@@ -8,13 +8,7 @@
 
 ;; 3. try out the method of scanning for unknown variables, then
 ;; binding it to a variable in system. We can then reuse CL functions
-(defpackage #:vampir
-  (:documentation "Provides a vampir representation")
-  (:use :common-lisp :trivia)
-  (:shadow :=)
-  (:export :defpoly :poly))
-
-(in-package :vampir)
+(in-package :alu.vampir)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Main Structure Types
@@ -205,8 +199,6 @@ appropriate circuit expression."
           (t
            (is-applyable-gate lookup)))))
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Examples
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -280,9 +272,6 @@ appropriate circuit expression."
 ;;                         #S(APPLY-CUSTOM-GATE
 ;;                            :GATE RANGE-2
 ;;                            :ARGUMENTS (Z X Y)))))
-
-
-
 
 ;; Standard library examples
 

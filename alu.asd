@@ -1,5 +1,5 @@
 (asdf:defsystem :alu
-  :depends-on (:trivia)
+  :depends-on (:trivia :alexandria)
   :version "0.0.0"
   :description "Powering Vamp-IR with the power of the original lineage"
   :author "Mariari"
@@ -7,7 +7,10 @@
   :pathname "src/"
   :serial t
   :components
-  ((:file "vampir")
+  ((:file "package")
+   (:file "vampir")
+   (:file "alu/term")
+   (:file "alu/type")
    (:file "alu"))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
@@ -18,6 +21,7 @@
   :serial t
   :components
   ((:file "package")
+   (:file "alu")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))
