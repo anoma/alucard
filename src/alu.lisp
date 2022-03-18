@@ -81,9 +81,65 @@ relevant to the system")
               :from-end t
               :initial-value body)))
 
-;; Place holders for now
-(defmacro deftype (name &body type-declarations)
-  ``(,',name ,@',type-declarations))
+(defmacro deftype (name-and-options generics &body type-declarations)
+  (let* ((fields (mapcar #'car type-declarations))
+         (name (if (listp name-and-options)
+                  (car name-and-options)
+                  name-and-options))
+         (options (if (listp name-and-options)
+                  (cdr name-and-options)
+                  nil))
+         (key-name (symbol-to-keyword name)))
+    `(progn
+       ;; Register the struct in the type table, so we will always
+       ;; know about it!
+       (setf (gethash ,key-name alu::*type-table*)
+             ;; make the top level type declaration
+             (make-type-declaration
+              :name ,key-name
+              :generics ,generics
+              :options (alexandria:plist-hash-table ,(cons 'list options))
+              ;; this is where the assumption about structs come in!
+              :decl
+              (make-record-declaration
+               ;; mapcan is the >>= for lists in Haskell
+               ,@(mapcan (lambda (declaration-info)
+                           (list
+                            (symbol-to-keyword (car declaration-info))
+                            ;; we want to transform the declaration
+                            ;; into a lookup of the table, and if an
+                            ;; application, the following
+                            ;;
+                            ;; 1. (utxo int)
+                            ;;    -> (utxo (type-reference :int))
+                            ;; 2. (utxo (int 64))
+                            ;;    -> (utxo (application (type-refernece :int) 64))
+                            `(to-type-reference-format ',(cadr declaration-info))))
+                         type-declarations))))
+
+       ;; Create the function that we can now call, to create an instance
+       (defun ,name (&key ,@fields)
+         (make-record :name ,key-name
+                      ;; fill in the other slots
+                      ,@(mapcan (lambda (field)
+                                  (list (symbol-to-keyword field) field))
+                                fields)))
+       ;; Return the Symbol itself!
+       ',name)))
+
+(defun to-type-reference-format (term)
+  "Given an application or a symbol, transform it to the correct type
+storage format. So for example
+
+1. int      -> (make-type-reference :name :int)
+2. (int 64) -> (make-application :name (make-type-reference :name :int)
+                                 :arguments (list 64))"
+  ;; can either be a list number or atom
+  (cond ((listp term)
+         (let ((type-ref (mapcar #'to-type-reference-format term)))
+           (make-application :name (car type-ref) :arguments (cdr type-ref))))
+        ((numberp term) term)
+        (t              (make-type-reference :name (symbol-to-keyword term)))))
 
 ;; Place holders for now
 (defmacro defcircuit (name arguments &body body)
@@ -94,13 +150,13 @@ relevant to the system")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
-(deftype utxo
+(deftype utxo ()
   (owner  (bytes 128))
   (amount (int   64))
   (nonce  (int   64)))
 
 ;; let us not support recursive data types at first
-(deftype (merkel-branch :unroll 10)
+(deftype (merkel-branch :unroll 10) ()
   (hash  (bytes 64))
   (left  merkel-branch)
   (right merkel-branch))
