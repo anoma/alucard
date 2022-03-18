@@ -10,6 +10,18 @@
        let-node
        reference))
 
+;; An alu Expression type.
+(cl:deftype alu-expression ()
+  "The Alu expression type. The expression type is the `alu-term'
+augmented with the common lisp list type."
+  `(or ;; we may want to remove this, if we go for a more effectful
+       ;; route rather than just binding naively on what we find.
+       ;;
+       ;; We can do this by pushing to some list, then collecting the
+       ;; constraints at the end of the expression.
+       list
+       ;; from alu/term
+       alu-term))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Alucard Term Declaration
@@ -20,10 +32,11 @@
 
 (defclass application ()
   ((name
-    :initarg :name
-    :accessor name
-    :type     keyword
-    :documentation "the name of the gate that we wish to apply")
+    :initarg :function
+    :accessor func
+    :documentation "the name of the gate that we wish to apply. This
+will be either a reference type or a type-reference depending on
+what table it is related to.")
    (arguments
     :initarg :args
     :initform nil
@@ -91,11 +104,11 @@
 
 (defmethod print-object ((obj application) stream)
   (print-unreadable-object (obj stream)
-    (with-accessors ((name name) (args arguments)) obj
-      (format stream "~A ~{~A~^ ~}" name args))))
+    (with-accessors ((fun func) (args arguments)) obj
+      (format stream "~A ~{~A~^ ~}" fun args))))
 
-(defun make-application (&key (name (error "Please provide a name")) arguments)
-  (make-instance 'application :name name :args arguments))
+(defun make-application (&key (function (error "Please provide a name")) arguments)
+  (make-instance 'application :function function :args arguments))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Record Functionality

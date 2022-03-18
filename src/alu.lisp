@@ -22,35 +22,27 @@
 ;; Language Storage Mechanisms
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; *type-table* : Hash-Table keyword alu-type-storage
 (defvar *type-table* (make-hash-table :test #'eq)
   "Serves as the table which stores all the circuit types that are
 relevant to the system")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Expression ADT
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(cl:deftype alu-expression ()
-  "The Alu expression type"
-  `(or ;; we may want to remove this, if we go for a more effectful
-       ;; route rather than just binding naively on what we find.
-       ;;
-       ;; We can do this by pushing to some list, then collecting the
-       ;; constraints at the end of the expression.
-       list
-       ;; from alu/term
-       alu-term))
+;; *function-table* : Hash-Table keyword alu-function-type
+(defvar *function-table* (make-hash-table :test #'eq)
+  "Serves as the table which stores all custom circuits that are
+defined")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; High Level Macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro defprimitive (name body)
+(defmacro defprimitive (name)
   "defines a primitive type"
-  (let ((keyword (intern (symbol-name name) :keyword)))
+  (let ((keyword (util:symbol-to-keyword name)))
     ;; always set it to be safe
-    (setf (gethash keyword *type-table*)
-          body)))
+    `(setf (gethash ,keyword *type-table*)
+           (make-primitive :name ,keyword))))
 
 (defmacro def (bind-values body)
   "defines the values in the presence of the body"
@@ -97,16 +89,16 @@ relevant to the system")
               (make-record-declaration
                ;; mapcan is the >>= for lists in Haskell
                ,@(mapcan (lambda (declaration-info)
+                           ;; we want to transform the declaration
+                           ;; into a lookup of the table, and if an
+                           ;; application, the following
+                           ;;
+                           ;; 1. (utxo int)
+                           ;;    -> (:utxo (type-reference :int))
+                           ;; 2. (utxo (int 64))
+                           ;;    -> (:utxo (application (type-refernece :int) 64))
                            (list
                             (util:symbol-to-keyword (car declaration-info))
-                            ;; we want to transform the declaration
-                            ;; into a lookup of the table, and if an
-                            ;; application, the following
-                            ;;
-                            ;; 1. (utxo int)
-                            ;;    -> (utxo (type-reference :int))
-                            ;; 2. (utxo (int 64))
-                            ;;    -> (utxo (application (type-refernece :int) 64))
                             `(to-type-reference-format ',(cadr declaration-info))))
                          type-declarations))))
 
@@ -120,19 +112,6 @@ relevant to the system")
        ;; Return the Symbol itself!
        ',name)))
 
-(defun to-type-reference-format (term)
-  "Given an application or a symbol, transform it to the correct type
-storage format. So for example
-
-1. int      -> (make-type-reference :name :int)
-2. (int 64) -> (make-application :name (make-type-reference :name :int)
-                                 :arguments (list 64))"
-  ;; can either be a list number or atom
-  (cond ((listp term)
-         (let ((type-ref (mapcar #'to-type-reference-format term)))
-           (make-application :name (car type-ref) :arguments (cdr type-ref))))
-        ((numberp term) term)
-        (t              (make-type-reference :name (util:symbol-to-keyword term)))))
 
 ;; Place holders for now
 (defmacro defcircuit (name arguments &body body)
@@ -141,6 +120,9 @@ storage format. So for example
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EXAMPLES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defprimitive bytes)
+(defprimitive int)
 
 ;;
 (deftype utxo ()
@@ -158,10 +140,19 @@ storage format. So for example
                   (private sig  (bytes 64))
                   (private utxo utxo)
                   ;; should consider doing the unrolling here rather than
-                  (private merk merkel-branch))
+                  (private merk merkel-branch)
+                  ;; should we have return type information be here
+                  (output int))
   (fold-tree root merk)
   (equal (owner utxo) "test"))
 
 (def ((a 3)
       (b 5))
   a)
+
+(defcircuit constraint ((public const (bytes 64))
+                        (output int))
+  (def ((a (some-constraint const))
+        (b (range 32 a)))
+    (range 64 a)
+    b))

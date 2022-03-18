@@ -40,3 +40,13 @@
                  'alu::application))
       ;; we add a global defn, check if it's there
       (is (fboundp name)))))
+
+(test syntax-to-refernece-format
+  (let ((applied (alu::to-type-reference-format '(int 64)))
+        (nested  (alu::to-type-reference-format '(int (int 64)))))
+    (is (eq :INT
+            (alu::name (alu::func applied))))
+    (is (= 64
+           (car (alu::arguments applied))))
+    (is (eq :INT
+            (alu::name (alu::func (car (alu::arguments nested))))))))

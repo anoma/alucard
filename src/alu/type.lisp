@@ -28,7 +28,12 @@ reference. If we are apply a type, then "
   (:documentation "Primitive type in the Alu language"))
 
 (defclass type-declaration ()
-  ((declaration
+  ((name
+    :initarg  :name
+    :type     keyword
+    :accessor name
+    :documentation "The name of the Type")
+   (declaration
     :initarg  :decl
     :type     alu-type-format
     :accessor decl
@@ -44,12 +49,7 @@ take (primitives take an extra integer, we may with to propagate)")
     :initarg  :options
     :type     hash-table
     :accessor options
-    :documentation "The Options for the declaration")
-   (name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "The name of the Type"))
+    :documentation "The Options for the declaration"))
   (:documentation "Type declaration in the Alu language"))
 
 (cl:deftype alu-type-format ()
@@ -69,6 +69,28 @@ take (primitives take an extra integer, we may with to propagate)")
   ()
   (:documentation "Sum type declaration"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                     Extra Functionality On Types                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun to-type-reference-format (term)
+  "Given an application or a symbol, transform it to the correct type
+storage format. So for example
+
+1. int      -> (make-type-reference :name :int)
+2. (int 64) -> (make-application :name (make-type-reference :name :int)
+                                 :arguments (list 64))"
+  ;; can either be a list number or atom
+  (cond ((listp term)
+         (let ((type-ref (mapcar #'to-type-reference-format term)))
+           (make-application :function (car type-ref) :arguments (cdr type-ref))))
+        ((numberp term) term)
+        (t              (make-type-reference :name (util:symbol-to-keyword term)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                       Type Declaration Functions                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Reference Functionality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -87,6 +109,9 @@ take (primitives take an extra integer, we may with to propagate)")
 (defmethod print-object ((obj primitive) stream)
   (print-unreadable-object (obj stream :type t)
     (format stream "~A" (name obj))))
+
+(defun make-primitive (&key name)
+  (make-instance 'primitive :name name))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     Type Declaration Functionalities                       ;;
