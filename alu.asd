@@ -8,6 +8,7 @@
   :serial t
   :components
   ((:file "package")
+   (:file "utils")
    (:file "vampir")
    (:file "alu/term")
    (:file "alu/type")

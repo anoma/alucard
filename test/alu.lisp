@@ -35,7 +35,7 @@
       (is (= unroll-amount
              (gethash :unroll (alu::options (gethash keyword alu::*type-table*)))))
       ;; did we add the field correctly
-      (is (typep (gethash (alu::symbol-to-keyword field)
+      (is (typep (gethash (util:symbol-to-keyword field)
                           alu::(contents (decl (gethash keyword *type-table*))))
                  'alu::application))
       ;; we add a global defn, check if it's there

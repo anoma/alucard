@@ -42,13 +42,6 @@ relevant to the system")
        alu-term))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Helper Functions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun symbol-to-keyword (symbol)
-  (intern (symbol-name symbol) :keyword))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; High Level Macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -66,7 +59,7 @@ relevant to the system")
        ,(mapcar (lambda (bind-pair)
                   (list (car bind-pair)
                         `(make-reference
-                          :name (symbol-to-keyword ',(car bind-pair)))))
+                          :name (util:symbol-to-keyword ',(car bind-pair)))))
          bind-values)
      ;; Declare the values as ignoreable
      ;; Should we keep the warning!?
@@ -74,7 +67,7 @@ relevant to the system")
      ;; Generate out the Alucard level binding
      ,(reduce (lambda (bind-pair let-buildup)
                 `(make-let
-                  :var (symbol-to-keyword ',(car bind-pair))
+                  :var (util:symbol-to-keyword ',(car bind-pair))
                   :val ,(cadr bind-pair)
                   :body ,let-buildup))
               bind-values
@@ -89,7 +82,7 @@ relevant to the system")
          (options (if (listp name-and-options)
                   (cdr name-and-options)
                   nil))
-         (key-name (symbol-to-keyword name)))
+         (key-name (util:symbol-to-keyword name)))
     `(progn
        ;; Register the struct in the type table, so we will always
        ;; know about it!
@@ -105,7 +98,7 @@ relevant to the system")
                ;; mapcan is the >>= for lists in Haskell
                ,@(mapcan (lambda (declaration-info)
                            (list
-                            (symbol-to-keyword (car declaration-info))
+                            (util:symbol-to-keyword (car declaration-info))
                             ;; we want to transform the declaration
                             ;; into a lookup of the table, and if an
                             ;; application, the following
@@ -122,7 +115,7 @@ relevant to the system")
          (make-record :name ,key-name
                       ;; fill in the other slots
                       ,@(mapcan (lambda (field)
-                                  (list (symbol-to-keyword field) field))
+                                  (list (util:symbol-to-keyword field) field))
                                 fields)))
        ;; Return the Symbol itself!
        ',name)))
@@ -139,7 +132,7 @@ storage format. So for example
          (let ((type-ref (mapcar #'to-type-reference-format term)))
            (make-application :name (car type-ref) :arguments (cdr type-ref))))
         ((numberp term) term)
-        (t              (make-type-reference :name (symbol-to-keyword term)))))
+        (t              (make-type-reference :name (util:symbol-to-keyword term)))))
 
 ;; Place holders for now
 (defmacro defcircuit (name arguments &body body)
