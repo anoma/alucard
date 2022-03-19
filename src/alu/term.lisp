@@ -1,7 +1,7 @@
-(in-package :alu)
+(in-package :alu.format)
 
 ;; data Alu = Number | Application ... | Record | Record-Lookup ...
-(cl:deftype alu-term ()
+(deftype term ()
   "The Alu term type, which dictates what terms can be written bound."
   `(or number
        application
@@ -11,8 +11,8 @@
        reference))
 
 ;; An alu Expression type.
-(cl:deftype alu-expression ()
-  "The Alu expression type. The expression type is the `alu-term'
+(deftype expression ()
+  "The Alu expression type. The expression type is the `term'
 augmented with the common lisp list type."
   `(or ;; we may want to remove this, if we go for a more effectful
        ;; route rather than just binding naively on what we find.
@@ -21,7 +21,7 @@ augmented with the common lisp list type."
        ;; constraints at the end of the expression.
        list
        ;; from alu/term
-       alu-term))
+       term))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Alucard Term Declaration
@@ -31,71 +31,61 @@ augmented with the common lisp list type."
 ;; terms of verbosity, but that's not a big deal.
 
 (defclass application ()
-  ((name
-    :initarg :function
-    :accessor func
-    :documentation "the name of the gate that we wish to apply. This
-will be either a reference type or a type-reference depending on
-what table it is related to.")
-   (arguments
-    :initarg :args
-    :initform nil
-    :type     list
-    :accessor arguments
-    :documentation "The arguments in which the gate is called upon"))
+  ((name :initarg :function
+         :accessor func
+         :documentation "the name of the gate that we wish to
+apply. This will be either a reference type or a type-reference
+depending on what table it is related to.")
+   (arguments :initarg :args
+              :initform nil
+              :type     list
+              :accessor arguments
+              :documentation "The arguments in which the gate is called upon"))
   (:documentation "application is the application type of the alu ADT"))
 
 (defclass record ()
-  ((name
-    :initarg :name
-    :accessor name
-    :type     keyword
-    :documentation "The name of the constructor of the alucard type")
+  ((name :initarg :name
+         :accessor name
+         :type     keyword
+         :documentation "The name of the constructor of the alucard type")
    ;; half tempted to bring in fset to have a functional hashtable
    ;; here...
-   (contents
-    :initarg :contents
-    :initform (make-hash-table)
-    :type     hash-table
-    :accessor contents
-    :documentation "the storage of the initial type mapping"))
+   (contents :initarg :contents
+             :initform (make-hash-table)
+             :type     hash-table
+             :accessor contents
+             :documentation "the storage of the initial type mapping"))
   (:documentation "Represents an instance of a record type"))
 
 (defclass record-lookup ()
-  ((record
-    :initarg :record
-    :accessor record
-    :documentation "the record in which we are grabbing the data out of")
-   (field
-    :initarg  :field
-    :type     keyword
-    :accessor field
-    :documentation "The field we wish to lookup from the record"))
+  ((record :initarg :record
+           :accessor record
+           :documentation "the record in which we are grabbing the data out of")
+   (field :initarg  :field
+          :type     keyword
+          :accessor field
+          :documentation "The field we wish to lookup from the record"))
   (:documentation "Represents a field lookup"))
 
 (defclass let-node ()
-  ((variable
-    :initarg  :variable
-    :type     keyword
-    :accessor var
-    :documentation "The variable that will be bound")
-   (value
-    :initarg :value
-    :accessor value
-    :type     alu-term
-    :documentation "the value that is bound")
-   (body
-    :initarg :body
-    :accessor body
-    :documentation "The body where the let value exists in"))
+  ((variable :initarg  :variable
+             :type     keyword
+             :accessor var
+             :documentation "The variable that will be bound")
+   (value :initarg :value
+          :accessor value
+          :type     term
+          :documentation "the value that is bound")
+   (body :initarg :body
+         :accessor body
+         :documentation "The body where the let value exists in"))
   (:documentation "Represents a variable binding in the Alucard language"))
 
 (defclass reference ()
-  ((name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "The Variable reference"))
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The Variable reference"))
   (:documentation "Represents a variable in the Alucard language"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

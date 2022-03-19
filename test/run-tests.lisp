@@ -2,4 +2,5 @@
 
 (defun run-tests ()
   (run! 'vampir)
-  (run! 'alucard))
+  (run! 'alucard)
+  (run! 'alucard.format))

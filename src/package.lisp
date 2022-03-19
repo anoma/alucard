@@ -15,5 +15,5 @@
   (:documentation "provides the Alucard VAMP-IR DSL")
   (:shadow #:deftype)
   (:use #:common-lisp)
-  (:local-nicknames (:util :alu.utils))
+  (:local-nicknames (:util :alu.utils) (:fmt :alu.format))
   (:export :deftype :defcircuit :def))

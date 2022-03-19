@@ -7,13 +7,14 @@
   :pathname "src/"
   :serial t
   :components
-  ((:file "package")
+  ((:file "alu/package")
+   (:file "package")
    (:file "utils")
-   (:file "vampir")
    (:file "alu/term")
    (:file "alu/type")
    (:file "alu/function")
-   (:file "alu"))
+   (:file "alu")
+   (:file "vampir"))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
 (asdf:defsystem :alu/test
@@ -24,6 +25,7 @@
   :components
   ((:file "package")
    (:file "alu")
+   (:file "format")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))

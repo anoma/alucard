@@ -1,51 +1,44 @@
-(in-package :alu)
+(in-package :alu.format)
 
-(cl:deftype alu-function-type ()
+(deftype function-type ()
   `(or circuit))
 
 (defclass circuit ()
-  ((name
-    :initarg :name
-    :type    keyword
-    :accessor name
-    :documentation "Name of the circuit")
-   (arguments
-    :initarg :arguments
-    :type    list
-    :accessor arguments
-    :documentation "Arguments for the circuit")
-   (return-type
-    :initarg  :return-type
-    :type     alu-type-reference
-    :accessor return-type
-    :documentation "The return output of a given circuit")
-   (body
-    :initarg  :body
-    :type     alu-expression
-    :accessor body
-    :documentation "The circuit logic")))
+  ((name :initarg :name
+         :type    keyword
+         :accessor name
+         :documentation "Name of the circuit")
+   (arguments :initarg :arguments
+              :type    list
+              :accessor arguments
+              :documentation "Arguments for the circuit")
+   (return-type :initarg  :return-type
+                :type     alu-type-reference
+                :accessor return-type
+                :documentation "The return output of a given circuit")
+   (body :initarg  :body
+         :type     alu-expression
+         :accessor body
+         :documentation "The circuit logic")))
 
-(cl:deftype privacy ()
+(deftype privacy ()
   `(or (eql :private)
        (eql :public)))
 
 (defclass constraint ()
-  ((privacy
-    :initarg  :privacy
-    :initform :private
-    :type     privacy
-    :accessor privacy
-    :documentation "Is the constraint public or private?")
-   (name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "The name of the constraint")
-   (type
-    :initarg  :type
-    :type     alu-type-reference
-    :accessor typ
-    :documentation "The name of the constraint")))
+  ((privacy :initarg  :privacy
+            :initform :private
+            :type     privacy
+            :accessor privacy
+            :documentation "Is the constraint public or private?")
+   (name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The name of the constraint")
+   (type :initarg  :type
+         :type     alu-type-reference
+         :accessor typ
+         :documentation "The name of the constraint")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Circuit Functionality

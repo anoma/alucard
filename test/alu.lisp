@@ -5,15 +5,6 @@
 
 (in-suite alucard)
 
-(test record-creation-and-lookup-works
-  (for-all ((name  (gen-string))
-            (value (gen-integer)))
-    (let ((keyword (intern name :keyword)))
-      (is
-       (equal (alu::lookup-record (alu::make-record :name :example keyword value)
-                                  keyword)
-              value)))))
-
 (defun clone-hash-table (hash)
   (alexandria:plist-hash-table
    (alexandria:hash-table-plist hash)))
@@ -33,20 +24,12 @@
       (is (gethash keyword alu::*type-table*))
       ;; did we add the right amount of unrolling?
       (is (= unroll-amount
-             (gethash :unroll (alu::options (gethash keyword alu::*type-table*)))))
+             (gethash :unroll
+                      (fmt:options (gethash keyword alu::*type-table*)))))
       ;; did we add the field correctly
       (is (typep (gethash (util:symbol-to-keyword field)
-                          alu::(contents (decl (gethash keyword *type-table*))))
-                 'alu::application))
+                          (fmt:contents
+                           (fmt:decl (gethash keyword alu::*type-table*))))
+                 'fmt:application))
       ;; we add a global defn, check if it's there
       (is (fboundp name)))))
-
-(test syntax-to-refernece-format
-  (let ((applied (alu::to-type-reference-format '(int 64)))
-        (nested  (alu::to-type-reference-format '(int (int 64)))))
-    (is (eq :INT
-            (alu::name (alu::func applied))))
-    (is (= 64
-           (car (alu::arguments applied))))
-    (is (eq :INT
-            (alu::name (alu::func (car (alu::arguments nested))))))))

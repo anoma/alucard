@@ -1,68 +1,61 @@
-(in-package :alu)
+(in-package :alu.format)
 
-(cl:deftype alu-type-reference ()
+(deftype type-reference ()
   "When we refer to the type in the language it will be through the type
 reference. If we are apply a type, then "
-  `(or type-reference
+  `(or reference-type
        ;; can be found in alu/term.lisp
        application))
 
-(defclass type-reference ()
-  ((name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "Type reference"))
+(defclass reference-type ()
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "Type reference"))
   (:documentation "Represents a variable in the Alucard language"))
 
-(cl:deftype alu-type-storage ()
+(deftype type-storage ()
   "The type we store in the top level type storage"
   `(or primitive type-declaration))
 
 (defclass primitive ()
-  ((name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "The name of the primitive"))
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The name of the primitive"))
   (:documentation "Primitive type in the Alu language"))
 
 (defclass type-declaration ()
-  ((name
-    :initarg  :name
-    :type     keyword
-    :accessor name
-    :documentation "The name of the Type")
-   (declaration
-    :initarg  :decl
-    :type     alu-type-format
-    :accessor decl
-    :documentation "The data declaration")
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The name of the Type")
    ;; currently unused
-   (generics
-    :initarg  :generics
-    :type     list
-    :accessor generics
-    :documentation "Any extra generic argumentation that the type can
-take (primitives take an extra integer, we may with to propagate)")
-   (options
-    :initarg  :options
-    :type     hash-table
-    :accessor options
-    :documentation "The Options for the declaration"))
+   (generics :initarg  :generics
+             :type     list
+             :accessor generics
+             :documentation "Any extra generic argumentation that the
+type can take (primitives take an extra integer, we may with to propagate)")
+   (options :initarg  :options
+            :type     hash-table
+            :accessor options
+            :documentation "The Options for the declaration")
+   (declaration :initarg  :decl
+                :type     type-format
+                :accessor decl
+                :documentation "The data declaration"))
   (:documentation "Type declaration in the Alu language"))
 
-(cl:deftype alu-type-format ()
+(deftype type-format ()
   "this is the choice of the format the type declaration can be"
   `(or record-decl sum-decl))
 
 (defclass record-decl ()
-  ((contents
-    :initarg :contents
-    :initform (make-hash-table)
-    :type     hash-table
-    :accessor contents
-    :documentation "Holding fields that are declared along with their type"))
+  ((contents :initarg :contents
+             :initform (make-hash-table)
+             :type     hash-table
+             :accessor contents
+             :documentation "Holding fields that are declared along with their type"))
   (:documentation "Record declaration"))
 
 (defclass sum-decl ()
@@ -84,8 +77,10 @@ storage format. So for example
   (cond ((listp term)
          (let ((type-ref (mapcar #'to-type-reference-format term)))
            (make-application :function (car type-ref) :arguments (cdr type-ref))))
-        ((numberp term) term)
-        (t              (make-type-reference :name (util:symbol-to-keyword term)))))
+        ((numberp term)
+         term)
+        (t
+         (make-type-reference :name (alu.utils:symbol-to-keyword term)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                       Type Declaration Functions                           ;;
@@ -95,12 +90,12 @@ storage format. So for example
 ;; Reference Functionality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((obj type-reference) stream)
+(defmethod print-object ((obj reference-type) stream)
   (print-unreadable-object (obj stream :type t)
     (format stream "~A" (name obj))))
 
 (defun make-type-reference (&key name)
-  (make-instance 'type-reference :name name))
+  (make-instance 'reference-type :name name))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Primitive Functionality

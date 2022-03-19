@@ -42,7 +42,7 @@ defined")
   (let ((keyword (util:symbol-to-keyword name)))
     ;; always set it to be safe
     `(setf (gethash ,keyword *type-table*)
-           (make-primitive :name ,keyword))))
+           (fmt:make-primitive :name ,keyword))))
 
 (defmacro def (bind-values body)
   "defines the values in the presence of the body"
@@ -50,7 +50,7 @@ defined")
        ;; bind the values at the CL level, so we can just reference it
        ,(mapcar (lambda (bind-pair)
                   (list (car bind-pair)
-                        `(make-reference
+                        `(fmt:make-reference
                           :name (util:symbol-to-keyword ',(car bind-pair)))))
          bind-values)
      ;; Declare the values as ignoreable
@@ -58,7 +58,7 @@ defined")
      (declare (ignorable ,@(mapcar #'car bind-values)))
      ;; Generate out the Alucard level binding
      ,(reduce (lambda (bind-pair let-buildup)
-                `(make-let
+                `(fmt:make-let
                   :var (util:symbol-to-keyword ',(car bind-pair))
                   :val ,(cadr bind-pair)
                   :body ,let-buildup))
@@ -80,13 +80,13 @@ defined")
        ;; know about it!
        (setf (gethash ,key-name alu::*type-table*)
              ;; make the top level type declaration
-             (make-type-declaration
+             (fmt:make-type-declaration
               :name ,key-name
               :generics ,generics
               :options (alexandria:plist-hash-table ,(cons 'list options))
               ;; this is where the assumption about structs come in!
               :decl
-              (make-record-declaration
+              (fmt:make-record-declaration
                ;; mapcan is the >>= for lists in Haskell
                ,@(mapcan (lambda (declaration-info)
                            ;; we want to transform the declaration
@@ -99,16 +99,16 @@ defined")
                            ;;    -> (:utxo (application (type-refernece :int) 64))
                            (list
                             (util:symbol-to-keyword (car declaration-info))
-                            `(to-type-reference-format ',(cadr declaration-info))))
+                            `(fmt:to-type-reference-format ',(cadr declaration-info))))
                          type-declarations))))
 
        ;; Create the function that we can now call, to create an instance
        (defun ,name (&key ,@fields)
-         (make-record :name ,key-name
-                      ;; fill in the other slots
-                      ,@(mapcan (lambda (field)
-                                  (list (util:symbol-to-keyword field) field))
-                                fields)))
+         (fmt:make-record :name ,key-name
+                          ;; fill in the other slots
+                          ,@(mapcan (lambda (field)
+                                      (list (util:symbol-to-keyword field) field))
+                                    fields)))
        ;; Return the Symbol itself!
        ',name)))
 
