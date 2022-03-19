@@ -68,7 +68,7 @@
         (fmt:make-type-declaration
          :name ,key-name
          :generics ,generics
-         :options (alexandria:plist-hash-table ,(cons 'list options))
+         :options (alu.utils:sycamore-plist-symbol-map ,(cons 'list options))
          ;; this is where the assumption about structs come in!
          :decl
          (fmt:make-record-declaration

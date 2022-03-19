@@ -2,6 +2,7 @@
   (:documentation "the type specification and layout of the alu
 package and alu terms")
   (:use #:common-lisp)
+  (:local-nicknames (:util :alu.utils))
   (:export
    ;; found in term
    :term
@@ -49,4 +50,5 @@ package and alu terms")
   (:documentation "provides the Alucard VAMP-IR Utils")
   (:shadow #:deftype)
   (:use #:common-lisp)
-  (:export :symbol-to-keyword))
+  (:export :symbol-to-keyword :hash-compare
+           :sycamore-plist-symbol-map :sycamore-symbol-map-plist))

@@ -48,11 +48,9 @@ depending on what table it is related to.")
          :accessor name
          :type     keyword
          :documentation "The name of the constructor of the alucard type")
-   ;; half tempted to bring in fset to have a functional hashtable
-   ;; here...
    (contents :initarg :contents
-             :initform (make-hash-table)
-             :type     hash-table
+             :initform (sycamore:make-tree-map #'util:hash-compare)
+             :type     sycamore:tree-map
              :accessor contents
              :documentation "the storage of the initial type mapping"))
   (:documentation "Represents an instance of a record type"))
@@ -107,16 +105,17 @@ depending on what table it is related to.")
 (defmethod print-object ((obj record) stream)
   (print-unreadable-object (obj stream :type t)
     (with-accessors ((name name) (cont contents)) obj
-      (format stream "~A ~{:~A ~A~^ ~}" name (alexandria:hash-table-plist cont)))))
+      (format stream "~A ~{:~A ~A~^ ~}"
+              name (util:sycamore-symbol-map-plist cont)))))
 
 (defun make-record (&rest arguments &key name &allow-other-keys)
-  (let ((hash (alexandria:plist-hash-table arguments)))
-    (remhash :name hash)
+  (let ((hash (sycamore:tree-map-remove (util:sycamore-plist-symbol-map arguments)
+                                        :name)))
     (make-instance 'record :name name :contents hash)))
 
 (defun lookup-record (record field)
   "looks up the alu-record type by the field"
-  (gethash field (contents record)))
+  (sycamore:tree-map-find (contents record) field))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Record Lookup Functionality

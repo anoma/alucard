@@ -37,7 +37,8 @@ reference. If we are apply a type, then "
              :documentation "Any extra generic argumentation that the
 type can take (primitives take an extra integer, we may with to propagate)")
    (options :initarg  :options
-            :type     hash-table
+            :initform (sycamore:make-tree-map #'util:hash-compare)
+            :type     sycamore:tree-map
             :accessor options
             :documentation "The Options for the declaration")
    (declaration :initarg  :decl
@@ -52,8 +53,8 @@ type can take (primitives take an extra integer, we may with to propagate)")
 
 (defclass record-decl ()
   ((contents :initarg :contents
-             :initform (make-hash-table)
-             :type     hash-table
+             :initform (sycamore:make-tree-map #'util:hash-compare)
+             :type     sycamore:tree-map
              :accessor contents
              :documentation "Holding fields that are declared along with their type"))
   (:documentation "Record declaration"))
@@ -115,7 +116,7 @@ storage format. So for example
 (defmethod print-object ((obj type-declaration) stream)
   (print-unreadable-object (obj stream)
     (with-accessors ((decl decl) (gen generics) (opt options) (name name)) obj
-      (let ((plist (alexandria:hash-table-plist opt)))
+      (let ((plist (util:sycamore-symbol-map-plist opt)))
         ;; should abstract this bit out eventually but w/e
         (if plist
             (format stream "TYPE (~A ~A) ~{~A ~}= ~A" name plist gen decl)
@@ -123,7 +124,8 @@ storage format. So for example
 
 (defun make-type-declaration (&key
                                 (name (error "please provide name"))
-                                options generics
+                                (options (sycamore:make-tree-map #'util:hash-compare))
+                                generics
                                 (decl (error "please provide declaration")))
   (make-instance 'type-declaration
                  :decl decl :options options :generics generics :name name))
@@ -135,8 +137,7 @@ storage format. So for example
 (defmethod print-object ((obj record-decl) stream)
   (print-unreadable-object (obj stream :type t)
     (with-accessors ((cont contents)) obj
-      (format stream "~{:~A ~A~^ ~}" (alexandria:hash-table-plist cont)))))
+      (format stream "~{:~A ~A~^ ~}" (util:sycamore-symbol-map-plist cont)))))
 
 (defun make-record-declaration (&rest arguments &key &allow-other-keys)
-  (make-instance 'record-decl
-                 :contents (alexandria:plist-hash-table arguments)))
+  (make-instance 'record-decl :contents (util:sycamore-plist-symbol-map arguments)))

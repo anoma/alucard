@@ -24,11 +24,12 @@
       (is (storage:lookup-type keyword))
       ;; did we add the right amount of unrolling?
       (is (= unroll-amount
-             (gethash :unroll
-                      (fmt:options (storage:lookup-type keyword)))))
+             (sycamore:tree-map-find (fmt:options (storage:lookup-type keyword))
+                                     :unroll)))
       ;; did we add the field correctly
-      (is (typep (gethash (util:symbol-to-keyword field)
-                          (fmt:contents (fmt:decl (storage:lookup-type keyword))))
+      (is (typep (sycamore:tree-map-find
+                  (fmt:contents (fmt:decl (storage:lookup-type keyword)))
+                  (util:symbol-to-keyword field))
                  'fmt:application))
       ;; we add a global defn, check if it's there
       (is (fboundp name)))))
