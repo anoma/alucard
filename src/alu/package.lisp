@@ -34,3 +34,13 @@ package and alu terms")
    :constraint :name :typ
    :make-circuit
    :make-constraint))
+
+(defpackage #:alu.storage
+  (:documentation "Serves as the long term storage of any Alucard Circuit")
+  (:use #:common-lisp)
+  (:local-nicknames (:format :alu.format))
+  (:export
+   :*types*
+   :*functions*
+   :add-function    :add-type
+   :lookup-function :lookup-type))

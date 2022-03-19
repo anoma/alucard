@@ -19,21 +19,6 @@
 ;; depending how I architect this.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Language Storage Mechanisms
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; *type-table* : Hash-Table keyword alu-type-storage
-(defvar *type-table* (make-hash-table :test #'eq)
-  "Serves as the table which stores all the circuit types that are
-relevant to the system")
-
-
-;; *function-table* : Hash-Table keyword alu-function-type
-(defvar *function-table* (make-hash-table :test #'eq)
-  "Serves as the table which stores all custom circuits that are
-defined")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; High Level Macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -41,8 +26,7 @@ defined")
   "defines a primitive type"
   (let ((keyword (util:symbol-to-keyword name)))
     ;; always set it to be safe
-    `(setf (gethash ,keyword *type-table*)
-           (fmt:make-primitive :name ,keyword))))
+    `(storage:add-type ,keyword (fmt:make-primitive :name ,keyword))))
 
 (defmacro def (bind-values body)
   "defines the values in the presence of the body"
@@ -78,29 +62,30 @@ defined")
     `(progn
        ;; Register the struct in the type table, so we will always
        ;; know about it!
-       (setf (gethash ,key-name alu::*type-table*)
-             ;; make the top level type declaration
-             (fmt:make-type-declaration
-              :name ,key-name
-              :generics ,generics
-              :options (alexandria:plist-hash-table ,(cons 'list options))
-              ;; this is where the assumption about structs come in!
-              :decl
-              (fmt:make-record-declaration
-               ;; mapcan is the >>= for lists in Haskell
-               ,@(mapcan (lambda (declaration-info)
-                           ;; we want to transform the declaration
-                           ;; into a lookup of the table, and if an
-                           ;; application, the following
-                           ;;
-                           ;; 1. (utxo int)
-                           ;;    -> (:utxo (type-reference :int))
-                           ;; 2. (utxo (int 64))
-                           ;;    -> (:utxo (application (type-refernece :int) 64))
-                           (list
-                            (util:symbol-to-keyword (car declaration-info))
-                            `(fmt:to-type-reference-format ',(cadr declaration-info))))
-                         type-declarations))))
+       (storage:add-type
+        ,key-name
+        ;; make the top level type declaration
+        (fmt:make-type-declaration
+         :name ,key-name
+         :generics ,generics
+         :options (alexandria:plist-hash-table ,(cons 'list options))
+         ;; this is where the assumption about structs come in!
+         :decl
+         (fmt:make-record-declaration
+          ;; mapcan is the >>= for lists in Haskell
+          ,@(mapcan (lambda (declaration-info)
+                      ;; we want to transform the declaration
+                      ;; into a lookup of the table, and if an
+                      ;; application, the following
+                      ;;
+                      ;; 1. (utxo int)
+                      ;;    -> (:utxo (type-reference :int))
+                      ;; 2. (utxo (int 64))
+                      ;;    -> (:utxo (application (type-refernece :int) 64))
+                      (list
+                       (util:symbol-to-keyword (car declaration-info))
+                       `(fmt:to-type-reference-format ',(cadr declaration-info))))
+                    type-declarations))))
 
        ;; Create the function that we can now call, to create an instance
        (defun ,name (&key ,@fields)

@@ -13,6 +13,7 @@
    (:file "alu/term")
    (:file "alu/type")
    (:file "alu/function")
+   (:file "alu/storage")
    (:file "alu")
    (:file "vampir"))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
