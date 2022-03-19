@@ -17,7 +17,7 @@
                 :accessor return-type
                 :documentation "The return output of a given circuit")
    (body :initarg  :body
-         :type     alu-expression
+         :type     alu-term
          :accessor body
          :documentation "The circuit logic")))
 

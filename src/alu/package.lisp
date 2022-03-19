@@ -44,3 +44,9 @@ package and alu terms")
    :*functions*
    :add-function    :add-type
    :lookup-function :lookup-type))
+
+(defpackage #:alu.utils
+  (:documentation "provides the Alucard VAMP-IR Utils")
+  (:shadow #:deftype)
+  (:use #:common-lisp)
+  (:export :symbol-to-keyword))

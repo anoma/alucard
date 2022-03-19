@@ -5,17 +5,20 @@
   :author "Mariari"
   :license "MIT"
   :pathname "src/"
-  :serial t
   :components
-  ((:file "alu/package")
-   (:file "package")
-   (:file "utils")
-   (:file "alu/term")
-   (:file "alu/type")
-   (:file "alu/function")
-   (:file "alu/storage")
-   (:file "alu")
-   (:file "vampir"))
+  ((:module specification
+    :serial t
+    :description "Internal Alucard Specification"
+    :pathname #P"alu/"
+    :components ((:file "package")
+                 (:file "utils")
+                 (:file "term")
+                 (:file "type")
+                 (:file "function")
+                 (:file "storage")))
+   (:file "package" :depends-on ("specification"))
+   (:file "alu"     :depends-on ("package"))
+   (:file "vampir"  :depends-on ("package")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
 (asdf:defsystem :alu/test
