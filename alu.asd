@@ -14,7 +14,7 @@
                  (:file "utils")
                  (:file "term")
                  (:file "type")
-                 (:file "function")
+                 (:file "global")
                  (:file "storage")))
    (:file "package" :depends-on ("specification"))
    (:file "alu"     :depends-on ("package"))

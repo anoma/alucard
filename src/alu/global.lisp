@@ -8,12 +8,15 @@
          :type    keyword
          :accessor name
          :documentation "Name of the circuit")
+   ;; arguments : sycamore.tree-map keyword constraint
    (arguments :initarg :arguments
-              :type    list
+              :type    sycamore:tree-map
+              :initform (sycamore:make-tree-map #'util:hash-compare)
               :accessor arguments
-              :documentation "Arguments for the circuit")
+              :documentation "Arguments for the circuit, saved in a
+map from the argument name (keyword) to the `constraint'")
    (return-type :initarg  :return-type
-                :type     alu-type-reference
+                :type     type-reference
                 :accessor return-type
                 :documentation "The return output of a given circuit")
    (body :initarg  :body
@@ -31,12 +34,8 @@
             :type     privacy
             :accessor privacy
             :documentation "Is the constraint public or private?")
-   (name :initarg  :name
-         :type     keyword
-         :accessor name
-         :documentation "The name of the constraint")
    (type :initarg  :type
-         :type     alu-type-reference
+         :type     type-reference
          :accessor typ
          :documentation "The name of the constraint")))
 
@@ -61,7 +60,7 @@
 
 (defmethod print-object ((obj constraint) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~A ~A ~A" (privacy obj) (name obj) (typ obj))))
+    (format stream "~A ~A" (privacy obj) (typ obj))))
 
-(defun make-constraint (&key name (privacy :private) type)
-  (make-instance 'constraint :type type :name name :privacy privacy))
+(defun make-constraint (&key (privacy :private) type)
+  (make-instance 'constraint :type type :privacy privacy))
