@@ -1,4 +1,4 @@
-(in-package :alu.format)
+(in-package :alu.spec)
 
 (deftype type-reference ()
   "When we refer to the type in the language it will be through the type

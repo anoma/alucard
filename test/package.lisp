@@ -1,7 +1,7 @@
 (defpackage :alu-test
   (:use #:cl #:fiveam)
   (:local-nicknames (:util    :alu.utils)
-                    (:fmt     :alu.format)
+                    (:spc     :alu.spec)
                     (:storage :alu.storage))
   (:export #:run-tests))
 

@@ -3,7 +3,7 @@
   (:shadow #:deftype #:range #:def)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
-                    (:fmt     :alu.format)
+                    (:spc     :alu.spec)
                     (:storage :alu.storage))
   (:export :deftype :defcircuit :def))
 

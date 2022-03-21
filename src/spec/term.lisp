@@ -1,4 +1,4 @@
-(in-package :alu.format)
+(in-package :alu.spec)
 
 ;; data Alu = Number | Application ... | Record | Record-Lookup ...
 (deftype term ()

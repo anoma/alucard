@@ -26,7 +26,7 @@
   "defines a primitive type"
   (let ((keyword (util:symbol-to-keyword name)))
     ;; always set it to be safe
-    `(storage:add-type ,keyword (fmt:make-primitive :name ,keyword))))
+    `(storage:add-type ,keyword (spc:make-primitive :name ,keyword))))
 
 (defmacro def (bind-values body)
   "defines the values in the presence of the body"
@@ -34,7 +34,7 @@
        ;; bind the values at the CL level, so we can just reference it
        ,(mapcar (lambda (bind-pair)
                   (list (car bind-pair)
-                        `(fmt:make-reference
+                        `(spc:make-reference
                           :name (util:symbol-to-keyword ',(car bind-pair)))))
          bind-values)
      ;; Declare the values as ignoreable
@@ -42,7 +42,7 @@
      (declare (ignorable ,@(mapcar #'car bind-values)))
      ;; Generate out the Alucard level binding
      ,(reduce (lambda (bind-pair let-buildup)
-                `(fmt:make-let
+                `(spc:make-let
                   :var (util:symbol-to-keyword ',(car bind-pair))
                   :val ,(cadr bind-pair)
                   :body ,let-buildup))
@@ -65,13 +65,13 @@
        (storage:add-type
         ,key-name
         ;; make the top level type declaration
-        (fmt:make-type-declaration
+        (spc:make-type-declaration
          :name ,key-name
          :generics ,generics
          :options (alu.utils:sycamore-plist-symbol-map ,(cons 'list options))
          ;; this is where the assumption about structs come in!
          :decl
-         (fmt:make-record-declaration
+         (spc:make-record-declaration
           ;; mapcan is the >>= for lists in Haskell
           ,@(mapcan (lambda (declaration-info)
                       ;; we want to transform the declaration
@@ -84,12 +84,12 @@
                       ;;    -> (:utxo (application (type-refernece :int) 64))
                       (list
                        (util:symbol-to-keyword (car declaration-info))
-                       `(fmt:to-type-reference-format ',(cadr declaration-info))))
+                       `(spc:to-type-reference-format ',(cadr declaration-info))))
                     type-declarations))))
 
        ;; Create the function that we can now call, to create an instance
        (defun ,name (&key ,@fields)
-         (fmt:make-record :name ,key-name
+         (spc:make-record :name ,key-name
                           ;; fill in the other slots
                           ,@(mapcan (lambda (field)
                                       (list (util:symbol-to-keyword field) field))

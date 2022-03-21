@@ -1,4 +1,4 @@
-(in-package :alu.format)
+(in-package :alu.spec)
 
 (deftype function-type ()
   `(or circuit))

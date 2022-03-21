@@ -9,13 +9,18 @@
   ((:module specification
     :serial t
     :description "Internal Alucard Specification"
-    :pathname #P"alu/"
+    :pathname #P"spec/"
     :components ((:file "package")
                  (:file "utils")
                  (:file "term")
                  (:file "type")
                  (:file "global")
                  (:file "storage")))
+   (:module pass
+    :serial t
+    :depends-on ("specification")
+    :description "Alucard Passes"
+    :components ((:file "package")))
    (:file "package" :depends-on ("specification"))
    (:file "alu"     :depends-on ("package"))
    (:file "vampir"  :depends-on ("package")))
@@ -29,7 +34,7 @@
   :components
   ((:file "package")
    (:file "alu")
-   (:file "format")
+   (:file "spec")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))

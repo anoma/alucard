@@ -5,7 +5,7 @@
   (:export :symbol-to-keyword :hash-compare
            :sycamore-plist-symbol-map :sycamore-symbol-map-plist))
 
-(defpackage #:alu.format
+(defpackage #:alu.spec
   (:documentation "the type specification and layout of the alu
 package and alu terms")
   (:use #:common-lisp #:serapeum)
@@ -35,7 +35,7 @@ package and alu terms")
    :to-type-reference-format
    :make-type-reference :make-primitive :make-type-declaration
    :make-record-declaration
-   ;; found in function
+   ;; found in global
    :function-type
    :privacy
    :circuit    :name :arguments :return-type :body
@@ -46,7 +46,7 @@ package and alu terms")
 (defpackage #:alu.storage
   (:documentation "Serves as the long term storage of any Alucard Circuit")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:format :alu.format))
+  (:local-nicknames (:format :alu.spec))
   (:export
    :*types*
    :*functions*
