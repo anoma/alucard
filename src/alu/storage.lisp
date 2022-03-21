@@ -18,21 +18,21 @@ defined")
 ;; Storage Addition Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(declaim (ftype (function (keyword format:function-type)) add-function))
+(-> add-function (keyword format:function-type) t)
 (defun add-function (name func)
   "Adds the given function to the `*functions' table"
   (setf (gethash name *functions*) func))
 
-(declaim (ftype (function (keyword format:type-storage)) add-type))
+(-> add-type (keyword format:type-storage) t)
 (defun add-type (name type)
   "Adds the given Type to the `*types*' table"
   (setf (gethash name *types*) type))
 
-(declaim (ftype (function (keyword) (or format:function-type nil)) lookup-function))
+(-> lookup-function (keyword) (or format:function-type null))
 (defun lookup-function (name)
   (gethash name *functions*))
 
-(declaim (ftype (function (keyword) (or format:type-storage nil)) lookup-type))
+(-> lookup-type (keyword) (or format:type-storage null))
 (defun lookup-type (name)
   (gethash name *types*))
 

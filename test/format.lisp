@@ -24,3 +24,15 @@
     (is (eq :INT
             (fmt:name (fmt:func (car (fmt:arguments nested))))))))
 
+
+;; Note for later, we can have exuastion
+;; (match-of term (make-application :function :hi )
+;;   ((application func) func))
+
+;; (typecase-of term 3
+;;   (number
+;;    2)
+;;   (application
+;;    2)
+;;   (otherwise
+;;    2))

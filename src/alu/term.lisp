@@ -10,6 +10,11 @@
        let-node
        reference))
 
+(deftype linear-term ()
+  "The Alu term type, which dictates what terms can be written bound."
+  `(and term
+        (not let-node)))
+
 ;; An alu Expression type.
 (deftype expression ()
   "The Alu expression type. The expression type is the `term'
@@ -108,14 +113,18 @@ depending on what table it is related to.")
       (format stream "~A ~{:~A ~A~^ ~}"
               name (util:sycamore-symbol-map-plist cont)))))
 
+(-> make-record (&key (:name keyword) &allow-other-keys) record)
 (defun make-record (&rest arguments &key name &allow-other-keys)
   (let ((hash (sycamore:tree-map-remove (util:sycamore-plist-symbol-map arguments)
                                         :name)))
-    (make-instance 'record :name name :contents hash)))
+    (assure record
+      (make-instance 'record :name name :contents hash))))
 
+(-> lookup-record (record keyword) (or term null))
 (defun lookup-record (record field)
   "looks up the alu-record type by the field"
-  (sycamore:tree-map-find (contents record) field))
+  (values
+   (sycamore:tree-map-find (contents record) field)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Record Lookup Functionality
@@ -150,5 +159,7 @@ depending on what table it is related to.")
   (print-unreadable-object (obj stream :type t)
     (format stream "~A" (name obj))))
 
+(-> make-reference (&key (:name keyword)) reference)
 (defun make-reference (&key name)
-  (make-instance 'reference :name name))
+  (assure reference
+    (make-instance 'reference :name name)))

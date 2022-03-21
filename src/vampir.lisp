@@ -161,9 +161,9 @@ appropriate circuit expression."
   ;; Normal Haskell pattern matching, with guards being haskell guards
   ;; (list x x)  ---> hd : [x]
   ;; (cons x xs) ---> hd : tl
-  (match raw-syntax
-    ((guard (list x to-eval)
-            (lisp-run? x))
+  (trivia:match raw-syntax
+    ((trivia:guard (list x to-eval)
+                   (lisp-run? x))
      (raw-syntax-into-circuit (eval to-eval)))
     ((cons poly-function xs)
      (let ((arguments (mapcar #'raw-syntax-into-circuit xs)))
