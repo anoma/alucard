@@ -30,16 +30,8 @@
 
 (defmacro def (bind-values body)
   "defines the values in the presence of the body"
-  `(let
-       ;; bind the values at the CL level, so we can just reference it
-       ,(mapcar (lambda (bind-pair)
-                  (list (car bind-pair)
-                        `(spc:make-reference
-                          :name (util:symbol-to-keyword ',(car bind-pair)))))
-         bind-values)
-     ;; Declare the values as ignoreable
-     ;; Should we keep the warning!?
-     (declare (ignorable ,@(mapcar #'car bind-values)))
+  ;; bind the values at the CL level, so we can just reference it
+  `(let-refs ,(mapcar #'car bind-values)
      ;; Generate out the Alucard level binding
      ,(reduce (lambda (bind-pair let-buildup)
                 `(spc:make-let
@@ -68,7 +60,7 @@
         (spc:make-type-declaration
          :name ,key-name
          :generics ,generics
-         :options (alu.utils:sycamore-plist-symbol-map ,(cons 'list options))
+         :options (util:sycamore-plist-symbol-map (list ,@options))
          ;; this is where the assumption about structs come in!
          :decl
          (spc:make-record-declaration
@@ -82,9 +74,8 @@
                       ;;    -> (:utxo (type-reference :int))
                       ;; 2. (utxo (int 64))
                       ;;    -> (:utxo (application (type-refernece :int) 64))
-                      (list
-                       (util:symbol-to-keyword (car declaration-info))
-                       `(spc:to-type-reference-format ',(cadr declaration-info))))
+                      (list (util:symbol-to-keyword (car declaration-info))
+                            `(spc:to-type-reference-format ',(cadr declaration-info))))
                     type-declarations))))
 
        ;; Create the function that we can now call, to create an instance
@@ -98,9 +89,72 @@
        ',name)))
 
 
-;; Place holders for now
 (defmacro defcircuit (name arguments &body body)
-  ``(,',name ,@',arguments ,@',body))
+  (let* (;; Arguments are laid out like (public root (bytes 64))
+         (just-args
+           (remove-if-not (lambda (x) (typep (util:symbol-to-keyword x) 'spc:privacy))
+                          arguments
+                          :key #'car))
+         (argument-names (mapcar #'cadr just-args))
+         ;; Outputs are laid out like (output int)
+         (just-output
+           (remove-if (lambda (x) (typep (util:symbol-to-keyword x) 'spc:privacy))
+                      arguments
+                      :key #'car))
+         (just-output
+           (case (length just-output)
+             (0 nil)
+             (1 (car just-output))
+             (t (error "In the arguments to defcircuit please only supply 1 output"))))
+         (key-name (util:symbol-to-keyword name)))
+    `(progn ;; make a lexical variable so we can just say it
+            (serapeum:def ,name (spc:make-primitive :name ,key-name))
+            ;; defun a function to apply the function
+            (defun ,name (,@argument-names)
+              (spc:make-application :function ,key-name
+                                    :arguments (list ,@argument-names)))
+            (let-refs
+             ,argument-names
+             (storage:add-function
+              ,key-name
+              (spc:make-circuit
+               :return-type (spc:to-type-reference-format
+                             ,(util:symbol-to-keyword (cadr just-output)))
+               :name ,key-name
+               :arguments (make-constraint-mapping-from-list '(,@just-args))
+               ;; the body is a list of terms that we combine
+               :body (list ,@body))))
+            ',name)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helper Macros and functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro let-refs (variables &rest body)
+  "let-refs lets the variables in the argument list be referred to in
+the body at the CL level. The values are simply references to the
+value in the Alucard environment. An example usage may
+be (let-refs (a b) (+ a b))"
+  `(let ,(mapcar (lambda (var)
+                   (list var `(spc:make-reference
+                               :name ,(util:symbol-to-keyword var))))
+          variables)
+     ;; Declare the values as ignoreable
+     ;; Should we keep the warning!?
+     (declare (ignorable ,@variables))
+     ,@body))
+
+(defun make-constraint-mapping-from-list (argument-list)
+  "Takes a list of terms like (public root (bytes 64)) and generates out
+a `sycamore:tree-map' from `keyword' to `spc:constraint'"
+  (sycamore:alist-tree-map
+   (mapcar (lambda (triple)
+             (destructuring-bind (priv name type) triple
+               (cons (util:symbol-to-keyword name)
+                     (spc:make-constraint :privacy (util:symbol-to-keyword priv)
+                                          :type (spc:to-type-reference-format type)))))
+           argument-list)
+   #'util:hash-compare))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EXAMPLES
@@ -128,8 +182,9 @@
                   (private merk merkel-branch)
                   ;; should we have return type information be here
                   (output int))
-  (fold-tree root merk)
-  (equal (owner utxo) "test"))
+  ;; (fold-tree root merk)
+  ;; (equal (owner utxo) "test")
+  poly)
 
 (def ((a 3)
       (b 5))
@@ -137,7 +192,8 @@
 
 (defcircuit constraint ((public const (bytes 64))
                         (output int))
-  (def ((a (some-constraint const))
-        (b (range 32 a)))
-    (range 64 a)
-    b))
+  ;; (def ((a (some-constraint const))
+  ;;       (b (range 32 a)))
+  ;;   (range 64 a)
+  ;;   b)
+  constraint)

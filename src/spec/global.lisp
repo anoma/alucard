@@ -1,7 +1,9 @@
 (in-package :alu.spec)
 
 (deftype function-type ()
-  `(or circuit))
+  `(or circuit
+       ;; in type.lisp
+       primitive))
 
 (defclass circuit ()
   ((name :initarg :name
@@ -16,11 +18,10 @@
               :documentation "Arguments for the circuit, saved in a
 map from the argument name (keyword) to the `constraint'")
    (return-type :initarg  :return-type
-                :type     type-reference
+                :type     (or type-reference null)
                 :accessor return-type
                 :documentation "The return output of a given circuit")
    (body :initarg  :body
-         :type     alu-term
          :accessor body
          :documentation "The circuit logic")))
 

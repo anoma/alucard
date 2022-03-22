@@ -18,13 +18,6 @@ reference. If we are apply a type, then "
   "The type we store in the top level type storage"
   `(or primitive type-declaration))
 
-(defclass primitive ()
-  ((name :initarg  :name
-         :type     keyword
-         :accessor name
-         :documentation "The name of the primitive"))
-  (:documentation "Primitive type in the Alu language"))
-
 (defclass type-declaration ()
   ((name :initarg  :name
          :type     keyword
@@ -97,17 +90,6 @@ storage format. So for example
 
 (defun make-type-reference (&key name)
   (make-instance 'reference-type :name name))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Primitive Functionality
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj primitive) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A" (name obj))))
-
-(defun make-primitive (&key name)
-  (make-instance 'primitive :name name))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     Type Declaration Functionalities                       ;;

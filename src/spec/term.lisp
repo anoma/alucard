@@ -4,6 +4,7 @@
 (deftype term ()
   "The Alu term type, which dictates what terms can be written bound."
   `(or number
+       primitive
        application
        record
        record-lookup
@@ -34,6 +35,13 @@ augmented with the common lisp list type."
 
 ;; We are using defclass as they are more flexible.... we just pay in
 ;; terms of verbosity, but that's not a big deal.
+
+(defclass primitive ()
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The name of the primitive"))
+  (:documentation "Primitive type in the Alu language"))
 
 (defclass application ()
   ((name :initarg :function
@@ -90,6 +98,17 @@ depending on what table it is related to.")
          :accessor name
          :documentation "The Variable reference"))
   (:documentation "Represents a variable in the Alucard language"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Primitive Functionality
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj primitive) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A" (name obj))))
+
+(defun make-primitive (&key name)
+  (make-instance 'primitive :name name))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Application Functionality
