@@ -22,26 +22,6 @@
 ;; High Level Macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro defprimitive (name)
-  "defines a primitive type"
-  (let ((keyword (util:symbol-to-keyword name)))
-    ;; always set it to be safe
-    `(storage:add-type ,keyword (spc:make-primitive :name ,keyword))))
-
-(defmacro def (bind-values body)
-  "defines the values in the presence of the body"
-  ;; bind the values at the CL level, so we can just reference it
-  `(let-refs ,(mapcar #'car bind-values)
-     ;; Generate out the Alucard level binding
-     ,(reduce (lambda (bind-pair let-buildup)
-                `(spc:make-let
-                  :var (util:symbol-to-keyword ',(car bind-pair))
-                  :val ,(cadr bind-pair)
-                  :body ,let-buildup))
-              bind-values
-              :from-end t
-              :initial-value body)))
-
 (defmacro deftype (name-and-options generics &body type-declarations)
   (let* ((fields (mapcar #'car type-declarations))
          (name (if (listp name-and-options)
@@ -107,24 +87,53 @@
              (1 (car just-output))
              (t (error "In the arguments to defcircuit please only supply 1 output"))))
          (key-name (util:symbol-to-keyword name)))
-    `(progn ;; make a lexical variable so we can just say it
-            (serapeum:def ,name (spc:make-primitive :name ,key-name))
-            ;; defun a function to apply the function
-            (defun ,name (,@argument-names)
-              (spc:make-application :function ,key-name
-                                    :arguments (list ,@argument-names)))
-            (let-refs
-             ,argument-names
-             (storage:add-function
-              ,key-name
-              (spc:make-circuit
-               :return-type (spc:to-type-reference-format
-                             ,(util:symbol-to-keyword (cadr just-output)))
-               :name ,key-name
-               :arguments (make-constraint-mapping-from-list '(,@just-args))
-               ;; the body is a list of terms that we combine
-               :body (list ,@body))))
-            ',name)))
+    `(progn
+       ;; make a lexical variable so we can just say it
+       (serapeum:def ,name (spc:make-primitive :name ,key-name))
+       ;; defun a function to apply the function
+       (defun ,name (,@argument-names)
+         (spc:make-application :function ,key-name
+                               :arguments (list ,@argument-names)))
+       (storage:add-function
+        ,key-name
+        (let-refs
+         ,argument-names
+         (storage:add-function
+          ,key-name
+          (spc:make-circuit
+           :return-type (spc:to-type-reference-format
+                         ,(util:symbol-to-keyword (cadr just-output)))
+           :name ,key-name
+           :arguments (make-constraint-mapping-from-list '(,@just-args))
+           ;; the body is a list of terms that we combine
+           :body (list ,@body)))))
+       ',name)))
+
+(defmacro def (bind-values body)
+  "defines the values in the presence of the body"
+  ;; bind the values at the CL level, so we can just reference it
+  `(let-refs ,(mapcar #'car bind-values)
+     ;; Generate out the Alucard level binding
+     ,(reduce (lambda (bind-pair let-buildup)
+                `(spc:make-let
+                  :var (util:symbol-to-keyword ',(car bind-pair))
+                  :val ,(cadr bind-pair)
+                  :body ,let-buildup))
+              bind-values
+              :from-end t
+              :initial-value body)))
+
+(defmacro defprimitive-type (name)
+  "defines a primitive type"
+  (let ((keyword (util:symbol-to-keyword name)))
+    ;; always set it to be safe
+    `(storage:add-type ,keyword (spc:make-primitive :name ,keyword))))
+
+(defmacro defprimitive (name)
+  "defines a primitive type"
+  (let ((keyword (util:symbol-to-keyword name)))
+    ;; always set it to be safe
+    `(storage:add-type ,keyword (spc:make-primitive :name ,keyword))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Macros and functions
@@ -160,8 +169,8 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 ;; EXAMPLES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprimitive bytes)
-(defprimitive int)
+(defprimitive-type bytes)
+(defprimitive-type int)
 
 ;;
 (deftype utxo ()
