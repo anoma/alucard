@@ -13,3 +13,18 @@
   (:shadow :=)
   (:local-nicknames (:util :alu.utils))
   (:export :defpoly :poly))
+
+(uiop:define-package #:alu.prelude
+  (:documentation "The Alu User pacakge")
+  (:mix #:alu #:common-lisp)
+  (:reexport
+   #:common-lisp
+   #:alu)
+  (:export #:+ #:* #:= #:range))
+
+(uiop:define-package #:aluser
+  (:documentation "The Alu User pacakge")
+  (:mix #:alu.prelude #:common-lisp)
+  (:reexport
+   #:alu.prelude
+   #:common-lisp))
