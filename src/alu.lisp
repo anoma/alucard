@@ -109,7 +109,7 @@
            :body (list ,@body)))))
        ',name)))
 
-(defmacro def (bind-values body)
+(defmacro def (bind-values &rest body)
   "defines the values in the presence of the body"
   ;; bind the values at the CL level, so we can just reference it
   `(let-refs ,(mapcar #'car bind-values)
@@ -121,7 +121,10 @@
                   :body ,let-buildup))
               bind-values
               :from-end t
-              :initial-value body)))
+              :initial-value
+              (if (cl:= (length body) 1)
+                  (car body)
+                  (cons 'list body)))))
 
 (defmacro defprimitive-type (name)
   "defines a primitive type"
@@ -133,7 +136,12 @@
   "defines a primitive type"
   (let ((keyword (util:symbol-to-keyword name)))
     ;; always set it to be safe
-    `(storage:add-type ,keyword (spc:make-primitive :name ,keyword))))
+    `(progn
+       ;; don't need to gensym arguments as there are no capture issues
+       (defun ,name (&rest arguments)
+         (spc:make-application :function ,keyword :arguments arguments))
+       (serapeum:def ,name (spc:make-primitive :name ,keyword))
+       (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Macros and functions
@@ -169,8 +177,15 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 ;; EXAMPLES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Primitive type declaration
 (defprimitive-type bytes)
 (defprimitive-type int)
+
+;; Primitive function declaration
+(defprimitive +)
+(defprimitive *)
+(defprimitive =)
+(defprimitive range)
 
 ;;
 (deftype utxo ()
@@ -201,8 +216,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 
 (defcircuit constraint ((public const (bytes 64))
                         (output int))
-  ;; (def ((a (some-constraint const))
-  ;;       (b (range 32 a)))
-  ;;   (range 64 a)
-  ;;   b)
-  constraint)
+  (def ((a (= (+ const 53) 0))
+        (b (range 32 a)))
+    (range 64 a)
+    b))

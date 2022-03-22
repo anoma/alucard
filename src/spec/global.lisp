@@ -1,9 +1,8 @@
 (in-package :alu.spec)
 
 (deftype function-type ()
-  `(or circuit
-       ;; in term.lisp
-       primitive))
+  "The type we store in the top level function storage"
+  `(or primitive circuit))
 
 (deftype type-storage ()
   "The type we store in the top level type storage"
