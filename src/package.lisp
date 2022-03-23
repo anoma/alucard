@@ -1,6 +1,6 @@
 (defpackage #:alu
   (:documentation "provides the Alucard VAMP-IR DSL")
-  (:shadow #:deftype #:range #:def #:+ #:* #:=)
+  (:shadow #:deftype #:range #:def #:+ #:* #:= #:exp)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)

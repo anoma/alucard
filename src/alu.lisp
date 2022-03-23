@@ -182,10 +182,20 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 (defprimitive-type int)
 
 ;; Primitive function declaration
+;; Add to a list, so we can get exhaustion when we write functions over this
+;; ALU> (defparameter *x* '(or (eql :foo)))
+;; *X*
+;; ALU> (cl:deftype test () *x*)
+;; TEST
+;; ALU> (typep :foo 'test)
+;; T
+;; ALU> (typep :fooa 'test)
+;; NIL
 (defprimitive +)
 (defprimitive *)
 (defprimitive =)
 (defprimitive range)
+(defprimitive exp)
 
 ;;
 (deftype utxo ()
@@ -194,10 +204,12 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
   (nonce  (int   64)))
 
 ;; let us not support recursive data types at first
-(deftype (merkel-branch :unroll 10) ()
+(deftype (merkle-branch :unroll 10) ()
   (hash  (bytes 64))
   (left  merkel-branch)
   (right merkel-branch))
+
+;; (defcircuit fold-tree )
 
 (defcircuit poly ((public  root (bytes 64))
                   (private sig  (bytes 64))
@@ -213,6 +225,17 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 (def ((a 3)
       (b 5))
   a)
+
+(defcircuit root-test ((public x int))
+  (= (+ (exp x 3) (* 3 (exp x 2)) (* 2 x) 4) 0))
+
+;; Note from Chris, something like
+;; (defun poly-check (x int) (= (+ (exp x 3) (mul 3 (exp x 2)) (mul 2 x) 4) 0)
+;; is wanted, so we can skimp on the `public` and make more short hands thereof
+
+(defcircuit poly-check ((public x int)
+                        (output bool))
+  (= (+ (exp x 3) (* 3 (exp x 2)) (* 2 x) 4) 0))
 
 (defcircuit constraint ((public const (bytes 64))
                         (output int))
