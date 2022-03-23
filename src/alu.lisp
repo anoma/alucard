@@ -161,17 +161,19 @@ be (let-refs (a b) (+ a b))"
      (declare (ignorable ,@variables))
      ,@body))
 
+(-> make-constraint-mapping-from-list (list) sycamore:tree-map)
 (defun make-constraint-mapping-from-list (argument-list)
   "Takes a list of terms like (public root (bytes 64)) and generates out
 a `sycamore:tree-map' from `keyword' to `spc:constraint'"
-  (sycamore:alist-tree-map
-   (mapcar (lambda (triple)
-             (destructuring-bind (priv name type) triple
-               (cons (util:symbol-to-keyword name)
-                     (spc:make-constraint :privacy (util:symbol-to-keyword priv)
-                                          :type (spc:to-type-reference-format type)))))
-           argument-list)
-   #'util:hash-compare))
+  (values
+   (sycamore:alist-tree-map
+    (mapcar (lambda (triple)
+              (destructuring-bind (priv name type) triple
+                (cons (util:symbol-to-keyword name)
+                      (spc:make-constraint :privacy (util:symbol-to-keyword priv)
+                                           :type (spc:to-type-reference-format type)))))
+            argument-list)
+    #'util:hash-compare)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EXAMPLES

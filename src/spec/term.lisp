@@ -3,18 +3,17 @@
 ;; data Alu = Number | Application ... | Record | Record-Lookup ...
 (deftype term ()
   "The Alu term type, which dictates what terms can be written bound."
+  `(or term-no-binding
+       let-node))
+
+(deftype term-no-binding ()
+  "The Alucard term type with no binding terms"
   `(or number
        primitive
        application
        record
        record-lookup
-       let-node
        reference))
-
-(deftype linear-term ()
-  "The Alu term type, which dictates what terms can be written bound."
-  `(and term
-        (not let-node)))
 
 ;; An alu Expression type.
 (deftype expression ()
@@ -25,9 +24,18 @@ augmented with the common lisp list type."
        ;;
        ;; We can do this by pushing to some list, then collecting the
        ;; constraints at the end of the expression.
-       list
+       ;; we also use cons so we can
+       cons
        ;; from alu/term
        term))
+
+;; we do this as number isn't a pattern in trivia, and thus our
+;; exhaustion of match-of is a bit off!
+(trivia:defpattern number (x)
+  (alexandria:with-gensyms (it)
+    `(trivia:guard1 (,it :type number)
+                    (numberp ,it)
+                    ,it ,x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Alucard Term Declaration
@@ -79,10 +87,10 @@ depending on what table it is related to.")
   (:documentation "Represents a field lookup"))
 
 (defclass let-node ()
-  ((variable :initarg  :variable
-             :type     keyword
-             :accessor var
-             :documentation "The variable that will be bound")
+  ((var :initarg  :variable
+        :type     keyword
+        :accessor var
+        :documentation "The variable that will be bound")
    (value :initarg :value
           :accessor value
           :type     term

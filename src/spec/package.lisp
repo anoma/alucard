@@ -13,14 +13,16 @@ package and alu terms")
   (:export
    ;; found in term
    :term
+   :term-no-binding
    :expression
    :application   :func   :arguments
    :record        :name   :contents
    :record-lookup :record :field
-   :let-node      :var    :term :body
+   :let-node      :var :value :body
    :reference     :name
    :make-application :make-record :lookup-record
    :make-record-lookup :make-let :make-reference
+   :number
    ;; found in type
    :type-reference
    :refernce-type :name

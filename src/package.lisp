@@ -1,3 +1,8 @@
+
+;; see https://gist.github.com/phoe/2b63f33a2a4727a437403eceb7a6b4a3
+;; for an argument on local-nicknames flag for defpackage, and which
+;; compilers support the non standard feature.
+;; https://github.com/phoe/trivial-package-local-nicknames
 (defpackage #:alu
   (:documentation "provides the Alucard VAMP-IR DSL")
   (:shadow #:deftype #:range #:def #:+ #:* #:= #:exp)
