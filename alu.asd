@@ -20,7 +20,10 @@
     :serial t
     :depends-on ("specification")
     :description "Alucard Passes"
-    :components ((:file "package")))
+    :components ((:file "package")
+                 (:file "linear-term")
+                 (:file "anf")
+                 (:file "pass")))
    (:file "package" :depends-on ("specification"))
    (:file "alu"     :depends-on ("package"))
    (:file "vampir"  :depends-on ("package")))

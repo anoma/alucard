@@ -18,10 +18,20 @@ reusing values from alu.spec and alu.pass.linear-term")
   (:use #:common-lisp #:serapeum)
   (:use-reexport :alu.spec :alu.pass.linear-term))
 
+(defpackage #:alu.pass.anf
+  (:documentation "Provides an ANF pass for the alucard term")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util    :alu.utils)
+                    (:spc     :alu.spec))
+  (:export :normalize-expression))
+
 (defpackage #:alu.pass
   (:documentation "Provides simplification passes to the Alucard Language")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.pass.linear-spec)
+                    (:anf     :alu.pass.anf)
                     (:storage :alu.storage))
   (:export))
+
+
