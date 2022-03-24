@@ -66,18 +66,20 @@ will evaluate to this let buildup."
               (values         (mapcar #'cdr alist-contents)))
          (normalize-bind* values
                           (lambda (value-refs)
-                            (make-instance 'spc:record
-                                           :name spc:name
-                                           :contents (sycamore:alist-tree-map
-                                                      ;; remake our alist
-                                                      (mapcar #'cons keys value-refs)
-                                                      #'util:hash-compare))))))
+                            (funcall constructor
+                                     (make-instance 'spc:record
+                                                    :name spc:name
+                                                    :contents (sycamore:alist-tree-map
+                                                               ;; remake our alist
+                                                               (mapcar #'cons keys value-refs)
+                                                               #'util:hash-compare)))))))
       ((spc:record-lookup spc:record spc:field)
        ;; field is a keyword, thus we are fine with it
        (normalize-bind spc:record
                        (lambda (rec-ref)
-                         (spc:make-record-lookup :record rec-ref
-                                                 :field  spc:field))))
+                         (funcall constructor
+                                  (spc:make-record-lookup :record rec-ref
+                                                          :field  spc:field)))))
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
       ((cons _ _)
