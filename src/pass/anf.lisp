@@ -56,14 +56,34 @@ will evaluate to this let buildup."
                             (funcall constructor
                                      (spc:make-application :function func-name
                                                            :arguments args)))))))
-      ((spc:record)
-       term)
-      ((spc:record-lookup)
-       term)
+      ((spc:record spc:name spc:contents)
+       ;; probably the hardest transform just due to hash table format
+       ;; schenans. Note that an alist is like the following
+       ;; ((:key1 . term1) (:key2 . term2))
+       ;; spc:name is a keyword so no need to traverse
+       (let* ((alist-contents (sycamore:tree-map-alist spc:contents))
+              (keys           (mapcar #'car alist-contents))
+              (values         (mapcar #'cdr alist-contents)))
+         (normalize-bind* values
+                          (lambda (value-refs)
+                            (make-instance 'spc:record
+                                           :name spc:name
+                                           :contents (sycamore:alist-tree-map
+                                                      ;; remake our alist
+                                                      (mapcar #'cons keys value-refs)
+                                                      #'util:hash-compare))))))
+      ((spc:record-lookup spc:record spc:field)
+       ;; field is a keyword, thus we are fine with it
+       (normalize-bind spc:record
+                       (lambda (rec-ref)
+                         (spc:make-record-lookup :record rec-ref
+                                                 :field  spc:field))))
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
-      ((cons a b)
-       (cons a b)))))
+      ((cons _ _)
+       (normalize-bind* term
+                        (lambda (args)
+                          (funcall constructor args)))))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from
@@ -96,6 +116,7 @@ let binding if the result of normalization is itself not in normal form"
                           (lambda (ref-cdr)
                             (funcall cont (cons ref-car ref-cdr))))))))
 
+;; Unused should we delete
 (-> combine-expression (spc:expression spc:expression) spc:expression)
 (defun combine-expression (expr1 expr2)
   (dispatch-case ((expr1 spc:expression)

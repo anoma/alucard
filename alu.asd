@@ -38,6 +38,7 @@
   ((:file "package")
    (:file "alu")
    (:file "spec")
+   (:file "anf")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))
