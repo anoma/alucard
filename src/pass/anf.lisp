@@ -7,17 +7,18 @@
 
 (-> normalp (spc:expression) boolean)
 (defun normalp (expr)
-  (match-of spc:expression expr
-    ((spc:primitive)     t)
-    ((spc:number _)      t)
-    ((spc:let-node)      nil)
-    ((spc:application)   nil)
-    ((spc:record)        nil)
-    ((spc:record-lookup) nil)
-    ((spc:reference)     nil)
-    ((cons _ _)          nil)))
+  (etypecase-of spc:expression expr
+    (number            t)
+    (spc:primitive     t)
+    (spc:reference     t)
+    (spc:let-node      nil)
+    (spc:application   nil)
+    (spc:record        nil)
+    (spc:record-lookup nil)
+    (cons              nil)))
 
-(-> normalize (spc:expression function) spc:expression)
+(-> normalize
+    (spc:expression (-> (spc:expression) spc:expression)) spc:expression)
 (defun normalize (term constructor)
   "normalize works by taking a term, deciding if it needs to be let
 abstracted. if so, then we generate a let binding over the constructor
@@ -36,6 +37,7 @@ will evaluate to this let buildup."
       ;; just call the constructor, and end the algorithm
       ((spc:primitive)   (funcall constructor term))
       ((spc:number numb) (funcall constructor numb))
+      ((spc:reference)   (funcall constructor term))
       ;; For nodes which are not in normal form, recurse building
       ;; up the let chain
       ((spc:let-node spc:value spc:body spc:var)
@@ -46,33 +48,53 @@ will evaluate to this let buildup."
                      :val new-val
                      :body (normalize spc:body constructor)))))
       ((spc:application spc:name spc:arguments)
-     
-       (flet ((linearize-function (args)
-                (normalize spc:name
-                           (lambda (f)
-                             (funcall
-                              constructor
-                              (spc:make-application :function  f
-                                                    :arguments args)))))
-              (process-argument (argument continuation-build-up)
-                (normalize argument
-                           (lambda (arg)
-                             ()))
-                continuation-build-up))
-         (reduce #'process-argument
-                 spc:arguments
-                 :initial-value #'linearize-function
-                 :from-end t)))
+       (normalize-bind spc:name
+                       (lambda (func-name)
+                         (normalize-bind*
+                          spc:arguments
+                          (lambda (args)
+                            (funcall constructor
+                                     (spc:make-application :function func-name
+                                                           :arguments args)))))))
       ((spc:record)
        term)
       ((spc:record-lookup)
-       term)
-      ((spc:reference)
        term)
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
       ((cons a b)
        (cons a b)))))
+
+;; replace expression with terms here!?
+;; this function was taken from
+;; https://matt.might.net/articles/a-normalization/
+(-> normalize-bind
+    (spc:expression (-> (spc:expression) spc:expression)) spc:expression)
+(defun normalize-bind (expr cont)
+  "normalize-bind normalizes the given expression, creating an unique
+let binding if the result of normalization is itself not in normal form"
+  (normalize expr
+             (lambda (expr)
+               (if (normalp expr)
+                   (funcall cont expr)
+                   (let ((var (util:symbol-to-keyword (gensym "&G"))))
+                     (spc:make-let
+                      :var var
+                      :val expr
+                      :body (funcall cont (spc:make-reference :name var))))))))
+
+(-> normalize-bind* (list (-> (list) spc:expression)) spc:expression)
+(defun normalize-bind* (list cont)
+  ;; can't foldr here, as it turns out, we need access to the recursive calls ☹
+  (if (null list)
+      (funcall cont nil)
+      (normalize-bind
+       (car list)
+       (lambda (ref-car)
+         ;; induction!
+         (normalize-bind* (cdr list)
+                          (lambda (ref-cdr)
+                            (funcall cont (cons ref-car ref-cdr))))))))
 
 (-> combine-expression (spc:expression spc:expression) spc:expression)
 (defun combine-expression (expr1 expr2)
