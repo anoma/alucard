@@ -1,5 +1,16 @@
 (in-package :alu.pass)
 
+(defun pipeline (term)
+  (~> term
+      anf:normalize-expression
+      linearize-lets))
+
+;; TODO :: Make pass that expands away useless lets
+;; thus a let :name = :name-calc
+;; just rename all instances of :name into :name-calc from that point
+;; forth
+
+
 
 (-> linearize-lets (spc:term) spc:constraint-list)
 (defun linearize-lets (term)

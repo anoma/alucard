@@ -72,8 +72,13 @@ flatly."
 (-> expand-record-lookup (spc:record-lookup closure:typ) (or null spc:reference))
 (defun expand-record-lookup (lookup closure)
   "expands a record lookup call into the value itself"
-  closure lookup
-  (error "Hi"))
+  ;; it has to be a reference or a type error due to ANF
+  ;; I need to do some type checking before this so I can give better errors
+  (let ((term
+          (closure:lookup closure (spc:name (spc:record lookup)))))
+    (declare (type spc:term-no-binding term))
+    term
+    (error "Hi")))
 
 (->  expand-def (spc:bind closure:typ) (or spc:bind spc:multiple-bind))
 (defun expand-def (def closure)

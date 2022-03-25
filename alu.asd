@@ -30,6 +30,7 @@
     :components ((:file "package")
                  (:file "linear-term")
                  (:file "expand")
+                 (:file "relocation")
                  (:file "anf")
                  (:file "pass")))
    (:file "package" :depends-on ("specification"))
