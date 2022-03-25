@@ -10,19 +10,6 @@ linearization, use alu.pass.linear-spec for the full specification")
    :bind
    :make-bind))
 
-(defpackage #:alu.pass.expanded
-  (:documentation "Provides the expanded argument type, to properly denote how arguments
-get expanded and functionality on how to properly name expand
-arguments")
-  (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.spec)
-                    (:storage :alu.storage))
-  (:use #:common-lisp #:serapeum)
-  (:export
-   :expanded-argument
-   :expanded
-   :make-expanded))
-
 ;; I'm unsure of how to rexport values but not use them, so we make
 ;; this package until I figure this out
 (uiop:define-package #:alu.pass.linear-spec
@@ -30,6 +17,19 @@ arguments")
 reusing values from alu.spec and alu.pass.linear-term")
   (:use #:common-lisp #:serapeum)
   (:use-reexport :alu.spec :alu.pass.linear-term))
+
+(defpackage #:alu.pass.expanded
+  (:documentation "Provides argument expansion functionality. Including circuit
+declaration expansion, and function type expansion.")
+  (:local-nicknames (:util    :alu.utils)
+                    (:spc     :alu.pass.linear-spec)
+                    (:storage :alu.storage)
+                    (:closure :alu.closure))
+  (:use #:common-lisp #:serapeum)
+  (:export
+   :expanded-argument
+   :expanded
+   :make-expanded))
 
 (defpackage #:alu.pass.anf
   (:documentation "Provides an ANF pass for the alucard term")
@@ -45,7 +45,8 @@ reusing values from alu.spec and alu.pass.linear-term")
                     (:spc     :alu.pass.linear-spec)
                     (:anf     :alu.pass.anf)
                     (:expand  :alu.pass.expanded)
-                    (:storage :alu.storage))
+                    (:storage :alu.storage)
+                    (:closure :alu.closure))
   (:export))
 
 
