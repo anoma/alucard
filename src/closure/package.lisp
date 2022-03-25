@@ -7,6 +7,7 @@ linearization, use alu.pass.linear-spec for the full specification")
   (:shadow #:remove)
   (:use #:common-lisp #:serapeum)
   (:export
+   :typ
    :allocate
    :from-plist
    :from-alist

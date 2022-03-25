@@ -27,9 +27,12 @@ declaration expansion, and function type expansion.")
                     (:closure :alu.closure))
   (:use #:common-lisp #:serapeum)
   (:export
-   :expanded-argument
-   :expanded
-   :make-expanded))
+   ;; Type API
+   :argument
+   :expand :original :expanded
+   :make-expanded
+   ;; Core API
+   :full-arguments-from-storage))
 
 (defpackage #:alu.pass.anf
   (:documentation "Provides an ANF pass for the alucard term")

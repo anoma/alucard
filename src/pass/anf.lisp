@@ -7,15 +7,7 @@
 
 (-> normalp (spc:expression) boolean)
 (defun normalp (expr)
-  (etypecase-of spc:expression expr
-    (number            t)
-    (spc:primitive     t)
-    (spc:reference     t)
-    (spc:let-node      nil)
-    (spc:application   nil)
-    (spc:record        nil)
-    (spc:record-lookup nil)
-    (cons              nil)))
+  (typep expr 'spc:term-normal-form))
 
 (-> normalize
     (spc:expression (-> (spc:expression) spc:expression)) spc:expression)
@@ -64,15 +56,16 @@ will evaluate to this let buildup."
        (let* ((alist-contents (sycamore:tree-map-alist spc:contents))
               (keys           (mapcar #'car alist-contents))
               (values         (mapcar #'cdr alist-contents)))
-         (normalize-bind* values
-                          (lambda (value-refs)
-                            (funcall constructor
-                                     (make-instance 'spc:record
-                                                    :name spc:name
-                                                    :contents (sycamore:alist-tree-map
-                                                               ;; remake our alist
-                                                               (mapcar #'cons keys value-refs)
-                                                               #'util:hash-compare)))))))
+         (normalize-bind*
+          values
+          (lambda (value-refs)
+            (funcall constructor
+                     (make-instance 'spc:record
+                                    :name spc:name
+                                    :contents (sycamore:alist-tree-map
+                                               ;; remake our alist
+                                               (mapcar #'cons keys value-refs)
+                                               #'util:hash-compare)))))))
       ((spc:record-lookup spc:record spc:field)
        ;; field is a keyword, thus we are fine with it
        (normalize-bind spc:record
@@ -83,9 +76,7 @@ will evaluate to this let buildup."
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
       ((cons _ _)
-       (normalize-bind* term
-                        (lambda (args)
-                          (funcall constructor args)))))))
+       (normalize-bind* term constructor)))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from

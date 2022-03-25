@@ -12,16 +12,19 @@ package and alu terms")
   (:local-nicknames (:util :alu.utils))
   (:export
    ;; found in term
+   :expression
    :term
    :term-no-binding
-   :expression
+   :term-normal-form
    :application   :func   :arguments
    :record        :name   :contents
    :record-lookup :record :field
    :let-node      :var :value :body
    :reference     :name
+
    :make-application :make-record :lookup-record
    :make-record-lookup :make-let :make-reference
+
    :number
    ;; found in type
    :type-reference

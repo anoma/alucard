@@ -29,7 +29,7 @@
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
-                 (:file "expanded")
+                 (:file "expand")
                  (:file "anf")
                  (:file "pass")))
    (:file "package" :depends-on ("specification"))
@@ -47,6 +47,7 @@
    (:file "alu")
    (:file "spec")
    (:file "anf")
+   (:file "expand")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))

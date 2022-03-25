@@ -8,11 +8,15 @@
 
 (deftype term-no-binding ()
   "The Alucard term type with no binding terms"
-  `(or number
-       primitive
+  `(or term-normal-form
        application
        record
-       record-lookup
+       record-lookup))
+
+(deftype term-normal-form ()
+  "The Alucard Terms which are fully in normal form"
+  `(or number
+       primitive
        reference))
 
 ;; An alu Expression type.
@@ -20,14 +24,14 @@
   "The Alu expression type. The expression type is the `term'
 augmented with the common lisp list type."
   `(or ;; we may want to remove this, if we go for a more effectful
-       ;; route rather than just binding naively on what we find.
-       ;;
-       ;; We can do this by pushing to some list, then collecting the
-       ;; constraints at the end of the expression.
-       ;; we also use cons so we can
-       cons
-       ;; from alu/term
-       term))
+    ;; route rather than just binding naively on what we find.
+    ;;
+    ;; We can do this by pushing to some list, then collecting the
+    ;; constraints at the end of the expression.
+    ;; we also use cons so we can
+    cons
+    ;; from alu/term
+    term))
 
 ;; we do this as number isn't a pattern in trivia, and thus our
 ;; exhaustion of match-of is a bit off!
