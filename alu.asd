@@ -22,6 +22,7 @@
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
+                 (:file "expanded")
                  (:file "anf")
                  (:file "pass")))
    (:file "package" :depends-on ("specification"))

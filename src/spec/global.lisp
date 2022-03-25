@@ -17,13 +17,18 @@
          :type    keyword
          :accessor name
          :documentation "Name of the circuit")
-   ;; arguments : sycamore.tree-map keyword constraint
+   ;; a list of constraints
    (arguments :initarg :arguments
-              :type    sycamore:tree-map
-              :initform (sycamore:make-tree-map #'util:hash-compare)
+              :type    list
               :accessor arguments
               :documentation "Arguments for the circuit, saved in a
-map from the argument name (keyword) to the `constraint'")
+a list of `constraint'")
+   (expanded-arguments
+    :type    list
+    :accessor expanded-arguments
+    :documentation "expanded arguments for a given circuit, This is
+not written at creation time, but later set by a later pass which
+determines and caches the appropriate expanded argument list")
    (return-type :initarg  :return-type
                 :type     (or type-reference null)
                 :accessor return-type
@@ -37,7 +42,12 @@ map from the argument name (keyword) to the `constraint'")
        (eql :public)))
 
 (defclass constraint ()
-  ((privacy :initarg  :privacy
+  ((name :initarg  :name
+         :initform :name
+         :type     keyword
+         :accessor name
+         :documentation "The name of the constraint")
+   (privacy :initarg  :privacy
             :initform :private
             :type     privacy
             :accessor privacy
@@ -45,7 +55,7 @@ map from the argument name (keyword) to the `constraint'")
    (type :initarg  :type
          :type     type-reference
          :accessor typ
-         :documentation "The name of the constraint")))
+         :documentation "The type of the constraint")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                         Alu Type Storage Type                              ;;
@@ -97,9 +107,14 @@ type can take (primitives take an extra integer, we may with to propagate)")
 ;; Circuit Functionality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (defmethod print-object ((obj circuit) stream)
-  (with-accessors ((name name) (ret return-type) (bod body)) obj
-    (format stream "~A =~%~A : ~A" name bod ret)))
+  (with-accessors ((name name) (ret return-type) (bod body) (arg arguments)) obj
+    (format stream "Circuit ~A~{ ~A~^~} =~%~A : ~A"
+            name
+            (mapcar #'name arg)
+            bod
+            ret)))
 
 (defun make-circuit (&key name arguments return-type body)
   (make-instance 'circuit
@@ -114,10 +129,12 @@ type can take (primitives take an extra integer, we may with to propagate)")
 
 (defmethod print-object ((obj constraint) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~A ~A" (privacy obj) (typ obj))))
+    (format stream "~A ~A ~A" (privacy obj) (name obj) (typ obj))))
 
-(defun make-constraint (&key (privacy :private) type)
-  (make-instance 'constraint :type type :privacy privacy))
+(defun make-constraint (&key (name (error "please provide name"))
+                             (privacy :private)
+                             type)
+  (make-instance 'constraint :name name :type type :privacy privacy))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     Type Declaration Functionalities                       ;;

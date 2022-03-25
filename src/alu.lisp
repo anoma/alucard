@@ -104,7 +104,7 @@
            :return-type (spc:to-type-reference-format
                          ,(util:symbol-to-keyword (cadr just-output)))
            :name ,key-name
-           :arguments (make-constraint-mapping-from-list '(,@just-args))
+           :arguments (mapcar #'make-constraint-from-list ',just-args)
            ;; the body is a list of terms that we combine
            :body (list ,@body)))))
        ',name)))
@@ -160,6 +160,15 @@ be (let-refs (a b) (+ a b))"
      ;; Should we keep the warning!?
      (declare (ignorable ,@variables))
      ,@body))
+
+(-> make-constraint-from-list (list) spc:constraint)
+(defun make-constraint-from-list (term)
+  "Takes a terms like (public root (bytes 64)) and generates out a `spc:constraint'"
+  (values
+   (destructuring-bind (priv name type) term
+     (spc:make-constraint :name    (util:symbol-to-keyword name)
+                          :privacy (util:symbol-to-keyword priv)
+                          :type    (spc:to-type-reference-format type)))))
 
 (-> make-constraint-mapping-from-list (list) sycamore:tree-map)
 (defun make-constraint-mapping-from-list (argument-list)
@@ -217,7 +226,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
                   (private sig  (bytes 64))
                   (private utxo utxo)
                   ;; should consider doing the unrolling here rather than
-                  (private merk merkel-branch)
+                  (private merk merkle-branch)
                   ;; should we have return type information be here
                   (output int))
   ;; (fold-tree root merk)

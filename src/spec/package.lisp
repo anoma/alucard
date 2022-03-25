@@ -25,7 +25,7 @@ package and alu terms")
    :number
    ;; found in type
    :type-reference
-   :refernce-type :name
+   :reference-type :name
 
    :type-storage
    :primitive :name
@@ -40,7 +40,7 @@ package and alu terms")
    ;; found in global
    :function-type
    :privacy
-   :circuit    :name :arguments :return-type :body
+   :circuit    :name :arguments :expanded-arguments :return-type :body
    :constraint :name :typ
    :make-circuit
    :make-constraint))
