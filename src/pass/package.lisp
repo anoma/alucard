@@ -1,17 +1,23 @@
 (defpackage #:alu.pass.linear-term
-  (:documentation "Provides a simplified term structure that has been through
+  (:documentation "Provides a simplified term structures that has been through
 linearization, use alu.pass.linear-spec for the full specification")
   (:local-nicknames (:util :alu.utils)
                     (:spc  :alu.spec))
   (:use #:common-lisp #:serapeum)
   (:export
-   :constraint-list
+   ;; New Term Variants Defined
    :linear-term
+   :expanded-term
+   ;; New Term Lists Defined
+   :constraint-list
+   :expanded-list
+   ;; New Types Defined
    :bind
-   :make-bind))
+   :multiple-bind
+   ;; New Constructors Defined
+   :make-bind
+   :make-multiple-bind))
 
-;; I'm unsure of how to rexport values but not use them, so we make
-;; this package until I figure this out
 (uiop:define-package #:alu.pass.linear-spec
   (:documentation "Defines out the specification of the linear term,
 reusing values from alu.spec and alu.pass.linear-term")

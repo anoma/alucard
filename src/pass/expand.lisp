@@ -58,11 +58,30 @@ caches them on the structure"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Argument Expansion API
+;; We assume the code is in ANF
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (-> expand-function-call (spc:application closure:typ) spc:application)
 (defun expand-function-call (application closure)
+  "expand function call, expand any record references into their
+constituents and reforms the application, with arguments expanded
+flatly."
   closure
   application)
+
+
+(-> expand-record-lookup (spc:record-lookup closure:typ) (or null spc:reference))
+(defun expand-record-lookup (lookup closure)
+  "expands a record lookup call into the value itself"
+  closure lookup
+  (error "Hi"))
+
+(->  expand-def (spc:bind closure:typ) (or spc:bind spc:multiple-bind))
+(defun expand-def (def closure)
+  "Expands a let definition into potentially multiple lets or a single
+multiple bind value"
+  closure
+  def)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Functions
