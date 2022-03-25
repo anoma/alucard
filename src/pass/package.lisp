@@ -1,8 +1,8 @@
 (defpackage #:alu.pass.linear-term
   (:documentation "Provides a simplified term structure that has been through
 linearization, use alu.pass.linear-spec for the full specification")
-  (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.spec))
+  (:local-nicknames (:util :alu.utils)
+                    (:spc  :alu.spec))
   (:use #:common-lisp #:serapeum)
   (:export
    :constraint-list

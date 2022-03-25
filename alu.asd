@@ -16,9 +16,16 @@
                  (:file "type")
                  (:file "global")
                  (:file "storage")))
+   (:module closure
+    :serial t
+    :description "Closure data type and utilities"
+    :depends-on ("specification")
+    :pathname #P"closure/"
+    :components ((:file "package")
+                 (:file "closure")))
    (:module pass
     :serial t
-    :depends-on ("specification")
+    :depends-on ("specification" "closure")
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
