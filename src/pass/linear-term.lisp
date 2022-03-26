@@ -11,7 +11,7 @@
 
 (deftype expanded-term ()
   "An expanded term is a `linear-term' with an expanded binder for
-multiple return values"
+multiple return values along with return-value types"
   `(or linear-term
        multiple-bind))
 

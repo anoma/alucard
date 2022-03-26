@@ -5,4 +5,5 @@
   (run! 'alucard.format)
   (run! 'alucard.pass.anf)
   (run! 'alucard.expand)
+  (run! 'alucard.relocation)
   (run! 'alucard))
