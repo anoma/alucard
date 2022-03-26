@@ -47,16 +47,16 @@ old value was relocated to."
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
         (spc:application
-         (let* ((name (spc:name (spc:func val)))
-                (exp  (expand:full-return-values name)))
+         (let* ((func-name (spc:name (spc:func val)))
+                (exp  (expand:full-return-values func-name)))
            (if (consp exp)
-               ;; We have a record like:
-               ;; ((:TIME (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
-               ;;         (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>))
-               ;; (:PLANE (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
-               ;;         (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>)))
-               ;; to expand
-               (error "lets continue")
+               ;; see doc on `expand:full-return-values' to see that
+               ;; the type coincides with our nested alist representation
+               (let* ((new-closure-value (update-alist-values-with-preifx name exp))
+                      (new-bindings      (alist-values new-closure-value)))
+                 (make-rel
+                  :closure (closure:insert closure name new-closure-value)
+                  :forms (spc:make-multiple-bind :var new-bindings :val val)))
                ;; If we don't get back a cons, then we aren't dealing
                ;; with a record return type or the record is not found
                no-change)))
@@ -123,9 +123,9 @@ result = ((:plane . :hi-plane) (:point . ((:x . :hi-point-x) (:y . :hi-point-y))
             (destructuring-bind (key  . value) apair
               (let ((new-prefix (keyword-combine prefix :- key)))
                 (cons key
-                      (if (keywordp value)
-                          new-prefix
-                          (update-alist-values-with-preifx new-prefix value))))))
+                      (if (listp value)
+                          (update-alist-values-with-preifx new-prefix value)
+                          new-prefix)))))
           alist))
 
 (defun alist-values (alist)

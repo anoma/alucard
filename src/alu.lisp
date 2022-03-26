@@ -92,7 +92,7 @@
        (serapeum:def ,name (spc:make-primitive :name ,key-name))
        ;; defun a function to apply the function
        (defun ,name (,@argument-names)
-         (spc:make-application :function ,key-name
+         (spc:make-application :function (spc:make-reference :name ,key-name)
                                :arguments (list ,@argument-names)))
        (storage:add-function
         ,key-name
@@ -139,7 +139,8 @@
     `(progn
        ;; don't need to gensym arguments as there are no capture issues
        (defun ,name (&rest arguments)
-         (spc:make-application :function ,keyword :arguments arguments))
+         (spc:make-application :function (spc:make-reference :name ,keyword)
+                               :arguments arguments))
        (serapeum:def ,name (spc:make-primitive :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
 

@@ -53,7 +53,7 @@ multiple return values along with return-value types"
 
 (defclass multiple-bind ()
   ((variables :initarg  :variables
-              :type     keyword
+              :type     list
               :accessor spc:var
               :documentation "The variables that will be bound")
    (value :initarg :value
@@ -102,7 +102,7 @@ multiple return values along with return-value types"
 (defun make-multiple-bind (&key (var  (error "Please provide the variable"))
                                 (val  (error "Please provide the value field")))
   (values
-   (make-instance 'multiple-bind :value val :variable var)))
+   (make-instance 'multiple-bind :value val :variables var)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Multiple Bind Functionality
