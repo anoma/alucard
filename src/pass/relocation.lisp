@@ -42,14 +42,24 @@
   "relocate-let generates out let bindings which remove the original let
 bound to a record. This function also builds up a closure to where the
 old value was relocated to."
-  (let ((no-change (make-rel :forms bind :closure closure)))
+  (let ((no-change
+          (make-rel :forms bind :closure closure)))
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
         (spc:application
          (let* ((name (spc:name (spc:func val)))
-                (exp  ()))
-           exp name)
-         (error "hi"))
+                (exp  (expand:full-return-values name)))
+           (if (consp exp)
+               ;; We have a record like:
+               ;; ((:TIME (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
+               ;;         (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>))
+               ;; (:PLANE (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
+               ;;         (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>)))
+               ;; to expand
+               (error "lets continue")
+               ;; If we don't get back a cons, then we aren't dealing
+               ;; with a record return type or the record is not found
+               no-change)))
         (spc:record
          (error "hi"))
         (spc:record-lookup

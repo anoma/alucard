@@ -60,7 +60,15 @@ caches them on the structure"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun full-return-values (name)
-  "Expands the return type into the constitute fields recursively"
+  "Expands the return type into the constitute fields recursively and
+gives back the original output type, an empty list if primitive, or an
+alist
+
+alist-return-example:
+((:TIME (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
+        (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>))
+ (:PLANE (:X . #<ALU.SPEC:REFERENCE-TYPE INT>)
+         (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>)))"
   (let ((circuit (storage:lookup-function name)))
     (when circuit
       (etypecase-of spc:function-type circuit
