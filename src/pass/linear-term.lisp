@@ -13,7 +13,8 @@
   "An expanded term is a `linear-term' with an expanded binder for
 multiple return values along with return-value types"
   `(or linear-term
-       multiple-bind))
+       multiple-bind
+       multi-ret))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types List Aliases
@@ -61,6 +62,13 @@ multiple return values along with return-value types"
           :documentation "the value that is bound"))
   (:documentation "A let that can bind many return values"))
 
+(defclass multi-ret ()
+  ((value :initarg :value
+          :accessor spc:value
+          :type     list
+          :documentation "Values that are returned"))
+  (:documentation "An explicit multiple return"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constructors
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -95,3 +103,16 @@ multiple return values along with return-value types"
                                 (val  (error "Please provide the value field")))
   (values
    (make-instance 'multiple-bind :value val :variable var)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Multiple Bind Functionality
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj multi-ret) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A" (spc:value obj))))
+
+
+(defun make-multi-ret (&key (val (error "Please provide the return fields")))
+  (values
+   (make-instance 'multi-ret :value val)))

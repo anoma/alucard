@@ -220,6 +220,15 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
   (left  merkle-branch)
   (right merkle-branch))
 
+
+(deftype point ()
+  (x int)
+  (y int))
+
+(deftype nested ()
+  (plane point)
+  (time  point))
+
 ;; (defcircuit fold-tree )
 
 (defcircuit poly ((public  root (bytes 64))

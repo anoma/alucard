@@ -10,8 +10,6 @@
 ;; just rename all instances of :name into :name-calc from that point
 ;; forth
 
-
-
 (-> linearize-lets (spc:term) spc:constraint-list)
 (defun linearize-lets (term)
   "linearize-lets takes a `spc:term' in a flatten form, and removes the

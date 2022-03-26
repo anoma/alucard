@@ -23,8 +23,7 @@
 
 (defmethod print-object ((obj expand) stream)
   (print-unreadable-object (obj stream :type t)
-    (with-accessors ((orig original) (exp expanded)) obj
-      (format stream "~A ~A" orig exp))))
+    (format stream "~A ~A" (original obj) (expanded obj))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core API
@@ -57,62 +56,59 @@ caches them on the structure"
       nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Argument Expansion API
-;; We assume the code is in ANF
+;; Return Type Expansion API
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(-> expand-function-call (spc:application closure:typ) spc:application)
-(defun expand-function-call (application closure)
-  "expand function call, expand any record references into their
-constituents and reforms the application, with arguments expanded
-flatly."
-  closure
-  application)
 
+(defun full-return-values (name)
+  "Expands the return type into the constitute fields recursively"
+  (let ((circuit (storage:lookup-function name)))
+    (when circuit
+      (etypecase-of spc:function-type circuit
+        (spc:primitive nil)
+        (spc:circuit   (full-type-reference* (spc:return-type circuit)))))))
 
-(-> expand-record-lookup (spc:record-lookup closure:typ) (or null spc:reference))
-(defun expand-record-lookup (lookup closure)
-  "expands a record lookup call into the value itself"
-  ;; it has to be a reference or a type error due to ANF
-  ;; I need to do some type checking before this so I can give better errors
-  (let ((term
-          (closure:lookup closure (spc:name (spc:record lookup)))))
-    (declare (type spc:term-no-binding term))
-    term
-    (error "Hi")))
-
-(->  expand-def (spc:bind closure:typ) (or spc:bind spc:multiple-bind))
-(defun expand-def (def closure)
-  "Expands a let definition into potentially multiple lets or a single
-multiple bind value"
-  closure
-  def)
-
+(-> full-type-reference* (spc:type-reference &optional sycamore:tree-set) (or spc:type-reference list))
+(defun full-type-reference* (ref &optional
+                                     (seen-set (sycamore:tree-set #'util:hash-compare)))
+  "Expands a type reference into it's expanded members recursively"
+  (let* ((name
+           (etypecase-of spc:type-reference ref
+             (spc:application    (spc:name (spc:func ref)))
+             (spc:reference-type (spc:name ref))))
+         (new-set
+           (sycamore:tree-set-insert seen-set name)))
+    (if (sycamore:tree-set-find seen-set name)
+        ref
+        (let ((expand (expand-type-fields name)))
+          (if expand
+              (mapcar (lambda (x)
+                        (let ((expand* (full-type-reference* (cdr x) new-set)))
+                          (cons (car x) expand*)))
+                      expand)
+              ref)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (mapcar (lambda (x) (constraint-from-dotted-pair x :private))
-;;         (expand-type-fields :utxo))
-
-;; TODO:: Recursively run this via expand-type-into-constituents*
-;; Need a better renaming strategy at that point
+;; TODO :: Update with nested
 (-> expand-type-into-constituents (spc:constraint) argument)
 (defun expand-type-into-constituents (circ)
   "Takes a constraint and expands user defined types into the proper
 components, otherwise returns the type given back."
   (with-accessors ((name spc:name) (typ spc:typ) (priv spc:privacy)) circ
     (let ((expanded-list
-            (expand-type-fields
-             (etypecase-of spc:type-reference typ
-               (spc:application    (spc:name (spc:func typ)))
-               (spc:reference-type (spc:name typ))))))
+            (full-type-reference* typ)))
       ;; TODO :: Properly expand generic pass through for non primitive
       (when (and (typep typ 'spc:application)
-                 expanded-list)
+                 (listp expanded-list))
         (error "Generics in custom user types is not supported yet"))
+      (when (and (listp expanded-list)
+                 (some (lambda (pair) (listp (cdr pair)))
+                       expanded-list))
+        (error "Nested type expansion is not supported yet!"))
       (assure argument
-        (if expanded-list
+        (if (listp expanded-list)
             (make-expanded :original name
                            :expanded
                            (mapcar (lambda (x)
@@ -120,21 +116,12 @@ components, otherwise returns the type given back."
                                    expanded-list))
             circ)))))
 
-(-> naming-scheme (keyword keyword &optional fixnum) keyword)
-(defun naming-scheme (prefix name &optional (iteration 0))
+(-> naming-scheme (keyword keyword) keyword)
+(defun naming-scheme (prefix name)
   "Derives the proper name for the expanded name from the original field
-name, the record name, and the number of expanded iterations, starting
-at 0."
-  (let ((iteration-string
-          (if (zerop iteration)
-              ""
-              (format nil "-~a" iteration))))
-    (intern (concatenate 'string
-                         (symbol-name prefix)
-                         "-"
-                         (symbol-name name)
-                         iteration-string)
-            'keyword)))
+name, the record name"
+  (intern (concatenate 'string (symbol-name prefix) "-" (symbol-name name))
+          'keyword))
 
 (-> constraint-from-dotted-pair (list spc:privacy keyword) spc:constraint)
 (defun constraint-from-dotted-pair (list privacy prefix)
@@ -146,6 +133,13 @@ original argument name."
       (spc:make-constraint :name    new-name
                            :privacy privacy
                            :type    (cdr list)))))
+
+(-> expand-type-reference (spc:type-reference) list)
+(defun expand-type-reference (ref)
+  (expand-type-fields
+   (etypecase-of spc:type-reference ref
+     (spc:application    (spc:name (spc:func ref)))
+     (spc:reference-type (spc:name ref)))))
 
 (-> expand-type-fields (keyword) list)
 (defun expand-type-fields (name)

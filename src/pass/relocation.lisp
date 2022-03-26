@@ -1,5 +1,9 @@
 (in-package :alu.pass.relocation)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; We assume the code is in ANF
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; This module will have the arduous task of taking code like
 ;; (<let ref-point = <POINT :x 300 :y :ref2>
 ;;  <let fi        = <Nested-CORDS :PLANE :ref1 :Point :ref-point>
@@ -35,22 +39,27 @@
 
 (-> relocate-let (spc:bind closure:typ) rel)
 (defun relocate-let (bind closure)
+  "relocate-let generates out let bindings which remove the original let
+bound to a record. This function also builds up a closure to where the
+old value was relocated to."
   (let ((no-change (make-rel :forms bind :closure closure)))
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
         (spc:application
-         no-change)
+         (let* ((name (spc:name (spc:func val)))
+                (exp  ()))
+           exp name)
+         (error "hi"))
         (spc:record
-         no-change)
+         (error "hi"))
         (spc:record-lookup
-         no-change)
-        ;; don't need to be a pointer chaser, just lookup in closure, if
-        ;; I need to relocate!
+         (error "hi"))
         (spc:reference
          (let ((checked (closure:lookup closure (spc:name val))))
            (if checked
-               ;; if it's there we have to clone the alist on the other side!
-               (let ((new-closure-content (update-alist-values-with-preifx name checked)))
+               ;; if it's there we have a reference to a record, expand!
+               (let ((new-closure-content
+                       (update-alist-values-with-preifx name checked)))
                  (make-rel
                   :forms (generate-binds (alist-values checked)
                                          (alist-values new-closure-content))
@@ -61,6 +70,14 @@
          no-change)
         (spc:primitive
          no-change)))))
+
+(-> relocate-standalone (spc:term-no-binding closure:typ) spc:expanded-term)
+(defun relocate-standalone (term closure)
+  "relocate-standalone is similar to `relocate-let' however, instead of
+being let bound the value stands by itself, simply generates out the
+term with the proper relocation."
+  term closure
+  (error "hi"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper functions

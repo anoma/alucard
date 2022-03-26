@@ -18,8 +18,10 @@ linearization, use alu.pass.linear-spec for the full specification")
    ;; New Types Defined
    :bind
    :multiple-bind
+   :multi-ret
    ;; New Constructors Defined
    :make-bind
+   :make-multi-ret
    :make-multiple-bind))
 
 (uiop:define-package #:alu.pass.linear-spec
@@ -38,8 +40,7 @@ Including circuit declaration expansion, and function type
 expansion.")
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.pass.linear-spec)
-                    (:storage :alu.storage)
-                    (:closure :alu.closure))
+                    (:storage :alu.storage))
   (:use #:common-lisp #:serapeum)
   (:export
    ;; Type API
@@ -47,7 +48,9 @@ expansion.")
    :expand :original :expanded
    :make-expanded
    ;; Core API
-   :full-arguments-from-storage))
+   :full-arguments-from-storage
+   :full-return-values
+   :full-type-reference*))
 
 (defpackage #:alu.pass.relocation
   (:documentation "Provides mapping and functionality required to
@@ -55,6 +58,7 @@ safely relocate record instances and generate out code which lacks records")
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.pass.linear-spec)
                     (:storage :alu.storage)
+                    (:expand  :alu.pass.expanded)
                     (:closure :alu.closure))
   (:use #:common-lisp #:serapeum)
   (:export))
