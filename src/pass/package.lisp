@@ -12,9 +12,11 @@ linearization, use alu.pass.linear-spec for the full specification")
    ;; New Term Variants Defined
    :linear-term
    :expanded-term
+   :fully-expanded-term
    ;; New Term Lists Defined
    :constraint-list
    :expanded-list
+   :fully-expanded-list
    ;; New Types Defined
    :bind
    :multiple-bind

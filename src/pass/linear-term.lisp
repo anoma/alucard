@@ -16,6 +16,17 @@ multiple return values along with return-value types"
        multiple-bind
        multi-ret))
 
+;; would use `(and (not spc:record) (not spc:record-lookup)) however
+;; I'd lose exhaustion ☹
+(deftype fully-expanded-term ()
+  "A fully expanded term is a `expanded-term' with the records part
+removed."
+  `(or spc:term-normal-form
+       spc:application
+       bind
+       multiple-bind
+       multi-ret))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types List Aliases
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -25,7 +36,11 @@ multiple return values along with return-value types"
   `(satisfies linear-list))
 
 (deftype expanded-list ()
-  "A constraint-list is a list of linear-terms"
+  "A constraint-list is a list of expanded-terms"
+  `(satisfies expanded-list))
+
+(deftype fully-expanded-list ()
+  "A constraint-list is a list of fully-expanded-terms"
   `(satisfies expanded-list))
 
 (defun linear-list (list)
@@ -35,6 +50,10 @@ multiple return values along with return-value types"
 (defun expanded-list (list)
   (and (listp list)
        (every (lambda (x) (typep x 'expanded-term)) list)))
+
+(defun fully-expanded-list (list)
+  (and (listp list)
+       (every (lambda (x) (typep x 'fully-expanded-term)) list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types

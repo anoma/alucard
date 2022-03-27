@@ -28,6 +28,17 @@
                          :own   (spc:make-reference :name :fi)
                          :other (spc:make-reference :name :non-exist))))
 
+(defparameter *example-bind-lookup-1*
+  (spc:make-bind
+   :var :hi
+   :val (spc:make-record-lookup :record (spc:make-reference :name :fi)
+                                :field :plane)))
+(defparameter *example-bind-lookup-2*
+  (spc:make-bind
+   :var :hi
+   :val (spc:make-record-lookup :record (spc:make-reference :name :fi)
+                                :field :point)))
+
 (test relocate-let-ref
   (let ((expected-let-names '(:hi-plane :hi-point-x :hi-point-y))
         (expected-let-resul '(:fi-plane :fi-point-x :fi-point-y))
@@ -44,6 +55,32 @@
             (relocate::rel-forms relocation))
     (is (equalp expected-storage (closure:lookup (relocate::rel-closure relocation)
                                                  :hi)))))
+(test relocate-let-lookup
+  (let ((expected-let-names '(:hi-point-x :hi-point-y))
+        (expected-let-resul '(:fi-point-x :fi-point-y))
+        (expected-storage   '((:POINT
+                               (:X . :HI-POINT-X)
+                               (:Y . :HI-POINT-Y))))
+        (relocation-1 (relocate::relocate-let *example-bind-lookup-1*
+                                              *example-closure*))
+        (relocation-2 (relocate::relocate-let *example-bind-lookup-2*
+                                              *example-closure*)))
+    (mapcar (lambda (input res bind)
+              (is (eq input (spc:var bind)))
+              (is (eq res (spc:name (spc:value bind)))))
+            expected-let-names
+            expected-let-resul
+            (relocate::rel-forms relocation-2))
+    (is (equalp expected-storage
+                (closure:lookup (relocate::rel-closure relocation-2)
+                                :hi)))
+    ;; time for the easier one
+    (let ((only-form (car (relocate::rel-forms relocation-1))))
+      (is (eq :hi
+              (spc:var only-form)))
+      (is (eq :fi-plane
+              (spc:name (spc:value only-form)))))))
+
 (test relocate-let-record
   (let ((expected-let-names '(:hi-other       :hi-own-plane
                               :hi-own-point-x :hi-own-point-y))

@@ -37,6 +37,13 @@
   forms
   closure)
 
+;; TODO.
+;; simplify this code with another pass.
+;;
+;; Instead of generating out multiple lets for records, do a
+;; multi-bind, have a pass that then remove the mutli-binds on a
+;; record, and remove the last records.
+
 (-> relocate-let (spc:bind closure:typ) rel)
 (defun relocate-let (bind closure)
   "relocate-let generates out let bindings which remove the original let
@@ -46,6 +53,14 @@ old value was relocated to."
           (make-rel :forms (list bind) :closure closure)))
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
+        (spc:number    no-change)
+        (spc:primitive no-change)
+        (spc:reference
+         (let ((checked (closure:lookup closure (spc:name val))))
+           (if checked
+               (make-rel-from-alist name checked closure)
+               no-change))) ; if we have no pointer to the record
+                            ; itself we're golden
         (spc:application
          (let* ((func-name (spc:name (spc:func val)))
                 (exp  (expand:full-return-values func-name)))
@@ -56,10 +71,31 @@ old value was relocated to."
                       (new-bindings      (alist-values new-closure-value)))
                  (make-rel
                   :closure (closure:insert closure name new-closure-value)
-                  :forms (spc:make-multiple-bind :var new-bindings :val val)))
+                  :forms   (spc:make-multiple-bind :var new-bindings :val val)))
                ;; If we don't get back a cons, then we aren't dealing
                ;; with a record return type or the record is not found
                no-change)))
+        (spc:record-lookup
+         ;; has to be a ref due to ANF, gotta love ANF
+         (let ((lookup (closure:lookup closure (spc:name (spc:record val)))))
+           (if lookup
+               (let ((find (find (spc:field val) lookup :key #'car)))
+                 (cond ((null find)
+                        ;; really should put more effort into error reporting!
+                        (error
+                         (format nil
+                                 "Trying to do a lookup on a non existant field")))
+                       ((listp (cdr find))
+                        (make-rel-from-alist name (list find) closure))
+                       ;; must be an atom, let manually make our rel
+                       (t
+                        (make-rel
+                         :forms (generate-binds (alist-values (list find)) (list name))
+                         :closure closure))))
+               ;; use something better than error for error reporting
+               (error
+                (format nil
+                        "Trying to do a lookup on an unknown record ~A" val)))))
         (spc:record
          (let* ((alist (sycamore:tree-map-alist (spc:contents val)))
                 ;; we now have to recursively update the alist such that
@@ -92,25 +128,7 @@ old value was relocated to."
             :closure (closure:insert (rel-closure recursed-on-args)
                                      name
                                      closure-mapping-for-current)
-            :forms (rel-forms recursed-on-args))))
-        (spc:record-lookup
-         (error "hi"))
-        (spc:reference
-         (let ((checked (closure:lookup closure (spc:name val))))
-           (if checked
-               ;; if it's there we have a reference to a record, expand!
-               (let ((new-closure-content
-                       (update-alist-values-with-preifx name checked)))
-                 (make-rel
-                  :forms (generate-binds (alist-values checked)
-                                         (alist-values new-closure-content))
-                  :closure (closure:insert closure name new-closure-content)))
-               ;; if it's not a pointer which is a record itself, we're good!
-               no-change)))
-        (spc:number
-         no-change)
-        (spc:primitive
-         no-change)))))
+            :forms (rel-forms recursed-on-args))))))))
 
 (-> relocate-standalone (spc:term-no-binding closure:typ) spc:expanded-term)
 (defun relocate-standalone (term closure)
@@ -123,6 +141,17 @@ term with the proper relocation."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> make-rel-from-alist (keyword list closure:typ) rel)
+(defun make-rel-from-alist (prefix alist closure)
+  "Takes an alist and a prefix and generates the proper relocation
+relation"
+  ;; we have a reference to a record, now lets expand!
+  (let ((new-closure-content (update-alist-values-with-preifx prefix alist)))
+    (make-rel
+     :forms (generate-binds (alist-values alist)
+                            (alist-values new-closure-content))
+     :closure (closure:insert closure prefix new-closure-content))))
 
 (defun generate-binds (from to)
   "this function generates a bind over the two given lists
