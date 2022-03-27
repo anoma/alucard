@@ -46,14 +46,14 @@
                               (:POINT
                                (:X . :HI-POINT-X)
                                (:Y . :HI-POINT-Y))))
-        (relocation (relocate::relocate-let *example-bind* *example-closure*)))
+        (relocation (relocate:relocate-let *example-bind* *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
               (is (eq res (spc:name (spc:value bind)))))
             expected-let-names
             expected-let-resul
-            (relocate::rel-forms relocation))
-    (is (equalp expected-storage (closure:lookup (relocate::rel-closure relocation)
+            (relocate:rel-forms relocation))
+    (is (equalp expected-storage (closure:lookup (relocate:rel-closure relocation)
                                                  :hi)))))
 (test relocate-let-lookup
   (let ((expected-let-names '(:hi-point-x :hi-point-y))
@@ -61,21 +61,21 @@
         (expected-storage   '((:POINT
                                (:X . :HI-POINT-X)
                                (:Y . :HI-POINT-Y))))
-        (relocation-1 (relocate::relocate-let *example-bind-lookup-1*
+        (relocation-1 (relocate:relocate-let *example-bind-lookup-1*
                                               *example-closure*))
-        (relocation-2 (relocate::relocate-let *example-bind-lookup-2*
+        (relocation-2 (relocate:relocate-let *example-bind-lookup-2*
                                               *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
               (is (eq res (spc:name (spc:value bind)))))
             expected-let-names
             expected-let-resul
-            (relocate::rel-forms relocation-2))
+            (relocate:rel-forms relocation-2))
     (is (equalp expected-storage
-                (closure:lookup (relocate::rel-closure relocation-2)
+                (closure:lookup (relocate:rel-closure relocation-2)
                                 :hi)))
     ;; time for the easier one
-    (let ((only-form (car (relocate::rel-forms relocation-1))))
+    (let ((only-form (car (relocate:rel-forms relocation-1))))
       (is (eq :hi
               (spc:var only-form)))
       (is (eq :fi-plane
@@ -90,14 +90,14 @@
                                        (:POINT . ((:X . :HI-OWN-POINT-X)
                                                   (:Y . :HI-OWN-POINT-Y)))))
                               (:OTHER . :HI-OTHER)))
-        (relocation (relocate::relocate-let *example-bind-record* *example-closure*)))
+        (relocation (relocate:relocate-let *example-bind-record* *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
               (is (eq res (spc:name (spc:value bind)))))
             expected-let-names
             expected-let-resul
-            (relocate::rel-forms relocation))
-    (is (equalp expected-storage (closure:lookup (relocate::rel-closure relocation)
+            (relocate:rel-forms relocation))
+    (is (equalp expected-storage (closure:lookup (relocate:rel-closure relocation)
                                                  :hi)))))
 
 (test relocate-let-app
@@ -122,14 +122,14 @@
                               (:PLANE
                                (:X . :HI-PLANE-X)
                                (:Y . :HI-PLANE-Y))))
-          (relocation (relocate::relocate-let *example-bind-app*
+          (relocation (relocate:relocate-let *example-bind-app*
                                               *example-closure*)))
 
       ;; Tests begin here
-      (is (equalp expected-binds (spc:var (relocate::rel-forms relocation))))
+      (is (equalp expected-binds (spc:var (car (relocate:rel-forms relocation)))))
       (is (equalp (spc:value *example-bind-app*)
-                  (spc:value (relocate::rel-forms relocation)))
+                  (spc:value (car (relocate:rel-forms relocation))))
           "The function should not change")
       (is (equalp expected-storage
-                  (closure:lookup (relocate::rel-closure relocation)
+                  (closure:lookup (relocate:rel-closure relocation)
                                   :hi))))))

@@ -21,9 +21,11 @@ linearization, use alu.pass.linear-spec for the full specification")
    :bind
    :multiple-bind
    :multi-ret
+   :ret
    ;; New Constructors Defined
    :make-bind
    :make-multi-ret
+   :make-ret
    :make-multiple-bind))
 
 (uiop:define-package #:alu.pass.linear-spec
@@ -63,7 +65,16 @@ safely relocate record instances and generate out code which lacks records")
                     (:expand  :alu.pass.expanded)
                     (:closure :alu.closure))
   (:use #:common-lisp #:serapeum)
-  (:export))
+  (:export
+   ;; Type API
+   :rel
+   :rel-closure
+   :rel-forms
+   :rel-p
+   :make-rel
+   ;; Core API
+   :relocate-let
+   :relocate-standalone))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Passes

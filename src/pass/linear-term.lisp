@@ -14,7 +14,8 @@
 multiple return values along with return-value types"
   `(or linear-term
        multiple-bind
-       multi-ret))
+       multi-ret
+       ret))
 
 ;; would use `(and (not spc:record) (not spc:record-lookup)) however
 ;; I'd lose exhaustion ☹
@@ -25,7 +26,8 @@ removed."
        spc:application
        bind
        multiple-bind
-       multi-ret))
+       multi-ret
+       ret))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types List Aliases
@@ -82,11 +84,27 @@ removed."
   (:documentation "A let that can bind many return values"))
 
 (defclass multi-ret ()
-  ((value :initarg :value
+  ((variable :initarg  :variable
+             :accessor spc:var
+             :documentation "The name that will be returned")
+   (value :initarg :value
           :accessor spc:value
           :type     list
           :documentation "Values that are returned"))
-  (:documentation "An explicit multiple return"))
+  (:documentation "An explicit return which may have many values.
+Many returns in a single function may be had, they are all ordered."))
+
+(defclass ret ()
+  ((variable :initarg  :variable
+             :type     keyword
+             :accessor spc:var
+             :documentation "The name that will be returned")
+   (value :initarg :value
+          :accessor spc:value
+          :type     spc:term-no-binding
+          :documentation "the value that is returned"))
+  (:documentation "An explicit return which. Many returns in a single
+function may be had, they are all ordered."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constructors
@@ -124,14 +142,30 @@ removed."
    (make-instance 'multiple-bind :value val :variables var)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Multiple Bind Functionality
+;; Multiple Return Functionality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod print-object ((obj multi-ret) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~A" (spc:value obj))))
+    (format stream "~A = ~A" (spc:var obj) (spc:value obj))))
 
 
-(defun make-multi-ret (&key (val (error "Please provide the return fields")))
+(defun make-multi-ret (&key
+                         (val (error "Please provide the return fields"))
+                         (var (error "Please provide the return name")))
   (values
-   (make-instance 'multi-ret :value val)))
+   (make-instance 'multi-ret :value val :variable var)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Return Functionality
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj ret) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A = ~A" (spc:var obj) (spc:value obj))))
+
+
+(defun make-ret (&key (val (error "Please provide the return fields"))
+                      (var (error "Please provide the return name")))
+  (values
+   (make-instance 'ret :value val :variable var)))
