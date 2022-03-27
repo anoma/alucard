@@ -28,7 +28,7 @@
                               (private sig  int)
                               (private utx utx)
                               (output int))
-      arg-test)
+      3)
     ;; (utx :owner 3 :amount 5 :nonce 10)
     (let ((expanded-storage
             (expand:full-arguments-from-storage :arg-test))
@@ -70,7 +70,7 @@
                               (private sig  int)
                               (private utx utx)
                               (output nested))
-      arg-test)
+      3)
     ;; (utx :owner 3 :amount 5 :nonce 10)
     (let ((expanded-nested
             `((:time  . ,(expand:full-type-reference*

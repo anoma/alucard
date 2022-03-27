@@ -18,7 +18,7 @@
 (defparameter *example-bind-app*
   (spc:make-bind
    :var :hi
-   :val (spc:make-application :function (spc:make-reference :name :arg-test)
+   :val (spc:make-application :function (spc:make-reference :name :arg-foo)
                               :arguments '(1 5 6))))
 
 (defparameter *example-bind-record*
@@ -112,8 +112,11 @@
       (x int)
       (y int))
 
-    (alu:defcircuit arg-test ((output nested))
-      arg-test)
+    (alu:defcircuit arg-foo ((public  root int)
+                             (private sig  int)
+                             (private foo  int)
+                             (output nested))
+      3)
 
     (let ((expected-binds   '(:HI-TIME-X :HI-TIME-Y :HI-PLANE-X :HI-PLANE-Y))
           (expected-storage '((:TIME
