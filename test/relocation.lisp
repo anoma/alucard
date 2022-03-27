@@ -21,6 +21,13 @@
    :val (spc:make-application :function (spc:make-reference :name :arg-test)
                               :arguments '(1 5 6))))
 
+(defparameter *example-bind-record*
+  (spc:make-bind
+   :var :hi
+   :val (spc:make-record :name :test
+                         :own   (spc:make-reference :name :fi)
+                         :other (spc:make-reference :name :non-exist))))
+
 (test relocate-let-ref
   (let ((expected-let-names '(:hi-plane :hi-point-x :hi-point-y))
         (expected-let-resul '(:fi-plane :fi-point-x :fi-point-y))
@@ -29,6 +36,24 @@
                                (:X . :HI-POINT-X)
                                (:Y . :HI-POINT-Y))))
         (relocation (relocate::relocate-let *example-bind* *example-closure*)))
+    (mapcar (lambda (input res bind)
+              (is (eq input (spc:var bind)))
+              (is (eq res (spc:name (spc:value bind)))))
+            expected-let-names
+            expected-let-resul
+            (relocate::rel-forms relocation))
+    (is (equalp expected-storage (closure:lookup (relocate::rel-closure relocation)
+                                                 :hi)))))
+(test relocate-let-record
+  (let ((expected-let-names '(:hi-other       :hi-own-plane
+                              :hi-own-point-x :hi-own-point-y))
+        (expected-let-resul '(:non-exist  :fi-plane
+                              :fi-point-x :fi-point-y))
+        (expected-storage   '((:OWN . ((:PLANE . :HI-OWN-PLANE)
+                                       (:POINT . ((:X . :HI-OWN-POINT-X)
+                                                  (:Y . :HI-OWN-POINT-Y)))))
+                              (:OTHER . :HI-OTHER)))
+        (relocation (relocate::relocate-let *example-bind-record* *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
               (is (eq res (spc:name (spc:value bind)))))

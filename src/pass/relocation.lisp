@@ -43,7 +43,7 @@
 bound to a record. This function also builds up a closure to where the
 old value was relocated to."
   (let ((no-change
-          (make-rel :forms bind :closure closure)))
+          (make-rel :forms (list bind) :closure closure)))
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
         (spc:application
@@ -61,7 +61,38 @@ old value was relocated to."
                ;; with a record return type or the record is not found
                no-change)))
         (spc:record
-         (error "hi"))
+         (let* ((alist (sycamore:tree-map-alist (spc:contents val)))
+                ;; we now have to recursively update the alist such that
+                ;; all the nested terms works out, and save it under the
+                ;; original name. we can do this via induction/recursion.
+                (recursed-on-args
+                  (reduce (lambda (pair rel)
+                            (destructuring-bind (field-name . value) pair
+                              (let* ((name (append-two-keywords name field-name))
+                                     (recurse
+                                       (relocate-let (spc:make-bind :var name :val value)
+                                                     (rel-closure rel))))
+                                (make-rel
+                                 :closure (rel-closure recurse)
+                                 :forms   (append (rel-forms recurse)
+                                                  (rel-forms rel))))))
+                          alist
+                          :from-end t
+                          :initial-value (make-rel :forms nil :closure closure)))
+                (closure-mapping-for-current
+                  (mapcar (lambda (field-name)
+                            (let* ((name      (append-two-keywords name field-name))
+                                   (clos-look (closure:lookup
+                                               (rel-closure recursed-on-args)
+                                               name)))
+                              (cons field-name
+                                    (or clos-look name))))
+                          (sycamore:tree-map-keys (spc:contents val)))))
+           (make-rel
+            :closure (closure:insert (rel-closure recursed-on-args)
+                                     name
+                                     closure-mapping-for-current)
+            :forms (rel-forms recursed-on-args))))
         (spc:record-lookup
          (error "hi"))
         (spc:reference
@@ -120,8 +151,8 @@ Example:
 
 result = ((:plane . :hi-plane) (:point . ((:x . :hi-point-x) (:y . :hi-point-y))))"
   (mapcar (lambda (apair)
-            (destructuring-bind (key  . value) apair
-              (let ((new-prefix (keyword-combine prefix :- key)))
+            (destructuring-bind (key . value) apair
+              (let ((new-prefix (append-two-keywords prefix key)))
                 (cons key
                       (if (listp value)
                           (update-alist-values-with-preifx new-prefix value)
@@ -135,6 +166,11 @@ result = ((:plane . :hi-plane) (:point . ((:x . :hi-point-x) (:y . :hi-point-y))
                 (list (cdr apair))
                 (alist-values (cdr apair))))
           alist))
+
+(-> append-two-keywords (keyword keyword) keyword)
+(defun append-two-keywords (prefix end)
+  (values
+   (keyword-combine prefix :- end)))
 
 (defun keyword-combine (&rest keywords)
   (intern (apply #'concatenate 'string (mapcar #'symbol-name keywords))
