@@ -163,6 +163,11 @@ term with the proper relocation."
             :from-end t
             :initial-value closure)))
 
+(-> maps-to (keyword closure:typ) list)
+(defun maps-to (name closure)
+  (values
+   (alist-values (closure:lookup closure name))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

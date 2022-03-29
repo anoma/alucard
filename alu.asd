@@ -1,5 +1,5 @@
 (asdf:defsystem :alu
-  :depends-on (:trivia :alexandria :sycamore :serapeum)
+  :depends-on (:trivia :alexandria :sycamore :serapeum :closer-mop)
   :version "0.0.0"
   :description "Powering Vamp-IR with the power of the original lineage"
   :author "Mariari"

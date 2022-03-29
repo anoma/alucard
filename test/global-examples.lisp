@@ -43,18 +43,12 @@
   (time  point))
 
 
-(alu:defcircuit arg-test ((public  root (bytes 64))
-                          (private sig  int)
-                          (private utx nested)
-                          (output nested))
-  3)
-
-
 (alu:defcircuit arg-test-exp ((public  root (bytes 64))
                               (private sig  int)
                               (private utx utx)
                               (output int))
       3)
+
 
 (alu:defcircuit arg-foo ((public  root int)
                          (private sig  int)
@@ -66,6 +60,12 @@
                                    (private sig  nested)
                                    (output nested))
   3)
+
+(alu:defcircuit arg-test ((public  root (bytes 64))
+                          (private sig  int)
+                          (private utx nested)
+                          (output nested))
+  (arg-circuit-input 3 (plane utx)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table

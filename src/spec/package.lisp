@@ -6,7 +6,8 @@
    :symbol-to-keyword
    :hash-compare
    :sycamore-plist-symbol-map
-   :sycamore-symbol-map-plist))
+   :sycamore-symbol-map-plist
+   :copy-instance))
 
 (defpackage #:alu.spec
   (:documentation "the type specification and layout of the alu

@@ -6,7 +6,8 @@
       anf:normalize-expression
       linearize-lets
       let-all-but-last
-      (relocate-records circuit)))
+      (relocate-records circuit)
+      expand-applications))
 
 ;; TODO :: Make pass that expands away useless lets
 ;; thus a let :name = :name-calc
@@ -50,7 +51,7 @@ isn't so already. Perhaps we should make them be an and call instead?"
 (-> relocate-records (spc:constraint-list spc:circuit) relocate:rel)
 (defun relocate-records (anf-terms circuit)
   "Relocate records takes a fully anfied term where only the last form
-is not a let, and generates out a `spc:fully-expanded-term' along with
+is not a let, and generates out a `spc:fully-expanded-list' along with
 it's closure"
   (let ((rel (reduce (lambda (rel term)
                        (etypecase-of spc:linear-term term
@@ -77,4 +78,34 @@ it's closure"
     (relocate:make-rel :forms   (reverse (relocate:rel-forms rel))
                        :closure (relocate:rel-closure rel))))
 
+
+(-> expand-applications (relocate:rel) spc:fully-expanded-list)
+(defun expand-applications (rel)
+  (let ((closure (relocate:rel-closure rel)))
+    (labels ((expand-app (app)
+               (spc:make-application
+                :function (spc:func app)
+                :arguments (mapcan (lambda (arg)
+                                     (etypecase-of spc:term-normal-form arg
+                                       (number        (list arg))
+                                       (spc:primitive (list arg))
+                                       (spc:reference
+                                        (or (relocate:maps-to (spc:name arg)
+                                                              closure)
+                                            (list arg)))))
+                                   (spc:arguments app))))
+             (update-val (term)
+               (if (typep (spc:value term) 'spc:application)
+                   (util:copy-instance term :value (expand-app (spc:value term)))
+                   term)))
+      (mapcar (lambda (term)
+                (etypecase-of spc:fully-expanded-term term
+                  (spc:term-normal-form term)
+                  (spc:application      (expand-app term))
+                  ;; terms with value slots to check and update
+                  (spc:bind             (update-val term))
+                  (spc:multiple-bind    (update-val term))
+                  (spc:multi-ret        (update-val term))
+                  (spc:ret              (update-val term))))
+              (relocate:rel-forms rel)))))
 ;; (alu.pass::pipeline (spc:body (storage:lookup-function :poly-check)))

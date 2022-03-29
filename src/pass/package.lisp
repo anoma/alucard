@@ -77,7 +77,8 @@ safely relocate record instances and generate out code which lacks records")
    ;; Core API
    :relocate-let
    :relocate-standalone
-   :initial-closure-from-circuit))
+   :initial-closure-from-circuit
+   :maps-to))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Passes
