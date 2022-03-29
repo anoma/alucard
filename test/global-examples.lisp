@@ -5,3 +5,17 @@
                           (private utx nested)
                           (output nested))
   3)
+
+
+(alu:deftype utxo ()
+  (owner  (bytes 128))
+  (amount (int   64))
+  (nonce  (int   64)))
+
+(deftype point ()
+  (x int)
+  (y int))
+
+(deftype nested ()
+  (plane point)
+  (time  point))

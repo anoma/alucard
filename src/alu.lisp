@@ -65,6 +65,16 @@
                           ,@(mapcan (lambda (field)
                                       (list (util:symbol-to-keyword field) field))
                                     fields)))
+       ;; Make accessors
+       ,@(mapcar (lambda (field)
+                   ;; don't overwrite what already exists
+                   (if (fboundp field)
+                       'nil
+                       `(defun ,field (record)
+                          (spc:make-record-lookup
+                           :record record
+                           :field ,(util:symbol-to-keyword field)))))
+                 fields)
        ;; Return the Symbol itself!
        ',name)))
 
@@ -241,7 +251,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
                   (output int))
   ;; (fold-tree root merk)
   ;; (equal (owner utxo) "test")
-  poly)
+  (= (owner utxo) 5))
 
 (def ((a 3)
       (b 5))
