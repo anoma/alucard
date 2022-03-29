@@ -101,6 +101,8 @@ safely relocate record instances and generate out code which lacks records")
                     (:relocate :alu.pass.relocation)
                     (:storage  :alu.storage)
                     (:closure  :alu.closure))
-  (:export))
+  (:export
+   :pipeline
+   :to-expand-away-records))
 
 

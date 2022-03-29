@@ -52,6 +52,7 @@
    (:file "anf")
    (:file "expand")
    (:file "relocation")
+   (:file "pass")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))

@@ -1,11 +1,25 @@
 (in-package :alu.pass)
 
+;; TODO :: Make a Berlin pipeline abstraction, we really need to stop
+;; half way through for easier testing! until then I'll just have many
+;; arrow functions for where I want to stop off!
 (defun pipeline (circuit)
+  (~> circuit
+      to-expand-away-records))
+
+(defun to-expand-away-records (circuit)
   (~> circuit
       spc:body
       anf:normalize-expression
       linearize-lets
       let-all-but-last
+      (expand-away-records circuit)))
+
+(-> expand-away-records (spc:constraint-list spc:circuit) spc:fully-expanded-list)
+(defun expand-away-records (terms circuit)
+  "expand-away-records is responsible for removing all record instances
+and properly propagating arguments around them"
+  (~> terms
       (relocate-records circuit)
       expand-applications))
 

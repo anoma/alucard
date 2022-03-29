@@ -10,6 +10,7 @@
     (run! 'alucard.pass.anf)
     (run! 'alucard.expand)
     (run! 'alucard.relocation)
+    (run! 'alucard.pass)
     (run! 'alucard)
     (unless swapped
       (storage:restore-tables))))

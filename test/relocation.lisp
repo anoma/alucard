@@ -5,7 +5,6 @@
 
 (in-suite alucard.relocation)
 
-
 (defparameter *example-closure*
   (closure:allocate
    :fi '((:plane . :fi-plane)

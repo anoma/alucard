@@ -61,10 +61,10 @@
                                    (output nested))
   3)
 
-(alu:defcircuit arg-test ((public  root (bytes 64))
-                          (private sig  int)
-                          (private utx nested)
-                          (output nested))
+(alu:defcircuit record-test ((public  root (bytes 64))
+                             (private sig  int)
+                             (private utx nested)
+                             (output nested))
   (arg-circuit-input 3 (plane utx)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
