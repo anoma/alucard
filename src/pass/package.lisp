@@ -49,10 +49,12 @@ expansion.")
   (:export
    ;; Type API
    :argument
+   :argument-list
    :expand :original :expanded
    :make-expanded
    ;; Core API
    :full-arguments-from-storage
+   :full-arguments-from-circuit
    :full-return-values
    :full-type-reference*))
 

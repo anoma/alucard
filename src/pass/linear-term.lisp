@@ -17,8 +17,8 @@ multiple return values along with return-value types"
        multi-ret
        ret))
 
-;; would use `(and (not spc:record) (not spc:record-lookup)) however
-;; I'd lose exhaustion ☹
+;; would use `(and expanded-term (not spc:record) (not spc:record-lookup))
+;; however I'd lose exhaustion ☹
 (deftype fully-expanded-term ()
   "A fully expanded term is a `expanded-term' with the records part
 removed."
@@ -43,7 +43,7 @@ removed."
 
 (deftype fully-expanded-list ()
   "A constraint-list is a list of fully-expanded-terms"
-  `(satisfies expanded-list))
+  `(satisfies fully-expanded-list))
 
 (defun linear-list (list)
   (and (listp list)

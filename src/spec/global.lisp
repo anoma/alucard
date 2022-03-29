@@ -131,10 +131,13 @@ type can take (primitives take an extra integer, we may with to propagate)")
   (print-unreadable-object (obj stream :type t)
     (format stream "~A ~A ~A" (privacy obj) (name obj) (typ obj))))
 
+(-> make-constraint
+    (&key (:name keyword) (:privacy privacy) (:type type-reference)) constraint)
 (defun make-constraint (&key (name (error "please provide name"))
                              (privacy :private)
                              type)
-  (make-instance 'constraint :name name :type type :privacy privacy))
+  (values
+   (make-instance 'constraint :name name :type type :privacy privacy)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     Type Declaration Functionalities                       ;;

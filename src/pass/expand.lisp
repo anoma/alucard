@@ -7,16 +7,20 @@
 (deftype argument ()
   `(or expand spc:constraint))
 
+(deftype argument-list ()
+  "A constraint-list is a list of fully-expanded-terms"
+  `(satisfies argument-list))
+
 (defclass expand ()
   ((original :initarg :original
              :type    keyword
              :accessor original
              :documentation "The original name the argument had")
-   (expanded :initarg :expanded
-             :type    list
+   (expanded :initarg  :expanded
+             :type     list
              :accessor expanded
              :documentation
-             "The fully expanded argument list of `spc:constraint'")))
+             "The fully expanded argument alist from keyword to `spc:constraint'")))
 
 (defun make-expanded (&key original expanded)
   (make-instance 'expand :original original :expanded expanded))
@@ -24,6 +28,11 @@
 (defmethod print-object ((obj expand) stream)
   (print-unreadable-object (obj stream :type t)
     (format stream "~A ~A" (original obj) (expanded obj))))
+
+
+(defun argument-list (list)
+  (and (listp list)
+       (every (lambda (x) (typep x 'argument)) list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Core API
@@ -34,15 +43,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; (calculate-full-arguments-from-storage :poly)
-(-> full-arguments-from-storage (keyword) list)
+(-> full-arguments-from-storage (keyword) argument-list)
 (defun full-arguments-from-storage (name)
-  "Calculates the full argument list with records being expanded"
+  "Calculates the full argument list with records being expanded into
+the `expand' type"
   (let ((circuit (storage:lookup-function name)))
     (when circuit
       (etypecase-of spc:function-type circuit
         (spc:primitive nil)
-        (spc:circuit   (mapcar #'expand-type-into-constituents
-                               (spc:arguments circuit)))))))
+        (spc:circuit   (full-arguments-from-circuit circuit))))))
+
+(-> full-arguments-from-circuit (spc:circuit) argument-list)
+(defun full-arguments-from-circuit (circuit)
+  "Calculates the full argument list with records being expanded into
+being the `expand' type"
+  (mapcar #'expand-type-into-constituents
+          (spc:arguments circuit)))
 
 (-> cache-expanded-arguments! (keyword) null)
 (defun cache-expanded-arguments! (name)
@@ -75,7 +91,9 @@ alist-return-example:
         (spc:primitive nil)
         (spc:circuit   (full-type-reference* (spc:return-type circuit)))))))
 
-(-> full-type-reference* (spc:type-reference &optional sycamore:tree-set) (or spc:type-reference list))
+(-> full-type-reference*
+    (spc:type-reference &optional sycamore:tree-set)
+    (or spc:type-reference list))
 (defun full-type-reference* (ref &optional
                                      (seen-set (sycamore:tree-set #'util:hash-compare)))
   "Expands a type reference into it's expanded members recursively"
@@ -99,6 +117,10 @@ alist-return-example:
 ;; Helper Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Expanding Helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; TODO :: Update with nested
 (-> expand-type-into-constituents (spc:constraint) argument)
 (defun expand-type-into-constituents (circ)
@@ -111,36 +133,14 @@ components, otherwise returns the type given back."
       (when (and (typep typ 'spc:application)
                  (listp expanded-list))
         (error "Generics in custom user types is not supported yet"))
-      (when (and (listp expanded-list)
-                 (some (lambda (pair) (listp (cdr pair)))
-                       expanded-list))
-        (error "Nested type expansion is not supported yet!"))
       (assure argument
         (if (listp expanded-list)
-            (make-expanded :original name
-                           :expanded
-                           (mapcar (lambda (x)
-                                     (constraint-from-dotted-pair x priv name))
-                                   expanded-list))
+            (make-expanded
+             :original name
+             :expanded (mapcar (lambda (x)
+                                 (constraint-alist-from-dotted-pair* x priv name))
+                               expanded-list))
             circ)))))
-
-(-> naming-scheme (keyword keyword) keyword)
-(defun naming-scheme (prefix name)
-  "Derives the proper name for the expanded name from the original field
-name, the record name"
-  (intern (concatenate 'string (symbol-name prefix) "-" (symbol-name name))
-          'keyword))
-
-(-> constraint-from-dotted-pair (list spc:privacy keyword) spc:constraint)
-(defun constraint-from-dotted-pair (list privacy prefix)
-  "creates a constraint given an alist, a privacy modified, and the
-original argument name."
-  (let ((new-name
-          (naming-scheme prefix (car list))))
-    (assure spc:constraint
-      (spc:make-constraint :name    new-name
-                           :privacy privacy
-                           :type    (cdr list)))))
 
 (-> expand-type-reference (spc:type-reference) list)
 (defun expand-type-reference (ref)
@@ -163,3 +163,57 @@ original argument name."
            (sycamore:tree-map-alist spc:contents))
           ((spc:sum-decl)
            (error "sum types are not supported yet"))))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Constraint Creation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> constraint-alist-from-dotted-pair* (list spc:privacy keyword) list)
+(defun constraint-alist-from-dotted-pair* (list privacy prefix)
+  "creates a constraint given an alist, a privacy modified, and the
+original argument name.
+
+(constraint-alist-from-dotted-pair*
+ `(:hi . ((:bah . ,(spc:make-type-reference :name :int))
+          (:baz . ,(spc:make-type-reference :name :int))))
+ :private
+ :prefix)
+
+===>
+
+(:HI
+  . #<EXPAND:EXPAND PREFIX-HI
+     ((:BAH . #<ALU.SPEC:CONSTRAINT PRIVATE PREFIX-HI-BAH #<REFERENCE-TYPE INT>>)
+      (:BAZ . #<ALU.SPEC:CONSTRAINT PRIVATE PREFIX-HI-BAZ #<REFERENCE-TYPE INT>>))>)
+
+(constraint-alist-from-dotted-pair*
+  `(:name . ,(spc:make-type-reference :name :int)) :private :prefix)
+
+===>
+
+(:NAME . #<ALU.SPEC:CONSTRAINT PRIVATE PREFIX-NAME #<REFERENCE-TYPE INT>>)
+"
+  (let ((new-name (naming-scheme prefix (car list))))
+    (cons (car list)
+          (if (listp (cdr list))
+              (make-expanded
+               :original new-name
+               :expanded
+               (mapcar (lambda (pair)
+                         (constraint-from-dotted-pair* pair privacy new-name))
+                       (cdr list)))
+              (spc:make-constraint :name    new-name
+                                   :privacy privacy
+                                   :type    (cdr list))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Utility Helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> naming-scheme (keyword keyword) keyword)
+(defun naming-scheme (prefix name)
+  "Derives the proper name for the expanded name from the original field
+name, the record name"
+  (intern (concatenate 'string (symbol-name prefix) "-" (symbol-name name))
+          'keyword))

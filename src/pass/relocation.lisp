@@ -82,7 +82,7 @@ old value was relocated to."
         (spc:record-lookup
          ;; has to be a ref due to ANF, gotta love ANF
          (let* ((lookup (closure:lookup closure (spc:name (spc:record val))))
-                (find (find (spc:field val) lookup :key #'car)))
+                (find   (find (spc:field val) lookup :key #'car)))
            ;; use something better than error for error reporting
            (cond ((null lookup)
                   (error
@@ -93,10 +93,9 @@ old value was relocated to."
                  ((listp (cdr find))
                   (make-rel-from-alist name (list find) closure))
                  ;; must be an atom, let manually make our rel
-                 (t
-                  (make-rel
-                   :forms (generate-binds (alist-values (list find)) (list name))
-                   :closure closure)))))
+                 (t (make-rel
+                     :forms (generate-binds (alist-values (list find)) (list name))
+                     :closure closure)))))
         (spc:record
          (let* ((alist (sycamore:tree-map-alist (spc:contents val)))
                 ;; we now have to recursively update the alist such that
@@ -150,9 +149,27 @@ term with the proper relocation."
                                                        :var (spc:var x)))))
             relocated)))
 
+(-> initial-closure-from-circuit (spc:circuit &optional closure:typ) closure:typ)
+(defun initial-closure-from-circuit (circ &optional (closure (closure:allocate)))
+  (let ((expanded-arguments (expand:full-arguments-from-circuit circ)))
+    (reduce (lambda (const closure)
+              (etypecase-of expand:argument const
+                (spc:constraint closure)
+                (expand:expand  (closure:insert closure
+                                                (expand:original const)
+                                                (argument-list-to-alist
+                                                 (expand:expanded const))))))
+            expanded-arguments
+            :from-end t
+            :initial-value closure)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> argument-list-to-alist (expand:argument-list) list)
+(defun argument-list-to-alist (arglist)
+  (error "hi"))
 
 (-> make-rel-from-alist (keyword list closure:typ) rel)
 (defun make-rel-from-alist (prefix alist closure)
