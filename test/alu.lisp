@@ -13,7 +13,7 @@
   (for-all ((name          (gen-string))
             (unroll-amount (gen-integer))
             (field         (gen-string)))
-    (let ((storage:*types* (clone-hash-table storage:*types*))
+    (let ((storage:*types* (clone storage:*types*))
           (name            (intern name))
           (field           (intern field))
           (keyword         (intern name :keyword)))

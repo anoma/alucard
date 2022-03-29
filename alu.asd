@@ -45,6 +45,8 @@
   :serial t
   :components
   ((:file "package")
+   ;; we setup our table with global-examples
+   (:file "global-examples")
    (:file "alu")
    (:file "spec")
    (:file "anf")

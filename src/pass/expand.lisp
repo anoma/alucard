@@ -199,7 +199,7 @@ original argument name.
            (make-expanded
             :original new-name
             :expanded (mapcar (lambda (p)
-                                (constraint-from-dotted-pair* p privacy new-name))
+                                (constraint-alist-from-dotted-pair* p privacy new-name))
                               cont))
            (spc:make-constraint :name new-name :privacy privacy :type cont))))))
 

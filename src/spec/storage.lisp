@@ -14,6 +14,14 @@ relevant to the system")
   "Serves as the table which stores all custom circuits that are
 defined")
 
+(defvar *cannonical-function-table* nil
+  "serves as the backup of the original function table. Useful when
+swapping to another env")
+
+(defvar *cannonical-type-table* nil
+  "serves as the backup of the original type table. Useful when
+swapping to another env")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Storage Addition Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -36,3 +44,31 @@ defined")
 (defun lookup-type (name)
   (gethash name *types*))
 
+
+(-> swap-tables (hash-table hash-table) null)
+(defun swap-tables (func-table type-table)
+  (when (and (not *cannonical-function-table*)
+             (not *cannonical-type-table*))
+    (setf *cannonical-function-table* *functions*
+          *cannonical-type-table*     *types*))
+
+  (setf *functions* func-table
+        *types* type-table)
+  nil)
+
+(-> restore-tables () null)
+(defun restore-tables ()
+  (if (or (not *cannonical-function-table*)
+          (not *cannonical-type-table*))
+      (error "Must swap the tables to restore the original tables!")
+      (progn
+        (setf *functions* *cannonical-function-table*
+              *types*     *cannonical-type-table*)
+        (setf *cannonical-function-table* nil
+              *cannonical-type-table*     nil)
+        nil)))
+
+(-> currently-swapped? () boolean)
+(defun currently-swapped? ()
+  (and (hash-table-p *cannonical-function-table*)
+       (hash-table-p *cannonical-function-table*)))

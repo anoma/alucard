@@ -101,69 +101,36 @@
                                                  :hi)))))
 
 (test relocate-let-app
-  (let ((storage:*types*     (clone storage:*types*))
-        (storage:*functions* (clone storage:*functions*)))
+  (let ((expected-binds   '(:HI-TIME-X :HI-TIME-Y :HI-PLANE-X :HI-PLANE-Y))
+        (expected-storage '((:TIME
+                             (:X . :HI-TIME-X)
+                             (:Y . :HI-TIME-Y))
+                            (:PLANE
+                             (:X . :HI-PLANE-X)
+                             (:Y . :HI-PLANE-Y))))
+        (relocation (relocate:relocate-let *example-bind-app*
+                                           *example-closure*)))
 
-    (alu:deftype nested ()
-      (plane point)
-      (time  point))
-
-    (alu:deftype point ()
-      (x int)
-      (y int))
-
-    (alu:defcircuit arg-foo ((public  root int)
-                             (private sig  int)
-                             (private foo  int)
-                             (output nested))
-      3)
-
-    (let ((expected-binds   '(:HI-TIME-X :HI-TIME-Y :HI-PLANE-X :HI-PLANE-Y))
-          (expected-storage '((:TIME
-                               (:X . :HI-TIME-X)
-                               (:Y . :HI-TIME-Y))
-                              (:PLANE
-                               (:X . :HI-PLANE-X)
-                               (:Y . :HI-PLANE-Y))))
-          (relocation (relocate:relocate-let *example-bind-app*
-                                              *example-closure*)))
-
-      ;; Tests begin here
-      (is (equalp expected-binds (spc:var (car (relocate:rel-forms relocation)))))
-      (is (equalp (spc:value *example-bind-app*)
-                  (spc:value (car (relocate:rel-forms relocation))))
-          "The function should not change")
-      (is (equalp expected-storage
-                  (closure:lookup (relocate:rel-closure relocation)
-                                  :hi))))))
+    ;; Tests begin here
+    (is (equalp expected-binds (spc:var (car (relocate:rel-forms relocation)))))
+    (is (equalp (spc:value *example-bind-app*)
+                (spc:value (car (relocate:rel-forms relocation))))
+        "The function should not change")
+    (is (equalp expected-storage
+                (closure:lookup (relocate:rel-closure relocation)
+                                :hi)))))
 
 (test initial-closure-from-circuit
-  (let ((storage:*types*     (clone storage:*types*))
-        (storage:*functions* (clone storage:*functions*)))
+  (let ((expected-storage '((:TIME
+                             (:X . :SIG-TIME-X)
+                             (:Y . :SIG-TIME-Y))
+                            (:PLANE
+                             (:X . :SIG-PLANE-X)
+                             (:Y . :SIG-PLANE-Y))))
+        (closure (relocate:initial-closure-from-circuit
+                  (storage:lookup-function :arg-circuit-input))))
 
-    (alu:deftype nested ()
-      (plane point)
-      (time  point))
-
-    (alu:deftype point ()
-      (x int)
-      (y int))
-
-    (alu:defcircuit arg-foo ((public  root int)
-                             (private sig  nested)
-                             (output nested))
-      3)
-
-    (let ((expected-storage '((:TIME
-                               (:X . :SIG-TIME-X)
-                               (:Y . :SIG-TIME-Y))
-                              (:PLANE
-                               (:X . :SIG-PLANE-X)
-                               (:Y . :SIG-PLANE-Y))))
-          (closure (relocate:initial-closure-from-circuit
-                    (storage:lookup-function :arg-foo))))
-
-      ;; Tests begin here
-      (is (equalp expected-storage (closure:lookup closure :sig)))
-      (is (equalp nil (closure:lookup closure :root))
-          "Root is not a record, we don't ingest it."))))
+    ;; Tests begin here
+    (is (equalp expected-storage (closure:lookup closure :sig)))
+    (is (equalp nil (closure:lookup closure :root))
+        "Root is not a record, we don't ingest it.")))

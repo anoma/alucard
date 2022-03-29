@@ -90,4 +90,6 @@ package and alu terms")
    :*types*
    :*functions*
    :add-function    :add-type
-   :lookup-function :lookup-type))
+   :lookup-function :lookup-type
+   :swap-tables     :restore-tables
+   :currently-swapped?))

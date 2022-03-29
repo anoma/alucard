@@ -70,7 +70,11 @@
                    ;; don't overwrite what already exists
                    (if (fboundp field)
                        'nil
-                       `(defun ,field (record)
+                       ;; we use defmethod as we will end up with
+                       ;; multiple methods of the same file if
+                       ;; multiple records have the same field, even
+                       ;; with the check
+                       `(defmethod ,field (record)
                           (spc:make-record-lookup
                            :record record
                            :field ,(util:symbol-to-keyword field)))))
