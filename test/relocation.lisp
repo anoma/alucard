@@ -136,3 +136,34 @@
       (is (equalp expected-storage
                   (closure:lookup (relocate:rel-closure relocation)
                                   :hi))))))
+
+(test initial-closure-from-circuit
+  (let ((storage:*types*     (clone storage:*types*))
+        (storage:*functions* (clone storage:*functions*)))
+
+    (alu:deftype nested ()
+      (plane point)
+      (time  point))
+
+    (alu:deftype point ()
+      (x int)
+      (y int))
+
+    (alu:defcircuit arg-foo ((public  root int)
+                             (private sig  nested)
+                             (output nested))
+      3)
+
+    (let ((expected-storage '((:TIME
+                               (:X . :SIG-TIME-X)
+                               (:Y . :SIG-TIME-Y))
+                              (:PLANE
+                               (:X . :SIG-PLANE-X)
+                               (:Y . :SIG-PLANE-Y))))
+          (closure (relocate:initial-closure-from-circuit
+                    (storage:lookup-function :arg-foo))))
+
+      ;; Tests begin here
+      (is (equalp expected-storage (closure:lookup closure :sig)))
+      (is (equalp nil (closure:lookup closure :root))
+          "Root is not a record, we don't ingest it."))))

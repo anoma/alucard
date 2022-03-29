@@ -95,7 +95,7 @@ alist-return-example:
     (spc:type-reference &optional sycamore:tree-set)
     (or spc:type-reference list))
 (defun full-type-reference* (ref &optional
-                                     (seen-set (sycamore:tree-set #'util:hash-compare)))
+                                   (seen-set (sycamore:tree-set #'util:hash-compare)))
   "Expands a type reference into it's expanded members recursively"
   (let* ((name
            (etypecase-of spc:type-reference ref
@@ -121,15 +121,13 @@ alist-return-example:
 ;; Expanding Helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TODO :: Update with nested
 (-> expand-type-into-constituents (spc:constraint) argument)
 (defun expand-type-into-constituents (circ)
   "Takes a constraint and expands user defined types into the proper
 components, otherwise returns the type given back."
   (with-accessors ((name spc:name) (typ spc:typ) (priv spc:privacy)) circ
-    (let ((expanded-list
-            (full-type-reference* typ)))
-      ;; TODO :: Properly expand generic pass through for non primitive
+
+    (let ((expanded-list (full-type-reference* typ)))
       (when (and (typep typ 'spc:application)
                  (listp expanded-list))
         (error "Generics in custom user types is not supported yet"))
@@ -151,7 +149,7 @@ components, otherwise returns the type given back."
 
 (-> expand-type-fields (keyword) list)
 (defun expand-type-fields (name)
-  "Expands the given type to an alist type of the expanded values"
+  "Expands the given type to an alist of (:field-name . `spc:type-reference')"
   (values
    (let ((lookup (storage:lookup-type name)))
      (etypecase-of (or null spc:type-storage) lookup
@@ -193,18 +191,17 @@ original argument name.
 
 (:NAME . #<ALU.SPEC:CONSTRAINT PRIVATE PREFIX-NAME #<REFERENCE-TYPE INT>>)
 "
-  (let ((new-name (naming-scheme prefix (car list))))
-    (cons (car list)
-          (if (listp (cdr list))
-              (make-expanded
-               :original new-name
-               :expanded
-               (mapcar (lambda (pair)
-                         (constraint-from-dotted-pair* pair privacy new-name))
-                       (cdr list)))
-              (spc:make-constraint :name    new-name
-                                   :privacy privacy
-                                   :type    (cdr list))))))
+  (destructuring-bind (key . cont) list
+    (let ((new-name (naming-scheme prefix key)))
+      (cons
+       key
+       (if (listp cont)
+           (make-expanded
+            :original new-name
+            :expanded (mapcar (lambda (p)
+                                (constraint-from-dotted-pair* p privacy new-name))
+                              cont))
+           (spc:make-constraint :name new-name :privacy privacy :type cont))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

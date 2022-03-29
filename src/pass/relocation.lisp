@@ -157,7 +157,7 @@ term with the proper relocation."
                 (spc:constraint closure)
                 (expand:expand  (closure:insert closure
                                                 (expand:original const)
-                                                (argument-list-to-alist
+                                                (argument-list-to-closure-alist
                                                  (expand:expanded const))))))
             expanded-arguments
             :from-end t
@@ -167,9 +167,16 @@ term with the proper relocation."
 ;; Helper functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> argument-list-to-alist (expand:argument-list) list)
-(defun argument-list-to-alist (arglist)
-  (error "hi"))
+(-> argument-list-to-closure-alist (list) list)
+(defun argument-list-to-closure-alist (arglist)
+  (mapcar (lambda (x)
+            (destructuring-bind (field . constraint) x
+              (cons field
+                    (etypecase-of expand:argument constraint
+                      (spc:constraint (spc:name constraint))
+                      (expand:expand  (argument-list-to-closure-alist
+                                       (expand:expanded constraint)))))))
+          arglist))
 
 (-> make-rel-from-alist (keyword list closure:typ) rel)
 (defun make-rel-from-alist (prefix alist closure)
