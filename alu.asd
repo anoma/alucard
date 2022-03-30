@@ -33,9 +33,15 @@
                  (:file "relocation")
                  (:file "anf")
                  (:file "pass")))
+   (:module vampir
+    :serial t
+    :depends-on ("pass" "specification" "closure")
+    :description "The Vampir Extraction Module"
+    :components ((:file "package")
+                 (:file "spec")
+                 (:file "vampir")))
    (:file "package" :depends-on ("specification"))
-   (:file "alu"     :depends-on ("package"))
-   (:file "vampir"  :depends-on ("package")))
+   (:file "alu"     :depends-on ("package")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
 (asdf:defsystem :alu/test

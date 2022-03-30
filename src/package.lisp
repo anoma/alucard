@@ -12,13 +12,6 @@
                     (:storage :alu.storage))
   (:export :deftype :defcircuit :def))
 
-(defpackage #:alu.vampir
-  (:documentation "Provides a vampir representation")
-  (:use #:common-lisp #:serapeum)
-  (:shadow :=)
-  (:local-nicknames (:util :alu.utils))
-  (:export :defpoly :poly))
-
 (uiop:define-package #:alu.prelude
   (:documentation "The Alu User pacakge")
   (:mix #:alu #:common-lisp)
