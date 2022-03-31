@@ -92,7 +92,12 @@ type can take (primitives take an extra integer, we may with to propagate)")
              :initform (sycamore:make-tree-map #'util:hash-compare)
              :type     sycamore:tree-map
              :accessor contents
-             :documentation "Holding fields that are declared along with their type"))
+             :documentation "Holding fields that are declared along with their type")
+   (order :initarg :order
+          :initform nil
+          :type     list
+          :accessor order
+          :documentation "For keeping a consistent order of fields between implementations"))
   (:documentation "Record declaration"))
 
 (defclass sum-decl ()
@@ -170,4 +175,11 @@ type can take (primitives take an extra integer, we may with to propagate)")
       (format stream "~{:~A ~A~^ ~}" (util:sycamore-symbol-map-plist cont)))))
 
 (defun make-record-declaration (&rest arguments &key &allow-other-keys)
-  (make-instance 'record-decl :contents (util:sycamore-plist-symbol-map arguments)))
+  (make-instance 'record-decl
+                 :contents (util:sycamore-plist-symbol-map arguments)
+                 :order    (mapcar #'car (alexandria:plist-alist arguments))))
+
+(defun record-declaration->alist (record)
+  (mapcar (lambda (field)
+            (cons field (sycamore:tree-map-find (contents record) field nil)))
+          (order record)))

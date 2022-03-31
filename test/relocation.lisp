@@ -81,14 +81,16 @@
               (spc:name (spc:value only-form)))))))
 
 (test relocate-let-record
-  (let ((expected-let-names '(:hi-other       :hi-own-plane
-                              :hi-own-point-x :hi-own-point-y))
-        (expected-let-resul '(:non-exist  :fi-plane
-                              :fi-point-x :fi-point-y))
-        (expected-storage   '((:OWN . ((:PLANE . :HI-OWN-PLANE)
+  (let ((expected-let-names '(:hi-own-plane
+                              :hi-own-point-x :hi-own-point-y
+                              :hi-other))
+        (expected-let-resul '(:fi-plane
+                              :fi-point-x :fi-point-y
+                              :non-exist))
+        (expected-storage   '((:OTHER . :HI-OTHER)
+                              (:OWN . ((:PLANE . :HI-OWN-PLANE)
                                        (:POINT . ((:X . :HI-OWN-POINT-X)
-                                                  (:Y . :HI-OWN-POINT-Y)))))
-                              (:OTHER . :HI-OTHER)))
+                                                  (:Y . :HI-OWN-POINT-Y)))))))
         (relocation (relocate:relocate-let *example-bind-record* *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
@@ -100,13 +102,13 @@
                                                  :hi)))))
 
 (test relocate-let-app
-  (let ((expected-binds   '(:HI-TIME-X :HI-TIME-Y :HI-PLANE-X :HI-PLANE-Y))
-        (expected-storage '((:TIME
-                             (:X . :HI-TIME-X)
-                             (:Y . :HI-TIME-Y))
-                            (:PLANE
+  (let ((expected-binds   '(:HI-PLANE-X :HI-PLANE-Y :HI-TIME-X :HI-TIME-Y))
+        (expected-storage '((:PLANE
                              (:X . :HI-PLANE-X)
-                             (:Y . :HI-PLANE-Y))))
+                             (:Y . :HI-PLANE-Y))
+                            (:TIME
+                             (:X . :HI-TIME-X)
+                             (:Y . :HI-TIME-Y))))
         (relocation (relocate:relocate-let *example-bind-app*
                                            *example-closure*)))
 
@@ -120,12 +122,12 @@
                                 :hi)))))
 
 (test initial-closure-from-circuit
-  (let ((expected-storage '((:TIME
-                             (:X . :SIG-TIME-X)
-                             (:Y . :SIG-TIME-Y))
-                            (:PLANE
+  (let ((expected-storage '((:PLANE
                              (:X . :SIG-PLANE-X)
-                             (:Y . :SIG-PLANE-Y))))
+                             (:Y . :SIG-PLANE-Y))
+                            (:TIME
+                             (:X . :SIG-TIME-X)
+                             (:Y . :SIG-TIME-Y))))
         (closure (relocate:initial-closure-from-circuit
                   (storage:lookup-function :arg-circuit-input))))
 

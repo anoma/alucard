@@ -156,10 +156,10 @@ components, otherwise returns the type given back."
        (null          nil)
        (spc:primitive nil)
        (spc:type-declaration
-        (match-of spc:type-format (spc:decl lookup)
-          ((spc:record-decl spc:contents)
-           (sycamore:tree-map-alist spc:contents))
-          ((spc:sum-decl)
+        (etypecase-of spc:type-format (spc:decl lookup)
+          (spc:record-decl
+           (spc:record-declaration->alist (spc:decl lookup)))
+          (spc:sum-decl
            (error "sum types are not supported yet"))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -28,9 +28,9 @@
 
 (test expansion-of-output
   (let ((expanded-nested
-          `((:time  . ,(expand:full-type-reference*
+          `((:plane . ,(expand:full-type-reference*
                         (spc:make-type-reference :name :point)))
-            (:plane . ,(expand:full-type-reference*
+            (:time  . ,(expand:full-type-reference*
                         (spc:make-type-reference :name :point)))))
         (nested-lookup
           (expand:full-type-reference* (spc:make-type-reference :name :nested)))

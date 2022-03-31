@@ -16,9 +16,9 @@ package and alu terms")
   (:local-nicknames (:util :alu.utils))
   (:export
 
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; found in term
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;; New Top Level Term Variants Defined
    :expression
@@ -41,9 +41,9 @@ package and alu terms")
    ;; Misc pattern matching functions
    :number
 
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ;;; found in type
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; found in type
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;; New Top Level Term Variants Defined
    :type-reference
@@ -58,9 +58,9 @@ package and alu terms")
    :make-type-reference   :make-primitive
    :make-type-declaration :make-record-declaration
 
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; found in global
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
    ;; New Top Level Term Variants Defined
    :function-type
@@ -76,8 +76,11 @@ package and alu terms")
    :type-declaration :name :generics :options :decl
 
    :type-format
-   :record-decl :contents
+   :record-decl :contents :order
    :sum-decl
+
+   ;; Functions
+   :record-declaration->alist
 
    ;; New Constructors Defined
    :make-circuit
