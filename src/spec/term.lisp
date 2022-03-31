@@ -77,7 +77,12 @@ depending on what table it is related to.")
              :initform (sycamore:make-tree-map #'util:hash-compare)
              :type     sycamore:tree-map
              :accessor contents
-             :documentation "the storage of the initial type mapping"))
+             :documentation "the storage of the initial type mapping")
+   (order :initarg :order
+          :initform nil
+          :type     list
+          :accessor order
+          :documentation "For keeping a consistent order of fields between implementations"))
   (:documentation "Represents an instance of a record type"))
 
 (defclass record-lookup ()
@@ -146,10 +151,18 @@ depending on what table it is related to.")
 
 (-> make-record (&key (:name keyword) &allow-other-keys) record)
 (defun make-record (&rest arguments &key name &allow-other-keys)
-  (let ((hash (sycamore:tree-map-remove (util:sycamore-plist-symbol-map arguments)
-                                        :name)))
+  (let* ((alist (alexandria:plist-alist arguments))
+         (no-name (remove-if (lambda (x) (eq :name x)) alist :key #'car))
+         (hash (sycamore:alist-tree-map no-name #'util:hash-compare)))
     (assure record
-      (make-instance 'record :name name :contents hash))))
+      (make-instance 'record :name name
+                             :contents hash
+                             :order (mapcar #'car no-name)))))
+
+(defun record->alist (record)
+  (mapcar (lambda (field)
+            (cons field (sycamore:tree-map-find (contents record) field nil)))
+          (order record)))
 
 (-> lookup-record (record keyword) (or term null))
 (defun lookup-record (record field)

@@ -48,7 +48,7 @@ will evaluate to this let buildup."
                             (funcall constructor
                                      (spc:make-application :function func-name
                                                            :arguments args)))))))
-      ((spc:record spc:name spc:contents)
+      ((spc:record spc:name spc:contents spc:order)
        ;; probably the hardest transform just due to hash table format
        ;; schenans. Note that an alist is like the following
        ;; ((:key1 . term1) (:key2 . term2))
@@ -62,6 +62,7 @@ will evaluate to this let buildup."
             (funcall constructor
                      (make-instance 'spc:record
                                     :name spc:name
+                                    :order spc:order
                                     :contents (sycamore:alist-tree-map
                                                ;; remake our alist
                                                (mapcar #'cons keys value-refs)

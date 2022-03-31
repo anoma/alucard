@@ -38,6 +38,9 @@ package and alu terms")
    :make-application :make-record :lookup-record
    :make-record-lookup :make-let :make-reference
 
+   ;; Functions
+   :record->alist
+
    ;; Misc pattern matching functions
    :number
 

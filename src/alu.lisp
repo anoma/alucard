@@ -23,6 +23,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmacro deftype (name-and-options generics &body type-declarations)
+  ;; fields must not shuffle type-declaration for ordering of record
+  ;; creation
   (let* ((fields (mapcar #'car type-declarations))
          (name (if (listp name-and-options)
                   (car name-and-options)
@@ -60,6 +62,7 @@
 
        ;; Create the function that we can now call, to create an instance
        (defun ,name (&key ,@fields)
+         ;; keep this ordering up, as we rely on the correspondence
          (spc:make-record :name ,key-name
                           ;; fill in the other slots
                           ,@(mapcan (lambda (field)

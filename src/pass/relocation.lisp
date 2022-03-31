@@ -97,7 +97,7 @@ old value was relocated to."
                      :forms (generate-binds (alist-values (list find)) (list name))
                      :closure closure)))))
         (spc:record
-         (let* ((alist (sycamore:tree-map-alist (spc:contents val)))
+         (let* ((alist (spc:record->alist val))
                 ;; we now have to recursively update the alist such that
                 ;; all the nested terms works out, and save it under the
                 ;; original name. we can do this via induction/recursion.
@@ -123,7 +123,7 @@ old value was relocated to."
                                                               name)))
                               (cons field-name
                                     (or clos-look name))))
-                          (sycamore:tree-map-keys (spc:contents val)))))
+                          (mapcar #'car alist))))
            (make-rel
             :closure (closure:insert (rel-closure recursed-on-args)
                                      name

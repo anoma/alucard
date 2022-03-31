@@ -87,10 +87,10 @@
         (expected-let-resul '(:fi-plane
                               :fi-point-x :fi-point-y
                               :non-exist))
-        (expected-storage   '((:OTHER . :HI-OTHER)
-                              (:OWN . ((:PLANE . :HI-OWN-PLANE)
+        (expected-storage   '((:OWN . ((:PLANE . :HI-OWN-PLANE)
                                        (:POINT . ((:X . :HI-OWN-POINT-X)
-                                                  (:Y . :HI-OWN-POINT-Y)))))))
+                                                  (:Y . :HI-OWN-POINT-Y)))))
+                              (:OTHER . :HI-OTHER)))
         (relocation (relocate:relocate-let *example-bind-record* *example-closure*)))
     (mapcar (lambda (input res bind)
               (is (eq input (spc:var bind)))
