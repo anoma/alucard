@@ -5,7 +5,7 @@
   (:use #:common-lisp #:serapeum)
   (:shadow :=)
   (:local-nicknames (#:util #:alu.utils))
-  (:export :defpoly :poly))
+  (:export))
 
 
 (defpackage #:alu.vampir.spec

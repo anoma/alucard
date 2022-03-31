@@ -105,10 +105,10 @@
         :accessor lhs
         :type     expression
         :documentation "the argument to the left of the =")
-   (rhs :initarg  :lhs
-        :accessor lhs
+   (rhs :initarg  :rhs
+        :accessor rhs
         :type     expression
-        :documentation "the argument to the left of the =")))
+        :documentation "the argument to the rigth of the =")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Normal Form Product Types
