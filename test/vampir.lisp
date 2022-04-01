@@ -18,9 +18,48 @@
                                               :lhs (vspc:make-wire :var :a)
                                               :rhs (vspc:make-wire :var :b)))))))
 
+(defparameter *expected-1*
+  (with-output-to-string (stream)
+    (format stream "pub fi~%")
+    (format stream "pub bar~%")
+    (format stream "def xor a b -> c {~%")
+    (format stream "  c = a + b~%")
+    (format stream "}")))
+(defparameter *vamp-example-2*
+  (list (vspc:make-pub :wires (list :fi :bar))
+        (vspc:make-alias
+         :name :xor
+         :inputs '(:a :b)
+         :outputs '(:c)
+         :body
+         (list (vspc:make-bind
+                :names (list (vspc:make-wire :var :c))
+                :value #1=(vspc:make-infix :op :*
+                                           :lhs (vspc:make-wire :var :a)
+                                           :rhs (vspc:make-wire :var :b)))
+               (vspc:make-equality
+                :lhs (vspc:make-wire :var :baz)
+                :rhs (vspc:make-infix :op :+
+                                      :lhs (vspc:make-wire :var :a)
+                                      :rhs #1#))
+               (vspc:make-application
+                :func :foo
+                :arguments (list #1#))))))
+
+(defparameter *expected-2*
+  (with-output-to-string (stream)
+    (format stream "pub fi~%")
+    (format stream "pub bar~%")
+    (format stream "def xor a b -> c {~%")
+    (format stream "  c = a * b~%")
+    (format stream "  baz = a + (a * b)~%")
+    (format stream "  foo (a * b)~%")
+    (format stream "}")))
+
 (test extract-alias
-  (let ((expected-string
-          (format nil "pub fi~%pub bar~%def xor a b -> c {~%~2tc = a + b~%}"))
-        (ran (with-output-to-string (stream)
-               (vamp:extract *vamp-example-1* stream))))
-    (is (equalp expected-string ran))))
+  (let ((ran-1 (with-output-to-string (stream)
+                 (vamp:extract *vamp-example-1* stream)))
+        (ran-2 (with-output-to-string (stream)
+                 (vamp:extract *vamp-example-2* stream))))
+    (is (equalp *expected-1* ran-1))
+    (is (equalp *expected-2* ran-2))))

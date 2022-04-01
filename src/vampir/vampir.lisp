@@ -1,11 +1,36 @@
 (in-package :alu.vampir)
 
-;; Since slime/sly screws with pprint-new, what this means is that I
-;; can't track newlines automatically and even enforce good
-;; indentation automatically ☹
-
 ;; We use CL streams as they are much better for concatenating to, and
 ;; have us worry less. they are a mutable interface however.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FORMAT RUNDOWN FOR THOSE WHO ARE UNFAMILIAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node257.html
+
+;; DSL FOR NEWLINES AND CONTROL OF IT
+
+;; ~4I  = (pprint-indent :block   4)
+;; ~4:I = (pprint-indent :current 4)
+;; ~_   = (pprint-newline :linear)
+;; ~@_  = (pprint-newline :miser)
+;; ~:@_ = (pprint-newline :mandatory)
+;; ~:_  = (pprint-newline :fill)
+
+
+;; FOR PRINTING NORMALLY NOTE THESE TAKE ARGUMENTS!
+
+;; ~(~a~)    = print symbol lower case instead of upper case
+;; ~{~A~}    = prints a list element by element.
+
+;; ~{~A~^ ~} = prints a list element by element, the last element of
+;;             the list does not print the extra space
+;; EXAMPLE:
+;; VAMPIR> (format nil "~{~A~^ ~}" (list 1 2 3 4 5))
+;; "1 2 3 4 5"
+;; VAMPIR> (format nil "~{~A ~}" (list 1 2 3 4 5))
+;; "1 2 3 4 5 "
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TopLevel Extraction
@@ -13,145 +38,83 @@
 
 (-> extract (list &optional stream) stream)
 (defun extract (stmts &optional (stream *standard-output*))
-  (let ((last (car (last stmts))))
-    (dolist (stmt stmts stream)
-      (extract-statement stmt stream)
-      (unless (eq last stmt)
-        (format stream "~%")))))
+  (let ((*print-pretty*      t)
+        (*print-miser-width* 40))
+    (format stream "~{~A~^~%~}" stmts)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Statement Extraction
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> extract-statement (spc:statement &optional stream) stream)
-(defun extract-statement (stmt &optional (stream *standard-output*))
-  (etypecase-of spc:statement stmt
-    (spc:alias      (extract-alias stmt stream))
-    (spc:pub        (extract-pub stmt stream))
-    (spc:constraint (extract-constraint stmt stream))))
+(defmethod print-object ((pub spc:pub) stream)
+  (pprint-logical-block (stream nil)
+    (format stream "~I~{pub ~(~a~)~^~:@_~}" (spc:wires pub))))
 
-(-> extract-pub (spc:pub &optional stream) stream)
-(defun extract-pub (pub &optional (stream *standard-output*))
-  (format stream "~{pub ~(~a~)~^~%~}" (spc:wires pub))
-  stream)
+(defmethod print-object ((alias spc:alias) stream)
+  (pprint-logical-block (stream nil)
+    (format stream "def ~(~a~)" (spc:name alias))
+    (format stream "~4I~{ ~@_~(~a~)~} " (spc:inputs alias))
 
-(-> extract-alias (spc:alias &optional stream) stream)
-(defun extract-alias (alias &optional (stream *standard-output*))
-  (format stream "def ~(~a~)~{ ~(~a~)~} " (spc:name alias) (spc:inputs alias))
+    (when (spc:outputs alias)
+      (format stream "~@_->~{ ~@_~(~a~)~} " (spc:outputs alias)))
 
-  (when (spc:outputs alias)
-    (format stream "->~{ ~(~a~)~} " (spc:outputs alias)))
+    (format stream "~0I~@_{")
+    (pprint-indent :block 2 stream)
 
-  (format stream "{")
-  (extract-constraint-list (spc:body alias) stream)
-  (format stream "~%}")
-
-  stream)
+    (extract-constraint-list (spc:body alias) stream)
+    (format stream "~0I~:@_}")))
 
 (-> extract-constraint-list (spc:constraint-list &optional stream) stream)
 (defun extract-constraint-list (cs &optional (stream *standard-output*))
-  (dolist (constraint cs stream)
-    (format stream "~%~2t")
-    (extract-constraint constraint stream)))
+  (format stream "~{~:@_~A~}" cs)
+  stream)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constraint Extraction
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> extract-constraint (spc:constraint &optional stream) stream)
-(defun extract-constraint (constraint &optional (stream *standard-output*))
-  (etypecase-of spc:constraint constraint
-    (spc:application (extract-application constraint 2 stream))
-    (spc:bind        (extract-bind        constraint 2 stream))
-    (spc:equality    (extract-equality    constraint 2 stream)))
-  stream)
+(defmethod print-object ((bind spc:bind) stream)
+  (pprint-logical-block (stream nil)
+    (format stream "~{~A~} = ~2I~@_~A" (spc:names bind) (spc:value bind))))
 
-(-> extract-bind (spc:bind &optional fixnum stream) stream)
-(defun extract-bind (bind &optional (indent 2) (stream *standard-output*))
-  (dolist (normal (spc:names bind))
-    (extract-normal-form normal stream))
-  (format stream " = ")
-  (extract-expression-no-paren (spc:value bind) (+ 2 indent) stream))
-
-(-> extract-equality (spc:equality &optional fixnum stream) stream)
-(defun extract-equality (eql &optional (indent 2) (stream *standard-output*))
-  (extract-expression-no-paren (spc:lhs eql) indent stream)
-  (format stream " = ")
-  (extract-expression-no-paren (spc:rhs eql) (+ 2 indent) stream))
+(defmethod print-object ((eql spc:equality) stream)
+  (pprint-logical-block (stream nil)
+    (format stream "~A ~2:I= ~4I~@_~A" (spc:lhs eql) (spc:rhs eql))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Expression Extraction
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> extract-expression (spc:expression &optional fixnum stream) stream)
-(defun extract-expression (expr &optional (indent 2) (stream *standard-output*))
-  ;; For safety reasons we wrap most things in ()'s as expressions
-  ;; show up as part of a constraint.
-  ;; recalculate indent levels here
+(-> extract-expression (spc:expression &optional stream) stream)
+(defun extract-expression (expr &optional (stream *standard-output*))
+  "Extract-expression is like a `print-object' but adds an extra set
+of ()'s for any non normal form"
   (etypecase-of spc:expression expr
     (spc:infix
-     (write-char #\( stream)
-     (extract-infix expr indent stream)
-     (write-char #\) stream))
+     (pprint-logical-block (stream nil :prefix "(" :suffix ")")
+       (print-object expr stream)))
     (spc:application
-     (write-char #\( stream)
-     (extract-application expr indent stream)
-     (write-char #\) stream))
+     (pprint-logical-block (stream nil :prefix "(" :suffix ")")
+       (print-object expr stream)))
     (spc:normal-form
-     (extract-normal-form expr stream)))
+     (print-object expr stream)))
   stream)
 
-(-> extract-expression-no-paren (spc:expression &optional fixnum stream) stream)
-(defun extract-expression-no-paren (expr &optional (indent 2) (stream *standard-output*))
-  ;; For safety reasons we wrap most things in ()'s as expressions
-  ;; show up as part of a constraint.
-  ;; recalculate indent levels here
-  (etypecase-of spc:expression expr
-    (spc:infix       (extract-infix expr indent stream))
-    (spc:application (extract-application expr indent stream))
-    (spc:normal-form (extract-normal-form expr stream))))
-
-(-> extract-infix (spc:infix &optional fixnum stream) stream)
-(defun extract-infix (infix &optional (indent 2) (stream *standard-output*))
-  (extract-expression (spc:lhs infix) indent stream)
+(defmethod print-object ((infix spc:infix) stream)
+  (extract-expression (spc:lhs infix) stream)
   (format stream " ~A " (spc:op infix))
-  (extract-expression (spc:rhs infix) indent stream)
-  stream)
+  (extract-expression (spc:rhs infix) stream))
 
-(-> extract-application (spc:application &optional fixnum stream) stream)
-(defun extract-application (application &optional (indent 2) (stream *standard-output*))
-  ;; TODO :: put indentation in application if it gets long plz
+(defmethod print-object ((application spc:application) stream)
   (format stream "~(~a~)" (spc:func application))
-  (dolist (expr (spc:arguments application) stream)
+  ;; put fill printing?
+  (dolist (expr (spc:arguments application))
     (format stream " ")
-    (extract-expression expr indent stream)))
+    (extract-expression expr stream)))
 
-(-> extract-normal-form (spc:normal-form &optional stream) stream)
-(defun extract-normal-form (normal &optional (stream *standard-output*))
-  (etypecase-of spc:normal-form normal
-    (spc:wire
-     (extract-wire normal stream))
-    (spc:constant
-     (extract-constant normal stream))))
 
-(-> extract-wire (spc:wire &optional stream) stream)
-(defun extract-wire (wire &optional (stream *standard-output*))
-  (format stream "~(~a~)" (spc:var wire))
-  stream)
+(defmethod print-object ((wire spc:wire) stream)
+  (format stream "~(~a~)" (spc:var wire)))
 
-(-> extract-constant (spc:constant &optional stream) stream)
-(defun extract-constant (constant &optional (stream *standard-output*))
-  (format stream "~A" (spc:const constant))
-  stream)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;  Testing
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; (defparameter *x* (make-string-output-stream))
-
-;; (pprint-defun '(defun prod (x y) (let ((yjaskdfjksadjkf y)) (* x y))))
-
-;; (format t "~vt~a~%" 2 "hi")
-
-;; (format t (get-output-stream-string *x*))
+(defmethod print-object ((const spc:constant) stream)
+  (format stream "~A" (spc:const const)))

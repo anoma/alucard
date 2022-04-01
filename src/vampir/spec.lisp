@@ -93,7 +93,8 @@
          :documentation "the alias we are calling")
    (arguments :initarg :arguments
               :initform nil
-              :type     list
+              ;; I assume list of expressions?
+              :type     cons
               :accessor arguments
               :documentation "The arguments in which the gate is called upon")))
 
@@ -134,24 +135,12 @@
 ;; Alias
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((obj alias) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A ~A -> ~A = ~A"
-            (name obj)
-            (inputs obj)
-            (outputs obj)
-            (body obj))))
-
 (defun make-alias (&key name inputs outputs body)
   (make-instance 'alias :name name :inputs inputs :outputs outputs :body body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pub
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj pub) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A" (wires obj))))
 
 (defun make-pub (&key wires)
   (make-instance 'pub :wires wires))
@@ -160,20 +149,12 @@
 ;; Infix
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((obj infix) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A ~A ~A" (lhs obj) (op obj) (rhs obj))))
-
 (defun make-infix (&key lhs op rhs)
   (make-instance 'infix :lhs lhs :op op :rhs rhs))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Application
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj application) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A ~{~A~^ ~}" (func obj) (arguments obj))))
 
 (defun make-application (&key func arguments)
   (make-instance 'application :function func :arguments arguments))
@@ -182,20 +163,12 @@
 ;; Bind
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((obj bind) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A = ~A" (names obj) (value obj))))
-
 (defun make-bind (&key names value)
   (make-instance 'bind :names names :value value))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Equality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj equality) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A = ~A" (lhs obj) (rhs obj))))
 
 (defun make-equality (&key lhs rhs)
   (make-instance 'equality :lhs lhs :rhs rhs))
@@ -204,20 +177,12 @@
 ;; Wire
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((obj wire) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A" (var obj))))
-
 (defun make-wire (&key var)
   (make-instance 'wire :var var))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constant
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj constant) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A" (const obj))))
 
 (defun make-constant (&key const)
   (make-instance 'constant :const const))
