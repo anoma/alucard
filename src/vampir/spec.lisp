@@ -92,7 +92,6 @@
          :type     keyword
          :documentation "the alias we are calling")
    (arguments :initarg :arguments
-              :initform nil
               ;; I assume list of expressions?
               :type     cons
               :accessor arguments
