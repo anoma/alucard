@@ -1,14 +1,3 @@
-(defpackage #:alu.utils
-  (:documentation "provides the Alucard VAMP-IR Utils")
-  (:shadow #:deftype #:serapeum)
-  (:use #:common-lisp)
-  (:export
-   :symbol-to-keyword
-   :hash-compare
-   :sycamore-plist-symbol-map
-   :sycamore-symbol-map-plist
-   :copy-instance))
-
 (defpackage #:alu.spec
   (:documentation "the type specification and layout of the alu
 package and alu terms")

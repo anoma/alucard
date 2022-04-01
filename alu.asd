@@ -6,12 +6,17 @@
   :license "MIT"
   :pathname "src/"
   :components
-  ((:module specification
+  ((:module util
+    :serial t
+    :description "Internal Utility Functions"
+    :components ((:file "package")
+                 (:file "utils")))
+   (:module specification
     :serial t
     :description "Internal Alucard Specification"
+    :depends-on  ("util")
     :pathname #P"spec/"
     :components ((:file "package")
-                 (:file "utils")
                  (:file "term")
                  (:file "type")
                  (:file "global")
@@ -19,7 +24,7 @@
    (:module closure
     :serial t
     :description "Closure data type and utilities"
-    :depends-on ("specification")
+    :depends-on ("util")
     :pathname #P"closure/"
     :components ((:file "package")
                  (:file "closure")))
@@ -31,13 +36,14 @@
                  (:file "vampir")))
    (:module pass
     :serial t
-    :depends-on ("specification" "closure" "vampir")
+    :depends-on ("specification" "closure" "vampir" "util")
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
                  (:file "expand")
                  (:file "relocation")
                  (:file "anf")
+                 (:file "extract")
                  (:file "pass")))
    (:file "package" :depends-on ("specification"))
    (:file "alu"     :depends-on ("package")))

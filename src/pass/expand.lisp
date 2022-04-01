@@ -71,10 +71,19 @@ caches them on the structure"
             expanded)
       nil)))
 
+(-> argument-names (argument-list) list)
+(defun argument-names (argument-list)
+  (mapcan (lambda (x)
+            (etypecase-of argument x
+              (spc:constraint (list (spc:name x)))
+              (expand         (argument-names (util:alist-values (expanded x))))))
+          argument-list))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Return Type Expansion API
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(-> full-return-values (keyword) (or spc:type-reference list))
 (defun full-return-values (name)
   "Expands the return type into the constitute fields recursively and
 gives back the original output type, an empty list if primitive, or an

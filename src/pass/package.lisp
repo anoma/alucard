@@ -56,7 +56,8 @@ expansion.")
    :full-arguments-from-storage
    :full-arguments-from-circuit
    :full-return-values
-   :full-type-reference*))
+   :full-type-reference*
+   :argument-names))
 
 (defpackage #:alu.pass.relocation
   (:documentation "Provides mapping and functionality required to
@@ -91,6 +92,14 @@ safely relocate record instances and generate out code which lacks records")
                     (:spc     :alu.spec))
   (:export :normalize-expression))
 
+(defpackage #:alu.pass.extract
+  (:documentation "Provides Extraction capabilities to vamp-ir")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (#:util #:alu.utils)
+                    (#:aspc #:alu.pass.linear-spec)
+                    (#:vspc #:alu.vampir.spec))
+  (:export))
+
 (defpackage #:alu.pass
   (:documentation "Provides simplification passes to the Alucard Language")
   (:use #:common-lisp #:serapeum)
@@ -100,7 +109,9 @@ safely relocate record instances and generate out code which lacks records")
                     (:expand   :alu.pass.expanded)
                     (:relocate :alu.pass.relocation)
                     (:storage  :alu.storage)
-                    (:closure  :alu.closure))
+                    (:closure  :alu.closure)
+                    (:extract  :alu.pass.extract)
+                    (:vampir   :alu.vampir))
   (:export
    :pipeline
    :to-expand-away-records))

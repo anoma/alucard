@@ -113,7 +113,6 @@ of ()'s for any non normal form"
     (format stream " ")
     (extract-expression expr stream)))
 
-
 (defmethod print-object ((wire spc:wire) stream)
   (format stream "~(~a~)" (spc:var wire)))
 

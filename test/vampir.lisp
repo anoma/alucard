@@ -5,8 +5,7 @@
 
 (in-suite vampir)
 
-
-(defparameter *vamp-example-1*
+(defparameter *vamp-example1*
   (list (vspc:make-pub :wires (list :fi :bar))
         (vspc:make-alias
          :name :xor

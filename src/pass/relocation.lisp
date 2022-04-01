@@ -71,7 +71,7 @@ old value was relocated to."
                ;; see doc on `expand:full-return-values' to see that
                ;; the type coincides with our nested alist representation
                (let* ((new-closure-value (update-alist-values-with-preifx name exp))
-                      (new-bindings      (alist-values new-closure-value)))
+                      (new-bindings      (util:alist-values new-closure-value)))
                  (make-rel
                   :closure (closure:insert closure name new-closure-value)
                   :forms   (list
@@ -94,7 +94,7 @@ old value was relocated to."
                   (make-rel-from-alist name (list find) closure))
                  ;; must be an atom, let manually make our rel
                  (t (make-rel
-                     :forms (generate-binds (alist-values (list find)) (list name))
+                     :forms (generate-binds (util:alist-values (list find)) (list name))
                      :closure closure)))))
         (spc:record
          (let* ((alist (spc:record->alist val))
@@ -166,7 +166,7 @@ term with the proper relocation."
 (-> maps-to (keyword closure:typ) list)
 (defun maps-to (name closure)
   (values
-   (alist-values (closure:lookup closure name))))
+   (util:alist-values (closure:lookup closure name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper functions
@@ -190,8 +190,8 @@ relation"
   ;; we have a reference to a record, now lets expand!
   (let ((new-closure-content (update-alist-values-with-preifx prefix alist)))
     (make-rel
-     :forms (generate-binds (alist-values alist)
-                            (alist-values new-closure-content))
+     :forms (generate-binds (util:alist-values alist)
+                            (util:alist-values new-closure-content))
      :closure (closure:insert closure prefix new-closure-content))))
 
 (defun generate-binds (from to)
@@ -229,14 +229,6 @@ Example:
                       (if (listp value)
                           (update-alist-values-with-preifx new-prefix value)
                           new-prefix)))))
-          alist))
-
-(defun alist-values (alist)
-  "Takes a potentially nested alist and returns the values"
-  (mapcan (lambda (apair)
-            (if (not (listp (cdr apair)))
-                (list (cdr apair))
-                (alist-values (cdr apair))))
           alist))
 
 (-> append-two-keywords (keyword keyword) keyword)

@@ -38,3 +38,47 @@
       (apply #'reinitialize-instance copy initargs))))
 
 ;; I should use this for object equality, namely the slot values trick
+
+;; Please abstract out this logic. Too much of the same pattern!!!
+
+(defun alist-values (alist)
+  "Takes a potentially nested alist and returns the values
+
+(alist-values '((:plane . :fi-plane) (:point . ((:x . fi-point-x) (:y . fi-point-y)))))
+
+==>
+
+(:FI-PLANE FI-POINT-X FI-POINT-Y)"
+  (mapcan (lambda (apair)
+            (if (not (listp (cdr apair)))
+                (list (cdr apair))
+                (alist-values (cdr apair))))
+          alist))
+
+(defun nested-alist-keys (alist)
+  "Takes a potentially nested alist and returns all the keys
+
+(nested-alist-keys '((:plane . :fi-plane) (:point . ((:x . fi-point-x) (:y . fi-point-y)))))
+
+==>
+
+(:PLANE :POINT :X :Y)"
+  (mapcan (lambda (apair)
+            (if (not (listp (cdr apair)))
+                (list (car apair))
+                (cons (car apair) (nested-alist-keys (cdr apair)))))
+          alist))
+
+(defun leaf-alist-keys (alist)
+  "Takes a nested alist and gives back all the keys on the leaves
+
+(leaf-alist-keys '((:plane . :fi-plane) (:point . ((:x . fi-point-x) (:y . fi-point-y)))))
+
+==>
+
+(:PLANE :X :Y)"
+  (mapcan (lambda (apair)
+            (if (not (listp (cdr apair)))
+                (list (car apair))
+                (leaf-alist-keys (cdr apair))))
+          alist))
