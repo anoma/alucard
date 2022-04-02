@@ -9,6 +9,7 @@
                     (:expand   :alu.pass.expanded)
                     (:relocate :alu.pass.relocation)
                     (:vamp     :alu.vampir)
+                    (:pass     :alu.pass)
                     (:vspc     :alu.vampir.spec))
   (:export #:run-tests))
 

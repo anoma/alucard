@@ -59,7 +59,7 @@
    ;; TODO :: layout types
    (body :initarg :body
          :accessor body
-         :type     constarint-list))
+         :type     constraint-list))
   (:documentation "An alias gate in vamp-ir"))
 
 

@@ -5,9 +5,8 @@
 
 (in-suite alucard.pass)
 
-
 (test to-expand-away-records
-  (let* ((look (alu.pass:to-expand-away-records
+  (let* ((look (pass:to-expand-away-records
                 (storage:lookup-function :record-test)))
          (multi-lets (remove-if-not (lambda (x) (typep x 'spc:multiple-bind))
                                     look))
@@ -20,6 +19,6 @@
         "The nested type should be expanded into output")))
 
 (test void-removal
-  (let ((ran (alu.pass:to-expand-away-records
+  (let ((ran (pass:to-expand-away-records
               (storage:lookup-function :use-constrain))))
     (is (= 1 (length ran)))))
