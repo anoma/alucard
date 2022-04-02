@@ -8,6 +8,15 @@
   "The type we store in the top level type storage"
   `(or primitive type-declaration))
 
+;; Augment primitive to have return type as well!
+(defmethod return-type ((primitive primitive))
+  ;; replace with an exhaustive match!
+  (case (name primitive)
+    ;; we know these return a field/int
+    ((:+ :* :- :/ :exp) (make-reference :name :int))
+    ;; default to int
+    (t                  (make-reference :name :int))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                      Function Type Storage Type                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -177,3 +186,7 @@ type can take (primitives take an extra integer, we may with to propagate)")
   (mapcar (lambda (field)
             (cons field (sycamore:tree-map-find (contents record) field nil)))
           (order record)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                         Function Storage Func                              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -22,7 +22,8 @@
 (defun to-expand-away-records (circuit)
   (~> circuit
       to-linearize
-      (expand-away-records circuit)))
+      (expand-away-records circuit)
+      remove-void-bindings))
 
 (defun to-primtitve-circuit (circuit)
   (~> circuit
@@ -70,6 +71,47 @@ and properly propagating arguments around them"
        (cons (spc:make-bind :var var :val val)
              (linearize-lets body))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Remove void returns and lets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Update logic so that we can get inference on this.
+(-> remove-void-bindings (spc:fully-expanded-list) spc:fully-expanded-list)
+(defun remove-void-bindings (terms)
+  "remove-void-bindings removes any void return value from a function
+and direct references to it. Note this does not go into other values,
+so the error of the user program is preserved."
+  ;; we use mutation here just because the fold pattern of trying to
+  ;; mimic a map-accuml is just too much against clarity
+  (let ((set (sycamore:tree-set #'util:hash-compare)))
+    (labels ((value-if-void (term)
+               (let ((value (spc:value term)))
+                 (cond ((and (typep value 'spc:application)
+                             (~> value
+                                 spc:func
+                                 spc:name
+                                 storage:lookup-function
+                                 spc:return-type
+                                 voidp))
+                        (if (listp (spc:var term))
+                            (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
+                                    (spc:var term))
+                            (sycamore:tree-set-insertf set (spc:var term)))
+                        (spc:value term))
+                       ((and (typep value 'spc:reference)
+                             (sycamore:tree-set-find set (spc:name value)))
+                        nil)
+                       (t
+                        term)))))
+      (filter-map (lambda (term)
+                    (etypecase-of spc:fully-expanded-term term
+                      (spc:term-normal-form term)
+                      (spc:application      term)
+                      (spc:bind             (value-if-void term))
+                      (spc:multiple-bind    (value-if-void term))
+                      (spc:multi-ret        (value-if-void term))
+                      (spc:ret              (value-if-void term))))
+                  terms))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -191,9 +233,11 @@ if the value is not void, then the returns in the body are given back"
                    (spc:var x))))
               filtered))))
 
-
 (defun voidp (ret)
   (typecase ret
     (spc:type-reference (eq (spc:name ret) :void))
-    (null               t)
     (otherwise          nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Return Type Filling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

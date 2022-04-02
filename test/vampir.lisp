@@ -24,6 +24,7 @@
     (format stream "def xor a b -> c {~%")
     (format stream "  c = a + b~%")
     (format stream "}")))
+
 (defparameter *vamp-example-2*
   (list (vspc:make-pub :wires (list :fi :bar))
         (vspc:make-alias

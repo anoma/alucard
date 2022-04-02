@@ -1,5 +1,6 @@
 (defpackage :alu-test
   (:use #:cl #:fiveam #:serapeum)
+  (:shadow #:time)
   (:local-nicknames (:util     :alu.utils)
                     (:spc      :alu.pass.spec)
                     (:storage  :alu.storage)

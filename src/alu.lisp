@@ -209,6 +209,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 ;; Primitive type declaration
 (defprimitive-type bytes)
 (defprimitive-type int)
+(defprimitive-type void)
 
 ;; Primitive function declaration
 ;; Add to a list, so we can get exhaustion when we write functions over this

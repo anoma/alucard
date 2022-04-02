@@ -43,6 +43,19 @@
   (time  point))
 
 
+(alu:defcircuit constrain ((public nest nested)
+                           (output void))
+  (alu:def ((plane (plane nest))
+            (time  (time nest)))
+    (alu::= (alu::* (x plane)
+                    (y plane))
+            (alu::+ (x time)
+                    (y time)))))
+
+(alu:defcircuit use-constrain ((public foo nested)
+                               (output void))
+  (constrain foo))
+
 (alu:defcircuit arg-test-exp ((public  root (bytes 64))
                               (private sig  int)
                               (private utx utx)
