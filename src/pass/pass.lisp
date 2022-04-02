@@ -74,14 +74,14 @@ it's closure"
                                   (relocate:relocate-let term
                                                          (relocate:rel-closure rel))))
                             (relocate:make-rel
-                             :forms (append (relocate:rel-forms new-rel)
+                             :forms (append (reverse (relocate:rel-forms new-rel))
                                             (relocate:rel-forms rel))
                              :closure (relocate:rel-closure new-rel))))
                          (spc:term-no-binding
                           (relocate:make-rel
-                           :forms   (append (relocate:relocate-standalone
-                                             term
-                                             (relocate:rel-closure rel))
+                           :forms   (append (reverse (relocate:relocate-standalone
+                                                      term
+                                                      (relocate:rel-closure rel)))
                                             (relocate:rel-forms rel))
                            :closure (relocate:rel-closure rel)))))
                      anf-terms
@@ -89,6 +89,7 @@ it's closure"
                                      :forms nil
                                      :closure (relocate:initial-closure-from-circuit
                                                circuit)))))
+    ;; since we are reversing the list here, we have to reverse above
     (relocate:make-rel :forms   (reverse (relocate:rel-forms rel))
                        :closure (relocate:rel-closure rel))))
 
