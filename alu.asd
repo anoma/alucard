@@ -40,6 +40,7 @@
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
+                 (:file "primitive-global")
                  (:file "expand")
                  (:file "relocation")
                  (:file "anf")

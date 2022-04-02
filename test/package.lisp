@@ -1,7 +1,7 @@
 (defpackage :alu-test
   (:use #:cl #:fiveam #:serapeum)
   (:local-nicknames (:util     :alu.utils)
-                    (:spc      :alu.pass.linear-spec)
+                    (:spc      :alu.pass.spec)
                     (:storage  :alu.storage)
                     (:anf      :alu.pass.anf)
                     (:closure  :alu.closure)

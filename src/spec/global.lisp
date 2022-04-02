@@ -23,12 +23,6 @@
               :accessor arguments
               :documentation "Arguments for the circuit, saved in a
 a list of `constraint'")
-   (expanded-arguments
-    :type    list
-    :accessor expanded-arguments
-    :documentation "expanded arguments for a given circuit, This is
-not written at creation time, but later set by a later pass which
-determines and caches the appropriate expanded argument list")
    (return-type :initarg  :return-type
                 :type     (or type-reference null)
                 :accessor return-type

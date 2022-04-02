@@ -4,7 +4,7 @@
 
 (defpackage #:alu.pass.linear-term
   (:documentation "Provides a simplified term structures that has been through
-linearization, use alu.pass.linear-spec for the full specification")
+linearization, use `alu.pass.spec' for the full specification")
   (:local-nicknames (:util :alu.utils)
                     (:spc  :alu.spec))
   (:use #:common-lisp #:serapeum)
@@ -28,11 +28,21 @@ linearization, use alu.pass.linear-spec for the full specification")
    :make-ret
    :make-multiple-bind))
 
-(uiop:define-package #:alu.pass.linear-spec
-  (:documentation "Defines out the specification of the linear term,
-reusing values from alu.spec and alu.pass.linear-term")
+(defpackage #:alu.pass.primitive-global
+  (:documentation "Provides a more low level representation of the
+global structure")
+  (:local-nicknames (#:spc #:alu.spec))
   (:use #:common-lisp #:serapeum)
-  (:use-reexport :alu.spec :alu.pass.linear-term))
+  (:export
+   :prim-circuit :returns
+   :make-prim-circuit))
+
+(uiop:define-package #:alu.pass.spec
+  (:documentation "Defines out the specification of the pass terms,
+namely linear terms and more primitive global type storage, this
+package strictly adds to the `alu.spec' package")
+  (:use #:common-lisp #:serapeum)
+  (:use-reexport :alu.spec :alu.pass.linear-term :alu.pass.primitive-global))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Expanding Away And relocating Record Types
@@ -43,7 +53,7 @@ reusing values from alu.spec and alu.pass.linear-term")
 Including circuit declaration expansion, and function type
 expansion.")
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.linear-spec)
+                    (:spc     :alu.pass.spec)
                     (:storage :alu.storage))
   (:use #:common-lisp #:serapeum)
   (:export
@@ -63,7 +73,7 @@ expansion.")
   (:documentation "Provides mapping and functionality required to
 safely relocate record instances and generate out code which lacks records")
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.linear-spec)
+                    (:spc     :alu.pass.spec)
                     (:storage :alu.storage)
                     (:expand  :alu.pass.expanded)
                     (:closure :alu.closure))
@@ -96,7 +106,7 @@ safely relocate record instances and generate out code which lacks records")
   (:documentation "Provides Extraction capabilities to vamp-ir")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (#:util #:alu.utils)
-                    (#:aspc #:alu.pass.linear-spec)
+                    (#:aspc #:alu.pass.spec)
                     (#:vspc #:alu.vampir.spec))
   (:export))
 
@@ -104,7 +114,7 @@ safely relocate record instances and generate out code which lacks records")
   (:documentation "Provides simplification passes to the Alucard Language")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util     :alu.utils)
-                    (:spc      :alu.pass.linear-spec)
+                    (:spc      :alu.pass.spec)
                     (:anf      :alu.pass.anf)
                     (:expand   :alu.pass.expanded)
                     (:relocate :alu.pass.relocation)

@@ -60,17 +60,6 @@ being the `expand' type"
   (mapcar #'expand-type-into-constituents
           (spc:arguments circuit)))
 
-(-> cache-expanded-arguments! (keyword) null)
-(defun cache-expanded-arguments! (name)
-  "Calculates the full argument list with records being expanded, and
-caches them on the structure"
-  (let ((circuit  (storage:lookup-function name))
-        (expanded (full-arguments-from-storage name)))
-    (when (and circuit expanded)
-      (setf (spc:expanded-arguments circuit)
-            expanded)
-      nil)))
-
 (-> argument-names (argument-list) list)
 (defun argument-names (argument-list)
   (mapcan (lambda (x)

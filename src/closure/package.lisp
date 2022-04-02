@@ -1,7 +1,6 @@
 
 (defpackage #:alu.closure
-  (:documentation "Provides a simplified term structure that has been through
-linearization, use alu.pass.linear-spec for the full specification")
+  (:documentation "Provides a simple closure structure")
   (:local-nicknames (:syc  :sycamore)
                     (:util :alu.utils))
   (:shadow #:remove)
