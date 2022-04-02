@@ -57,9 +57,8 @@
 (test relocate-let-lookup
   (let ((expected-let-names '(:hi-point-x :hi-point-y))
         (expected-let-resul '(:fi-point-x :fi-point-y))
-        (expected-storage   '((:POINT
-                               (:X . :HI-POINT-X)
-                               (:Y . :HI-POINT-Y))))
+        (expected-storage   '((:X . :HI-POINT-X)
+                              (:Y . :HI-POINT-Y)))
         (relocation-1 (relocate:relocate-let *example-bind-lookup-1*
                                               *example-closure*))
         (relocation-2 (relocate:relocate-let *example-bind-lookup-2*

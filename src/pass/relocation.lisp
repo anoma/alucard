@@ -91,7 +91,14 @@ old value was relocated to."
                  ((null find)
                   (error "Trying to do a lookup on a non existant field"))
                  ((listp (cdr find))
-                  (make-rel-from-alist name (list find) closure))
+                  (let* ((rel (make-rel-from-alist name (list find) closure))
+                         (clos (rel-closure rel)))
+                    ;; need to cdr away the nested label that we used to generate
+                    (make-rel
+                     :forms   (rel-forms rel)
+                     :closure (closure:insert clos
+                                              name
+                                              (cdar (closure:lookup clos name))))))
                  ;; must be an atom, let manually make our rel
                  (t (make-rel
                      :forms (generate-binds (util:alist-values (list find)) (list name))
@@ -143,8 +150,8 @@ term with the proper relocation."
     (mapcar (lambda (x)
               ;; make a type for binders later to gain back exhaustion
               (etypecase x
-                (spc:bind          (spc:make-ret :val (spc:value x)
-                                                 :var (spc:var x)))
+                (spc:bind (spc:make-ret :val (spc:value x)
+                                        :var (spc:var x)))
                 (spc:multiple-bind (spc:make-multi-ret :val (spc:value x)
                                                        :var (spc:var x)))))
             relocated)))
