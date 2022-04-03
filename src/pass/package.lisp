@@ -109,7 +109,7 @@ safely relocate record instances and generate out code which lacks records")
                     (#:aspc    #:alu.pass.spec)
                     (#:vspc    #:alu.vampir.spec)
                     (#:storage #:alu.storage))
-  (:export))
+  (:export :circuit-to-alias))
 
 (defpackage #:alu.pass
   (:documentation "Provides simplification passes to the Alucard Language")
@@ -125,7 +125,11 @@ safely relocate record instances and generate out code which lacks records")
                     (:vampir   :alu.vampir))
   (:export
    :pipeline
+   :print-vampir
+   ;; Intermediate steps
+   :to-linearize
    :to-expand-away-records
-   :to-primtitve-circuit))
+   :to-primitive-circuit
+   :to-vampir))
 
 

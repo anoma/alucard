@@ -123,7 +123,7 @@
            :name ,key-name
            :arguments (mapcar #'make-constraint-from-list ',just-args)
            ;; the body is a list of terms that we combine
-           :body ,(if (= 1 (length body))
+           :body ,(if (cl:= 1 (length body))
                       (car body)
                       `(list ,@body))))))
        ',name)))

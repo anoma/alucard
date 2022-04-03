@@ -6,11 +6,16 @@
 
 (-> to-linearize           (spc:circuit) spc:constraint-list)
 (-> to-expand-away-records (spc:circuit) spc:fully-expanded-list)
-(-> to-primtitve-circuit   (spc:circuit) spc:prim-circuit)
+(-> to-primitive-circuit   (spc:circuit) spc:prim-circuit)
+(-> to-vampir              (spc:circuit) alu.vampir.spec:alias)
 
+(defun print-vampir (circuit &optional (stream *standard-output*))
+  (vampir:extract (list (pipeline circuit)) stream))
+
+(-> pipeline (spc:circuit) alu.vampir.spec:alias)
 (defun pipeline (circuit)
   (~> circuit
-      to-primtitve-circuit))
+      to-vampir))
 
 (defun to-linearize (circuit)
   (~> circuit
@@ -25,11 +30,16 @@
       (expand-away-records circuit)
       remove-void-bindings))
 
-(defun to-primtitve-circuit (circuit)
+(defun to-primitive-circuit (circuit)
   (~> circuit
       to-expand-away-records
       (primtitve-circuit circuit)
       rename-primitive-circuit))
+
+(defun to-vampir (circuit)
+  (~> circuit
+      to-primitive-circuit
+      extract:circuit-to-alias))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Groups of Passes

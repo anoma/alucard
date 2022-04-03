@@ -37,9 +37,9 @@
 (test renaming
   (let ((expected-args '(:ROOT :SIG :UTX_PLANE_X :UTX_PLANE_Y
                          :UTX_TIME_X :UTX_TIME_Y))
-        (ran  (pass:to-primtitve-circuit (storage:lookup-function :record-test)))
-        (ran2 (pass:to-primtitve-circuit (storage:lookup-function :record-test-mult)))
-        (ran3 (pass:to-primtitve-circuit (storage:lookup-function :use-constrain))))
+        (ran  (pass:to-primitive-circuit (storage:lookup-function :record-test)))
+        (ran2 (pass:to-primitive-circuit (storage:lookup-function :record-test-mult)))
+        (ran3 (pass:to-primitive-circuit (storage:lookup-function :use-constrain))))
     ran2 ran3
     (is (equalp expected-args (spc:arguments ran))
         "Renaming is consistent")
