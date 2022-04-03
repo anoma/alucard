@@ -28,7 +28,8 @@
 (defun to-primtitve-circuit (circuit)
   (~> circuit
       to-expand-away-records
-      (primtitve-circuit circuit)))
+      (primtitve-circuit circuit)
+      rename-primitive-circuit))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Groups of Passes
@@ -171,7 +172,8 @@ it's closure"
                (etypecase-of spc:term-normal-form arg
                  (number        (list arg))
                  (spc:primitive (list arg))
-                 (spc:reference (or (relocate:maps-to (spc:name arg) closure)
+                 (spc:reference (or (mapcar (lambda (x) (spc:make-reference :name x))
+                                            (relocate:maps-to (spc:name arg) closure))
                                     (list arg)))))
              (expand-term (term)
                (etypecase-of spc:fully-expanded-term term
@@ -239,5 +241,59 @@ if the value is not void, then the returns in the body are given back"
     (otherwise          nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Return Type Filling
+;; Renaming 在蒼白的月光
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> rename-primitive-circuit (spc:prim-circuit) spc:prim-circuit)
+(defun rename-primitive-circuit (prim-circ)
+  (with-accessors ((name spc:name)    (args spc:arguments)
+                   (rets spc:returns) (body spc:body))
+      prim-circ
+    (spc:make-prim-circuit :name      (renaming-scheme name)
+                           :arguments (mapcar #'renaming-scheme args)
+                           :returns   (mapcar #'renaming-scheme rets)
+                           :body      (rename-statements body))))
+
+;; If we do this uniformly to all terms then the references will all
+;; be valid!
+(-> rename-statements (spc:fully-expanded-list) spc:fully-expanded-list)
+(defun rename-statements (stmts)
+  (labels ((handle-ref (normal)
+             (etypecase-of spc:term-normal-form normal
+               (spc:number    normal)
+               (spc:primitive normal)
+               (spc:reference (spc:make-primitive
+                               :name (renaming-scheme (spc:name normal))))))
+           ;; recursion is fine in binds, as they can't have another
+           ;; binding, has to be the `spc:application' or `spc:term-normal-form'
+           (handle-term (x)
+             (etypecase-of spc:fully-expanded-term x
+               (spc:term-normal-form (handle-ref x))
+               (spc:application
+                (spc:make-application :function (handle-ref (spc:func x))
+                                      :arguments (mapcar #'handle-ref
+                                                         (spc:arguments x))))
+               (spc:bind (spc:make-bind :val (handle-term (spc:value x))
+                                        :var (renaming-scheme (spc:var x))))
+               (spc:ret  (spc:make-ret  :var (renaming-scheme (spc:var x))
+                                        :val (handle-term (spc:value x))))
+               (spc:multiple-bind (spc:make-multiple-bind
+                                   :var (mapcar #'renaming-scheme (spc:var x))
+                                   :val (handle-term (spc:value x))))
+               (spc:multi-ret (spc:make-multi-ret
+                               :var (mapcar #'renaming-scheme (spc:var x))
+                               :val (handle-term (spc:value x)))))))
+    (mapcar #'handle-term stmts)))
+
+(-> renaming-scheme (symbol) keyword)
+(defun renaming-scheme (symb)
+  "Renames certain names to be valid for vampir"
+  ;; the n here mutates a once only list, so no mutation at all!
+  ;; at least after the first substitute
+  (intern
+   (nsubstitute #\V #\%
+                (nsubstitute #\V #\&
+                             (substitute #\_ #\-
+                                         (symbol-name symb))))
+   :keyword))
+

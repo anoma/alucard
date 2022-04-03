@@ -76,7 +76,7 @@ removed."
   ((variables :initarg  :variables
               :type     list
               :accessor spc:var
-              :documentation "The variables that will be bound")
+              :documentation "The variables of type `keyword' that will be bound")
    (value :initarg :value
           :accessor spc:value
           :type     spc:term-no-binding
