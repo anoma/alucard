@@ -86,10 +86,11 @@ removed."
 (defclass multi-ret ()
   ((variable :initarg  :variable
              :accessor spc:var
+             :type     list
              :documentation "The name that will be returned")
    (value :initarg :value
           :accessor spc:value
-          :type     list
+          :type     spc:term-no-binding
           :documentation "Values that are returned"))
   (:documentation "An explicit return which may have many values.
 Many returns in a single function may be had, they are all ordered."))

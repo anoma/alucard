@@ -80,6 +80,18 @@
                              (output nested))
   (arg-circuit-input 3 (plane utx)))
 
+(alu:defcircuit record-test-mult ((public  root (bytes 64))
+                                  (private sig  int)
+                                  (private utx nested)
+                                  (output nested))
+  (alu:def ((circ (arg-circuit-input 3 (plane utx))))
+    (plane circ)))
+
+(alu:defcircuit record-ret ((public x int)
+                            (public y int))
+  (nested :plane (point :x x :y y)
+          :time  (point :x x :y y)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

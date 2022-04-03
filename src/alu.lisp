@@ -123,7 +123,9 @@
            :name ,key-name
            :arguments (mapcar #'make-constraint-from-list ',just-args)
            ;; the body is a list of terms that we combine
-           :body (list ,@body)))))
+           :body ,(if (= 1 (length body))
+                      (car body)
+                      `(list ,@body))))))
        ',name)))
 
 (defmacro def (bind-values &rest body)
