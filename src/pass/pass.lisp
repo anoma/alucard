@@ -247,10 +247,11 @@ if the value is not void, then the returns in the body are given back"
   (with-accessors ((name spc:name)    (args spc:arguments)
                    (rets spc:returns) (body spc:body))
       prim-circ
-    (spc:make-prim-circuit :name      (renaming-scheme name)
-                           :arguments (mapcar #'renaming-scheme args)
-                           :returns   (mapcar #'renaming-scheme rets)
-                           :body      (rename-statements body))))
+    (values
+     (spc:make-prim-circuit :name      (renaming-scheme name)
+                            :arguments (mapcar #'renaming-scheme args)
+                            :returns   (mapcar #'renaming-scheme rets)
+                            :body      (rename-statements body)))))
 
 ;; If we do this uniformly to all terms then the references will all
 ;; be valid!

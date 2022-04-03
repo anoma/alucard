@@ -5,10 +5,11 @@
   (with-accessors ((name aspc:name) (arguments aspc:arguments)
                    (body aspc:body) (ret       aspc:returns))
       circuit
-    (vspc:make-alias :name name
-                     :inputs  arguments
-                     :outputs ret
-                     :body (error "hi"))))
+    (values
+     (vspc:make-alias :name name
+                      :inputs  arguments
+                      :outputs ret
+                      :body (filter-map #'term->constraint body)))))
 
 (-> term->constraint (aspc:fully-expanded-term) (or null vspc:constraint))
 (defun term->constraint (term)
