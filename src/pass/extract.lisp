@@ -64,7 +64,7 @@
         (deal-args (mapcar #'normal-form->normal-form (aspc:arguments app))))
     (if (typep looked 'aspc:primitive)
         ;; circuits are easy, as it's a straightforward mapping!
-        (prim->app (aspc:name app) deal-args)
+        (prim->app (alucard-prim->vampir-name (aspc:name looked)) deal-args)
         (vspc:make-application :func (aspc:name (aspc:func app))
                                :arguments deal-args))))
 
@@ -77,3 +77,9 @@
                 (vspc:make-infix :lhs lhs :op key :rhs rhs))
               args
               :from-end t)))
+
+(-> alucard-prim->vampir-name (keyword) keyword)
+(defun alucard-prim->vampir-name (keyword)
+  (case keyword
+    (:exp :^)
+    (t    keyword)))
