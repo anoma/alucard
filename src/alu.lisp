@@ -106,7 +106,7 @@
          (key-name (util:symbol-to-keyword name)))
     `(progn
        ;; make a lexical variable so we can just say it
-       (serapeum:def ,name (spc:make-primitive :name ,key-name))
+       (serapeum:def ,name (spc:make-reference :name ,key-name))
        ;; defun a function to apply the function
        (defun ,name (,@argument-names)
          (spc:make-application :function (spc:make-reference :name ,key-name)
@@ -158,7 +158,7 @@
        (defun ,name (&rest arguments)
          (spc:make-application :function (spc:make-reference :name ,keyword)
                                :arguments arguments))
-       (serapeum:def ,name (spc:make-primitive :name ,keyword))
+       (serapeum:def ,name (spc:make-reference :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

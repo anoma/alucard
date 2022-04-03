@@ -16,7 +16,6 @@
 (deftype term-normal-form ()
   "The Alucard Terms which are fully in normal form"
   `(or number
-       primitive
        reference))
 
 ;; An alu Expression type.

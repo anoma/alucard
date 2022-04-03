@@ -22,3 +22,16 @@
   (let ((ran (pass:to-expand-away-records
               (storage:lookup-function :use-constrain))))
     (is (= 1 (length ran)))))
+
+(test renaming
+  (let ((expected-args '(:ROOT :SIG :UTX_PLANE_X :UTX_PLANE_Y
+                         :UTX_TIME_X :UTX_TIME_Y))
+        (ran (pass:to-primtitve-circuit (storage:lookup-function :record-test))))
+    (is (equalp expected-args (spc:arguments ran))
+        "Renaming is consistent")
+    (is (every (lambda (x)
+                 (not
+                  (or (string-contains-p "&" x)
+                      (string-contains-p "-" x)
+                      (string-contains-p "%" x))))
+               (spc:returns ran)))))

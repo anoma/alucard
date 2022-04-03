@@ -57,7 +57,6 @@ old value was relocated to."
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
         (spc:number    no-change)
-        (spc:primitive no-change)
         (spc:reference
          (let ((checked (closure:lookup closure (spc:name val))))
            (if checked

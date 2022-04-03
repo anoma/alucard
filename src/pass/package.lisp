@@ -105,9 +105,10 @@ safely relocate record instances and generate out code which lacks records")
 (defpackage #:alu.pass.extract
   (:documentation "Provides Extraction capabilities to vamp-ir")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (#:util #:alu.utils)
-                    (#:aspc #:alu.pass.spec)
-                    (#:vspc #:alu.vampir.spec))
+  (:local-nicknames (#:util    #:alu.utils)
+                    (#:aspc    #:alu.pass.spec)
+                    (#:vspc    #:alu.vampir.spec)
+                    (#:storage #:alu.storage))
   (:export))
 
 (defpackage #:alu.pass
@@ -124,6 +125,7 @@ safely relocate record instances and generate out code which lacks records")
                     (:vampir   :alu.vampir))
   (:export
    :pipeline
-   :to-expand-away-records))
+   :to-expand-away-records
+   :to-primtitve-circuit))
 
 

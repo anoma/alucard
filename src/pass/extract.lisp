@@ -10,8 +10,8 @@
                      :outputs ret
                      :body (error "hi"))))
 
-(-> expand-term-to-constraint (aspc:fully-expanded-term) (or null vspc:constraint))
-(defun expand-term-to-constraint (term)
+(-> term->constraint (aspc:fully-expanded-term) (or null vspc:constraint))
+(defun term->constraint (term)
   (etypecase-of aspc:fully-expanded-term term
     ;; drop standalone constants, we can't emit it!
     (aspc:term-normal-form nil)
@@ -27,3 +27,20 @@
     (aspc:multi-ret
      ))
   (error "hi"))
+
+(-> normal-form->normal-form (aspc:term-normal-form) vspc:normal-form)
+(defun normal-form->normal-form (anormal)
+  anormal
+  (error "hi"))
+
+(-> app-to-constraint (aspc:application) vspc:constraint)
+(defun app->constraint (app)
+  (etypecase-of aspc:function-type
+      (storage:lookup-function (aspc:name (aspc:func app)))
+    ;; circuits are easy, as it's a straightforward mapping!
+    (aspc:circuit
+     (vspc:make-application :func (aspc:name (aspc:func app))
+                            :arguments (mapcar #'normal-form->normal-form
+                                               (aspc:arguments app))))
+    (aspc:primitive
+     )))

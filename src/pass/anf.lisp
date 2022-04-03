@@ -27,7 +27,6 @@ will evaluate to this let buildup."
     (match-of spc:expression term
       ;; for terms which are just references or numbers we can
       ;; just call the constructor, and end the algorithm
-      ((spc:primitive)   (funcall constructor term))
       ((spc:number numb) (funcall constructor numb))
       ((spc:reference)   (funcall constructor term))
       ;; For nodes which are not in normal form, recurse building

@@ -10,7 +10,7 @@
 
 (defun pipeline (circuit)
   (~> circuit
-      to-expand-away-records))
+      to-primtitve-circuit))
 
 (defun to-linearize (circuit)
   (~> circuit
@@ -89,8 +89,7 @@ so the error of the user program is preserved."
                (let ((value (spc:value term)))
                  (cond ((and (typep value 'spc:application)
                              (~> value
-                                 spc:func
-                                 spc:name
+                                 spc:func spc:name
                                  storage:lookup-function
                                  spc:return-type
                                  voidp))
@@ -171,7 +170,6 @@ it's closure"
              (expand-argument (arg)
                (etypecase-of spc:term-normal-form arg
                  (number        (list arg))
-                 (spc:primitive (list arg))
                  (spc:reference (or (mapcar (lambda (x) (spc:make-reference :name x))
                                             (relocate:maps-to (spc:name arg) closure))
                                     (list arg)))))
@@ -258,31 +256,32 @@ if the value is not void, then the returns in the body are given back"
 ;; be valid!
 (-> rename-statements (spc:fully-expanded-list) spc:fully-expanded-list)
 (defun rename-statements (stmts)
-  (labels ((handle-ref (normal)
+  (labels ((rename-vars-val (con var)
+             (funcall con
+                      :val (handle-term (spc:value var))
+                      :var (mapcar #'renaming-scheme (spc:var var))))
+           (rename-var-val (con var)
+             (funcall con
+                      :val (handle-term (spc:value var))
+                      :var (renaming-scheme (spc:var var))))
+           (handle-ref (normal)
              (etypecase-of spc:term-normal-form normal
                (spc:number    normal)
-               (spc:primitive normal)
-               (spc:reference (spc:make-primitive
+               (spc:reference (spc:make-reference
                                :name (renaming-scheme (spc:name normal))))))
            ;; recursion is fine in binds, as they can't have another
            ;; binding, has to be the `spc:application' or `spc:term-normal-form'
            (handle-term (x)
              (etypecase-of spc:fully-expanded-term x
+               (spc:bind             (rename-var-val #'spc:make-bind x))
+               (spc:ret              (rename-var-val #'spc:make-ret  x))
+               (spc:multiple-bind    (rename-vars-val #'spc:make-multiple-bind x))
+               (spc:multi-ret        (rename-vars-val #'spc:make-multi-ret x))
                (spc:term-normal-form (handle-ref x))
                (spc:application
-                (spc:make-application :function (handle-ref (spc:func x))
-                                      :arguments (mapcar #'handle-ref
-                                                         (spc:arguments x))))
-               (spc:bind (spc:make-bind :val (handle-term (spc:value x))
-                                        :var (renaming-scheme (spc:var x))))
-               (spc:ret  (spc:make-ret  :var (renaming-scheme (spc:var x))
-                                        :val (handle-term (spc:value x))))
-               (spc:multiple-bind (spc:make-multiple-bind
-                                   :var (mapcar #'renaming-scheme (spc:var x))
-                                   :val (handle-term (spc:value x))))
-               (spc:multi-ret (spc:make-multi-ret
-                               :var (mapcar #'renaming-scheme (spc:var x))
-                               :val (handle-term (spc:value x)))))))
+                (spc:make-application
+                 :function (handle-ref (spc:func x))
+                 :arguments (mapcar #'handle-ref (spc:arguments x)))))))
     (mapcar #'handle-term stmts)))
 
 (-> renaming-scheme (symbol) keyword)
@@ -291,9 +290,8 @@ if the value is not void, then the returns in the body are given back"
   ;; the n here mutates a once only list, so no mutation at all!
   ;; at least after the first substitute
   (intern
-   (nsubstitute #\V #\%
-                (nsubstitute #\V #\&
-                             (substitute #\_ #\-
-                                         (symbol-name symb))))
+   (~>> symb symbol-name
+        (substitute #\_ #\-)
+        (nsubstitute #\V #\&)
+        (nsubstitute #\V #\%))
    :keyword))
-
