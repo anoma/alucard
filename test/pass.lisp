@@ -49,3 +49,8 @@
                       (string-contains-p "-" x)
                       (string-contains-p "%" x))))
                (spc:returns ran)))))
+
+(test extraction
+  (pass:pipeline (storage:lookup-function :poly-check))
+  (pass:pipeline (storage:lookup-function :record-test-mult))
+  (is (= 2 2)))

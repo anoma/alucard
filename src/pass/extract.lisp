@@ -9,22 +9,33 @@
      (vspc:make-alias :name name
                       :inputs  arguments
                       :outputs ret
-                      :body (filter-map #'term->constraint body)))))
+                      :body (mapcan #'term->constraint body)))))
 
 (-> term->constraint (aspc:fully-expanded-term) (or null vspc:constraint))
 (defun term->constraint (term)
   (labels ((keywords->wire (keys)
              (mapcar (lambda (x) (vspc:make-wire :var x)) keys))
            (var-val->bind (term)
-             (vspc:make-bind :names (keywords->wire
-                                     (if (listp (aspc:var term))
-                                         (aspc:var term)
-                                         (list (aspc:var term))))
-                             :value (term->expression (aspc:value term)))))
+             (let ((value (aspc:value term))
+                   (names (keywords->wire (if (listp (aspc:var term))
+                                              (aspc:var term)
+                                              (list (aspc:var term))))))
+               (if (not (equality-check value))
+                   (list
+                    (vspc:make-bind :names names
+                                    :value (term->expression value)))
+                   ;; This entire thing is a hack, please do better!
+
+                   ;; this will have to hit the app->constraint case!
+                   ;; as it's an equality application!
+                   (let ((equality (car (term->constraint value))))
+                     (list equality
+                           ;; should only be one as it's a
+                           (vspc:make-bind :names names :value (vspc:lhs equality))))))))
     (etypecase-of aspc:fully-expanded-term term
       ;; drop standalone constants, we can't emit it!
       (aspc:term-normal-form nil)
-      (aspc:application      (app->constraint term))
+      (aspc:application      (list (app->constraint term)))
       (aspc:bind             (var-val->bind term))
       (aspc:ret              (var-val->bind term))
       (aspc:multiple-bind    (var-val->bind term))
@@ -52,8 +63,9 @@
        (vspc:make-application :func (aspc:name (aspc:func app))
                               :arguments deal-args))
       (aspc:primitive
-       (cond ((not (eql (aspc:name app) :=))
+       (cond ((not (eql (aspc:name looked) :=))
               (error "an infix expression is not a valid constraint"))
+             ;; we should probably make = take n arguments were we can fold it
              ((= (length deal-args) 2)
               (vspc:make-equality :lhs (car deal-args)
                                   :rhs (cadr deal-args))))))))
@@ -83,3 +95,7 @@
   (case keyword
     (:exp :^)
     (t    keyword)))
+
+(defun equality-check (term)
+  (and (typep term 'aspc:application)
+       (eql (aspc:name (aspc:func term)) :=)))
