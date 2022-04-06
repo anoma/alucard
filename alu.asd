@@ -5,6 +5,11 @@
   :author "Mariari"
   :license "MIT"
   :pathname "src/"
+  :build-pathname "../build/alu.image"
+  :entry-point "alu::main"
+  :build-operation ;; #+(or ecl ccl)
+  "program-op"
+  ;; #-(or ecl ccl) "image-op"
   :components
   ((:module util
     :serial t
@@ -47,7 +52,8 @@
                  (:file "extract")
                  (:file "pass")))
    (:file "package" :depends-on ("specification"))
-   (:file "alu"     :depends-on ("package")))
+   (:file "alu"     :depends-on ("package"))
+   (:file "../app/main" :depends-on ("alu")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
 (asdf:defsystem :alu/test
