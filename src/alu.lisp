@@ -281,6 +281,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
 ;; Discussion
 ;; maybe : Add casting functions to add more constraints into a circuit input
 ;; want  : explicit defconstraint macro that adds constraints to values (monotonically increasing information)
+
 (defcircuit poly-check ((public x int)
                         (output bool))
   (= (+ (exp x 3)
