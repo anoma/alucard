@@ -51,9 +51,16 @@
                  (:file "anf")
                  (:file "extract")
                  (:file "pass")))
+   ;; only folder without a package
+   (:module prelude
+    :serial t
+    :description "Alucard Prelude"
+    :depends-on  ("alu")
+    :pathname #P"../alu/"
+    :components ((:file "prelude")))
    (:file "package" :depends-on ("specification"))
    (:file "alu"     :depends-on ("package"))
-   (:file "../app/main" :depends-on ("alu")))
+   (:file "../app/main" :depends-on ("alu" "prelude")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
 (asdf:defsystem :alu/test

@@ -5,24 +5,22 @@
 ;; https://github.com/phoe/trivial-package-local-nicknames
 (defpackage #:alu
   (:documentation "provides the Alucard VAMP-IR DSL")
-  (:shadow #:deftype #:range #:def #:+ #:* #:= #:exp)
+  (:shadow #:deftype #:def)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)
                     (:storage :alu.storage))
-  (:export :deftype :defcircuit :def))
+  (:export :deftype :defcircuit :def :defprimitive :defprimitive-type))
 
 (uiop:define-package #:alu.prelude
   (:documentation "The Alu User pacakge")
+  ;; we shouldn't use CL
+  (:shadow #:range #:+ #:* #:= #:exp)
   (:mix #:alu #:common-lisp)
-  (:reexport
-   #:common-lisp
-   #:alu)
-  (:export #:+ #:* #:= #:range))
+  (:export #:+ #:* #:= #:exp :deftype :defcircuit :def))
 
 (uiop:define-package #:aluser
   (:documentation "The Alu User pacakge")
+  (:shadow #:time)
   (:mix #:alu.prelude #:common-lisp)
-  (:reexport
-   #:alu.prelude
-   #:common-lisp))
+  (:reexport #:alu.prelude))

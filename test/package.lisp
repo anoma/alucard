@@ -1,5 +1,5 @@
-(defpackage :alu-test
-  (:use #:cl #:fiveam #:serapeum)
+(uiop:define-package :alu-test
+  (:mix #:cl #:alu.prelude #:fiveam #:serapeum)
   (:shadow #:time)
   (:local-nicknames (:util     :alu.utils)
                     (:spc      :alu.pass.spec)
@@ -10,7 +10,8 @@
                     (:relocate :alu.pass.relocation)
                     (:vamp     :alu.vampir)
                     (:pass     :alu.pass)
-                    (:vspc     :alu.vampir.spec))
+                    (:vspc     :alu.vampir.spec)
+                    (:prld     :alu.prelude))
   (:export #:run-tests))
 
 (in-package :alu-test)
