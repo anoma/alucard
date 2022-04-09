@@ -1,0 +1,17 @@
+;;; -*- Mode: common-lisp; -*-
+(:api-version "0.4")
+
+(:source "quicklisp"
+ :url "https://beta.quicklisp.org/dist/quicklisp.txt"
+ :type :quicklisp)
+
+(:asd "~/Documents/Work/repo/alu/alu.asd")
+
+(:github "fiveam"
+ :path "lispci/fiveam"
+ ;; :branch "master"
+ :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379")
+
+(:github "serapeum"
+ :path "ruricolist/serapeum"
+ :commit "070edc01c617a44178ee108f22834e6d49059303")

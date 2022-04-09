@@ -82,3 +82,11 @@
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))
+
+;; #-clpm-client
+(defun activate-project ()
+  "Activates the projects clmpfile after `clpm-client' is loaded as the
+default project. Note that the repl must be in the ALU directory for
+the fileplath to work!"
+  (uiop:symbol-call :clpm-client '#:activate-context #p"clpmfile"
+                    :activate-asdf-integration t))
