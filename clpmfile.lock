@@ -9,8 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :sources
-(:implicit-file :type :file-system :system-files
- ("~/Documents/Work/repo/alu/alu.asd"))
+(:implicit-file :type :file-system :system-files ("./alu.asd"))
 (:implicit-vcs :type :vcs :projects
  (("serapeum" :github :path "ruricolist/serapeum")))
 (:implicit-vcs :type :vcs :projects (("fiveam" :github :path "lispci/fiveam")))
@@ -27,7 +26,7 @@
  :source :implicit-vcs)
 (:project :name "fiveam" :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379"
  :source :implicit-vcs)
-(:asd-file :name "~/Documents/Work/repo/alu/alu.asd")
+(:asd-file :name "./alu.asd")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,6 +34,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :releases
+("./alu.asd" :version :newest :source :implicit-file :systems nil)
 ("alexandria" :version "2022-04-01" :source "quicklisp" :systems ("alexandria"))
 ("asdf-flv" :version "2016-04-21" :source "quicklisp" :systems
  ("net.didierverna.asdf-flv"))
@@ -82,8 +82,6 @@
 ("trivial-macroexpand-all" :version "2017-10-23" :source "quicklisp" :systems
  ("trivial-macroexpand-all"))
 ("type-i" :version "2019-12-27" :source "quicklisp" :systems ("type-i"))
-("~/Documents/Work/repo/alu/alu.asd" :version :newest :source :implicit-file
- :systems nil)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -91,6 +89,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :reverse-dependencies
+("./alu.asd" (t (:asd-file :name "./alu.asd")))
+
 ("alexandria" ((:system :name "type-i") (:system :name "alexandria"))
  ((:system :name "trivia.level0") (:system :name "alexandria"))
  ((:system :name "trivia.balland2006") (:system :name "alexandria"))
@@ -179,7 +179,4 @@
  ((:system :name "serapeum") (:system :name "trivial-macroexpand-all")))
 
 ("type-i" ((:system :name "trivia.balland2006") (:system :name "type-i")))
-
-("~/Documents/Work/repo/alu/alu.asd"
- (t (:asd-file :name "~/Documents/Work/repo/alu/alu.asd")))
 
