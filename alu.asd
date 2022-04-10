@@ -88,5 +88,5 @@
   "Activates the projects clmpfile after `clpm-client' is loaded as the
 default project. Note that the repl must be in the ALU directory for
 the fileplath to work!"
-  (uiop:symbol-call :clpm-client '#:activate-context #p"clpmfile"
+  (uiop:symbol-call :clpm-client '#:activate-context (truename "clpmfile")
                     :activate-asdf-integration t))

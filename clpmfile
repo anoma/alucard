@@ -5,7 +5,7 @@
  :url "https://beta.quicklisp.org/dist/quicklisp.txt"
  :type :quicklisp)
 
-(:asd "./alu.asd")
+(:asd "alu.asd")
 
 (:github "fiveam"
  :path "lispci/fiveam"
