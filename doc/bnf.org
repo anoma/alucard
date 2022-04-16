@@ -1,0 +1,23 @@
+#+begin_src bnf
+  defcircuit ::= (defcircuit <symbol> (<field>* <return>?) <expression>*)
+
+  deftype ::= (deftype <symbol> () <type-field>*)
+
+  def ::= (def (<bind>*) <expressoin>*)
+
+  field ::= (<privacy> <symbol> <type>)
+
+  type-field ::= (<symbol> <type>)
+
+  bind ::= (<symbol> <expression>)
+
+  return ::= (return <type>)
+
+  privacy ::= public | private
+
+  expression ::= <valid-lisp>
+
+  type ::= <symbol> | (<symbol> <symbol>*)
+
+  symbol ::= <utf8>
+#+end_src
