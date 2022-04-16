@@ -22,7 +22,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :requirements
-(:project :name "serapeum" :commit "070edc01c617a44178ee108f22834e6d49059303"
+(:project :name "serapeum" :commit "d2985f5e42df11f0e3063625b8432f0a9eca912f"
  :source :implicit-vcs)
 (:project :name "fiveam" :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379"
  :source :implicit-vcs)
@@ -59,7 +59,7 @@
  ("parse-declarations-1.0"))
 ("parse-number" :version "2018-02-28" :source "quicklisp" :systems
  ("parse-number"))
-("serapeum" :version (:commit "070edc01c617a44178ee108f22834e6d49059303")
+("serapeum" :version (:commit "d2985f5e42df11f0e3063625b8432f0a9eca912f")
  :source :implicit-vcs :systems ("serapeum" "serapeum/docs" "serapeum/tests"))
 ("slime" :version "2022-02-20" :source "quicklisp" :systems ("swank"))
 ("split-sequence" :version "2021-05-31" :source "quicklisp" :systems
@@ -141,7 +141,7 @@
 ("serapeum" ((:system :name "serapeum/tests") (:system :name "serapeum"))
  ((:system :name "serapeum/docs") (:system :name "serapeum"))
  (t
-  (:project :name "serapeum" :commit "070edc01c617a44178ee108f22834e6d49059303"
+  (:project :name "serapeum" :commit "d2985f5e42df11f0e3063625b8432f0a9eca912f"
    :source :implicit-vcs)))
 
 ("slime" ((:system :name "serapeum/docs") (:system :name "swank")))

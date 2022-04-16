@@ -12,6 +12,10 @@
  ;; :branch "master"
  :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379")
 
+;; (:github "sycamore"
+;;  :path "ndantam/sycamore"
+;;          :branch "master")
+
 (:github "serapeum"
  :path "ruricolist/serapeum"
- :commit "070edc01c617a44178ee108f22834e6d49059303")
+ :commit "d2985f5e42df11f0e3063625b8432f0a9eca912f")
