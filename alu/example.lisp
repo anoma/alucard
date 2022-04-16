@@ -21,7 +21,7 @@
   (time  point))
 
 (defcircuit constrain ((public nest nested)
-                       (output void))
+                       (output bool))
   (def ((plane (plane nest))
         (time  (time nest)))
     (= (* (x plane)
@@ -38,8 +38,8 @@
        (formula (time nest)))))
 
 (defcircuit constrain-3 ((public nest nested)
-                       (output void))
-  (apply #'=
+                         (output void))
+  (reduce #'=
          (mapcar (lambda (point)
                    (* (x point)
                       (y point)))

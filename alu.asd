@@ -15,6 +15,7 @@
     :serial t
     :description "Internal Utility Functions"
     :components ((:file "package")
+                 (:file "bit")
                  (:file "utils")))
    (:module specification
     :serial t

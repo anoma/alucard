@@ -38,7 +38,10 @@ a list of `constraint'")
                 :documentation "The return output of a given circuit")
    (body :initarg  :body
          :accessor body
-         :documentation "The circuit logic")))
+         :documentation "The frozen circuit literal")
+   (excution-body :initarg  :body
+                  :accessor body
+                  :documentation "The circuit logic")))
 
 (deftype privacy ()
   `(or (eql :private)

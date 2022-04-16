@@ -1,7 +1,7 @@
 (defpackage #:alu.utils
   (:documentation "provides the utility functions for the Alucard project")
-  (:shadow #:deftype #:serapeum)
-  (:use #:common-lisp)
+  (:shadow #:deftype)
+  (:use #:common-lisp #:serapeum)
   (:export
    :symbol-to-keyword
    :hash-compare
@@ -12,4 +12,8 @@
    ;; Alist Helpers
    :alist-values
    :leaf-alist-keys
-   :nested-alist-keys))
+   :nested-alist-keys
+
+   ;; Bit packing functionality
+   :string-to-bit-array
+   :char-to-bit-array))
