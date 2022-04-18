@@ -115,17 +115,15 @@
         ,key-name
         (let-refs
          ,argument-names
-         (storage:add-function
-          ,key-name
-          (spc:make-circuit
-           :return-type (spc:to-type-reference-format
-                         ,(util:symbol-to-keyword (cadr just-output)))
-           :name ,key-name
-           :arguments (mapcar #'make-constraint-from-list ',just-args)
-           ;; the body is a list of terms that we combine
-           :body ,(if (cl:= 1 (length body))
-                      (car body)
-                      `(list ,@body))))))
+         (spc:make-circuit
+          :return-type (spc:to-type-reference-format
+                        ,(util:symbol-to-keyword (cadr just-output)))
+          :name ,key-name
+          :arguments (mapcar #'make-constraint-from-list ',just-args)
+          ;; the body is a list of terms that we combine
+          :body ,(if (cl:= 1 (length body))
+                     (car body)
+                     `(list ,@body)))))
        ',name)))
 
 (defmacro def (bind-values &rest body)
