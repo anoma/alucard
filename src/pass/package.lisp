@@ -155,11 +155,15 @@ safely relocate record instances and generate out code which lacks records")
 (defpackage #:alu.pipeline
   (:documentation "Provides The Alucard Pipeline down to ANF")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util   :alu.utils)
-                    (:spc    :alu.pass.spec)
-                    (:pass   :alu.pass)
-                    (:vampir :alu.vampir))
+  (:local-nicknames (:util    :alu.utils)
+                    (:spc     :alu.pass.spec)
+                    (:pass    :alu.pass)
+                    (:vampir  :alu.vampir)
+                    (:dep     :alu.pass.dependencies)
+                    (:storage :alu.storage))
   (:export
+   :dump-entry-point
+   :dump-entry-point-to-file
    :pipeline
    :print-vampir
    ;; Intermediate steps

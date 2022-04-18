@@ -10,7 +10,7 @@
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)
                     (:storage :alu.storage))
-  (:export :deftype :defcircuit :def :defprimitive :defprimitive-type))
+  (:export :deftype :defcircuit :def :defprimitive :defprimitive-type :entry-point))
 
 (uiop:define-package #:alu.prelude
   (:documentation "The Alu User pacakge")
@@ -18,7 +18,7 @@
   (:shadow #:range #:+ #:* #:= #:exp)
   (:mix #:alu #:common-lisp)
   (:export #:+ #:* #:= #:exp #:deftype #:defcircuit #:def
-           #:deflex #:bool))
+           #:deflex #:bool #:entry-point))
 
 (uiop:define-package #:aluser
   (:documentation "The Alu User pacakge")

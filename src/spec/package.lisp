@@ -88,4 +88,7 @@ package and alu terms")
    :add-function    :add-type
    :lookup-function :lookup-type
    :swap-tables     :restore-tables
-   :currently-swapped?))
+   :currently-swapped?
+   ;; Entry point operations
+   :get-entry-point
+   :set-entry-point))

@@ -5,13 +5,13 @@
                                                (sycamore:tree-set
                                                 #'util:hash-compare)))
   "This function wors like `track-circuit-deps' however it recursively checks all functions"
-  circuit
-  exclusion-set
   (labels ((recursively-expand (key-name)
              (unless (sycamore:tree-set-find exclusion-set key-name)
                (sycamore:tree-set-insertf exclusion-set key-name)
-               (let ((circuit (alu.storage:lookup-function key-name)))
-                 (cons key-name (when circuit (track-circuit-deps* circuit exclusion-set)))))))
+               (let ((circuit (storage:lookup-function key-name)))
+                 (cons key-name
+                       (when circuit
+                         (track-circuit-deps* circuit exclusion-set)))))))
     (mapcan #'recursively-expand (track-circuit-deps circuit))))
 
 

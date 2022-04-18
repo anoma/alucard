@@ -107,3 +107,5 @@
   ;; (fold-tree root merk)
   ;; (equal (owner utxo) "test")
   (= (owner utxo) 5))
+
+(entry-point constrain-3)

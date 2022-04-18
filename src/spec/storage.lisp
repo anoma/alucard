@@ -14,6 +14,9 @@ relevant to the system")
   "Serves as the table which stores all custom circuits that are
 defined")
 
+(defvar *entry-point* nil
+  "Serves as the entry point to the generated circuit")
+
 (defvar *cannonical-function-table* nil
   "serves as the backup of the original function table. Useful when
 swapping to another env")
@@ -22,6 +25,16 @@ swapping to another env")
   "serves as the backup of the original type table. Useful when
 swapping to another env")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Entry Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun get-entry-point ()
+  "Grabs the entry point function for the alucard program"
+  *entry-point*)
+
+(defun set-entry-point (keyword)
+  (setf *entry-point* keyword))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Storage Addition Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -143,6 +143,10 @@
                   (car body)
                   (cons 'list body)))))
 
+(defmacro entry-point (symbol)
+  "Sets the entry point of the circuit to the desired function"
+  `(storage:set-entry-point ,(util:symbol-to-keyword symbol)))
+
 (defmacro defprimitive-type (name)
   "defines a primitive type"
   (let ((keyword (util:symbol-to-keyword name)))
