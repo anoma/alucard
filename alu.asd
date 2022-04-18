@@ -51,7 +51,8 @@
                  (:file "relocation")
                  (:file "anf")
                  (:file "extract")
-                 (:file "pass")))
+                 (:file "pass")
+                 (:file "pipeline")))
    ;; only folder without a package
    (:module prelude
     :serial t

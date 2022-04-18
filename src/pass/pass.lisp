@@ -1,49 +1,16 @@
 (in-package :alu.pass)
 
-;; TODO :: Make a Berlin pipeline abstraction, we really need to stop
-;; half way through for easier testing! until then I'll just have many
-;; arrow functions for where I want to stop off!
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Groups of Passes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> to-linearize           (spc:circuit) spc:constraint-list)
-(-> to-expand-away-records (spc:circuit) spc:fully-expanded-list)
-(-> to-primitive-circuit   (spc:circuit) spc:prim-circuit)
-(-> to-vampir              (spc:circuit) alu.vampir.spec:alias)
-
-(defun print-vampir (circuit &optional (stream *standard-output*))
-  (vampir:extract (list (pipeline circuit)) stream))
-
-(-> pipeline (spc:circuit) alu.vampir.spec:alias)
-(defun pipeline (circuit)
-  (~> circuit
-      to-vampir))
-
-(defun to-linearize (circuit)
+(-> linearize (spc:circuit) spc:constraint-list)
+(defun linearize (circuit)
   (~> circuit
       spc:body
       anf:normalize-expression
       linearize-lets
       let-all-but-last))
-
-(defun to-expand-away-records (circuit)
-  (~> circuit
-      to-linearize
-      (expand-away-records circuit)
-      remove-void-bindings))
-
-(defun to-primitive-circuit (circuit)
-  (~> circuit
-      to-expand-away-records
-      (primtitve-circuit circuit)
-      rename-primitive-circuit))
-
-(defun to-vampir (circuit)
-  (~> circuit
-      to-primitive-circuit
-      extract:circuit-to-alias))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Groups of Passes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (-> expand-away-records (spc:constraint-list spc:circuit) spc:fully-expanded-list)
 (defun expand-away-records (terms circuit)
@@ -82,46 +49,6 @@ and properly propagating arguments around them"
        (cons (spc:make-bind :var var :val val)
              (linearize-lets body))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Remove void returns and lets
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Update logic so that we can get inference on this.
-(-> remove-void-bindings (spc:fully-expanded-list) spc:fully-expanded-list)
-(defun remove-void-bindings (terms)
-  "remove-void-bindings removes any void return value from a function
-and direct references to it. Note this does not go into other values,
-so the error of the user program is preserved."
-  ;; we use mutation here just because the fold pattern of trying to
-  ;; mimic a map-accuml is just too much against clarity
-  (let ((set (sycamore:tree-set #'util:hash-compare)))
-    (labels ((value-if-void (term)
-               (let ((value (spc:value term)))
-                 (cond ((and (typep value 'spc:application)
-                             (~> value
-                                 spc:func spc:name
-                                 storage:lookup-function
-                                 spc:return-type
-                                 voidp))
-                        (if (listp (spc:var term))
-                            (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
-                                    (spc:var term))
-                            (sycamore:tree-set-insertf set (spc:var term)))
-                        (spc:value term))
-                       ((and (typep value 'spc:reference)
-                             (sycamore:tree-set-find set (spc:name value)))
-                        nil)
-                       (t
-                        term)))))
-      (filter-map (lambda (term)
-                    (etypecase-of spc:fully-expanded-term term
-                      (spc:term-normal-form term)
-                      (spc:application      term)
-                      (spc:bind             (value-if-void term))
-                      (spc:multiple-bind    (value-if-void term))
-                      (spc:multi-ret        (value-if-void term))
-                      (spc:ret              (value-if-void term))))
-                  terms))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -193,6 +120,47 @@ it's closure"
                  (spc:ret              (update-val term)))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Remove void returns and lets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Update logic so that we can get inference on this.
+(-> remove-void-bindings (spc:fully-expanded-list) spc:fully-expanded-list)
+(defun remove-void-bindings (terms)
+  "remove-void-bindings removes any void return value from a function
+and direct references to it. Note this does not go into other values,
+so the error of the user program is preserved."
+  ;; we use mutation here just because the fold pattern of trying to
+  ;; mimic a map-accuml is just too much against clarity
+  (let ((set (sycamore:tree-set #'util:hash-compare)))
+    (labels ((value-if-void (term)
+               (let ((value (spc:value term)))
+                 (cond ((and (typep value 'spc:application)
+                             (~> value
+                                 spc:func spc:name
+                                 storage:lookup-function
+                                 spc:return-type
+                                 voidp))
+                        (if (listp (spc:var term))
+                            (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
+                                    (spc:var term))
+                            (sycamore:tree-set-insertf set (spc:var term)))
+                        (spc:value term))
+                       ((and (typep value 'spc:reference)
+                             (sycamore:tree-set-find set (spc:name value)))
+                        nil)
+                       (t
+                        term)))))
+      (filter-map (lambda (term)
+                    (etypecase-of spc:fully-expanded-term term
+                      (spc:term-normal-form term)
+                      (spc:application      term)
+                      (spc:bind             (value-if-void term))
+                      (spc:multiple-bind    (value-if-void term))
+                      (spc:multi-ret        (value-if-void term))
+                      (spc:ret              (value-if-void term))))
+                  terms))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Primitive Circuit Filling logic
@@ -306,3 +274,14 @@ if the value is not void, then the returns in the body are given back"
         (nsubstitute #\V #\&)
         (nsubstitute #\V #\%))
    :keyword))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extraction passes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extraction to VAMP-I
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defalias circuit-to-alias #'extract:circuit-to-alias
+  "Turns the circuit to a vamp-ir alias")

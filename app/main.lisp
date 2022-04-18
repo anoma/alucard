@@ -6,11 +6,11 @@
 
 ;; (asdf:make :alu)
 
-;; however if we want a compressed 
+;; however if we want a compressed
 
 
-(defun main (&rest args)
-  (declare (ignore args))
+(defun main ()
+  (format t "args: ~A" (uiop:command-line-arguments))
   (setf *print-pretty* t)
   (in-package :aluser)
   #+ccl

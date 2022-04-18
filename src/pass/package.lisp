@@ -92,6 +92,17 @@ safely relocate record instances and generate out code which lacks records")
    :maps-to))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages Regarding Extra Information Tracking
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defpackage #:alu.pass.dependencies
+  (:documentation "Provides an API for dependency tracking")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util    :alu.utils)
+                    (:spc     :alu.pass.spec))
+  (:export))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -124,10 +135,25 @@ safely relocate record instances and generate out code which lacks records")
                     (:extract  :alu.pass.extract)
                     (:vampir   :alu.vampir))
   (:export
+   :linearize
+   :expand-away-records
+   :remove-void-bindings
+   :primtitve-circuit
+   :rename-primitive-circuit
+   ;; Extraction
+   :circuit-to-alias))
+
+(defpackage #:alu.pipeline
+  (:documentation "Provides The Alucard Pipeline down to ANF")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util   :alu.utils)
+                    (:spc    :alu.pass.spec)
+                    (:pass   :alu.pass)
+                    (:vampir :alu.vampir))
+  (:export
    :pipeline
    :print-vampir
    ;; Intermediate steps
-   :to-linearize
    :to-expand-away-records
    :to-primitive-circuit
    :to-vampir))

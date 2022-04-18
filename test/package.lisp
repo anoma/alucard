@@ -10,6 +10,7 @@
                     (:relocate :alu.pass.relocation)
                     (:vamp     :alu.vampir)
                     (:pass     :alu.pass)
+                    (:pipeline :alu.pipeline)
                     (:vspc     :alu.vampir.spec)
                     (:prld     :alu.prelude))
   (:export #:run-tests))
