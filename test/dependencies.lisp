@@ -6,8 +6,17 @@
 (in-suite alucard.dependencies)
 
 (test circuit-dependency
-  (let ((expected-deps '(:* :+ :=))
-        (ran           (dep:track-circuit-deps
-                        (storage:lookup-function :constrain))))
+  (let ((expected-deps (sort '(:* :+ :=) #'util:hash-compare))
+        (ran           (sort (dep:track-circuit-deps
+                              (storage:lookup-function :constrain))
+                             #'util:hash-compare)))
+    (is (equalp expected-deps ran)
+        "The dependencies should track all function applications")))
+
+(test circuit-dependency*
+  (let ((expected-deps (sort '(:constrain :* :+ :=) #'util:hash-compare))
+        (ran           (sort (dep:track-circuit-deps*
+                              (storage:lookup-function :use-constrain))
+                             #'util:hash-compare)))
     (is (equalp expected-deps ran)
         "The dependencies should track all function applications")))

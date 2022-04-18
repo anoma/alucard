@@ -1,5 +1,18 @@
 (in-package :alu.pass.dependencies)
 
+(-> track-circuit-deps* (spc:function-type &optional sycamore:tree-set) list)
+(defun track-circuit-deps* (circuit &optional (exclusion-set
+                                               (sycamore:tree-set
+                                                #'util:hash-compare)))
+  "This function wors like `track-circuit-deps' however it recursively checks all functions"
+  circuit
+  exclusion-set
+  (labels ((recursively-expand (key-name)
+             (unless (sycamore:tree-set-find exclusion-set key-name)
+               (sycamore:tree-set-insertf exclusion-set key-name)
+               (let ((circuit (alu.storage:lookup-function key-name)))
+                 (cons key-name (when circuit (track-circuit-deps* circuit exclusion-set)))))))
+    (mapcan #'recursively-expand (track-circuit-deps circuit))))
 
 
 (-> track-circuit-deps (spc:function-type) list)
@@ -9,7 +22,6 @@
    (etypecase-of spc:function-type circuit
      (spc:primitive nil)
      (spc:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
-
 
 ;; we assume that `pass:linearize' has been run
 (-> track-function-deps (spc:constraint-list) list)

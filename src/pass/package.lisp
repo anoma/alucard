@@ -139,11 +139,13 @@ safely relocate record instances and generate out code which lacks records")
 (defpackage #:alu.pass.dependencies
   (:documentation "Provides an API for dependency tracking")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util :alu.utils)
-                    (:spc  :alu.pass.spec)
-                    (:pass :alu.pass))
+  (:local-nicknames (:util    :alu.utils)
+                    (:spc     :alu.pass.spec)
+                    (:pass    :alu.pass)
+                    (:storage :alu.storage))
   (:export
-   :track-circuit-deps))
+   :track-circuit-deps
+   :track-circuit-deps*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding the Pipeline
