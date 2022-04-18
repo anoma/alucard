@@ -52,6 +52,7 @@
                  (:file "anf")
                  (:file "extract")
                  (:file "pass")
+                 (:file "dependencies")
                  (:file "pipeline")))
    ;; only folder without a package
    (:module prelude
@@ -79,6 +80,7 @@
    (:file "anf")
    (:file "expand")
    (:file "relocation")
+   (:file "dependencies")
    (:file "pass")
    (:file "vampir")
    (:file "run-tests"))

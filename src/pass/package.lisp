@@ -92,17 +92,6 @@ safely relocate record instances and generate out code which lacks records")
    :maps-to))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Packages Regarding Extra Information Tracking
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defpackage #:alu.pass.dependencies
-  (:documentation "Provides an API for dependency tracking")
-  (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.spec))
-  (:export))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -142,6 +131,24 @@ safely relocate record instances and generate out code which lacks records")
    :rename-primitive-circuit
    ;; Extraction
    :circuit-to-alias))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages Regarding Extra Information Tracking
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defpackage #:alu.pass.dependencies
+  (:documentation "Provides an API for dependency tracking")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util :alu.utils)
+                    (:spc  :alu.pass.spec)
+                    (:pass :alu.pass))
+  (:export
+   :track-circuit-deps))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages Regarding the Pipeline
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (defpackage #:alu.pipeline
   (:documentation "Provides The Alucard Pipeline down to ANF")

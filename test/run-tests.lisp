@@ -9,6 +9,7 @@
     (run! 'alucard.pass.anf)
     (run! 'alucard.expand)
     (run! 'alucard.relocation)
+    (run! 'alucard.dependencies)
     (run! 'alucard.pass)
     (run! 'vampir)
     (run! 'alucard)
@@ -32,6 +33,7 @@
                                           'alucard.expand
                                           'alucard.relocation
                                           'alucard.pass
+                                          'alucard.dependencies
                                           'vampir
                                           'alucard
                                           )

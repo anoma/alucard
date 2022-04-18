@@ -9,6 +9,7 @@
                     (:expand   :alu.pass.expanded)
                     (:relocate :alu.pass.relocation)
                     (:vamp     :alu.vampir)
+                    (:dep      :alu.pass.dependencies)
                     (:pass     :alu.pass)
                     (:pipeline :alu.pipeline)
                     (:vspc     :alu.vampir.spec)
