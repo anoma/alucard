@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :sources
-(:implicit-file :type :file-system :system-files ("./alu.asd"))
+(:implicit-file :type :file-system :system-files ("alu.asd"))
 (:implicit-vcs :type :vcs :projects
  (("serapeum" :github :path "ruricolist/serapeum")))
 (:implicit-vcs :type :vcs :projects (("fiveam" :github :path "lispci/fiveam")))
@@ -26,7 +26,7 @@
  :source :implicit-vcs)
 (:project :name "fiveam" :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379"
  :source :implicit-vcs)
-(:asd-file :name "./alu.asd")
+(:asd-file :name "alu.asd")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -34,15 +34,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :releases
-("./alu.asd" :version :newest :source :implicit-file :systems nil)
 ("alexandria" :version "2022-04-01" :source "quicklisp" :systems ("alexandria"))
+("alu.asd" :version :newest :source :implicit-file :systems ("alu" "alu/test"))
 ("asdf-flv" :version "2016-04-21" :source "quicklisp" :systems
  ("net.didierverna.asdf-flv"))
 ("atomics" :version "2021-06-30" :source "quicklisp" :systems ("atomics"))
 ("bordeaux-threads" :version "2020-06-10" :source "quicklisp" :systems
  ("bordeaux-threads"))
+("cl-fuzz" :version "2018-10-18" :source "quicklisp" :systems ("cl-fuzz"))
 ("cl-ppcre" :version "2022-02-20" :source "quicklisp" :systems ("cl-ppcre"))
 ("closer-mop" :version "2022-04-01" :source "quicklisp" :systems ("closer-mop"))
+("command-line-arguments" :version "2021-08-07" :source "quicklisp" :systems
+ ("command-line-arguments"))
 ("documentation-utils" :version "2019-07-11" :source "quicklisp" :systems
  ("documentation-utils"))
 ("fiveam" :version (:commit "e11dee752a8f59065033ef9d60641d4a2f1e8379") :source
@@ -54,6 +57,7 @@
 ("iterate" :version "2021-05-31" :source "quicklisp" :systems ("iterate"))
 ("lisp-namespace" :version "2021-10-21" :source "quicklisp" :systems
  ("lisp-namespace"))
+("lisp-unit" :version "2017-01-24" :source "quicklisp" :systems ("lisp-unit"))
 ("local-time" :version "2021-01-24" :source "quicklisp" :systems ("local-time"))
 ("parse-declarations" :version "2010-10-07" :source "quicklisp" :systems
  ("parse-declarations-1.0"))
@@ -66,6 +70,7 @@
  ("split-sequence"))
 ("string-case" :version "2018-07-11" :source "quicklisp" :systems
  ("string-case"))
+("sycamore" :version "2021-10-21" :source "quicklisp" :systems ("sycamore"))
 ("trivia" :version "2022-04-01" :source "quicklisp" :systems
  ("trivia" "trivia.balland2006" "trivia.level0" "trivia.level1" "trivia.level2"
   "trivia.trivial"))
@@ -89,15 +94,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :reverse-dependencies
-("./alu.asd" (t (:asd-file :name "./alu.asd")))
-
 ("alexandria" ((:system :name "type-i") (:system :name "alexandria"))
  ((:system :name "trivia.level0") (:system :name "alexandria"))
  ((:system :name "trivia.balland2006") (:system :name "alexandria"))
+ ((:system :name "sycamore") (:system :name "alexandria"))
  ((:system :name "serapeum") (:system :name "alexandria"))
  ((:system :name "lisp-namespace") (:system :name "alexandria"))
  ((:system :name "fiveam") (:system :name "alexandria"))
- ((:system :name "bordeaux-threads") (:system :name "alexandria")))
+ ((:system :name "cl-fuzz") (:system :name "alexandria"))
+ ((:system :name "bordeaux-threads") (:system :name "alexandria"))
+ ((:system :name "alu") (:system :name "alexandria")))
+
+("alu.asd" ((:system :name "alu/test") (:system :name "alu"))
+ (t (:asd-file :name "alu.asd")))
 
 ("asdf-flv"
  ((:system :name "fiveam") (:system :name "net.didierverna.asdf-flv")))
@@ -107,15 +116,23 @@
 ("bordeaux-threads"
  ((:system :name "serapeum") (:system :name "bordeaux-threads")))
 
-("cl-ppcre" ((:system :name "serapeum/docs") (:system :name "cl-ppcre")))
+("cl-fuzz" ((:system :name "sycamore") (:system :name "cl-fuzz")))
 
-("closer-mop" ((:system :name "trivia.level2") (:system :name "closer-mop")))
+("cl-ppcre" ((:system :name "sycamore") (:system :name "cl-ppcre"))
+ ((:system :name "serapeum/docs") (:system :name "cl-ppcre")))
+
+("closer-mop" ((:system :name "trivia.level2") (:system :name "closer-mop"))
+ ((:system :name "alu") (:system :name "closer-mop")))
+
+("command-line-arguments"
+ ((:system :name "alu") (:system :name "command-line-arguments")))
 
 ("documentation-utils"
  ((:system :name "atomics") (:system :name "documentation-utils")))
 
 ("fiveam" ((:system :name "serapeum/tests") (:system :name "fiveam"))
  ((:system :name "fiveam/test") (:system :name "fiveam"))
+ ((:system :name "alu/test") (:system :name "fiveam"))
  (t
   (:project :name "fiveam" :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379"
    :source :implicit-vcs)))
@@ -131,6 +148,8 @@
 ("lisp-namespace" ((:system :name "type-i") (:system :name "lisp-namespace"))
  ((:system :name "trivia.level2") (:system :name "lisp-namespace")))
 
+("lisp-unit" ((:system :name "sycamore") (:system :name "lisp-unit")))
+
 ("local-time" ((:system :name "serapeum/tests") (:system :name "local-time")))
 
 ("parse-declarations"
@@ -140,6 +159,7 @@
 
 ("serapeum" ((:system :name "serapeum/tests") (:system :name "serapeum"))
  ((:system :name "serapeum/docs") (:system :name "serapeum"))
+ ((:system :name "alu") (:system :name "serapeum"))
  (t
   (:project :name "serapeum" :commit "d2985f5e42df11f0e3063625b8432f0a9eca912f"
    :source :implicit-vcs)))
@@ -150,13 +170,16 @@
 
 ("string-case" ((:system :name "serapeum") (:system :name "string-case")))
 
+("sycamore" ((:system :name "alu") (:system :name "sycamore")))
+
 ("trivia" ((:system :name "type-i") (:system :name "trivia.trivial"))
  ((:system :name "trivia.trivial") (:system :name "trivia.level2"))
  ((:system :name "trivia.level2") (:system :name "trivia.level1"))
  ((:system :name "trivia.level1") (:system :name "trivia.level0"))
  ((:system :name "trivia.balland2006") (:system :name "trivia.trivial"))
  ((:system :name "trivia") (:system :name "trivia.balland2006"))
- ((:system :name "serapeum") (:system :name "trivia")))
+ ((:system :name "serapeum") (:system :name "trivia"))
+ ((:system :name "alu") (:system :name "trivia")))
 
 ("trivial-backtrace"
  ((:system :name "fiveam") (:system :name "trivial-backtrace")))
