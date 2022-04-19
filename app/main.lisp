@@ -24,6 +24,7 @@
     ))
 
 (defun main ()
+  (setf uiop:*command-line-arguments* (uiop:command-line-arguments))
   (command-line-arguments:handle-command-line
    +command-line-spec+
    #'argument-handlers
@@ -76,14 +77,13 @@
 
 
 ;; If you want compression on your asdf
-(defun save-alu-and-die (&rest args)
-  args
-  (in-package :aluser)
+(defun save-alu-and-die ()
   #+ccl
   (ccl:save-application "image" :prepend-kernel t
                                 :toplevel-function #'main)
   #+sbcl
-  (sb-ext:save-lisp-and-die #p"image"
+  (sb-ext:save-lisp-and-die #p"sbcl-compressed.image"
                             :toplevel #'main
                             :executable t
-                            :COMPRESSION 9))
+                            :COMPRESSION 1
+                            ))
