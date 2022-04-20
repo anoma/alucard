@@ -92,3 +92,10 @@ package and alu terms")
    ;; Entry point operations
    :get-entry-point
    :set-entry-point))
+
+(defpackage #:alu.basic-typecheck
+  (:documentation
+   "Basic static type checking capabilities before any processing has occurred")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:spc     :alu.spec)
+                    (:storage :alu.storage)))

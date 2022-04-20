@@ -17,16 +17,6 @@
     :components ((:file "package")
                  (:file "bit")
                  (:file "utils")))
-   (:module specification
-    :serial t
-    :description "Internal Alucard Specification"
-    :depends-on  ("util")
-    :pathname #P"spec/"
-    :components ((:file "package")
-                 (:file "term")
-                 (:file "type")
-                 (:file "global")
-                 (:file "storage")))
    (:module closure
     :serial t
     :description "Closure data type and utilities"
@@ -34,6 +24,17 @@
     :pathname #P"closure/"
     :components ((:file "package")
                  (:file "closure")))
+   (:module specification
+    :serial t
+    :description "Internal Alucard Specification"
+    :depends-on  ("util" "closure")
+    :pathname #P"spec/"
+    :components ((:file "package")
+                 (:file "term")
+                 (:file "type")
+                 (:file "global")
+                 (:file "storage")
+                 (:file "typecheck")))
    (:module vampir
     :serial t
     :description "The Vampir Extraction Module"
