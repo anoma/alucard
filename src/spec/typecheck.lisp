@@ -21,8 +21,7 @@ de-reference values, and expect all the values to exist therein"
     (spc:record
      (spc:make-type-reference :name (spc:name term)))
     (spc:application
-     (spc:return-type (or (type-storage-to-declaration
-                           (storage:lookup-function #1=(spc:name (spc:func term))))
+     (spc:return-type (or (storage:lookup-function #1=(spc:name (spc:func term)))
                           (error (format nil "Function ~A is not defined" #1#)))))
     (spc:let-node
      (type-check (spc:body term)))
@@ -36,7 +35,8 @@ de-reference values, and expect all the values to exist therein"
                            (spc:reference-type (spc:name check))
                            (spc:application    (spc:name (spc:func check)))))
             (declaration (spc:decl
-                          (or (storage:lookup-type name-check)
+                          (or (type-storage-to-declaration
+                               (storage:lookup-type name-check))
                               (error (format nil "The type ~A does not exist"
                                              name-check))))))
        (etypecase-of spc:type-format declaration
