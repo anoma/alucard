@@ -10,13 +10,54 @@ syntax guide hosted <link here>
 
 ### Interface to Alucard
 
-Alucard is a language that can be played around with to see the fruits
-of one's labor sooner rather than later
+The Alucard language is one that allows the user a great deal of
+flexibility in its use. Due to this Alucard allow the use of using the
+system either as a traditional batch compiler, or aa a fully
+interactive system.
 
 #### Scripting Mode (PARTIALLY IMPLEMENTED)
 
-#### File Loading Mode (NOT IMPLEMENTED)
+Scripting mode is the default behavior when launching the alucard
+program. It gives the user an interface to input any valid alu
+expression.
 
+Sadly out of the box the user interface (hereby known as the REPL)
+does not support very good editor or auto-completion facilities. To
+alleviate this we recommend:
+
+1. Launching alucard in your editor of choice (vscode, vim, emacs, etc.)
+2. Running the cli in a program like `rlwrap`
+
+The alucard user interface is in reality a thin sheen over the common
+lisp REPL interface. This is due to alucard being a thin sheen over
+common lisp, and therefore able to reuse the tooling that comes with a
+common lisp system.
+
+This means that every time a user uses editor integration to help aid
+the writing of an alucard program, they are in essence using the
+scripting system. From this scripting mode, the user can write the
+same program they would have in batch compilation mode. Further, since
+the tooling is integrated they can experiment with:
+
+- Running tests
+- Having variations of the same circuit to optimize the performance or
+  to more rapidly test ideas
+- Having graphical outputs of the circuit live as they edit
+- Have multiple different strategies to compare
+- etc.
+
+
+#### Batch Compilation Mode (PARTIALLY IMPLEMENTED)
+
+The system can easily be used in batch mode, meaning that you can give
+the compiler a file with the `-i` flag and tell it to produce a vampir
+file with the `-o` flag.
+
+```bash=
+ % ./build/alu.image -i alu/example.lisp -o alu/exampale.vampir
+```
+
+If the `-o` flag is not given, then it will go into scripting mode.
 
 ### Data Types
 
@@ -29,7 +70,7 @@ broad groups:
 
 #### Numeric Types
 
-Numerical types are the bread and butter
+Numerical types are all variations on the finite field elements.
 
 ##### Fields Elements
 
@@ -74,7 +115,30 @@ to be either be `0` for false, and `1` for true
 
 #### Arrays (NOT IMPLEMENTED)
 
-Arrays
+Arrays are a fixed length data type in alucard. Circuit functions that
+take an array must be of a specific size which is incompatible with
+other sizes.
+
+Arrays have a lookup operation, and are indexed from 0.
+
+Although circuit functions are limited in the size of array they may
+take, generic functions can be defined over them in the common lisp
+side. This is often seen in functions like `map` that can take any
+size array.
+
+An example definition is shown below for map:
+
+```lisp
+;; how do we determine the type of new-arr?
+;; seems we need the type of the output of the lambda
+(defun map (lamb array)
+  (def ((length  (arr-length array))
+        (new-arr (make-array :length length)))
+    (dotimes (i length)
+      (= (lookup new-array i)
+         (funcall lamb (lookup array i))))
+    new-arr))
+```
 
 #### User Defined Types
 
@@ -82,7 +146,7 @@ Users can define more complex types with the `deftype` construct
 
 ##### Structs
 
-the
+Structs are very much like structs in the C programming language. They are defined with a specified type and name. The name compiles to a record lookup function, meaning that we can lookup the field by simply stating `(name struct-instance)`. If a struct is returned from the circuit then the wires out of the circuit will be the fields of the struct ordered in how they were defined.
 
 #### Array Types (NOT IMPLEMENTED)
 
@@ -134,7 +198,7 @@ return ::= (return <type>)
 ```
 The name return specifies the value as the return type.
 
-An example use of difcircuit:
+
 
 ```lisp=
 (defcircuit poly-check ((public x int)
@@ -156,18 +220,8 @@ simply state the relation `0 = x^3 + 3 * x^2 + 2 * x + 4` .
 
 #### Deftype
 
-Deftype defines a custom record type that wraps around
-
 The deftype construct is the way to make a new custom user data
 type. The data types
-
-```ebnf=
-(deftype name () <type-field>*)
-```
-
-```ebnf=
-(field-name <type>)
-```
 
 ```lisp
 (deftype point ()

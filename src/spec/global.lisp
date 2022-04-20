@@ -39,9 +39,9 @@ a list of `constraint'")
    (body :initarg  :body
          :accessor body
          :documentation "The frozen circuit literal")
-   (excution-body :initarg  :body
-                  :accessor body
-                  :documentation "The circuit logic")))
+   (execution-body :initarg  :exec
+                   :accessor exec
+                   :documentation "The circuit logic")))
 
 (deftype privacy ()
   `(or (eql :private)
@@ -127,12 +127,13 @@ type can take (primitives take an extra integer, we may with to propagate)")
             bod
             ret)))
 
-(defun make-circuit (&key name arguments return-type body)
+(defun make-circuit (&key name arguments return-type body exec)
   (make-instance 'circuit
                  :name name
                  :body body
                  :return-type return-type
-                 :arguments arguments))
+                 :arguments arguments
+                 :exec exec))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constraint Functionality

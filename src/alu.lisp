@@ -85,7 +85,6 @@
        ;; Return the Symbol itself!
        ',name)))
 
-
 (defmacro defcircuit (name arguments &body body)
   (let* (;; Arguments are laid out like (public root (bytes 64))
          (just-args
@@ -113,18 +112,26 @@
                                :arguments (list ,@argument-names)))
        (storage:add-function
         ,key-name
-        (let-refs
-         ,argument-names
-         (spc:make-circuit
+        (spc:make-circuit
           :return-type (spc:to-type-reference-format
                         ,(util:symbol-to-keyword (cadr just-output)))
           :name ,key-name
           :arguments (mapcar #'make-constraint-from-list ',just-args)
           ;; the body is a list of terms that we combine
-          :body ,(if (cl:= 1 (length body))
-                     (car body)
-                     `(list ,@body)))))
+          :body (let-refs
+                 ,argument-names
+                 ,(if (cl:= 1 (length body))
+                      (car body)
+                      `(list ,@body)))))
        ',name)))
+
+(defmacro defgate (name arguments &body body)
+  `(defcircuit ,name ,@(mapcar (lambda (x)
+                                 (if (equalp :output (util:symbol-to-keyword (car x)))
+                                     x
+                                     (cons 'private x)))
+                               arguments)
+     ,body))
 
 (defmacro def (bind-values &rest body)
   "defines the values in the presence of the body"
