@@ -56,13 +56,12 @@ old value was relocated to."
           (make-rel :forms (list bind) :closure closure)))
     (with-accessors ((name spc:var) (val spc:value)) bind
       (etypecase-of spc:term-no-binding val
-        (spc:number    no-change)
+        (spc:number no-change)
         (spc:reference
          (let ((checked (closure:lookup closure (spc:name val))))
            (if checked
                (make-rel-from-alist name checked closure)
-               no-change))) ; if we have no pointer to the record
-                            ; itself we're golden
+               no-change)))
         (spc:application
          (let* ((func-name (spc:name (spc:func val)))
                 (exp  (expand:full-return-values func-name)))
@@ -89,6 +88,8 @@ old value was relocated to."
                            "Trying to do a lookup on an unknown record ~A" val)))
                  ((null find)
                   (error "Trying to do a lookup on a non existant field"))
+                 ;; format must be a record, as the format is akin to
+                 ;; find = (PLANE (X . NEST-PLANE-X) (Y . NEST-PLANE-Y))
                  ((listp (cdr find))
                   (let* ((rel (make-rel-from-alist name (list find) closure))
                          (clos (rel-closure rel)))
@@ -98,22 +99,36 @@ old value was relocated to."
                      :closure (closure:insert clos
                                               name
                                               (cdar (closure:lookup clos name))))))
-                 ;; must be an atom, let manually make our rel
+                 ;; must be an atom, meaning that it must not be bound to a record
+                 ;; find = (X . PLANE-PLANE-X)
                  (t (make-rel
-                     :forms (generate-binds (util:alist-values (list find)) (list name))
+                     :forms (list (generate-bind (cdr find) name))
                      :closure closure)))))
         (spc:record
          (let* ((alist (spc:record->alist val))
                 ;; we now have to recursively update the alist such that
                 ;; all the nested terms works out, and save it under the
                 ;; original name. we can do this via induction/recursion.
+                ;;
+                ;; Thus this happens when the value is a reference to
+                ;; another record, and thus we expand to another set
+                ;; of lets.
                 (recursed-on-args
                   (reduce (lambda (pair rel)
+                            ;; since the pair comes from the alist, it
+                            ;; must be a normal form, on the right
+                            ;; thus either:
+                            ;;
+                            ;; 1. number
+                            ;; 2. reference
+                            ;;
+                            ;; pair: (X . #<REFERENCE X>)
+                            ;; pair: (Y . 5)
                             (destructuring-bind (field-name . value) pair
-                              (let* ((name (append-two-keywords name field-name))
-                                     (recurse
-                                       (relocate-let (spc:make-bind :var name :val value)
-                                                     (rel-closure rel))))
+                              (let* ((name    (append-keywords name field-name))
+                                     (recurse (relocate-let
+                                               (spc:make-bind :var name :val value)
+                                               (rel-closure rel))))
                                 (make-rel
                                  :closure (rel-closure recurse)
                                  :forms   (append (rel-forms recurse)
@@ -122,8 +137,14 @@ old value was relocated to."
                           :from-end t
                           :initial-value (make-rel :forms nil :closure closure)))
                 (closure-mapping-for-current
+                  ;; here we need to construct the closure mapping for
+                  ;; the current name. If the field itself is a nested
+                  ;; structure then we grab the names that were added
+                  ;; during the recursion. Once we have all the names,
+                  ;; we have the complete mapping for the current
+                  ;; record binding term.
                   (mapcar (lambda (field-name)
-                            (let* ((name      (append-two-keywords name field-name))
+                            (let* ((name      (append-keywords name field-name))
                                    (clos-look (closure:lookup (rel-closure
                                                                recursed-on-args)
                                                               name)))
@@ -212,9 +233,11 @@ Example:
 (#<LET HI-PLANE   = #<REFERENCE FI-PLANE>>
  #<LET HI-POINT-X = #<REFERENCE FI-POINT-X>>
  #<LET HI-POINT-Y = #<REFERENCE FI-POINT-Y>>)"
-  (mapcar (lambda (from to)
-            (spc:make-bind :var to :val (spc:make-reference :name from)))
-          from to))
+  (mapcar #'generate-bind from to))
+
+(-> generate-bind (keyword keyword) spc:bind)
+(defun generate-bind (from to)
+  (spc:make-bind :var to :val (spc:make-reference :name from)))
 
 (-> update-alist-values-with-preifx (keyword list) list)
 (defun update-alist-values-with-preifx (prefix alist)
@@ -230,15 +253,15 @@ Example:
 ((:plane . :hi-plane) (:point . ((:x . :hi-point-x) (:y . :hi-point-y))))"
   (mapcar (lambda (apair)
             (destructuring-bind (key . value) apair
-              (let ((new-prefix (append-two-keywords prefix key)))
+              (let ((new-prefix (append-keywords prefix key)))
                 (cons key
                       (if (listp value)
                           (update-alist-values-with-preifx new-prefix value)
                           new-prefix)))))
           alist))
 
-(-> append-two-keywords (keyword keyword) keyword)
-(defun append-two-keywords (prefix end)
+(-> append-keywords (keyword keyword) keyword)
+(defun append-keywords (prefix end)
   (values
    (keyword-combine prefix :- end)))
 

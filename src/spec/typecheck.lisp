@@ -50,9 +50,13 @@ de-reference values, and expect all the values to exist therein"
               (error (format
                       nil "Field ~A, is not in type ~A" field name-check)))))))))
 
-
 (-> type-storage-to-declaration (spc:type-storage) spc:type-declaration)
 (defun type-storage-to-declaration (typ)
   (etypecase-of spc:type-storage typ
     (spc:primitive        (spc:make-type-reference :name (spc:name typ)))
     (spc:type-declaration typ)))
+
+(-> add-declaration (keyword spc:type-reference) null)
+(defun add-declaration (name type-reference)
+  (setf *closure* (alu.closure:insert *closure* name type-reference))
+  nil)
