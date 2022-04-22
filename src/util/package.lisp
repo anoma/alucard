@@ -15,6 +15,7 @@
    :nested-alist-keys
 
    ;; Bit packing functionality
+   :sequence-to-number
    :string-to-number
    :string-to-bit-array
    :char-to-bit-array))

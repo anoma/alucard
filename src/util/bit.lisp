@@ -7,11 +7,21 @@
   "converts a string to a numerical encoding"
   ;; if we had map-accum-r, we could do this with an accumulator
   (let ((cont 0))
-    (apply #'+
-           (map 'list (lambda (c)
-                        (prog1 (ash (char-code c) (* cont +byte-size+))
-                          (incf cont (char-byte-size c))))
-                (reverse string)))))
+    (sum (map 'list
+              (lambda (c)
+                (prog1
+                    (ash (char-code c) (* cont +byte-size+))
+                  (incf cont (char-byte-size c))))
+              ;; we should probably remove this and encode it with the
+              ;; first element in the last position of the bitstring.
+              (reverse string)))))
+
+(defun sequence-to-number (size arr)
+  "converts a sequence literal to a numerical encoding"
+  (sum (map 'list
+            (lambda (ele count) (ash ele (* count size)))
+            arr
+            (alexandria:iota (length arr)))))
 
 ;; I can speed this up by manually setfing the fill pointer instead,
 ;; or tracking it, but makes the code less clear
