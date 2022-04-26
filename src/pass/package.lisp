@@ -95,11 +95,20 @@ safely relocate record instances and generate out code which lacks records")
 ;; Packages Regarding Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defpackage #:alu.pass.evaluate-body
+  (:documentation "Provides initial evaluation of the circuit body, modifying the
+circuits execution body and tracking caching")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util :alu.utils)
+                    (:spc  :alu.pass.spec)
+                    (:emit :alu.spec.emit))
+  (:export :evaluate-circuit-body :evaluate-and-cache-body))
+
 (defpackage #:alu.pass.anf
   (:documentation "Provides an ANF pass for the alucard term")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.spec))
+  (:local-nicknames (:util :alu.utils)
+                    (:spc  :alu.spec))
   (:export :normalize-expression))
 
 (defpackage #:alu.pass.extract
@@ -116,6 +125,7 @@ safely relocate record instances and generate out code which lacks records")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util     :alu.utils)
                     (:spc      :alu.pass.spec)
+                    (:eval     :alu.pass.evaluate-body)
                     (:anf      :alu.pass.anf)
                     (:expand   :alu.pass.expanded)
                     (:relocate :alu.pass.relocation)

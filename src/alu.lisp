@@ -63,11 +63,12 @@
        ;; Create the function that we can now call, to create an instance
        (defun ,name (&key ,@fields)
          ;; keep this ordering up, as we rely on the correspondence
-         (spc:make-record :name ,key-name
-                          ;; fill in the other slots
-                          ,@(mapcan (lambda (field)
-                                      (list (util:symbol-to-keyword field) field))
-                                    fields)))
+         (ensure-call-by-value
+          (spc:make-record :name ,key-name
+                           ;; fill in the other slots
+                           ,@(mapcan (lambda (field)
+                                       (list (util:symbol-to-keyword field) field))
+                                     fields))))
        ;; Make accessors
        ,@(mapcar (lambda (field)
                    ;; don't overwrite what already exists
@@ -78,9 +79,10 @@
                        ;; multiple records have the same field, even
                        ;; with the check
                        `(defmethod ,field (record)
-                          (spc:make-record-lookup
-                           :record record
-                           :field ,(util:symbol-to-keyword field)))))
+                          (ensure-call-by-value
+                           (spc:make-record-lookup
+                            :record record
+                            :field ,(util:symbol-to-keyword field))))))
                  fields)
        ;; Return the Symbol itself!
        ',name)))
@@ -108,8 +110,9 @@
        (serapeum:def ,name (spc:make-reference :name ,key-name))
        ;; defun a function to apply the function
        (defun ,name (,@argument-names)
-         (spc:make-application :function (spc:make-reference :name ,key-name)
-                               :arguments (list ,@argument-names)))
+         (ensure-call-by-value
+          (spc:make-application :function (spc:make-reference :name ,key-name)
+                                :arguments (list ,@argument-names))))
        (storage:add-function
         ,key-name
         (spc:make-circuit
@@ -118,11 +121,11 @@
           :name ,key-name
           :arguments (mapcar #'make-constraint-from-list ',just-args)
           ;; the body is a list of terms that we combine
-          :body (let-refs
-                 ,argument-names
-                 ,(if (cl:= 1 (length body))
-                      (car body)
-                      `(list ,@body)))))
+          :body '(let-refs
+                  ,argument-names
+                  ,(if (cl:= 1 (length body))
+                       (car body)
+                       `(list ,@body)))))
        ',name)))
 
 (defmacro defgate (name arguments &body body)
@@ -138,17 +141,15 @@
   ;; bind the values at the CL level, so we can just reference it
   `(let-refs ,(mapcar #'car bind-values)
      ;; Generate out the Alucard level binding
-     ,(reduce (lambda (bind-pair let-buildup)
-                `(spc:make-let
-                  :var (util:symbol-to-keyword ',(car bind-pair))
-                  :val ,(cadr bind-pair)
-                  :body ,let-buildup))
-              bind-values
-              :from-end t
-              :initial-value
-              (if (cl:= (length body) 1)
-                  (car body)
-                  (cons 'list body)))))
+     ,@(mapcar (lambda (bind-pair)
+                 `(emit:instruction
+                   (spc:make-let
+                    :var (util:symbol-to-keyword ',(car bind-pair))
+                    :val ,(cadr bind-pair))))
+               bind-values)
+     ,(if (cl:= (length body) 1)
+          (car body)
+          (cons 'list body))))
 
 (defmacro entry-point (symbol)
   "Sets the entry point of the circuit to the desired function"
@@ -167,10 +168,20 @@
     `(progn
        ;; don't need to gensym arguments as there are no capture issues
        (defun ,name (&rest arguments)
-         (spc:make-application :function (spc:make-reference :name ,keyword)
-                               :arguments arguments))
+         (ensure-call-by-value
+          (spc:make-application :function (spc:make-reference :name ,keyword)
+                                :arguments arguments)))
        (serapeum:def ,name (spc:make-reference :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
+
+(defun ensure-call-by-value (term &optional (name "G"))
+  "This ensures that the value given back is a reference. This matters
+as when we evaluate expression terms, they are an ast value, not a
+reference to the AST value. This makes sure that information propagates
+and we are given back a reference to operate on."
+  (let* ((key (util:symbol-to-keyword (gensym name))))
+    (emit:instruction (spc:make-let :var key :val term))
+    (spc:make-reference :name key)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Macros and functions

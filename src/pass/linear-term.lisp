@@ -9,25 +9,26 @@
   `(or spc:term-no-binding
        bind))
 
-(deftype expanded-term ()
-  "An expanded term is a `linear-term' with an expanded binder for
-multiple return values along with return-value types"
-  `(or linear-term
+(deftype binders ()
+  "Terms which deal with binding and naming"
+  `(or bind
        multiple-bind
        multi-ret
        ret))
 
-;; would use `(and expanded-term (not spc:record) (not spc:record-lookup))
+(deftype expanded-term ()
+  "An expanded term is a `linear-term' with an expanded binder for
+multiple return values along with return-value types"
+  `(or linear-term
+       binders))
+
+;; would use `(and expanded-term (not spc:record-forms))
 ;; however I'd lose exhaustion ☹
 (deftype fully-expanded-term ()
   "A fully expanded term is a `expanded-term' with the records part
-removed."
-  `(or spc:term-normal-form
-       spc:application
-       bind
-       multiple-bind
-       multi-ret
-       ret))
+removed. Or as we can view it a base term, with the binders added in."
+  `(or spc:base
+       binders))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types List Aliases
@@ -70,7 +71,7 @@ removed."
           :accessor spc:value
           :type     spc:term-no-binding
           :documentation "the value that is bound"))
-  (:documentation "A let with no body"))
+  (:documentation "A let with a more restrictive value type"))
 
 (defclass multiple-bind ()
   ((variables :initarg  :variables

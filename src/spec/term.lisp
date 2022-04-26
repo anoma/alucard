@@ -2,23 +2,31 @@
 
 ;; data Alu = Number | Application ... | Record | Record-Lookup ...
 (deftype term ()
-  "The Alu term type, which dictates what terms can be written bound."
-  `(or term-no-binding
-       let-node))
+  "The starting Alucard term. This is the starting AST in which alucard
+is expressed from"
+  `(or term-no-binding let-node))
 
 (deftype term-no-binding ()
-  "The Alucard term type with no binding terms"
-  `(or term-normal-form
-       application
-       record
-       record-lookup))
+  "The starting Alucard term type with no binding terms included. This
+type is often used in the value slot of a binder after linearization
+since we want to ensure a binder does not contain another binder"
+  `(or base record-forms))
+
+(deftype base ()
+  "Alucard terms which are apart of the core/base system. These won't be
+removed until very late in the pipeline"
+  `(or term-normal-form application))
+
+(deftype record-forms ()
+  "Alucard forms that relate to records"
+  `(or record record-lookup))
 
 (deftype term-normal-form ()
-  "The Alucard Terms which are fully in normal form"
-  `(or number
-       reference))
+  "Alucard terms which are fully in normal form"
+  `(or number reference))
 
 ;; An alu Expression type.
+;; TODO :: Deprecated
 (deftype expression ()
   "The Alu expression type. The expression type is the `term'
 augmented with the common lisp list type."
@@ -102,10 +110,7 @@ depending on what table it is related to.")
    (value :initarg :value
           :accessor value
           :type     term
-          :documentation "the value that is bound")
-   (body :initarg :body
-         :accessor body
-         :documentation "The body where the let value exists in"))
+          :documentation "the value that is bound"))
   (:documentation "Represents a variable binding in the Alucard language"))
 
 (defclass reference ()
@@ -187,12 +192,11 @@ depending on what table it is related to.")
 
 (defmethod print-object ((obj let-node) stream)
   (with-accessors ((body body) (value value) (var var)) obj
-    (format stream "LET ~A = ~A IN~%~A" var value body)))
+    (format stream "LET ~A = ~A" var value)))
 
 (defun make-let (&key (var  (error "Please provide the variable"))
-                      (val  (error "Please provide the value field"))
-                      (body (error "Please provide the body")))
-  (make-instance 'let-node :value val :variable var :body body))
+                      (val  (error "Please provide the value field")))
+  (make-instance 'let-node :value val :variable var))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Reference Functionality

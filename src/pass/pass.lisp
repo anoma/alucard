@@ -7,7 +7,8 @@
 (-> linearize (spc:circuit) spc:constraint-list)
 (defun linearize (circuit)
   (~> circuit
-      spc:body
+      eval:evaluate-and-cache-body
+      ;; need to update this point forward
       anf:normalize-expression
       linearize-lets
       let-all-but-last))

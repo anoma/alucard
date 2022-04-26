@@ -34,6 +34,7 @@
                  (:file "type")
                  (:file "global")
                  (:file "storage")
+                 (:file "emit")
                  (:file "typecheck")))
    (:module vampir
     :serial t
@@ -47,6 +48,7 @@
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "linear-term")
+                 (:file "evaluate-body")
                  (:file "primitive-global")
                  (:file "expand")
                  (:file "relocation")
@@ -81,6 +83,7 @@
    (:file "anf")
    (:file "expand")
    (:file "relocation")
+   (:file "evaluate-body")
    (:file "dependencies")
    (:file "pass")
    (:file "vampir")

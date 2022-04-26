@@ -9,7 +9,8 @@
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)
-                    (:storage :alu.storage))
+                    (:storage :alu.storage)
+                    (:emit    :alu.spec.emit))
   (:export :deftype :defcircuit :def :defprimitive :defprimitive-type :entry-point))
 
 (uiop:define-package #:alu.prelude

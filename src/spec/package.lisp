@@ -13,6 +13,8 @@ package and alu terms")
    :expression
    :term
    :term-no-binding
+   :base
+   :record-forms
    :term-normal-form
 
    ;; Term ADT Constructors Defined
@@ -20,7 +22,7 @@ package and alu terms")
    :primitive     :name
    :record        :name   :contents
    :record-lookup :record :field
-   :let-node      :var :value :body
+   :let-node      :var    :value
    :reference     :name
 
    ;; Term Applications Defined
@@ -59,7 +61,7 @@ package and alu terms")
    :type-storage
 
    ;; New Types Defined Function-type
-   :circuit :name :arguments :expanded-arguments :return-type :body
+   :circuit :name :arguments :expanded-arguments :return-type :body :exec
 
    :privacy
    :constraint :name :typ
@@ -99,3 +101,11 @@ package and alu terms")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:spc     :alu.spec)
                     (:storage :alu.storage)))
+
+(defpackage #:alu.spec.emit
+  (:documentation "Emits to the real body of a circuit declaration. By this, we mean
+that we modify the current body in scope with the given instruction.")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:spc     :alu.spec)
+                    (:storage :alu.storage))
+  (:export :with-circuit-body :instruction))
