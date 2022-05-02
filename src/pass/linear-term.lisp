@@ -7,6 +7,7 @@
 (deftype linear-term ()
   "A Linear term is a term with no nested terms and is in proper ANF form."
   `(or spc:term-no-binding
+       spc:bind-constraint
        bind
        ret))
 
@@ -15,7 +16,8 @@
   `(or bind
        multiple-bind
        multi-ret
-       ret))
+       ret
+       spc:bind-constraint))
 
 (deftype expanded-term ()
   "An expanded term is a `linear-term' with an expanded binder for

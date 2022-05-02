@@ -4,7 +4,7 @@
 (deftype term ()
   "The starting Alucard term. This is the starting AST in which alucard
 is expressed from"
-  `(or term-no-binding let-node))
+  `(or term-no-binding bind-constraint let-node))
 
 (deftype term-no-binding ()
   "The starting Alucard term type with no binding terms included. This
@@ -113,6 +113,17 @@ depending on what table it is related to.")
           :documentation "the value that is bound"))
   (:documentation "Represents a variable binding in the Alucard language"))
 
+(defclass bind-constraint ()
+  ((vars :initarg  :variable
+         :type     list
+         :accessor var
+         :documentation "The terms which are created in the bind-constraint binding")
+   (value :initarg :value
+          :accessor value
+          :type     list
+          :documentation "the value that is bound"))
+  (:documentation "Represents a bind-constraint in the Alucard language"))
+
 (defclass reference ()
   ((name :initarg  :name
          :type     keyword
@@ -185,6 +196,18 @@ depending on what table it is related to.")
 (defun make-record-lookup (&key (record (error "Please provide the record"))
                                 (field  (error "Please provide the record field")))
   (make-instance 'record-lookup :record record :field field))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Bind Constraint Functionality
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj bind-constraint) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "(~{~A~^, ~}) ~A" (var obj) (value obj))))
+
+(defun make-bind-constraint (&key var value)
+  (make-instance 'bind-constraint :value value
+                                  :variable var))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Let Functionality

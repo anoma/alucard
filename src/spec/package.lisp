@@ -18,12 +18,13 @@ package and alu terms")
    :term-normal-form
 
    ;; Term ADT Constructors Defined
-   :application   :func   :arguments
-   :primitive     :name
-   :record        :name   :contents
-   :record-lookup :record :field
-   :let-node      :var    :value
-   :reference     :name
+   :application     :func   :arguments
+   :primitive       :name
+   :record          :name   :contents
+   :record-lookup   :record :field
+   :let-node        :var    :value
+   :reference       :name
+   :bind-constraint :var    :value
 
    ;; Term Applications Defined
    :make-application :make-record :lookup-record

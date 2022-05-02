@@ -174,6 +174,11 @@
        (serapeum:def ,name (spc:make-reference :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
 
+(defmacro with-constraint (variable-names &rest body)
+  `(spc:make-constraint
+    (let-refs variable-names
+             ,@body)))
+
 (defun ensure-call-by-value (term &optional (name "G"))
   "This ensures that the value given back is a reference. This matters
 as when we evaluate expression terms, they are an ast value, not a
