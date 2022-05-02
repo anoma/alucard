@@ -114,10 +114,10 @@ depending on what table it is related to.")
   (:documentation "Represents a variable binding in the Alucard language"))
 
 (defclass bind-constraint ()
-  ((vars :initarg  :variable
-         :type     list
-         :accessor var
-         :documentation "The terms which are created in the bind-constraint binding")
+  ((var :initarg  :variable
+        :type     list
+        :accessor var
+        :documentation "The terms which are created in the bind-constraint binding")
    (value :initarg :value
           :accessor value
           :type     list

@@ -28,7 +28,7 @@ package and alu terms")
 
    ;; Term Applications Defined
    :make-application :make-record :lookup-record
-   :make-record-lookup :make-let :make-reference
+   :make-record-lookup :make-let :make-reference :make-bind-constraint
 
    ;; Functions
    :record->alist

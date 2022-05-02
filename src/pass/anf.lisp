@@ -75,6 +75,12 @@ will evaluate to this let buildup."
                          (funcall constructor
                                   (spc:make-record-lookup :record rec-ref
                                                           :field  spc:field)))))
+      ((spc:bind-constraint spc:var spc:value)
+       (normalize spc:value
+                  (lambda (term)
+                    (funcall constructor
+                             (spc:make-bind-constraint :var spc:var
+                                                       :value term)))))
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
       ((cons _ _)
