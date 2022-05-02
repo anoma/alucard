@@ -34,8 +34,7 @@
                  (:file "type")
                  (:file "global")
                  (:file "storage")
-                 (:file "emit")
-                 (:file "typecheck")))
+                 (:file "emit")))
    (:module vampir
     :serial t
     :description "The Vampir Extraction Module"
