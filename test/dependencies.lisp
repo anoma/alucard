@@ -10,9 +10,7 @@
         (ran           (sort (dep:track-circuit-deps
                               (storage:lookup-function :constrain))
                              #'util:hash-compare)))
-    (is (equalp (sort (dep:track-circuit-deps
-                       (storage:lookup-function :constrain))
-                      #'util:hash-compare)
+    (is (equalp expected-deps
                 ran))))
 
 (test circuit-dependency*
