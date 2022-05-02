@@ -64,7 +64,7 @@ old value was relocated to."
                no-change)))
         (spc:application
          (let* ((func-name (spc:name (spc:func val)))
-                (exp  (expand:full-return-values func-name)))
+                (exp       (expand:full-return-values func-name)))
            (if (consp exp)
                ;; see doc on `expand:full-return-values' to see that
                ;; the type coincides with our nested alist representation

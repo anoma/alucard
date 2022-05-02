@@ -11,6 +11,7 @@
     (run! 'alucard.relocation)
     (run! 'alucard.dependencies)
     (run! 'alucard.pass)
+    (run! 'alucard.evaluate-body)
     (run! 'vampir)
     (run! 'alucard)
     (unless swapped
@@ -34,6 +35,7 @@
                                           'alucard.relocation
                                           'alucard.pass
                                           'alucard.dependencies
+                                          'alucard.evaluate-body
                                           'vampir
                                           'alucard
                                           )

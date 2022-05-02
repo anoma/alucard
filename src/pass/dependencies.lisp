@@ -4,9 +4,12 @@
 (defun track-circuit-deps* (circuit &optional (exclusion-set
                                                (sycamore:tree-set
                                                 #'util:hash-compare)))
-  "This function wors like `track-circuit-deps' however it recursively checks all functions"
+  "This function works like `track-circuit-deps' however it recursively
+checks all functions"
   (labels ((recursively-expand (key-name)
              (unless (sycamore:tree-set-find exclusion-set key-name)
+               ;; this technique doesn't work fully as we'd want a
+               ;; reference to it.
                (sycamore:tree-set-insertf exclusion-set key-name)
                (let ((circuit (storage:lookup-function key-name)))
                  (cons key-name
@@ -14,10 +17,10 @@
                          (track-circuit-deps* circuit exclusion-set)))))))
     (mapcan #'recursively-expand (track-circuit-deps circuit))))
 
-
 (-> track-circuit-deps (spc:function-type) list)
 (defun track-circuit-deps (circuit)
-  "This function gives out a list of any functions this function calls in a dependency chart"
+  "This function gives out a list of any functions this function calls
+in a dependency chart"
   (values
    (etypecase-of spc:function-type circuit
      (spc:primitive nil)
@@ -35,5 +38,6 @@
            (handle-linear-term (constraint)
              (etypecase-of spc:linear-term constraint
                (spc:term-no-binding (handle-term constraint))
-               (spc:bind            (handle-term (spc:value constraint))))))
+               (spc:bind            (handle-term (spc:value constraint)))
+               (spc:ret             (handle-term (spc:value constraint))))))
     (filter-map #'handle-linear-term constraint-list)))

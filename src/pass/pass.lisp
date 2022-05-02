@@ -7,10 +7,12 @@
 (-> linearize (spc:circuit) spc:constraint-list)
 (defun linearize (circuit)
   (~> circuit
-      spc:body
+      eval:evaluate-and-cache-body
+      ;; need to update this point forward
       anf:normalize-expression
-      linearize-lets
-      let-all-but-last))
+      transform-let
+      let-all-but-last
+      return-last-binding))
 
 (-> expand-away-records (spc:constraint-list spc:circuit) spc:fully-expanded-list)
 (defun expand-away-records (terms circuit)
@@ -35,19 +37,36 @@ and properly propagating arguments around them"
 ;; just rename all instances of :name into :name-calc from that point
 ;; forth
 
-(-> linearize-lets (spc:expression) spc:constraint-list)
-(defun linearize-lets (term)
-  "linearize-lets takes a `spc:term' in a flatten form, and removes the
+(-> transform-let (spc:expression) spc:constraint-list)
+(defun transform-let (term)
+  "transform-let takes a `spc:term' in a flatten form, and removes the
 `spc:let-node' for the more flat `spc:bind' type"
-  (etypecase-of spc:expression term
-    ;; if it's just the term, or a list as is, then we are good
-    (spc:term-no-binding (list term))
-    (cons                term)
-    ;; if it's a let-node we should change it
-    (spc:let-node
-     (with-accessors ((var spc:var) (val spc:value) (body spc:body)) term
-       (cons (spc:make-bind :var var :val val)
-             (linearize-lets body))))))
+  (flet ((transform-let-node (term)
+           ;; we keep this type around as it gives us more
+           ;; information!
+           (with-accessors ((var spc:var) (val spc:value)) term
+             (spc:make-bind :var var :val val))))
+    (etypecase-of spc:expression term
+      ;; if it's just the term, or a list as is, then we are good
+      (spc:term-no-binding (list term))
+      (spc:let-node        (list (transform-let-node term)))
+      (cons                (mapcan #'transform-let term)))))
+
+
+(-> return-last-binding (spc:constraint-list) spc:constraint-list)
+(defun return-last-binding (constraint-list)
+  "This transforms the last let into a straight binding, since we aren't
+going to be using a let"
+  (append (butlast constraint-list)
+          (list
+           (let ((term (car (last constraint-list))))
+             (etypecase-of spc:linear-term term
+               (spc:ret  term)
+               (spc:bind (spc:make-ret :var (spc:var term)
+                                       :val (spc:value term)))
+               (spc:term-no-binding
+                (spc:make-ret :var (util:symbol-to-keyword (gensym "&G"))
+                              :val term)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
@@ -78,6 +97,13 @@ it's closure"
                   (new-rel (etypecase-of spc:linear-term term
                              (spc:bind
                               (relocate:relocate-let term closure))
+                             ;; we can safely toss the return, as
+                             ;; stand-alone handles it
+                             (spc:ret
+                              (relocate:make-rel
+                               :forms   (relocate:relocate-standalone (spc:value term)
+                                                                      closure)
+                               :closure closure))
                              (spc:term-no-binding
                               (relocate:make-rel
                                :forms   (relocate:relocate-standalone term closure)

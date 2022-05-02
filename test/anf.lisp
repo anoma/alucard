@@ -21,13 +21,11 @@
                                      (list (spc:make-reference :name :hi)))))
                   (spc:make-reference :name :bob))))))
     ;; We sadly lack object equality for clos classes, so thus we test it this way
-    (is (typep normalized 'spc:let-node)
-        "normalization makes a let term over application with inner expressions")
-    (is (typep (spc:body normalized) 'spc:let-node)
-        "We have two nested applications")
-    (is (typep (spc:body (spc:body normalized)) 'spc:application)
+    (is (= 3 (length normalized))
+        "normalization makes a let term over application, at this point 3 times!")
+    (is (typep (car (last normalized)) 'spc:application)
         "After the double let we should have the function application")
-    (is (eq (spc:name (cadr (spc:arguments (spc:body (spc:body normalized)))))
+    (is (eq (spc:name (cadr (spc:arguments (car (last normalized)))))
             :bob)
         "bob is a straight line argument so it should be unchanged by the transform")))
 
@@ -51,8 +49,8 @@
                                                     :nonce #1#)
                            :field  :nonce)))
                    (spc:make-reference :name :bob)))))
-         (record (spc:value (spc:body (spc:body normalized))))
-         (lookup (spc:value (spc:body (spc:body (spc:body normalized))))))
+         (record (spc:value (caddr normalized)))
+         (lookup (spc:value (cadddr normalized))))
     ;; We sadly lack object equality for clos classes, so thus we test it this way
     ;; I really should make equality objects
     (is (typep (spc:lookup-record record :nonce) 'spc:reference)
