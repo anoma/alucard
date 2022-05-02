@@ -1,5 +1,8 @@
 (in-package :alu.pass.anf)
 
+;;; After the let change, I'm not sure this code is correct, hard to
+;;; even test, as our pass already puts it into anf form!
+
 (-> normalize-expression (spc:expression) spc:expression)
 (defun normalize-expression (expression)
   "Takes a potentially nested term, and flattens it with let bindings"
@@ -31,13 +34,12 @@ will evaluate to this let buildup."
       ((spc:reference)   (funcall constructor term))
       ;; For nodes which are not in normal form, recurse building
       ;; up the let chain
-      ((spc:let-node spc:value spc:body spc:var)
+      ((spc:let-node spc:value spc:var)
        (normalize spc:value
                   (lambda (new-val)
-                    (spc:make-let
-                     :var spc:var
-                     :val new-val
-                     :body (normalize spc:body constructor)))))
+                    (funcall constructor
+                             (spc:make-let :var spc:var
+                                           :val new-val)))))
       ((spc:application spc:name spc:arguments)
        (normalize-bind spc:name
                        (lambda (func-name)
@@ -76,7 +78,9 @@ will evaluate to this let buildup."
       ;; we get a bad exhaustive message due to number, but it will warn
       ;; us, if they aren't the same none the less!
       ((cons _ _)
-       (normalize-bind* term constructor)))))
+       (funcall constructor
+                (mvfoldr #'combine-expression
+                         (mapcar (lambda (ter) (normalize ter #'identity)) term)))))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from
@@ -91,10 +95,11 @@ let binding if the result of normalization is itself not in normal form"
                (if (normalp expr)
                    (funcall cont expr)
                    (let ((var (util:symbol-to-keyword (gensym "&G"))))
-                     (spc:make-let
-                      :var var
-                      :val expr
-                      :body (funcall cont (spc:make-reference :name var))))))))
+                     (combine-expression
+                      (spc:make-let
+                       :var var
+                       :val expr)
+                      (funcall cont (spc:make-reference :name var))))))))
 
 (-> normalize-bind* (list (-> (list) spc:expression)) spc:expression)
 (defun normalize-bind* (list cont)
