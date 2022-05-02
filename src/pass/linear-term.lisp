@@ -7,7 +7,8 @@
 (deftype linear-term ()
   "A Linear term is a term with no nested terms and is in proper ANF form."
   `(or spc:term-no-binding
-       bind))
+       bind
+       ret))
 
 (deftype binders ()
   "Terms which deal with binding and naming"

@@ -38,5 +38,6 @@ in a dependency chart"
            (handle-linear-term (constraint)
              (etypecase-of spc:linear-term constraint
                (spc:term-no-binding (handle-term constraint))
-               (spc:bind            (handle-term (spc:value constraint))))))
+               (spc:bind            (handle-term (spc:value constraint)))
+               (spc:ret             (handle-term (spc:value constraint))))))
     (filter-map #'handle-linear-term constraint-list)))

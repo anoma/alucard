@@ -9,6 +9,6 @@
   (let ((expected (list 5 6 7)))
     (is (equalp expected
                 (alu.pass.evaluate-body:evaluate-circuit-body
-                 `(progn (emit:add-instruction 5)
-                         (emit:add-instruction 6)
-                         (emit:add-instruction 7)))))))
+                 `(progn (emit:instruction 5)
+                         (emit:instruction 6)
+                         (emit:instruction 7)))))))
