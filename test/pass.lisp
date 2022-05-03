@@ -78,6 +78,15 @@
      (typep (alu.pass::transform-let (anf:normalize-expression term))
             'spc:constraint-list))))
 
+(test constrain-example
+  (let* ((circuit (storage:lookup-function :manual-constraint))
+         (linear  (pass:linearize circuit))
+         (record  (relocate:rel-forms (pass::relocate-records linear circuit))))
+    (is (equalp (spc:var (car (last linear)))
+                (list :a :b :c))
+        "The values in the constraint are returned if they are the last value")
+    (is (typep (spc:value (car record)) 'spc:fully-expanded-list))))
+
 (test extraction
   (finishes (pipeline:pipeline (storage:lookup-function :poly-check)))
   (finishes (pipeline:pipeline (storage:lookup-function :record-test-mult))))

@@ -167,14 +167,7 @@ term with the proper relocation."
                                 :var (util:symbol-to-keyword (gensym "%G"))
                                 :val term)
                                closure))))
-    (mapcar (lambda (x)
-              ;; make a type for binders later to gain back exhaustion
-              (etypecase x
-                (spc:bind (spc:make-ret :val (spc:value x)
-                                        :var (spc:var x)))
-                (spc:multiple-bind (spc:make-multi-ret :val (spc:value x)
-                                                       :var (spc:var x)))))
-            relocated)))
+    (mapcar #'spc:var relocated)))
 
 (-> initial-closure-from-circuit (spc:circuit &optional closure:typ) closure:typ)
 (defun initial-closure-from-circuit (circ &optional (closure (closure:allocate)))

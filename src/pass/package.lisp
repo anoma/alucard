@@ -13,6 +13,8 @@ linearization, use `alu.pass.spec' for the full specification")
    :linear-term
    :expanded-term
    :fully-expanded-term
+   :binders
+   :starting-binders
    ;; New Term Lists Defined
    :constraint-list
    :expanded-list
@@ -20,13 +22,11 @@ linearization, use `alu.pass.spec' for the full specification")
    ;; New Types Defined
    :bind
    :multiple-bind
-   :multi-ret
-   :ret
+   :standalone-ret
    ;; New Constructors Defined
    :make-bind
    :make-multi-ret
-   :make-ret
-   :make-multiple-bind))
+   :make-standalone-ret))
 
 (defpackage #:alu.pass.primitive-global
   (:documentation "Provides a more low level representation of the

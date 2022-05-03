@@ -121,7 +121,7 @@ depending on what table it is related to.")
    (value :initarg :value
           :accessor value
           :type     list
-          :documentation "the value that is bound"))
+          :documentation "the constraints"))
   (:documentation "Represents a bind-constraint in the Alucard language"))
 
 (defclass reference ()

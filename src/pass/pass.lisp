@@ -11,10 +11,10 @@
       ;; need to update this point forward
       anf:normalize-expression
       transform-let
-      let-all-but-last
+      let-all
       return-last-binding))
 
-(-> expand-away-records (spc:constraint-list spc:circuit) spc:fully-expanded-list)
+(-> expand-away-records (spc:expanded-list spc:circuit) spc:fully-expanded-list)
 (defun expand-away-records (terms circuit)
   "expand-away-records is responsible for removing all record instances
 and properly propagating arguments around them"
@@ -57,65 +57,72 @@ and properly propagating arguments around them"
                                                  (spc:value term))))))))
 
 
-(-> return-last-binding (spc:constraint-list) spc:constraint-list)
+(-> return-last-binding (spc:expanded-list) spc:expanded-list)
 (defun return-last-binding (constraint-list)
   "This transforms the last let into a straight binding, since we aren't
 going to be using a let"
-  (append (butlast constraint-list)
-          (list
-           (let ((term (car (last constraint-list))))
-             (etypecase-of spc:linear-term term
-               (spc:ret  term)
-               (spc:bind (spc:make-ret :var (spc:var term)
-                                       :val (spc:value term)))
-               (spc:term-no-binding
-                (spc:make-ret :var (util:symbol-to-keyword (gensym "&G"))
-                              :val term)))))))
+  (and constraint-list
+       (append (butlast constraint-list)
+               (let ((term (car (last constraint-list))))
+                 (cons term
+                       (etypecase-of spc:expanded-term term
+                         (spc:standalone-ret  nil)
+                         (spc:bind            (list (spc:make-standalone-ret
+                                                     :var (list (spc:var term)))))
+                         (spc:bind-constraint (list (spc:make-standalone-ret
+                                                     :var (spc:var term))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> let-all-but-last (spc:constraint-list) spc:constraint-list)
-(defun let-all-but-last (term-list)
+(-> let-all (spc:constraint-list) spc:expanded-list)
+(defun let-all (term-list)
   "This function turns any value which is not the last into a let if it
 isn't so already. Perhaps we should make them be an and call instead?"
-  (cond ((null term-list)
-         term-list)
-        ((and (not (typep (car term-list) 'spc:bind))
-              (cdr term-list))
-         (cons
-          ;; value goes unsued but may be a constraint, so it's not all dead code!
-          (spc:make-bind :var (util:symbol-to-keyword (gensym "&G"))
-                         :val (car term-list))
-          (let-all-but-last (cdr term-list))))
-        (t (cons (car term-list) (let-all-but-last (cdr term-list))))))
+  (labels ((make-binder (term)
+             (spc:make-bind :var (util:symbol-to-keyword (gensym "&G"))
+                            :val term))
+           (let-term (term)
+             (etypecase-of spc:linear-term term
+               (spc:standalone-ret   term)
+               (spc:bind             term)
+               (spc:term-no-binding  (make-binder term))
+               (spc:bind-constraint (spc:make-bind-constraint
+                                     :var   (spc:var term)
+                                     :value (mapcar #'let-term
+                                                    (spc:value term)))))))
+    (mapcar #'let-term term-list)))
 
-(-> relocate-records (spc:constraint-list spc:circuit) relocate:rel)
+(-> relocate-records (spc:expanded-list spc:circuit) relocate:rel)
 (defun relocate-records (anf-terms circuit)
   "Relocate records takes a fully anfied term where only the last form
 is not a let, and generates out a `spc:fully-expanded-list' along with
 it's closure"
-  (flet ((ingest (rel term)
-           (let* ((closure (relocate:rel-closure rel))
-                  (new-rel (etypecase-of spc:linear-term term
-                             (spc:bind
-                              (relocate:relocate-let term closure))
-                             ;; we can safely toss the return, as
-                             ;; stand-alone handles it
-                             (spc:ret
+  (labels
+      ((ingest (rel term)
+         (let* ((closure (relocate:rel-closure rel))
+                (new-rel (etypecase-of spc:expanded-term term
+                           (spc:bind
+                            (relocate:relocate-let term closure))
+                           (spc:standalone-ret
+                            (relocate:make-rel :closure closure :forms (list term)))
+                           ;; ASSUME: how would you make records or
+                           ;; other things constraints, no need to
+                           ;; even think about it!?
+                           (spc:bind-constraint
+                            (let ((rel (mvfold #'ingest (spc:value term)
+                                               (relocate:make-rel :closure closure))))
                               (relocate:make-rel
-                               :forms   (relocate:relocate-standalone (spc:value term)
-                                                                      closure)
-                               :closure closure))
-                             (spc:term-no-binding
-                              (relocate:make-rel
-                               :forms   (relocate:relocate-standalone term closure)
-                               :closure closure)))))
-             (relocate:make-rel
-              :forms   (append (reverse (relocate:rel-forms new-rel))
-                               (relocate:rel-forms rel))
-              :closure (relocate:rel-closure new-rel)))))
+                               :closure (relocate:rel-closure rel)
+                               :forms   (list (spc:make-bind-constraint
+                                               :var   (spc:var term)
+                                               :value (reverse
+                                                       (relocate:rel-forms rel))))))))))
+           (relocate:make-rel
+            :forms   (append (reverse (relocate:rel-forms new-rel))
+                             (relocate:rel-forms rel))
+            :closure (relocate:rel-closure new-rel)))))
     (let* ((initial (relocate:make-rel :closure
                                        (relocate:initial-closure-from-circuit
                                         circuit)))
@@ -172,10 +179,10 @@ so the error of the user program is preserved."
                                  storage:lookup-function
                                  spc:return-type
                                  voidp))
-                        (if (listp (spc:var term))
-                            (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
-                                    (spc:var term))
-                            (sycamore:tree-set-insertf set (spc:var term)))
+                        (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
+                                (if (listp (spc:var term))
+                                    (spc:var term)
+                                    (list (spc:var term))))
                         (spc:value term))
                        ((and (typep value 'spc:reference)
                              (sycamore:tree-set-find set (spc:name value)))
