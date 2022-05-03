@@ -50,6 +50,34 @@
                       (string-contains-p "%" x))))
                (spc:returns ran)))))
 
+(test trans-let
+  (let ((term
+          (spc:make-bind-constraint
+           :var (list :a :b :c)
+           :value
+           (list
+            (spc:make-application
+             :function (spc:make-reference :name :=)
+             :arguments
+             (list (spc:make-application
+                    :function (spc:make-reference :name :fun2)
+                    :arguments
+                    (list #1=(spc:make-application
+                              :function (spc:make-reference :name :fun3)
+                              :arguments
+                              (list (spc:make-reference :name :hi)))
+                          (spc:make-record-lookup
+                           :record (spc:make-record :name :utxo
+                                                    :owner 3
+                                                    :amount 5
+                                                    :nonce #1#)
+                           :field  :nonce)))
+                   (spc:make-reference :name :bob)))))))
+    (is
+     ;; the type check is good enough to ensure that the pass works!
+     (typep (alu.pass::transform-let (anf:normalize-expression term))
+            'spc:constraint-list))))
+
 (test extraction
   (finishes (pipeline:pipeline (storage:lookup-function :poly-check)))
   (finishes (pipeline:pipeline (storage:lookup-function :record-test-mult))))

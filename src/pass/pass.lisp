@@ -50,7 +50,11 @@ and properly propagating arguments around them"
       ;; if it's just the term, or a list as is, then we are good
       (spc:term-no-binding (list term))
       (spc:let-node        (list (transform-let-node term)))
-      (cons                (mapcan #'transform-let term)))))
+      (cons                (mapcan #'transform-let term))
+      (spc:bind-constraint (list (spc:make-bind-constraint
+                                  :var (spc:var term)
+                                  :value (mapcan #'transform-let
+                                                 (spc:value term))))))))
 
 
 (-> return-last-binding (spc:constraint-list) spc:constraint-list)
