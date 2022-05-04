@@ -26,7 +26,8 @@ linearization, use `alu.pass.spec' for the full specification")
    ;; New Constructors Defined
    :make-bind
    :make-multi-ret
-   :make-standalone-ret))
+   :make-standalone-ret
+   :make-multiple-bind))
 
 (defpackage #:alu.pass.primitive-global
   (:documentation "Provides a more low level representation of the
@@ -87,7 +88,6 @@ safely relocate record instances and generate out code which lacks records")
    :make-rel
    ;; Core API
    :relocate-let
-   :relocate-standalone
    :initial-closure-from-circuit
    :maps-to))
 

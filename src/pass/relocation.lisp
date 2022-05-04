@@ -157,18 +157,6 @@ old value was relocated to."
                                      closure-mapping-for-current)
             :forms (rel-forms recursed-on-args))))))))
 
-(-> relocate-standalone (spc:term-no-binding closure:typ) spc:expanded-list)
-(defun relocate-standalone (term closure)
-  "relocate-standalone is similar to `relocate-let' however, instead of
-being let bound the value stands by itself, simply generates out the
-term with the proper relocation."
-  (let ((relocated (rel-forms (relocate-let
-                               (spc:make-bind
-                                :var (util:symbol-to-keyword (gensym "%G"))
-                                :val term)
-                               closure))))
-    (mapcar #'spc:var relocated)))
-
 (-> initial-closure-from-circuit (spc:circuit &optional closure:typ) closure:typ)
 (defun initial-closure-from-circuit (circ &optional (closure (closure:allocate)))
   (let ((expanded-arguments (expand:full-arguments-from-circuit circ)))

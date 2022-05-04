@@ -139,6 +139,12 @@
                 :field :nonce)))
         (spc:make-reference :name :bob))))))))
 
+(defcircuit array-lookup-equation ((public x int)
+                                   (output int))
+  (def ((with-constraint (y z)
+          (prld:= x (prld:+ (prld:* y 10) z))))
+    z))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

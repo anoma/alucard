@@ -97,4 +97,5 @@
 (test extraction
   (finishes (pipeline:pipeline (storage:lookup-function :poly-check)))
   (finishes (pipeline:pipeline (storage:lookup-function :record-test-mult)))
+  (finishes (pipeline:pipeline (storage:lookup-function :array-lookup-equation)))
   (finishes (pipeline:pipeline (storage:lookup-function :manual-constraint))))

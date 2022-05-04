@@ -192,6 +192,7 @@ of the user program is preserved."
                         (spc:make-multiple-bind :var nil :val (spc:value term)))
                        ((and (typep value 'spc:reference)
                              (sycamore:tree-set-find set (spc:name value)))
+                        (sycamore:tree-set-insertf set (spc:var term))
                         nil)
                        (t
                         term))))
@@ -200,7 +201,7 @@ of the user program is preserved."
                                     (if (sycamore:tree-set-find set x)
                                         nil
                                         (list x)))
-                                  (spc:var term))))
+                                   (spc:var term))))
                  (and rets
                       (spc:make-standalone-ret :var rets)))))
       (filter-map (lambda (term)
@@ -246,7 +247,7 @@ of the user program is preserved."
                                          (spc:return-type alu-circuit)))))
 
 (-> determine-output-variables
-    (spc:expanded-list (or spc:type-reference null)) list)
+    (spc:fully-expanded-list (or spc:type-reference null)) list)
 (defun determine-output-variables (body ret)
   "Determines which output variables are returned from a function. If
 ret is (`spc:primitive' :void) then an empty list is returned, however
