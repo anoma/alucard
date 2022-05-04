@@ -7,29 +7,33 @@
 (deftype linear-term ()
   "A Linear term is a term with no nested terms and is in proper ANF form."
   `(or spc:term-no-binding
-       bind
-       ret))
-
-(deftype binders ()
-  "Terms which deal with binding and naming"
-  `(or bind
-       multiple-bind
-       multi-ret
-       ret))
+       (starting-binders spc:term-no-binding)
+       standalone-ret))
 
 (deftype expanded-term ()
-  "An expanded term is a `linear-term' with an expanded binder for
-multiple return values along with return-value types"
-  `(or linear-term
-       binders))
+  "An expanded term is a term where all top level forms have been
+expanded into lets or returns"
+  `(or (starting-binders spc:term-no-binding)
+       standalone-ret))
 
-;; would use `(and expanded-term (not spc:record-forms))
-;; however I'd lose exhaustion ☹
 (deftype fully-expanded-term ()
   "A fully expanded term is a `expanded-term' with the records part
 removed. Or as we can view it a base term, with the binders added in."
-  `(or spc:base
-       binders))
+  `(or (binders spc:base)
+       standalone-ret))
+
+(deftype starting-binders (&optional contains)
+  "Terms which deal with binding and naming, the input argument
+represents what data may be in the value of the binders."
+  (declare (ignore contains))
+  `(or bind
+       spc:bind-constraint))
+
+(deftype binders (&optional contains)
+  "Terms which deal with binding and naming, the input argument
+represents what data may be in the value of the binders."
+  `(or (starting-binders ,contains)
+       multiple-bind))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types List Aliases
@@ -85,29 +89,12 @@ removed. Or as we can view it a base term, with the binders added in."
           :documentation "the value that is bound"))
   (:documentation "A let that can bind many return values"))
 
-(defclass multi-ret ()
+(defclass standalone-ret ()
   ((variable :initarg  :variable
-             :accessor spc:var
              :type     list
-             :documentation "The name that will be returned")
-   (value :initarg :value
-          :accessor spc:value
-          :type     spc:term-no-binding
-          :documentation "Values that are returned"))
-  (:documentation "An explicit return which may have many values.
-Many returns in a single function may be had, they are all ordered."))
-
-(defclass ret ()
-  ((variable :initarg  :variable
-             :type     keyword
              :accessor spc:var
-             :documentation "The name that will be returned")
-   (value :initarg :value
-          :accessor spc:value
-          :type     spc:term-no-binding
-          :documentation "the value that is returned"))
-  (:documentation "An explicit return which. Many returns in a single
-function may be had, they are all ordered."))
+             :documentation "The name that will be returned"))
+  (:documentation "Values which will be returned"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constructors
@@ -145,30 +132,13 @@ function may be had, they are all ordered."))
    (make-instance 'multiple-bind :value val :variables var)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Multiple Return Functionality
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj multi-ret) stream)
-  (print-unreadable-object (obj stream :type t)
-    (format stream "~A = ~A" (spc:var obj) (spc:value obj))))
-
-
-(defun make-multi-ret (&key
-                         (val (error "Please provide the return fields"))
-                         (var (error "Please provide the return name")))
-  (values
-   (make-instance 'multi-ret :value val :variable var)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Return Functionality
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod print-object ((obj ret) stream)
+(defmethod print-object ((obj standalone-ret) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~A = ~A" (spc:var obj) (spc:value obj))))
+    (format stream "~{~A~^, ~}" (spc:var obj))))
 
 
-(defun make-ret (&key (val (error "Please provide the return fields"))
-                      (var (error "Please provide the return name")))
+(defun make-standalone-ret (&key (var (error "Please provide the return name")))
   (values
-   (make-instance 'ret :value val :variable var)))
+   (make-instance 'standalone-ret :variable var)))

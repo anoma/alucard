@@ -18,16 +18,17 @@ package and alu terms")
    :term-normal-form
 
    ;; Term ADT Constructors Defined
-   :application   :func   :arguments
-   :primitive     :name
-   :record        :name   :contents
-   :record-lookup :record :field
-   :let-node      :var    :value
-   :reference     :name
+   :application     :func   :arguments
+   :primitive       :name
+   :record          :name   :contents
+   :record-lookup   :record :field
+   :let-node        :var    :value
+   :reference       :name
+   :bind-constraint :var    :value
 
    ;; Term Applications Defined
    :make-application :make-record :lookup-record
-   :make-record-lookup :make-let :make-reference
+   :make-record-lookup :make-let :make-reference :make-bind-constraint
 
    ;; Functions
    :record->alist
@@ -94,13 +95,6 @@ package and alu terms")
    ;; Entry point operations
    :get-entry-point
    :set-entry-point))
-
-(defpackage #:alu.basic-typecheck
-  (:documentation
-   "Basic static type checking capabilities before any processing has occurred")
-  (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:spc     :alu.spec)
-                    (:storage :alu.storage)))
 
 (defpackage #:alu.spec.emit
   (:documentation "Emits to the real body of a circuit declaration. By this, we mean

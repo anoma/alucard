@@ -78,11 +78,12 @@
                        ;; multiple methods of the same file if
                        ;; multiple records have the same field, even
                        ;; with the check
-                       `(defmethod ,field (record)
-                          (ensure-call-by-value
-                           (spc:make-record-lookup
-                            :record record
-                            :field ,(util:symbol-to-keyword field))))))
+                       `(ignore-errors
+                         (defmethod ,field (record)
+                           (ensure-call-by-value
+                            (spc:make-record-lookup
+                             :record record
+                             :field ,(util:symbol-to-keyword field)))))))
                  fields)
        ;; Return the Symbol itself!
        ',name)))
@@ -121,11 +122,12 @@
           :name ,key-name
           :arguments (mapcar #'make-constraint-from-list ',just-args)
           ;; the body is a list of terms that we combine
-          :body '(let-refs
-                  ,argument-names
-                  ,(if (cl:= 1 (length body))
-                       (car body)
-                       `(list ,@body)))))
+          :body '(emit:instruction
+                  (let-refs
+                   ,argument-names
+                   ,(if (cl:= 1 (length body))
+                        (car body)
+                        `(list ,@body))))))
        ',name)))
 
 (defmacro defgate (name arguments &body body)
@@ -139,17 +141,24 @@
 (defmacro def (bind-values &rest body)
   "defines the values in the presence of the body"
   ;; bind the values at the CL level, so we can just reference it
-  `(let-refs ,(mapcar #'car bind-values)
-     ;; Generate out the Alucard level binding
-     ,@(mapcar (lambda (bind-pair)
-                 `(emit:instruction
-                   (spc:make-let
-                    :var (util:symbol-to-keyword ',(car bind-pair))
-                    :val ,(cadr bind-pair))))
-               bind-values)
-     ,(if (cl:= (length body) 1)
-          (car body)
-          (cons 'list body))))
+  `(let-refs
+    ,(mapcan (lambda (x)
+               (if (equalp (util:symbol-to-keyword (car x)) :with-constraint)
+                   (cadr x)
+                   (list (car x))))
+             bind-values)
+    ;; Generate out the Alucard level binding
+    ,@(mapcar (lambda (bind-pair)
+                (if (equalp (util:symbol-to-keyword (car bind-pair)) :with-constraint)
+                    `(with-constraint ,@(cdr bind-pair))
+                    `(emit:instruction
+                      (spc:make-let
+                       :var (util:symbol-to-keyword ',(car bind-pair))
+                       :val ,(cadr bind-pair)))))
+              bind-values)
+    ,(if (cl:= (length body) 1)
+         (car body)
+         (cons 'list body))))
 
 (defmacro entry-point (symbol)
   "Sets the entry point of the circuit to the desired function"
@@ -173,6 +182,17 @@
                                 :arguments arguments)))
        (serapeum:def ,name (spc:make-reference :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
+
+(defmacro with-constraint (variable-names &rest body)
+  (let ((body-list (gensym)))
+    `(let ((,body-list (list nil)))
+       (emit:with-circuit-body ,body-list
+         (let-refs ,variable-names
+                   ,@body))
+       (emit:instruction
+        (spc:make-bind-constraint
+         :var (mapcar #'util:symbol-to-keyword ',variable-names)
+         :value (cdr ,body-list))))))
 
 (defun ensure-call-by-value (term &optional (name "G"))
   "This ensures that the value given back is a reference. This matters

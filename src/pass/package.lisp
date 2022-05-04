@@ -13,6 +13,8 @@ linearization, use `alu.pass.spec' for the full specification")
    :linear-term
    :expanded-term
    :fully-expanded-term
+   :binders
+   :starting-binders
    ;; New Term Lists Defined
    :constraint-list
    :expanded-list
@@ -20,12 +22,11 @@ linearization, use `alu.pass.spec' for the full specification")
    ;; New Types Defined
    :bind
    :multiple-bind
-   :multi-ret
-   :ret
+   :standalone-ret
    ;; New Constructors Defined
    :make-bind
    :make-multi-ret
-   :make-ret
+   :make-standalone-ret
    :make-multiple-bind))
 
 (defpackage #:alu.pass.primitive-global
@@ -87,7 +88,6 @@ safely relocate record instances and generate out code which lacks records")
    :make-rel
    ;; Core API
    :relocate-let
-   :relocate-standalone
    :initial-closure-from-circuit
    :maps-to))
 

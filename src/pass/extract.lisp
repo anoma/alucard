@@ -28,19 +28,19 @@
 
                    ;; this will have to hit the app->constraint case!
                    ;; as it's an equality application!
-                   (let ((equality (car (term->constraint value))))
+                   (let ((equality (app->constraint value)))
                      (list equality
                            ;; should only be one as it's a
-                           (vspc:make-bind :names names :value (vspc:lhs equality))))))))
+                           (vspc:make-bind :names names
+                                           :value (vspc:lhs equality))))))))
     (values
      (etypecase-of aspc:fully-expanded-term term
        ;; drop standalone constants, we can't emit it!
-       (aspc:term-normal-form nil)
-       (aspc:application      (list (app->constraint term)))
-       (aspc:bind             (var-val->bind term))
-       (aspc:ret              (var-val->bind term))
-       (aspc:multiple-bind    (var-val->bind term))
-       (aspc:multi-ret        (var-val->bind term))))))
+       (aspc:standalone-ret nil)
+       ;; (aspc:application      (list (app->constraint term)))
+       (aspc:bind-constraint (mapcan #'term->constraint (aspc:value term)))
+       (aspc:bind            (var-val->bind term))
+       (aspc:multiple-bind   (var-val->bind term))))))
 
 (-> term->expression ((or aspc:term-normal-form aspc:application)) vspc:expression)
 (defun term->expression (app-norm)
@@ -71,7 +71,12 @@
               ;; we should probably make = take n arguments were we can fold it
               ((= (length deal-args) 2)
                (vspc:make-equality :lhs (car deal-args)
-                                   :rhs (cadr deal-args)))))))))
+                                   :rhs (cadr deal-args)))
+              (t
+               (error
+                (format nil
+                        "= can only be applied to 2 arguments but is applied to: ~A~%"
+                        (length deal-args))))))))))
 
 (-> app->expression (aspc:application) vspc:expression)
 (defun app->expression (app)

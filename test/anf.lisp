@@ -60,3 +60,30 @@
     (is (typep (spc:record lookup) 'spc:reference)
         "the record lookup is now over a reference instead of the record directly")))
 
+(test anf-constraint
+  (let* ((normalized (anf:normalize-expression
+                      (spc:make-bind-constraint
+                       :var (list :a :b :c)
+                       :value
+                       (list
+                        (spc:make-application
+                         :function (spc:make-reference :name :=)
+                         :arguments
+                         (list (spc:make-application
+                                :function (spc:make-reference :name :fun2)
+                                :arguments
+                                (list #1=(spc:make-application
+                                          :function (spc:make-reference :name :fun3)
+                                          :arguments
+                                          (list (spc:make-reference :name :hi)))
+                                      (spc:make-record-lookup
+                                       :record (spc:make-record :name :utxo
+                                                                :owner 3
+                                                                :amount 5
+                                                                :nonce #1#)
+                                       :field  :nonce)))
+                               (spc:make-reference :name :bob))))))))
+    (is (typep normalized 'spc:bind-constraint)
+        "constraint should hold the terms inside of it")
+    (is (= 6 (length (spc:value normalized)))
+        "The body should have ANF successfully run")))

@@ -1,6 +1,6 @@
 (in-package :alu.spec.emit)
 
-(defparameter *circuit-body* (list  nil))
+(defparameter *circuit-body* (list nil))
 
 (defmacro with-circuit-body (init-body &body body)
   "Creates a fresh circuit body"

@@ -27,17 +27,17 @@ in a dependency chart"
      (spc:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
 
 ;; we assume that `pass:linearize' has been run
-(-> track-function-deps (spc:constraint-list) list)
+(-> track-function-deps (spc:expanded-list) list)
 (defun track-constraint-deps (constraint-list)
   (labels ((handle-term (term)
              (etypecase-of spc:term-no-binding term
-               (spc:application      (spc:name (spc:func term)))
+               (spc:application      (list (spc:name (spc:func term))))
                (spc:term-normal-form nil)
                (spc:record           nil)
                (spc:record-lookup    nil)))
            (handle-linear-term (constraint)
-             (etypecase-of spc:linear-term constraint
-               (spc:term-no-binding (handle-term constraint))
+             (etypecase-of spc:expanded-term constraint
                (spc:bind            (handle-term (spc:value constraint)))
-               (spc:ret             (handle-term (spc:value constraint))))))
-    (filter-map #'handle-linear-term constraint-list)))
+               (spc:bind-constraint (track-function-deps (spc:value constraint)))
+               (spc:standalone-ret  nil))))
+    (mapcan #'handle-linear-term constraint-list)))

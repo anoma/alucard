@@ -76,7 +76,9 @@
 
 (defmethod print-object ((bind spc:bind) stream)
   (pprint-logical-block (stream nil)
-    (format stream "~{~A ~^~}= ~2I~@_~A" (spc:names bind) (spc:value bind))))
+    (if (spc:names bind)
+        (format stream "~{~A ~^~}= ~2I~@_~A" (spc:names bind) (spc:value bind))
+        (format stream "~2I~@_~A" (spc:value bind)))))
 
 (defmethod print-object ((eql spc:equality) stream)
   (pprint-logical-block (stream nil)
