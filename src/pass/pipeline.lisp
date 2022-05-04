@@ -4,7 +4,6 @@
 ;; half way through for easier testing! until then I'll just have many
 ;; arrow functions for where I want to stop off!
 
-(-> to-linearize           (spc:circuit) spc:constraint-list)
 (-> to-expand-away-records (spc:circuit) spc:fully-expanded-list)
 (-> to-primitive-circuit   (spc:circuit) spc:prim-circuit)
 (-> to-vampir              (spc:circuit) alu.vampir.spec:alias)

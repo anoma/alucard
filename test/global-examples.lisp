@@ -126,7 +126,7 @@
        :arguments
        (list
         (spc:make-application
-         :function (spc:make-reference :name :=)
+         :function (spc:make-reference :name :+)
          :arguments
          (list (spc:make-reference :name :a)
                (spc:make-reference :name :b)

@@ -136,7 +136,7 @@ represents what data may be in the value of the binders."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defmethod print-object ((obj standalone-ret) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~{~A~^,~}" (spc:var obj))))
+    (format stream "~{~A~^, ~}" (spc:var obj))))
 
 
 (defun make-standalone-ret (&key (var (error "Please provide the return name")))

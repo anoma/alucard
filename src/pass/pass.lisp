@@ -4,7 +4,7 @@
 ;; Groups of Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> linearize (spc:circuit) spc:constraint-list)
+(-> linearize (spc:circuit) spc:expanded-list)
 (defun linearize (circuit)
   (~> circuit
       eval:evaluate-and-cache-body
@@ -149,12 +149,17 @@ it's closure"
                                     (list arg)))))
              (expand-term (term)
                (etypecase-of spc:fully-expanded-term term
-                 (spc:term-normal-form term)
-                 (spc:application      (expand-app term))
                  (spc:bind             (update-val term))
                  (spc:multiple-bind    (update-val term))
-                 (spc:multi-ret        (update-val term))
-                 (spc:ret              (update-val term)))))
+                 (spc:bind-constraint
+                  (spc:make-bind-constraint
+                   :var   (spc:var term)
+                   :value (mapcar #'expand-term (spc:value term))))
+                 (spc:standalone-ret
+                  (spc:make-standalone-ret
+                   :var (mapcan (lambda (x) (or (relocate:maps-to x closure)
+                                            (list x)))
+                                (spc:var term)))))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
 
 
@@ -166,8 +171,9 @@ it's closure"
 (-> remove-void-bindings (spc:fully-expanded-list) spc:fully-expanded-list)
 (defun remove-void-bindings (terms)
   "remove-void-bindings removes any void return value from a function
-and direct references to it. Note this does not go into other values,
-so the error of the user program is preserved."
+and direct references to it. It does this by returning a multi-bind
+with no names. Note this does not go into other values, so the error
+of the user program is preserved."
   ;; we use mutation here just because the fold pattern of trying to
   ;; mimic a map-accuml is just too much against clarity
   (let ((set (sycamore:tree-set #'util:hash-compare)))
@@ -183,20 +189,29 @@ so the error of the user program is preserved."
                                 (if (listp (spc:var term))
                                     (spc:var term)
                                     (list (spc:var term))))
-                        (spc:value term))
+                        (spc:make-multiple-bind :var nil :val (spc:value term)))
                        ((and (typep value 'spc:reference)
                              (sycamore:tree-set-find set (spc:name value)))
                         nil)
                        (t
-                        term)))))
+                        term))))
+             (remove-standalone-ret (term)
+               (let ((rets (mapcan (lambda (x)
+                                    (if (sycamore:tree-set-find set x)
+                                        nil
+                                        (list x)))
+                                  (spc:var term))))
+                 (and rets
+                      (spc:make-standalone-ret :var rets)))))
       (filter-map (lambda (term)
                     (etypecase-of spc:fully-expanded-term term
-                      (spc:term-normal-form term)
-                      (spc:application      term)
-                      (spc:bind             (value-if-void term))
-                      (spc:multiple-bind    (value-if-void term))
-                      (spc:multi-ret        (value-if-void term))
-                      (spc:ret              (value-if-void term))))
+                      (spc:bind            (value-if-void term))
+                      (spc:multiple-bind   (value-if-void term))
+                      (spc:standalone-ret  (remove-standalone-ret term))
+                      (spc:bind-constraint (spc:make-bind-constraint
+                                            :var   (spc:var term)
+                                            :value (remove-void-bindings
+                                                    (spc:value term))))))
                   terms))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -238,15 +253,9 @@ ret is (`spc:primitive' :void) then an empty list is returned, however
 if the value is not void, then the returns in the body are given back"
   (unless (voidp ret)
     (let ((filtered (remove-if-not (lambda (x)
-                                     (typep x '#1=(or spc:ret spc:multi-ret)))
+                                     (typep x 'spc:standalone-ret))
                                    body)))
-      (mapcan (lambda (x)
-                (etypecase-of #1# x
-                  (spc:ret
-                   (list (spc:var x)))
-                  (spc:multi-ret
-                   (spc:var x))))
-              filtered))))
+      (mapcan #'spc:var filtered))))
 
 (defun voidp (ret)
   (typecase ret
@@ -274,11 +283,11 @@ if the value is not void, then the returns in the body are given back"
 (defun rename-statements (stmts)
   (labels ((rename-vars-val (con var)
              (funcall con
-                      :val (handle-term (spc:value var))
+                      :val (handle-base (spc:value var))
                       :var (mapcar #'renaming-scheme (spc:var var))))
            (rename-var-val (con var)
              (funcall con
-                      :val (handle-term (spc:value var))
+                      :val (handle-base (spc:value var))
                       :var (renaming-scheme (spc:var var))))
            (handle-ref (normal)
              (etypecase-of spc:term-normal-form normal
@@ -289,10 +298,15 @@ if the value is not void, then the returns in the body are given back"
            ;; binding, has to be the `spc:application' or `spc:term-normal-form'
            (handle-term (x)
              (etypecase-of spc:fully-expanded-term x
-               (spc:bind             (rename-var-val #'spc:make-bind x))
-               (spc:ret              (rename-var-val #'spc:make-ret  x))
-               (spc:multiple-bind    (rename-vars-val #'spc:make-multiple-bind x))
-               (spc:multi-ret        (rename-vars-val #'spc:make-multi-ret x))
+               (spc:bind            (rename-var-val #'spc:make-bind x))
+               (spc:multiple-bind   (rename-vars-val #'spc:make-multiple-bind x))
+               (spc:standalone-ret  (spc:make-standalone-ret
+                                     :var (mapcar #'renaming-scheme (spc:var x))))
+               (spc:bind-constraint (spc:make-bind-constraint
+                                     :var   (mapcar #'renaming-scheme (spc:var x))
+                                     :value (rename-statements (spc:value x))))))
+           (handle-base (x)
+             (etypecase-of spc:base x
                (spc:term-normal-form (handle-ref x))
                (spc:application
                 (spc:make-application
