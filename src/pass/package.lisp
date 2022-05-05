@@ -45,6 +45,11 @@ package strictly adds to the `alu.spec' package")
   (:use #:common-lisp #:serapeum)
   (:use-reexport :alu.spec :alu.pass.linear-term :alu.pass.primitive-global))
 
+(defpackage #:alu.pass.typecheck
+  (:local-nicknames (#:spc     #:alu.pass.spec)
+                    (#:closure #:alu.closure))
+  (:use #:common-lisp #:serapeum))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Expanding Away And relocating Record Types
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
