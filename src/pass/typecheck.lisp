@@ -15,15 +15,21 @@
 (defun determine-size (typ)
   (etypecase-of spc:type-reference typ
     (spc:reference-type
-     (error "not implemented"))
+     (let ((lookup (alu.storage:lookup-type (spc:name typ))))
+       (if lookup
+           (determine-size-of-storage lookup)
+           (error "type not found: ~A" (spc:name typ)))))
     (spc:application
-     (error "not implemented"))))
+     (or (determine-size-of-primitive typ)
+         (error "generics in user defined data type is not supported")))))
 
 (-> determine-size-of-storage (spc:type-storage) fixnum)
 (defun determine-size-of-storage (storage)
   (etypecase-of spc:type-storage storage
-    (spc:primitive        (error "not implemented"))
-    (spc:type-declaration (error "not implemented"))))
+    (spc:primitive        (or (determine-size-of-primitive storage)
+                              (error "type of primitive can not be resolved: ~A"
+                                     storage)))
+    (spc:type-declaration (determine-size-of-declaration storage))))
 
 (-> size-of-declaration-contents (spc:type-declaration) list)
 (defun size-of-declaration-contents (decl)
@@ -38,6 +44,24 @@
       (spc:sum-decl
        (error "Sum types are not currently supported")))))
 
-(-> deterine-size-of-declaration (spc:type-declaration) fixnum)
-(defun deterine-size-of-declaration (decl)
+(-> determine-size-of-declaration (spc:type-declaration) fixnum)
+(defun determine-size-of-declaration (decl)
   (sum (size-of-declaration-contents decl)))
+
+(deftype known-primitve-types ()
+  `(or (eql :int)
+       (eql :bool)
+       (eql :void)))
+
+(-> determine-size-of-primitive ((or spc:primitive spc:application)) (or null fixnum))
+(defun determine-size-of-primitive (prim?)
+  (flet ((handle-arguments (keyword-prim arguments)
+           (typecase-of known-primitve-types keyword-prim
+             ((eql :int)  (if arguments (car arguments) 256))
+             ((eql :bool) 1)
+             ((eql :void) 0)
+             (otherwise   nil))))
+    (etypecase-of (or spc:primitive spc:application) prim?
+      (spc:primitive   (handle-arguments (spc:name prim?) nil))
+      (spc:application (handle-arguments (spc:name (spc:func prim?))
+                                         (spc:arguments prim?))))))

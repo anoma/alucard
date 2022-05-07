@@ -84,8 +84,7 @@ old value was relocated to."
            ;; use something better than error for error reporting
            (cond ((null lookup)
                   (error
-                   (format nil
-                           "Trying to do a lookup on an unknown record ~A" val)))
+                   "Trying to do a lookup on an unknown record ~A" val))
                  ((null find)
                   (error "Trying to do a lookup on a non existant field"))
                  ;; format must be a record, as the format is akin to
