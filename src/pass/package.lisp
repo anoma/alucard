@@ -48,6 +48,7 @@ package strictly adds to the `alu.spec' package")
 (defpackage #:alu.pass.typecheck
   (:local-nicknames (#:spc        #:alu.pass.spec)
                     (#:closure    #:alu.closure)
+                    (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)
                     (#:util       #:alu.utils))
   (:use #:common-lisp #:serapeum))

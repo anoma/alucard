@@ -135,28 +135,85 @@ way."
   (with-accessors ((holes holes) (info hole-info)
                    (dep dependency) (closure typing-closure))
       context
-    (etypecase-of spc:term-no-binding term
-      (spc:reference
-       (let ((lookup (closure:lookup closure (spc:name term))))
+    (match-of spc:term-no-binding term
+      ((spc:reference :name name)
+       (let ((lookup (closure:lookup closure name)))
          (values (if lookup
                      (make-success :value lookup)
-                     (make-err     :value (make-same-as :value (spc:name term))))
+                     (make-err     :value (make-same-as :value name)))
                  context)))
-      (number
+      ((number _)
        (values (make-err :value :refine-integer)
                context))
-      (spc:application
-       (error "not implemented yet"))
-      (spc:record
-       (let* ((name (spc:name term))
-              (lookup (alu.storage:lookup-type name)))
+      ((spc:record :name name)
+       (let* ((lookup (storage:lookup-type name)))
          (if lookup
              (values (make-success :value (make-type-info
                                            :size (determine-size-of-storage lookup)
-                                           :type name))
+                                           :type (spc:make-type-reference :name name)))
                      context)
              (error "the record type ~A: is not defined" name))))
-      (spc:record-lookup
+      ;; This case isn't hard, just mostly tedious. All we have to do
+      ;; is get the field of the record. Which can be done
+      ;; mechanically...
+      ;;
+      ;; TODO :: Abstract out the mechanical lookup from record-lookup
+      ;;         to field type.
+      ;;
+      ;; Further if the record isn't known yet, that's fine, add the
+      ;; record reference as a dependency and solve again after we
+      ;; unify.
+      ((spc:record-lookup :record rec :field field)
+       (let* ((rec (etypecase-of spc:term-normal-form rec
+                     (number (error "can't index into a numerical literal: ~A"
+                                    rec))
+                     (spc:reference (spc:name rec))))
+              (lookup (closure:lookup closure rec)))
+         (cond ((and lookup (typep (type-info-type lookup) 'spc:reference-type))
+                (let* ((field-name (spc:name (type-info-type lookup)))
+                       (lookup     (storage:lookup-type field-name)))
+                  (typecase-of spc:type-storage lookup
+                    (spc:primitive
+                     (error "~A is a primitive type not a record type" field-name))
+                    (otherwise
+                     (error "type ~A does not exist" field-name))
+                    (spc:type-declaration
+                     (etypecase-of spc:type-format (spc:decl lookup)
+                       (spc:sum-decl
+                        (error "Trying to index into the sum type ~A" field-name))
+                       (spc:record-decl
+                        (let ((lookup (sycamore:tree-map-find
+                                       (spc:contents (spc:decl lookup))
+                                       field)))
+                          (values (make-success
+                                   :value (make-type-info
+                                           :type lookup
+                                           :size (determine-size lookup)))
+                                  context))))))))
+               (lookup
+                (error "Record types currently cannot be applied"))
+               (t
+                (values
+                 (make-err :value (make-depends-on :value (list rec)))
+                 context)))))
+      ;; This is an interesting case. We know the types of functions,
+      ;; in fact we even know the type of primitives! This opens up
+      ;; the can of worms of unification and type checking.
+      ;;
+      ;; If the function is a known user gate, then we can unify the
+      ;; arguments type wise and even report proper error messages for
+      ;; typing errors.
+      ;;
+      ;; If the function is a primitive, then our job gets a bit more
+      ;; complex. Functions like `+' and `*' can be applied to many
+      ;; different integer types, however since we want explicit
+      ;; casting (thus and int8 can only be added to another int8 and
+      ;; not an int16), all arguments must be of the same
+      ;; type. Further if we add only constants. (+ 12 35), we don't
+      ;; know the type of the addition until it is used
+      ;; elsewhere. Thus we build up more constraints to be solved.
+      ((spc:application :name func :arguments args)
+       func args
        (error "not implemented yet")))))
 
 (defun make-starting-hole (keywords typing-context)
@@ -167,20 +224,6 @@ way."
   term expected-type
   context)
 
-(defmethod type-of? ((term spc:bind) &optional (closure (closure:allocate)))
-  (multiple-value-bind (closure type) (type-of? (spc:value term) closure)
-    (values (closure:insert closure (spc:var term) type)
-            type)))
-
-(defmethod type-of? ((term spc:reference) &optional (closure (closure:allocate)))
-  (values closure
-          (closure:lookup closure (spc:name term))))
-
-(defmethod type-of? ((term number) &optional (closure (closure:allocate)))
-  (values closure
-          (make-type-info :size (integer-length term)
-                          :type :int)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -189,7 +232,7 @@ way."
 (defun determine-size (typ)
   (etypecase-of spc:type-reference typ
     (spc:reference-type
-     (let ((lookup (alu.storage:lookup-type (spc:name typ))))
+     (let ((lookup (storage:lookup-type (spc:name typ))))
        (if lookup
            (determine-size-of-storage lookup)
            (error "type not found: ~A" (spc:name typ)))))

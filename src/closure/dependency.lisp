@@ -23,7 +23,7 @@
            :accessor solved
            :documentation "The currently newly solved values that have
            not been cleared"))
-  (:documentation "The Closure type"))
+  (:documentation "The dependency closure that tracks dependencies"))
 
 (defmethod print-object ((obj typ) stream)
   (print-unreadable-object (obj stream :type t)
