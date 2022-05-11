@@ -1,6 +1,12 @@
 (in-package :alu.closure.dependency)
 
-;; This is just a glorified hash table
+;; TODO :: Change the structure for direct dependencies.
+;;
+;; We shouldn't model it with a list, but rather a set of constraints
+;; that when we solve the first one, we've solved it. What Ι mean is,
+;; we make sets that we add to, and if one of the sets is solved, then
+;; the direct dependencies are finished, and we should be able to
+;; solve the variable.
 (defclass typ ()
   ((direct :initarg  :direct
            :type     closure:typ        ; closure:typ (list keyword)

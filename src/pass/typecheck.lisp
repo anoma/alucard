@@ -12,6 +12,16 @@
 
 (defstruct hole-information
   unrefined
+  ;; We should redefine term, to be a list of spc:term-no-binding
+  ;; as we can be solved by various sets of equations.
+  ;;
+  ;; What I mean is that if we have `x = some equation', and then
+  ;; later `y = x' where we solve for `y', then we've solved for `x'.
+  ;;
+  ;; Thus the hole-information should be (list equation #<reference y>)
+  ;;
+  ;; And when our dependency closure says we've solved it, try the
+  ;; list until we get the equation that satisfies the constraint.
   (term (error "please supply value") :type spc:term-no-binding))
 
 (defclass typing-context ()
