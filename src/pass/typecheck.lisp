@@ -8,7 +8,7 @@
   "Type info is the type information we save"
   ;; if we don't know the size quite yet it will be nil
   (size nil :type (or fixnum null))
-  (type nil :type (or list keyword)))
+  (type nil :type spc:type-reference))
 
 (defstruct hole-information
   unrefined
@@ -25,7 +25,6 @@
               :initform (closure:allocate)
               :type closure:typ         ; Closure:typ hole-information
               :documentation "Represents information about the holes that we know")
-   ;; replace with real dependency datastructure
    (dependency :initarg :dependency
                :accessor dependency
                :initform (dependency:allocate)
@@ -145,6 +144,11 @@ way."
       ((number _)
        (values (make-err :value :refine-integer)
                context))
+      ;; Here we have a chance for unification, as we know the type of
+      ;; the fields
+      ;;
+      ;; TODO :: update the code to do unification of the arguments to
+      ;;         the record, and thus do CSP on values we now know.
       ((spc:record :name name)
        (let* ((lookup (storage:lookup-type name)))
          (if lookup
@@ -213,8 +217,12 @@ way."
       ;; know the type of the addition until it is used
       ;; elsewhere. Thus we build up more constraints to be solved.
       ((spc:application :name func :arguments args)
-       func args
-       (error "not implemented yet")))))
+       (let ((looked (storage:lookup-function (spc:name func))))
+         args
+         (typecase-of spc:function-type looked
+           (spc:circuit   (error "not implemented yet"))
+           (spc:primitive (error "not implemented yet"))
+           (otherwise     (error "Function is not defined"))))))))
 
 (defun make-starting-hole (keywords typing-context)
   (util:copy-instance typing-context
