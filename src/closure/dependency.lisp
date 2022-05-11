@@ -31,7 +31,6 @@
       (format stream ":DIRECT ~A~_:REVERSE ~A~_:CYCLIC ~A~_:SOLVED ~A"
               (direct obj) (reverse obj) (cyclic obj) (solved obj)))))
 
-
 (-> allocate () typ)
 (defun allocate ()
   (make-instance 'typ))
@@ -57,7 +56,9 @@
                                       (solved dependency)))))
           (closure:lookup (reverse dependency) term)
           (util:copy-instance dependency
-                              :reverse (closure:remove (reverse dependency) term))))
+                              :reverse (closure:remove (reverse dependency) term)
+                              :cyclic  (closure:remove (cyclic dependency) term)
+                              :solved  (adjoin term (solved dependency)))))
 
 (defun add-dependencies (dependency term &rest depends-on)
   (let ((typ (handle-cyclic dependency term depends-on)))
@@ -70,7 +71,6 @@
   "Removes the solved values"
   (util:copy-instance dependency :solved nil))
 
-
 (-> handle-cyclic (typ keyword list) typ)
 (defun handle-cyclic (dependency term depends-on)
   (util:copy-instance
@@ -81,7 +81,6 @@
                          closure))
                    depends-on
                    (cyclic dependency))))
-
 
 (-> add-reverse (closure:typ keyword list) closure:typ)
 (defun add-reverse (closure value depends-on)
