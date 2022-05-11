@@ -23,7 +23,8 @@
     :depends-on ("util")
     :pathname #P"closure/"
     :components ((:file "package")
-                 (:file "closure")))
+                 (:file "closure")
+                 (:file "dependency")))
    (:module specification
     :serial t
     :description "Internal Alucard Specification"

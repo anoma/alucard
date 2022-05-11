@@ -13,3 +13,21 @@
    :insert
    :lookup
    :remove))
+
+(defpackage #:alu.closure.dependency
+  (:documentation "Provides a dependency closure that shows dependency
+  between values")
+  (:shadow #:remove #:reverse)
+  (:local-nicknames (:syc     #:sycamore)
+                    (:util    #:alu.utils)
+                    (:closure #:alu.closure))
+  (:use #:common-lisp #:serapeum)
+  (:export
+   :typ
+   :allocate
+   :insert
+   :lookup
+   :solved-for
+   :solved
+   :dump-solved
+   :add-dependencies))

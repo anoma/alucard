@@ -18,17 +18,18 @@
   ((holes :initarg :holes
           :accessor holes
           :initform nil
-          :type list                    ; list keywords
+          :type list                    ; list (list keywords)
           :documentation "Represents the holes to solve. List of keywords")
    (hole-info :initarg :hole-info
               :accessor hole-info
               :initform (closure:allocate)
-              :type closure:typ         ; Closure:typ (list keyword)
+              :type closure:typ         ; Closure:typ hole-information
               :documentation "Represents information about the holes that we know")
+   ;; replace with real dependency datastructure
    (dependency :initarg :dependency
                :accessor dependency
-               :initform (closure:allocate)
-               :type closure:typ        ; Closure:typ list
+               :initform (dependency:allocate)
+               :type dependency:typ
                :documentation "Represents the constraint satisfaction mapping")
    (typing-closure :initarg :typing-closure
                    :accessor typing-closure
@@ -78,45 +79,53 @@ way."
 
 (-> annotate-term (spc:expanded-term typing-context) typing-context)
 (defun annotate-term (term context)
-  (etypecase-of spc:expanded-term term
-    (spc:standalone-ret  context)
-    (spc:bind
-     (multiple-value-bind (result ctx) (annotate-term-no-binder (spc:value term)
-                                                                context)
-       (etypecase-of result result
-         (success (util:copy-instance
-                   context
-                   :typing-closure (closure:insert (typing-closure ctx)
-                                                   (spc:var term)
-                                                   (success-value result))))
-         (err (let ((err (err-value result)))
-                (etypecase-of hole-conditions err
-                  (same-as
-                   (util:copy-instance
-                    ctx
-                    :holes (cons (spc:var term) (holes ctx))
-                    :hole-info
-                    (closure:insert (hole-info ctx)
-                                    (spc:var term)
-                                    ;; here we can cheat and make the
-                                    ;; hole the same value as the
-                                    ;; reference itself
-                                    (make-hole-information
-                                     :term (spc:make-reference
-                                            :name (same-as-value err))))
-                    :dependency
-                    (closure:insert (dependency ctx)
-                                    (spc:var term)
-                                    (list (same-as-value err)))))
-                  ;; here we have an integer type, but what size of
-                  ;; integer, we need to refine on this!
-                  ((eql :refine-integer) (error "step not implemented yet"))
-                  ;; Here we keep the original expression, and just
-                  ;; note what holes need to be solved first before we
-                  ;; can continue.
-                  (depends-on            (error "step not implemented yet"))))))))
-    (spc:bind-constraint
-     (make-starting-hole (spc:var term) context)
+  (match-of spc:expanded-term term
+    ((spc:standalone-ret)
+     context)
+    ((spc:bind :var v :value val)
+     (multiple-value-bind (result ctx) (annotate-term-no-binder val context)
+       (with-accessors ((holes holes) (info hole-info)
+                        (dep dependency) (closure typing-closure))
+           ctx
+         (match-of result result
+           ((success :value succ)
+            (util:copy-instance ctx
+                                :typing-closure (closure:insert closure v succ)))
+           ((err :value err)
+            (etypecase-of hole-conditions err
+              (same-as
+               (util:copy-instance
+                ctx
+                :holes      (cons v holes)
+                :dependency (dependency:insert dep v (list (same-as-value err)))
+                :hole-info  (closure:insert info v
+                                            ;; here we can cheat and make the
+                                            ;; hole the same value as the
+                                            ;; reference itself
+                                            (make-hole-information
+                                             :term (spc:make-reference
+                                                   :name (same-as-value err))))))
+              ;; here we have an integer type, but what size of
+              ;; integer, we need to refine on this!
+              ((eql :refine-integer)
+               (util:copy-instance
+                ctx
+                :holes     (cons v holes)
+                :hole-info (closure:insert info v
+                                           (make-hole-information :unrefined :int
+                                                                  :term val))))
+              ;; Here we keep the original expression, and just
+              ;; note what holes need to be solved first before we
+              ;; can continue.
+              (depends-on
+               (util:copy-instance
+                ctx
+                :holes      (cons v holes)
+                :hole-info  (closure:insert    info v (make-hole-information :term v))
+                :dependency (dependency:insert dep  v (depends-on-value err))))))))))
+    ((spc:bind-constraint :var introductions :value body)
+     body
+     (make-starting-hole introductions context)
      (error "step not implemented yet"))))
 
 (-> annotate-term-no-binder
@@ -136,7 +145,8 @@ way."
       (number
        (values (make-err :value :refine-integer)
                context))
-      (spc:application   (error "not implemented yet"))
+      (spc:application
+       (error "not implemented yet"))
       (spc:record
        (let* ((name (spc:name term))
               (lookup (alu.storage:lookup-type name)))
@@ -146,7 +156,8 @@ way."
                                            :type name))
                      context)
              (error "the record type ~A: is not defined" name))))
-      (spc:record-lookup (error "not implemented yet")))))
+      (spc:record-lookup
+       (error "not implemented yet")))))
 
 (defun make-starting-hole (keywords typing-context)
   (util:copy-instance typing-context

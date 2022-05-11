@@ -46,9 +46,10 @@ package strictly adds to the `alu.spec' package")
   (:use-reexport :alu.spec :alu.pass.linear-term :alu.pass.primitive-global))
 
 (defpackage #:alu.pass.typecheck
-  (:local-nicknames (#:spc     #:alu.pass.spec)
-                    (#:closure #:alu.closure)
-                    (#:util    #:alu.utils))
+  (:local-nicknames (#:spc        #:alu.pass.spec)
+                    (#:closure    #:alu.closure)
+                    (#:dependency #:alu.closure.dependency)
+                    (#:util       #:alu.utils))
   (:use #:common-lisp #:serapeum))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

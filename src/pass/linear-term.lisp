@@ -68,7 +68,7 @@ represents what data may be in the value of the binders."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass bind ()
-  ((variable :initarg  :variable
+  ((var :initarg  :variable
              :type     keyword
              :accessor spc:var
              :documentation "The variable that will be bound")
