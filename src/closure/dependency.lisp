@@ -1,15 +1,8 @@
 (in-package :alu.closure.dependency)
 
-;; TODO :: Change the structure for direct dependencies.
-;;
-;; We shouldn't model it with a list, but rather a set of constraints
-;; that when we solve the first one, we've solved it. What Ι mean is,
-;; we make sets that we add to, and if one of the sets is solved, then
-;; the direct dependencies are finished, and we should be able to
-;; solve the variable.
 (defclass typ ()
   ((direct :initarg  :direct
-           :type     closure:typ        ; closure:typ (list keyword)
+           :type     closure:typ        ; closure:typ (list (list keyword))
            :initform (closure:allocate)
            :accessor direct
            :documentation "The direct dependency mapping")
@@ -28,7 +21,7 @@
            :initform nil
            :accessor solved
            :documentation "The currently newly solved values that have
-           not been cleared"))
+           not been cleared, note this list is ordered."))
   (:documentation "The dependency closure that tracks dependencies"))
 
 (defmethod print-object ((obj typ) stream)
@@ -37,18 +30,34 @@
       (format stream ":DIRECT ~A~_:REVERSE ~A~_:CYCLIC ~A~_:SOLVED ~A"
               (direct obj) (reverse obj) (cyclic obj) (solved obj)))))
 
+(-> get-solved (typ) list)
+(defun get-solved (dependency)
+  (cl:reverse (solved dependency)))
+
 (-> allocate () typ)
 (defun allocate ()
-  (make-instance 'typ))
+  (assure typ
+    (make-instance 'typ)))
 
-(-> insert (typ keyword list) typ)
-(defun insert (dependency term depends-list)
-  (apply #'add-dependencies dependency term depends-list))
+(-> determined-by (typ keyword list) typ)
+(defun determined-by (dependency term dependency-list)
+  "Notes that the given term is entailed by the values in the list."
+  (let* ((current      (closure:lookup (direct dependency) term))
+         (new-contents (if current
+                           (cons dependency-list current)
+                           (list dependency-list)))
+         (typ          (handle-cyclic dependency term dependency-list)))
+    (assure typ
+      (util:copy-instance typ
+                          :direct  (closure:insert (direct typ) term new-contents)
+                          :reverse (add-reverse (reverse typ) term dependency-list)))))
 
 (-> lookup (typ keyword) list)
 (defun lookup (dependency term)
-  (closure:lookup (direct dependency) term))
+  (assure list
+    (closure:lookup (direct dependency) term)))
 
+(-> solved-for (typ keyword) typ)
 (defun solved-for (dependency term)
   (mvfold (lambda (dependency deps-on-term)
             (let ((direct (remove-from (direct dependency) deps-on-term term))
@@ -66,27 +75,27 @@
                               :cyclic  (closure:remove (cyclic dependency) term)
                               :solved  (adjoin term (solved dependency)))))
 
-(defun add-dependencies (dependency term &rest depends-on)
-  (let ((typ (handle-cyclic dependency term depends-on)))
-    (util:copy-instance typ
-                        :direct  (closure:insert (direct typ) term depends-on)
-                        :reverse (add-reverse (reverse typ) term depends-on))))
+(serapeum:-> solved-for* (typ &rest keyword) typ)
+(defun solved-for* (dependency &rest terms)
+  (mvfold #'solved-for terms dependency))
 
 (-> dump-solved (typ) typ)
 (defun dump-solved (dependency)
   "Removes the solved values"
-  (util:copy-instance dependency :solved nil))
+  (assure typ
+   (util:copy-instance dependency :solved nil)))
 
 (-> handle-cyclic (typ keyword list) typ)
 (defun handle-cyclic (dependency term depends-on)
-  (util:copy-instance
-   dependency
-   :cyclic (mvfold (lambda (closure dep)
-                     (if (member term (closure:lookup (direct dependency) dep))
-                         (adjoin-onto (adjoin-onto closure dep term) term dep)
-                         closure))
-                   depends-on
-                   (cyclic dependency))))
+  (values
+   (util:copy-instance
+    dependency
+    :cyclic (mvfold (lambda (closure dep)
+                      (if (member term (closure:lookup (direct dependency) dep))
+                          (adjoin-onto (adjoin-onto closure dep term) term dep)
+                          closure))
+                    depends-on
+                    (cyclic dependency)))))
 
 (-> add-reverse (closure:typ keyword list) closure:typ)
 (defun add-reverse (closure value depends-on)
@@ -101,11 +110,12 @@
 
 (-> remove-from (closure:typ keyword keyword) closure:typ)
 (defun remove-from (closure key member)
-  (let ((value (remove-if (alexandria:curry #'eq member)
-                          (closure:lookup closure key))))
-    (if value
-        (closure:insert closure key value)
-        (closure:remove closure key))))
+  (let ((value (mapcar (lambda (list)
+                         (remove-if (alexandria:curry #'eq member) list))
+                       (closure:lookup closure key))))
+    (if (some #'null value)
+        (closure:remove closure key)
+        (closure:insert closure key value))))
 
 (-> remove-from-if-exists (closure:typ keyword keyword) closure:typ)
 (defun remove-from-if-exists (closure key member)

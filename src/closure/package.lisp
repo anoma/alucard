@@ -25,9 +25,10 @@
   (:export
    :typ
    :allocate
-   :insert
+   :determined-by
    :lookup
    :solved-for
-   :solved
+   :solved-for*
+   :get-solved
    :dump-solved
    :add-dependencies))

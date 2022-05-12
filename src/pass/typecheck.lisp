@@ -24,6 +24,7 @@
   ;; list until we get the equation that satisfies the constraint.
   (term (error "please supply value") :type spc:term-no-binding))
 
+
 (defclass typing-context ()
   ((holes :initarg :holes
           :accessor holes
@@ -75,7 +76,7 @@ in"))
 
 (defstruct same-as
   "Represents that the hole is the same as this other variable"
-  (value (error "fill in the value") :type :keyword))
+  (value (error "fill in the value") :type keyword))
 
 (defstruct depends-on
   "this represents that the value is tied to the list of values in some
@@ -88,54 +89,56 @@ way."
 
 (-> annotate-term (spc:expanded-term typing-context) typing-context)
 (defun annotate-term (term context)
-  (match-of spc:expanded-term term
-    ((spc:standalone-ret)
-     context)
-    ((spc:bind :var v :value val)
-     (multiple-value-bind (result ctx) (annotate-term-no-binder val context)
-       (with-accessors ((holes holes) (info hole-info)
-                        (dep dependency) (closure typing-closure))
-           ctx
-         (match-of result result
-           ((success :value succ)
-            (util:copy-instance ctx
-                                :typing-closure (closure:insert closure v succ)))
-           ((err :value err)
-            (etypecase-of hole-conditions err
-              (same-as
-               (util:copy-instance
-                ctx
-                :holes      (cons v holes)
-                :dependency (dependency:insert dep v (list (same-as-value err)))
-                :hole-info  (closure:insert info v
-                                            ;; here we can cheat and make the
-                                            ;; hole the same value as the
-                                            ;; reference itself
-                                            (make-hole-information
-                                             :term (spc:make-reference
-                                                   :name (same-as-value err))))))
-              ;; here we have an integer type, but what size of
-              ;; integer, we need to refine on this!
-              ((eql :refine-integer)
-               (util:copy-instance
-                ctx
-                :holes     (cons v holes)
-                :hole-info (closure:insert info v
-                                           (make-hole-information :unrefined :int
-                                                                  :term val))))
-              ;; Here we keep the original expression, and just
-              ;; note what holes need to be solved first before we
-              ;; can continue.
-              (depends-on
-               (util:copy-instance
-                ctx
-                :holes      (cons v holes)
-                :hole-info  (closure:insert    info v (make-hole-information :term v))
-                :dependency (dependency:insert dep  v (depends-on-value err))))))))))
-    ((spc:bind-constraint :var introductions :value body)
-     body
-     (make-starting-hole introductions context)
-     (error "step not implemented yet"))))
+  (assure typing-context
+    (match-of spc:expanded-term term
+      ((spc:standalone-ret)
+       context)
+      ((spc:bind :variable v :value val)
+       (multiple-value-bind (result ctx) (annotate-term-no-binder val context)
+         (with-accessors ((holes holes) (info hole-info)
+                          (dep dependency) (closure typing-closure))
+             ctx
+           (match-of result result
+             ((success :value succ)
+              (util:copy-instance ctx
+                                  :typing-closure (closure:insert closure v succ)))
+             ((err :value err)
+              (etypecase-of hole-conditions err
+                (same-as
+                 (util:copy-instance
+                  ctx
+                  :holes      (cons v holes)
+                  :dependency (dependency:determined-by dep v (list (same-as-value err)))
+                  :hole-info  (closure:insert info v
+                                              ;; here we can cheat and make the
+                                              ;; hole the same value as the
+                                              ;; reference itself
+                                              (make-hole-information
+                                               :term (spc:make-reference
+                                                      :name (same-as-value err))))))
+                ;; here we have an integer type, but what size of
+                ;; integer, we need to refine on this!
+                ((eql :refine-integer)
+                 (util:copy-instance
+                  ctx
+                  :holes     (cons v holes)
+                  :hole-info (closure:insert info v
+                                             (make-hole-information :unrefined :int
+                                                                    :term val))))
+                ;; Here we keep the original expression, and just
+                ;; note what holes need to be solved first before we
+                ;; can continue.
+                (depends-on
+                 (util:copy-instance
+                  ctx
+                  :holes     (cons v holes)
+                  :hole-info (closure:insert info v (make-hole-information :term v))
+                  :dependency
+                  (dependency:determined-by dep v (depends-on-value err))))))))))
+      ((spc:bind-constraint :variable introductions :value body)
+       body
+       (make-starting-hole introductions context)
+       (error "step not implemented yet")))))
 
 (-> annotate-term-no-binder
     (spc:term-no-binding typing-context)
@@ -246,7 +249,7 @@ way."
 ;;; Determining the Size of the type
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> determine-size (spc:type-reference) fixnum)
+(-> determine-size (spc:type-reference) integer)
 (defun determine-size (typ)
   (etypecase-of spc:type-reference typ
     (spc:reference-type
@@ -258,7 +261,7 @@ way."
      (or (determine-size-of-primitive typ)
          (error "generics in user defined data type is not supported")))))
 
-(-> determine-size-of-storage (spc:type-storage) fixnum)
+(-> determine-size-of-storage (spc:type-storage) integer)
 (defun determine-size-of-storage (storage)
   (etypecase-of spc:type-storage storage
     (spc:primitive        (or (determine-size-of-primitive storage)
@@ -279,9 +282,10 @@ way."
       (spc:sum-decl
        (error "Sum types are not currently supported")))))
 
-(-> determine-size-of-declaration (spc:type-declaration) fixnum)
+(-> determine-size-of-declaration (spc:type-declaration) integer)
 (defun determine-size-of-declaration (decl)
-  (sum (size-of-declaration-contents decl)))
+  (assure integer
+    (sum (size-of-declaration-contents decl))))
 
 (deftype known-primitve-types ()
   `(or (eql :int)
