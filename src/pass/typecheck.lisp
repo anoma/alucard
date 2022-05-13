@@ -1,5 +1,8 @@
 (in-package :alu.pass.typecheck)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (setf trivia:*arity-check-by-test-call* nil))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Typing structures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,10 +246,9 @@ way."
       ;; know the type of the addition until it is used
       ;; elsewhere. Thus we build up more constraints to be solved.
       ((spc:application :name (spc:reference :name func) :arguments args)
-       args
        (match-of (or spc:function-type null) (storage:lookup-function func)
-         ((spc:circuit :arguments args :return-type ret)
-          (let ((types (mapcar #'spc:typ args)))
+         ((spc:circuit :arguments circ-args :return-type ret)
+          (let ((types (mapcar #'spc:typ circ-args)))
             (values (make-success :value ret)
                     ;; this may fail but it'll throw an error
                     (mvfold (lambda (pair context)
@@ -260,7 +262,8 @@ way."
             ((eql :exp) (error "not implemented yet"))
             (otherwise (error "not implemented yet"))))
          (null
-          (error "Function ~A: is not defined" func))))
+          (error "Function ~A: is not defined" func)))
+       )
       ((spc:application :name func)
        (error "Can not apply ~A. Expecting a reference to a function not a number"
               func)))))
@@ -274,8 +277,34 @@ way."
   "unify tries to unify term with expected-type, This can result in
 either holes being refined, or an error being thrown if the
 information is contradictory."
-  term expected-type
-  context)
+  (flet ((unification-error (type)
+           (error "Could not unify Defined type ~A with int" type)))
+    (match-of spc:term-normal-form term
+      ;; For references we need to check if the reference is known. If
+      ;; the term is known, then it is a simple equality check that
+      ;; the types agree.
+      ;;
+      ;; If the reference is unknown, then we need to unify it with
+      ;; the given type. At this point we can find contradictory
+      ;; information, from the partial data we have. If this is the
+      ;; case, we should throw and report to the user this issue.
+      ((spc:reference :name name)
+       name
+       (error "not implemented yet"))
+      ;; we only succeed unification if the expected value of this is a
+      ;; number
+      ((number _)
+       (let* ((type-name (etypecase-of spc:type-reference expected-type
+                           (spc:application    (spc:name (spc:func expected-type)))
+                           (spc:reference-type (spc:name expected-type))))
+              (lookup (storage:lookup-type type-name)))
+         (etypecase-of (or null spc:type-storage) lookup
+           (spc:type-declaration (unification-error type-name))
+           (null                 (error "Type ~A is not defined" type-name))
+           (spc:primitive
+            (typecase (spc:name lookup)
+              ((or (eql :int) (eql :bool)) context)
+              (otherwise                   (unification-error type-name))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type
@@ -283,15 +312,16 @@ information is contradictory."
 
 (-> determine-size (spc:type-reference) integer)
 (defun determine-size (typ)
-  (etypecase-of spc:type-reference typ
-    (spc:reference-type
-     (let ((lookup (storage:lookup-type (spc:name typ))))
-       (if lookup
-           (determine-size-of-storage lookup)
-           (error "type not found: ~A" (spc:name typ)))))
-    (spc:application
-     (or (determine-size-of-primitive typ)
-         (error "generics in user defined data type is not supported")))))
+  (values
+    (etypecase-of spc:type-reference typ
+      (spc:reference-type
+       (let ((lookup (storage:lookup-type (spc:name typ))))
+         (if lookup
+             (determine-size-of-storage lookup)
+             (error "type not found: ~A" (spc:name typ)))))
+      (spc:application
+       (or (determine-size-of-primitive typ)
+           (error "generics in user defined data type is not supported"))))))
 
 (-> determine-size-of-storage (spc:type-storage) integer)
 (defun determine-size-of-storage (storage)

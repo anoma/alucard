@@ -139,8 +139,8 @@ it's closure"
                    (util:copy-instance term :value (expand-app (spc:value term)))
                    term))
              (expand-app (app)
-               (util:copy-instance app :args (mapcan #'expand-argument
-                                                     (spc:arguments app))))
+               (util:copy-instance app :arguments (mapcan #'expand-argument
+                                                          (spc:arguments app))))
              (expand-argument (arg)
                (etypecase-of spc:term-normal-form arg
                  (number        (list arg))

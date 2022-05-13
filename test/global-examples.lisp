@@ -4,21 +4,24 @@
 ;; Table and Setup Swap
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun clone (hash)
-  (alexandria:plist-hash-table
-   (alexandria:hash-table-plist hash)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
 
-(defparameter *test-functions* (clone storage:*functions*))
-(defparameter *test-types* (clone storage:*types*))
+  (defun clone (hash)
+    (alexandria:plist-hash-table
+     (alexandria:hash-table-plist hash)))
+  (defparameter *test-functions* (clone storage:*functions*))
 
-(defparameter *swapped* (storage:currently-swapped?))
+  (defparameter *test-types* (clone storage:*types*))
 
-(storage:swap-tables *test-functions*
-                     *test-types*)
+  (defparameter *swapped* (storage:currently-swapped?))
 
-(defun swap-tables ()
-  (storage:swap-tables *test-functions*
-                       *test-types*))
+  (defun swap-tables ()
+    (storage:swap-tables *test-functions*
+                         *test-types*)))
+
+;; We do this to ensure that the tables get swapped properly
+(eval-when (:load-toplevel :execute)
+  (swap-tables))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Examples in the test table

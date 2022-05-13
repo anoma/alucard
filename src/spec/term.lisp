@@ -68,7 +68,7 @@ augmented with the common lisp list type."
          :documentation "the name of the gate that we wish to
 apply. This will be either a reference type or a type-reference
 depending on what table it is related to.")
-   (arguments :initarg :args
+   (arguments :initarg :arguments
               :initform nil
               :type     list
               :accessor arguments
@@ -152,7 +152,7 @@ depending on what table it is related to.")
       (format stream "~A ~{~A~^ ~}" fun args))))
 
 (defun make-application (&key (function (error "Please provide a name")) arguments)
-  (make-instance 'application :function function :args arguments))
+  (make-instance 'application :function function :arguments arguments))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Record Functionality
