@@ -85,9 +85,9 @@ isn't so already. Perhaps we should make them be an and call instead?"
                             :val term))
            (let-term (term)
              (etypecase-of spc:linear-term term
-               (spc:standalone-ret   term)
-               (spc:bind             term)
-               (spc:term-no-binding  (make-binder term))
+               (spc:standalone-ret  term)
+               (spc:bind            term)
+               (spc:term-no-binding (make-binder term))
                (spc:bind-constraint (spc:make-bind-constraint
                                      :var   (spc:var term)
                                      :value (mapcar #'let-term
@@ -149,8 +149,8 @@ it's closure"
                                     (list arg)))))
              (expand-term (term)
                (etypecase-of spc:fully-expanded-term term
-                 (spc:bind             (update-val term))
-                 (spc:multiple-bind    (update-val term))
+                 ((or spc:multiple-bind spc:bind)
+                  (update-val term))
                  (spc:bind-constraint
                   (spc:make-bind-constraint
                    :var   (spc:var term)
@@ -206,13 +206,12 @@ of the user program is preserved."
                       (spc:make-standalone-ret :var rets)))))
       (filter-map (lambda (term)
                     (etypecase-of spc:fully-expanded-term term
-                      (spc:bind            (value-if-void term))
-                      (spc:multiple-bind   (value-if-void term))
-                      (spc:standalone-ret  (remove-standalone-ret term))
-                      (spc:bind-constraint (spc:make-bind-constraint
-                                            :var   (spc:var term)
-                                            :value (remove-void-bindings
-                                                    (spc:value term))))))
+                      ((or spc:bind spc:multiple-bind) (value-if-void term))
+                      (spc:standalone-ret              (remove-standalone-ret term))
+                      (spc:bind-constraint             (spc:make-bind-constraint
+                                                        :var   (spc:var term)
+                                                        :value (remove-void-bindings
+                                                                (spc:value term))))))
                   terms))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -299,7 +298,7 @@ if the value is not void, then the returns in the body are given back"
            ;; binding, has to be the `spc:application' or `spc:term-normal-form'
            (handle-term (x)
              (etypecase-of spc:fully-expanded-term x
-               (spc:bind            (rename-var-val #'spc:make-bind x))
+               (spc:bind            (rename-var-val  #'spc:make-bind x))
                (spc:multiple-bind   (rename-vars-val #'spc:make-multiple-bind x))
                (spc:standalone-ret  (spc:make-standalone-ret
                                      :var (mapcar #'renaming-scheme (spc:var x))))

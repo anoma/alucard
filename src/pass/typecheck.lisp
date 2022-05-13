@@ -22,7 +22,7 @@
   ;;
   ;; And when our dependency closure says we've solved it, try the
   ;; list until we get the equation that satisfies the constraint.
-  (term (error "please supply value") :type spc:term-no-binding))
+  (term nil :type list))
 
 
 (defclass typing-context ()
@@ -83,6 +83,18 @@ in"))
 way."
   (value nil :type list))
 
+(deftype known-primitve-types ()
+  `(or (eql :int)
+       (eql :bool)
+       (eql :void)))
+
+(deftype known-primitve-functions ()
+  `(or (eql :+)
+       (eql :*)
+       (eql :=)
+       (eql :=)
+       (eql :exp)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -109,13 +121,14 @@ way."
                   ctx
                   :holes      (cons v holes)
                   :dependency (dependency:determined-by dep v (list (same-as-value err)))
-                  :hole-info  (closure:insert info v
-                                              ;; here we can cheat and make the
-                                              ;; hole the same value as the
-                                              ;; reference itself
-                                              (make-hole-information
-                                               :term (spc:make-reference
-                                                      :name (same-as-value err))))))
+                  :hole-info  (closure:insert
+                               info v
+                               ;; here we can cheat and make the
+                               ;; hole the same value as the
+                               ;; reference itself
+                               (make-hole-information
+                                :term (list (spc:make-reference
+                                             :name (same-as-value err)))))))
                 ;; here we have an integer type, but what size of
                 ;; integer, we need to refine on this!
                 ((eql :refine-integer)
@@ -124,7 +137,7 @@ way."
                   :holes     (cons v holes)
                   :hole-info (closure:insert info v
                                              (make-hole-information :unrefined :int
-                                                                    :term val))))
+                                                                    :term (list val)))))
                 ;; Here we keep the original expression, and just
                 ;; note what holes need to be solved first before we
                 ;; can continue.
@@ -132,7 +145,7 @@ way."
                  (util:copy-instance
                   ctx
                   :holes     (cons v holes)
-                  :hole-info (closure:insert info v (make-hole-information :term v))
+                  :hole-info (closure:insert info v (make-hole-information :term (list v)))
                   :dependency
                   (dependency:determined-by dep v (depends-on-value err))))))))))
       ((spc:bind-constraint :variable introductions :value body)
@@ -148,15 +161,15 @@ way."
                    (dep dependency) (closure typing-closure))
       context
     (match-of spc:term-no-binding term
+      ((number _)
+       (values (make-err :value :refine-integer)
+               context))
       ((spc:reference :name name)
        (let ((lookup (closure:lookup closure name)))
          (values (if lookup
                      (make-success :value lookup)
                      (make-err     :value (make-same-as :value name)))
                  context)))
-      ((number _)
-       (values (make-err :value :refine-integer)
-               context))
       ;; Here we have a chance for unification, as we know the type of
       ;; the fields
       ;;
@@ -229,19 +242,38 @@ way."
       ;; type. Further if we add only constants. (+ 12 35), we don't
       ;; know the type of the addition until it is used
       ;; elsewhere. Thus we build up more constraints to be solved.
-      ((spc:application :name func :arguments args)
-       (let ((looked (storage:lookup-function (spc:name func))))
-         args
-         (typecase-of spc:function-type looked
-           (spc:circuit   (error "not implemented yet"))
-           (spc:primitive (error "not implemented yet"))
-           (otherwise     (error "Function is not defined"))))))))
+      ((spc:application :name (spc:reference :name func) :arguments args)
+       args
+       (match-of (or spc:function-type null) (storage:lookup-function func)
+         ((spc:circuit :arguments args :return-type ret)
+          (let ((types (mapcar #'spc:typ args)))
+            (values (make-success :value ret)
+                    ;; this may fail but it'll throw an error
+                    (mvfold (lambda (pair context)
+                              (unify (car pair) (cdr pair) context))
+                            (mapcar #'cons args types)))))
+         ((spc:primitive :name name)
+          (typecase-of known-primitve-functions name
+            ((or (eql :*) (eql :+))
+             (error "not implemented yet"))
+            ((eql :=) (error "not implemented yet"))
+            ((eql :exp) (error "not implemented yet"))
+            (otherwise (error "not implemented yet"))))
+         (null
+          (error "Function ~A: is not defined" func))))
+      ((spc:application :name func)
+       (error "Can not apply ~A. Expecting a reference to a function not a number"
+              func)))))
 
 (defun make-starting-hole (keywords typing-context)
   (util:copy-instance typing-context
                       :holes (append keywords (holes typing-context))))
 
+(-> unify (spc:term-normal-form spc:type-reference typing-context) typing-context)
 (defun unify (term expected-type context)
+  "unify tries to unify term with expected-type, This can result in
+either holes being refined, or an error being thrown if the
+information is contradictory."
   term expected-type
   context)
 
@@ -286,11 +318,6 @@ way."
 (defun determine-size-of-declaration (decl)
   (assure integer
     (sum (size-of-declaration-contents decl))))
-
-(deftype known-primitve-types ()
-  `(or (eql :int)
-       (eql :bool)
-       (eql :void)))
 
 (-> determine-size-of-primitive ((or spc:primitive spc:application)) (or null fixnum))
 (defun determine-size-of-primitive (prim?)

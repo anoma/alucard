@@ -31,10 +31,10 @@ in a dependency chart"
 (defun track-constraint-deps (constraint-list)
   (labels ((handle-term (term)
              (etypecase-of spc:term-no-binding term
-               (spc:application      (list (spc:name (spc:func term))))
-               (spc:term-normal-form nil)
-               (spc:record           nil)
-               (spc:record-lookup    nil)))
+               (spc:application
+                (list (spc:name (spc:func term))))
+               ((or spc:term-normal-form spc:record spc:record-lookup)
+                nil)))
            (handle-linear-term (constraint)
              (etypecase-of spc:expanded-term constraint
                (spc:bind            (handle-term (spc:value constraint)))
