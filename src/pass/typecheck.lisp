@@ -8,15 +8,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct type-info
-  "Type info is the type information we save"
+  "Type information of a fully realized type."
   ;; if we don't know the size quite yet it will be nil
   (size nil :type (or fixnum null))
   (type nil :type spc:type-reference))
 
+;; TODO :: with generics we should make this type a lot more rich and
+;;         informative
+(deftype hole ()
+  "Represents the format of holes that have yet to be fully realized."
+  `(or null keyword))
+
+(deftype current-information ()
+  "Represents the current knowledge we have on a given type. Thus a
+hole, or if the type is known a type reference"
+  `(or hole spc:type-reference))
+
 (defstruct hole-information
-  ;; With the advent of generics, we need to change this to a proper
-  ;; reference.
-  (unrefined nil :type (or null keyword))
+  (unrefined nil :type hole)
   ;; We should redefine term, to be a list of spc:term-no-binding
   ;; as we can be solved by various sets of equations.
   ;;
@@ -61,18 +70,6 @@ in"))
                 (holes obj) (hole-info obj) (dependency obj) (typing-closure obj)))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defstruct err
-    "Represents a computation which has failed in some way"
-    value)
-
-  (defstruct success
-    "Represents a computation which has succeeded in some way"
-    value)
-
-  (deftype result ()
-    "the either monad from Haskell."
-    `(or err success))
-
   (deftype hole-conditions ()
     "The conditions in which a fialure can happen for "
     `(or same-as
@@ -101,15 +98,19 @@ way."
        (eql :exp)))
 
 (deftype lookup-type ()
-  "represents the potential type of a refernece.
+  "represents the potential type of a reference.
 
 _It can either be_
 1. known
+
 2. an unrefined value
   - which we represent with a keyword.
+  - TODO :: Once we update with generics, we should move this to a
+    `spc:type-reference'
+
 3. unknown
   - which we represent with null."
-  `(or type-info (or null keyword)))
+  `(or type-info hole))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Annotating the Typing context
@@ -162,10 +163,11 @@ _It can either be_
                :hole-info (closure:insert info v (make-hole-information :term (list v)))
                :dependency
                (dependency:determined-by dep v (depends-on-value result))))))))
+      ;; The hole will be filed in via the recursive body calls.
       ((spc:bind-constraint :variable introductions :value body)
-       body
-       (make-starting-hole introductions context)
-       (error "step not implemented yet")))))
+       (mvfold (flip #'annotate-term)
+               body
+               (make-starting-hole introductions context))))))
 
 (-> annotate-term-no-binder
     (spc:term-no-binding typing-context)
@@ -284,12 +286,11 @@ _It can either be_
           (typecase-of known-primitve-functions name
             ((or (eql :*) (eql :+))
              (error "not implemented yet"))
-            ((eql :=) (error "not implemented yet"))
+            ((eql :=)   (error "not implemented yet"))
             ((eql :exp) (error "not implemented yet"))
-            (otherwise (error "not implemented yet"))))
+            (otherwise  (error "not implemented yet"))))
          (null
-          (error "Function ~A: is not defined" func)))
-       )
+          (error "Function ~A: is not defined" func))))
       ((spc:application :name func)
        (error "Can not apply ~A. Expecting a reference to a function not a number"
               func)))))
@@ -299,7 +300,7 @@ _It can either be_
   (util:copy-instance typing-context
                       :holes (append keywords (holes typing-context))))
 
-(-> unify (spc:term-normal-form spc:type-reference typing-context) typing-context)
+(-> unify (spc:term-normal-form current-information typing-context) typing-context)
 (defun unify (term expected-type context)
   "unify tries to unify term with expected-type, This can result in
 either holes being refined, unknown values being turned into unrefined
@@ -309,47 +310,65 @@ values, or an error being thrown if the information is contradictory."
     (match-of spc:term-normal-form term
       ;; For references we need to check if the reference is known. If
       ;; the term is known, then it is a simple equality check that
-      ;; the types agree.
+      ;; the types agree. Note that if `expected-type' is a `hole'
+      ;; then we are trying to unify a known type with less
+      ;; information, thus we error (why are we even trying it?!).
       ;;
       ;; If the reference is unknown, then we need to unify it with
       ;; the given type. At this point we can find contradictory
       ;; information, from the partial data we have. If this is the
       ;; case, we should throw and report to the user this issue.
-      ((spc:reference :name name)
-       (let ((value (find-type-info name context)))
-         (etypecase-of (or type-info (or null keyword)) value
-           (type-info
+      ;;
+      ;; If the unification is with partial information we note the
+      ;; partial information as hole information to be resolved later.
+      ((spc:reference :name term-name)
+       (let ((value (find-type-info term-name context)))
+         (dispatch-case  ((value         lookup-type)
+                          (expected-type current-information))
+           ((type-info hole)
+            (error "Internal compiler error. Tried to unify a fully
+                   known type ~A with the hole ~A."
+                   value expected-type))
+           ((type-info spc:type-reference)
             (if (type-equality expected-type (type-info-type value))
                 context
                 (error "The types ~A and ~A are not equivalent"
                        expected-type
                        (type-info-type value))))
-           ((or null keyword)
+           ((hole spc:type-reference)
             ;; since we assume the only non refined value is `:int'
             ;; then we just need this one check.
             ;;
-            ;; TODO :: Rework when we get generics, where
-            (if (and value (int-reference? expected-type))
-                ;; the refined type is an integer, meaning we can unify
-                ;; it with another int only.
-                (error "not implemented yet")
-                ;; the refined type is unknown, and so we can just solve
-                ;; it without remorse.
-                (error "not implemented yet"))))))
+            ;; TODO :: Rework when we get generics, where the hole can
+            ;;         be many other kinds of things
+            (if (and value (not (int-reference? expected-type)))
+                ;; Since we only have holes on integers, and the value
+                ;; is not an integer type, we thus have a unification
+                ;; error, where we refine an integer as a non integer.
+                (error "Could not refine ~A to an integer type" term-name)
+                ;; Here either the hole is not refined and we can
+                ;; unify it without remorse, or we are unifying an
+                ;; integer hole with an exact integer type.
+                (solve-recursively term-name expected-type context)))
+            ((hole hole)
+             (refine-hole-with-hole value expected-type context)))))
       ;; we only succeed unification if the expected value of this is a
       ;; number
       ((number _)
-       (let* ((type-name (etypecase-of spc:type-reference expected-type
-                           (spc:application    (spc:name (spc:func expected-type)))
-                           (spc:reference-type (spc:name expected-type))))
-              (lookup (storage:lookup-type type-name)))
-         (etypecase-of (or null spc:type-storage) lookup
-           (spc:type-declaration (unification-error type-name))
-           (null                 (error "Type ~A is not defined" type-name))
-           (spc:primitive
-            (typecase (spc:name lookup)
-              ((or (eql :int) (eql :bool)) context)
-              (otherwise                   (unification-error type-name))))))))))
+       (etypecase-of current-information expected-type
+         (hole context)
+         (spc:type-reference
+          (let* ((type-name (etypecase-of spc:type-reference expected-type
+                              (spc:application    (spc:name (spc:func expected-type)))
+                              (spc:reference-type (spc:name expected-type))))
+                 (lookup (storage:lookup-type type-name)))
+            (etypecase-of (or null spc:type-storage) lookup
+              (spc:type-declaration (unification-error type-name))
+              (null                 (error "Type ~A is not defined" type-name))
+              (spc:primitive
+               (typecase (spc:name lookup)
+                 ((or (eql :int) (eql :bool)) context)
+                 (otherwise                   (unification-error type-name))))))))))))
 
 (-> find-type-info (keyword typing-context) lookup-type)
 (defun find-type-info (name context)
@@ -383,15 +402,31 @@ we try to get the unrefined type."
 (defun int-reference? (ref)
   (let* ((name-to-lookup
            (match-of spc:type-reference ref
-             ((spc:reference-type :name name)
-              name)
-             ((spc:application :name (spc:reference :name func))
-              func)))
+             ((spc:reference-type :name name)                     name)
+             ((spc:application    :name (spc:reference spc:name)) spc:name)))
          (looked (storage:lookup-type name-to-lookup)))
     (etypecase-of (or spc:type-storage null) looked
-      ((or null spc:type-declaration)
-       nil)
-      (spc:primitive (= :int (spc:name looked))))))
+      ((or null spc:type-declaration) nil)
+      (spc:primitive                  (or (= :int (spc:name looked))
+                                          (= :bool (spc:name looked)))))))
+
+;; TODO :: Fill in the details
+(-> refine-hole-with-hole (hole hole typing-context) typing-context)
+(defun refine-hole-with-hole (original-hole new-hole-info context)
+  "Refines the given hole with the new hole and stores it back into the
+typing context."
+  original-hole
+  new-hole-info
+  context)
+
+(-> solve-recursively (keyword spc:type-reference typing-context) typing-context)
+(defun solve-recursively (name solved-value context)
+  "Solves the given keyword with given type-reference. After solving,
+`solve-recursively', will attempt to solve any new variables that were
+entailed by the given keyword."
+  name solved-value context
+  (error "not implemented yet"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
