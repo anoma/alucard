@@ -14,7 +14,9 @@
   (type nil :type spc:type-reference))
 
 (defstruct hole-information
-  unrefined
+  ;; With the advent of generics, we need to change this to a proper
+  ;; reference.
+  (unrefined nil :type (or null keyword))
   ;; We should redefine term, to be a list of spc:term-no-binding
   ;; as we can be solved by various sets of equations.
   ;;
@@ -26,7 +28,6 @@
   ;; And when our dependency closure says we've solved it, try the
   ;; list until we get the equation that satisfies the constraint.
   (term nil :type list))
-
 
 (defclass typing-context ()
   ((holes :initarg :holes
@@ -59,23 +60,24 @@ in"))
         (format stream ":HOLES ~A~_:HOLE-INFO ~A~_:DEPENDENCY ~A~_:TYPING-CLOSURE ~A"
                 (holes obj) (hole-info obj) (dependency obj) (typing-closure obj)))))
 
-(deftype result ()
-  "the either monad from Haskell."
-  `(or err success))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defstruct err
+    "Represents a computation which has failed in some way"
+    value)
 
-(defstruct err
-  "Represents a computation which has failed in some way"
-  value)
+  (defstruct success
+    "Represents a computation which has succeeded in some way"
+    value)
 
-(defstruct success
-  "Represents a computation which has succeeded in some way"
-  value)
+  (deftype result ()
+    "the either monad from Haskell."
+    `(or err success))
 
-(deftype hole-conditions ()
-  "The conditions in which a fialure can happen for "
-  `(or same-as
-       (eql :refine-integer)
-       depends-on))
+  (deftype hole-conditions ()
+    "The conditions in which a fialure can happen for "
+    `(or same-as
+         (eql :refine-integer)
+         depends-on)))
 
 (defstruct same-as
   "Represents that the hole is the same as this other variable"
@@ -98,6 +100,17 @@ way."
        (eql :=)
        (eql :exp)))
 
+(deftype lookup-type ()
+  "represents the potential type of a refernece.
+
+_It can either be_
+1. known
+2. an unrefined value
+  - which we represent with a keyword.
+3. unknown
+  - which we represent with null."
+  `(or type-info (or null keyword)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -113,44 +126,42 @@ way."
          (with-accessors ((holes holes) (info hole-info)
                           (dep dependency) (closure typing-closure))
              ctx
-           (match-of result result
-             ((success :value succ)
+           (etypecase-of (or type-info hole-conditions) result
+             (type-info
               (util:copy-instance ctx
-                                  :typing-closure (closure:insert closure v succ)))
-             ((err :value err)
-              (etypecase-of hole-conditions err
-                (same-as
-                 (util:copy-instance
-                  ctx
-                  :holes      (cons v holes)
-                  :dependency (dependency:determined-by dep v (list (same-as-value err)))
-                  :hole-info  (closure:insert
-                               info v
-                               ;; here we can cheat and make the
-                               ;; hole the same value as the
-                               ;; reference itself
-                               (make-hole-information
-                                :term (list (spc:make-reference
-                                             :name (same-as-value err)))))))
-                ;; here we have an integer type, but what size of
-                ;; integer, we need to refine on this!
-                ((eql :refine-integer)
-                 (util:copy-instance
-                  ctx
-                  :holes     (cons v holes)
-                  :hole-info (closure:insert info v
-                                             (make-hole-information :unrefined :int
-                                                                    :term (list val)))))
-                ;; Here we keep the original expression, and just
-                ;; note what holes need to be solved first before we
-                ;; can continue.
-                (depends-on
-                 (util:copy-instance
-                  ctx
-                  :holes     (cons v holes)
-                  :hole-info (closure:insert info v (make-hole-information :term (list v)))
-                  :dependency
-                  (dependency:determined-by dep v (depends-on-value err))))))))))
+                                  :typing-closure (closure:insert closure v result)))
+             (same-as
+              (util:copy-instance
+               ctx
+               :holes      (cons v holes)
+               :dependency (dependency:determined-by dep v (list (same-as-value result)))
+               :hole-info  (closure:insert
+                            info v
+                            ;; here we can cheat and make the
+                            ;; hole the same value as the
+                            ;; reference itself
+                            (make-hole-information
+                             :term (list (spc:make-reference
+                                          :name (same-as-value result)))))))
+             ;; here we have an integer type, but what size of
+             ;; integer, we need to refine on this!
+             ((eql :refine-integer)
+              (util:copy-instance
+               ctx
+               :holes     (cons v holes)
+               :hole-info (closure:insert info v
+                                          (make-hole-information :unrefined :int
+                                                                 :term (list val)))))
+             ;; Here we keep the original expression, and just
+             ;; note what holes need to be solved first before we
+             ;; can continue.
+             (depends-on
+              (util:copy-instance
+               ctx
+               :holes     (cons v holes)
+               :hole-info (closure:insert info v (make-hole-information :term (list v)))
+               :dependency
+               (dependency:determined-by dep v (depends-on-value result))))))))
       ((spc:bind-constraint :variable introductions :value body)
        body
        (make-starting-hole introductions context)
@@ -158,20 +169,33 @@ way."
 
 (-> annotate-term-no-binder
     (spc:term-no-binding typing-context)
-    (values result typing-context))
+    (values (or type-info hole-conditions) typing-context))
 (defun annotate-term-no-binder (term context)
+  "Annotating a term can either end up with the following results:
+
+1. Error
+  - If the system is in an invalid state with the binder, an error is
+    thrown.
+
+2. `hole-condition'
+  - If the system needs more information to fully determine the type a
+    `hole-condition' is returned.
+
+3. `type-info'
+  - If unification is completely successful, then we get back a
+    `type-info'"
   (with-accessors ((holes holes) (info hole-info)
                    (dep dependency) (closure typing-closure))
       context
     (match-of spc:term-no-binding term
       ((number _)
-       (values (make-err :value :refine-integer)
+       (values :refine-integer
                context))
       ((spc:reference :name name)
        (let ((lookup (closure:lookup closure name)))
          (values (if lookup
-                     (make-success :value lookup)
-                     (make-err     :value (make-same-as :value name)))
+                     lookup
+                     (make-same-as :value name))
                  context)))
       ;; Here we have a chance for unification, as we know the type of
       ;; the fields
@@ -181,9 +205,9 @@ way."
       ((spc:record :name name)
        (let* ((lookup (storage:lookup-type name)))
          (if lookup
-             (values (make-success :value (make-type-info
-                                           :size (determine-size-of-storage lookup)
-                                           :type (spc:make-type-reference :name name)))
+             (values (make-type-info
+                      :size (determine-size-of-storage lookup)
+                      :type (spc:make-type-reference :name name))
                      context)
              (error "the record type ~A: is not defined" name))))
       ;; This case isn't hard, just mostly tedious. All we have to do
@@ -218,16 +242,15 @@ way."
                         (let ((lookup (sycamore:tree-map-find
                                        (spc:contents (spc:decl lookup))
                                        field)))
-                          (values (make-success
-                                   :value (make-type-info
-                                           :type lookup
-                                           :size (determine-size lookup)))
+                          (values (make-type-info
+                                   :type lookup
+                                   :size (determine-size lookup))
                                   context))))))))
                (lookup
                 (error "Record types currently cannot be applied"))
                (t
                 (values
-                 (make-err :value (make-depends-on :value (list rec)))
+                 (make-depends-on :value (list rec))
                  context)))))
       ;; This is an interesting case. We know the types of functions,
       ;; in fact we even know the type of primitives! This opens up
@@ -249,7 +272,10 @@ way."
        (match-of (or spc:function-type null) (storage:lookup-function func)
          ((spc:circuit :arguments circ-args :return-type ret)
           (let ((types (mapcar #'spc:typ circ-args)))
-            (values (make-success :value ret)
+            (values (make-type-info
+                     :type ret
+                     :size (determine-size-of-storage (storage:lookup-function
+                                                       func)))
                     ;; this may fail but it'll throw an error
                     (mvfold (lambda (pair context)
                               (unify (car pair) (cdr pair) context))
@@ -268,6 +294,7 @@ way."
        (error "Can not apply ~A. Expecting a reference to a function not a number"
               func)))))
 
+
 (defun make-starting-hole (keywords typing-context)
   (util:copy-instance typing-context
                       :holes (append keywords (holes typing-context))))
@@ -275,8 +302,8 @@ way."
 (-> unify (spc:term-normal-form spc:type-reference typing-context) typing-context)
 (defun unify (term expected-type context)
   "unify tries to unify term with expected-type, This can result in
-either holes being refined, or an error being thrown if the
-information is contradictory."
+either holes being refined, unknown values being turned into unrefined
+values, or an error being thrown if the information is contradictory."
   (flet ((unification-error (type)
            (error "Could not unify Defined type ~A with int" type)))
     (match-of spc:term-normal-form term
@@ -289,8 +316,26 @@ information is contradictory."
       ;; information, from the partial data we have. If this is the
       ;; case, we should throw and report to the user this issue.
       ((spc:reference :name name)
-       name
-       (error "not implemented yet"))
+       (let ((value (find-type-info name context)))
+         (etypecase-of (or type-info (or null keyword)) value
+           (type-info
+            (if (type-equality expected-type (type-info-type value))
+                context
+                (error "The types ~A and ~A are not equivalent"
+                       expected-type
+                       (type-info-type value))))
+           ((or null keyword)
+            ;; since we assume the only non refined value is `:int'
+            ;; then we just need this one check.
+            ;;
+            ;; TODO :: Rework when we get generics, where
+            (if (and value (int-reference? expected-type))
+                ;; the refined type is an integer, meaning we can unify
+                ;; it with another int only.
+                (error "not implemented yet")
+                ;; the refined type is unknown, and so we can just solve
+                ;; it without remorse.
+                (error "not implemented yet"))))))
       ;; we only succeed unification if the expected value of this is a
       ;; number
       ((number _)
@@ -306,6 +351,47 @@ information is contradictory."
               ((or (eql :int) (eql :bool)) context)
               (otherwise                   (unification-error type-name))))))))))
 
+(-> find-type-info (keyword typing-context) lookup-type)
+(defun find-type-info (name context)
+  "Grabs the typing value from the given keyword. If this lookup fails,
+we try to get the unrefined type."
+  (let ((looked (closure:lookup (typing-closure context) name)))
+    (cond (looked looked)
+          ((member name (holes context))
+           (let ((value (closure:lookup (hole-info context) name)))
+             (and value (hole-information-unrefined value))))
+          (t
+           (error "Internal error: Value ~A is not a known hole in ~A"
+                  name context)))))
+
+(-> type-equality (spc:type-reference spc:type-reference) boolean)
+(defun type-equality (type-1 type-2)
+  (dispatch-case ((type-1 spc:type-reference)
+                  (type-2 spc:type-reference))
+    ((spc:reference-type spc:reference-type)
+     (eq (spc:name type-1) (spc:name type-2)))
+    ((spc:application spc:application)
+     (every #'type-equality
+            (cons (spc:func type-1) (spc:arguments type-1))
+            (cons (spc:func type-2) (spc:arguments type-2))))
+    ((* spc:application)
+     nil)
+    ((* spc:reference-type)
+     nil)))
+
+(-> int-reference? (spc:type-reference) boolean)
+(defun int-reference? (ref)
+  (let* ((name-to-lookup
+           (match-of spc:type-reference ref
+             ((spc:reference-type :name name)
+              name)
+             ((spc:application :name (spc:reference :name func))
+              func)))
+         (looked (storage:lookup-type name-to-lookup)))
+    (etypecase-of (or spc:type-storage null) looked
+      ((or null spc:type-declaration)
+       nil)
+      (spc:primitive (= :int (spc:name looked))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
