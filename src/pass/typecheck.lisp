@@ -486,8 +486,31 @@ integer then it will error."
 
 (-> find-integer-type-from-args (list typing-context) t)
 (defun consistent-type-check (args context)
-  args context
-  (error "not implemented yet"))
+  (flet ((keyword-case (type keyword)
+           (etypecase-of known-primitve-types keyword
+             ((or (eql :int) (eql :bool))
+              (if (int-reference? (type-info-type type))
+                  type
+                  (error "Type ~A is not consistent with Integer"
+                         (type-info-type type))))
+             ((eql :void)
+              (error "The value void should not be used as an argument")))))
+    (mvfold (lambda (val current-most-known-type)
+              (dispatch-case ((val                     lookup-type)
+                              (current-most-known-type lookup-type))
+                ((*         null)      val)
+                ((null      *)         current-most-known-type)
+                ((type-info keyword)   (keyword-case val current-most-known-type))
+                ((keyword   type-info) (keyword-case current-most-known-type val))
+                ((keyword   keyword)   (if (eql val current-most-known-type)
+                                           val
+                                           (error "Values ~A and ~A are not consistent"
+                                                  val current-most-known-type)))
+                ((type-info type-info) (type-equality (type-info-type val)
+                                                      (type-info-type
+                                                       current-most-known-type)))))
+            (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
+            (assure hole nil))))
 
 (-> find-type-info (keyword typing-context) lookup-type)
 (defun find-type-info (name context)
