@@ -129,13 +129,15 @@ _It can either be_
              ctx
            (etypecase-of (or type-info hole-conditions) result
              (type-info
-              (util:copy-instance ctx
-                                  :typing-closure (closure:insert closure v result)))
+              (util:copy-instance
+               ctx
+               :typing-closure (closure:insert closure v result)))
              (same-as
               (util:copy-instance
                ctx
                :holes      (cons v holes)
-               :dependency (dependency:determined-by dep v (list (same-as-value result)))
+               :dependency (dependency:determined-by
+                            dep v (list (same-as-value result)))
                :hole-info  (closure:insert
                             info v
                             ;; here we can cheat and make the
@@ -160,7 +162,9 @@ _It can either be_
               (util:copy-instance
                ctx
                :holes     (cons v holes)
-               :hole-info (closure:insert info v (make-hole-information :term (list v)))
+               :hole-info (closure:insert info
+                                          v
+                                          (make-hole-information :term (list v)))
                :dependency
                (dependency:determined-by dep v (depends-on-value result))))))))
       ;; The hole will be filed in via the recursive body calls.
@@ -283,12 +287,29 @@ _It can either be_
                               (unify (car pair) (cdr pair) context))
                             (mapcar #'cons args types)))))
          ((spc:primitive :name name)
-          (typecase-of known-primitve-functions name
-            ((or (eql :*) (eql :+))
-             (error "not implemented yet"))
-            ((eql :=)   (error "not implemented yet"))
-            ((eql :exp) (error "not implemented yet"))
-            (otherwise  (error "not implemented yet"))))
+          (flet ((handle-all-int-case ()
+                   (let ((integer-constraint
+                           (find-integer-type-from-args args context)))
+                     (mvfold (lambda (context term)
+                               (unify term integer-constraint context))
+                             args
+                             context))))
+            (typecase-of known-primitve-functions name
+              ((or (eql :*) (eql :+))
+               (handle-all-int-case))
+              ;; TODO :: Should = be to integer/bool types only? it is a
+              ;;         constraint satisfaction, so we could extend it.
+              ((eql :=)
+               (handle-all-int-case))
+              ;; TODO :: We should actually allow different integer
+              ;;         types here
+              ((eql :exp)
+               (handle-all-int-case))
+              ;; TODO :: Find a way to type custom user primitives for
+              ;;         better interopt.
+              (otherwise (error "unknown primitive ~A. Don't know how
+                                 to type it."
+                                name)))))
          (null
           (error "Function ~A: is not defined" func))))
       ((spc:application :name func)
@@ -426,6 +447,44 @@ typing context."
 entailed by the given keyword."
   name solved-value context
   (error "not implemented yet"))
+
+(-> find-integer-type-from-args (list typing-context) current-information)
+(defun find-integer-type-from-args (args context)
+  "Finds the most refined integer type in the given argument list. If
+the values are contradictory or if the most refined value is not an
+integer then it will error."
+  (let* ((most-refined-value (find-most-refined-value args context))
+         (integer-constraint
+           (etypecase-of lookup-type most-refined-value
+             (hole
+              (etypecase-of hole most-refined-value
+                (null :int)
+                (keyword (if (or (eql most-refined-value :int)
+                                 (eql most-refined-value :bool))
+                             (assure hole :int)
+                             (error "the given type ~A is not an integer type"
+                                    most-refined-value)))))
+             (type-info
+              (if (int-reference?
+                   (type-info-type most-refined-value))
+                  (type-info-type most-refined-value)
+                  (error "Value to should be an Integer not a ~A"
+                         (type-info-type most-refined-value)))))))
+    (consistent-type-check args context)
+    integer-constraint))
+
+
+
+(-> find-integer-type-from-args (list typing-context) lookup-type)
+(defun find-most-refined-value (args context)
+  args context
+  (error "not implemented yet"))
+
+(-> find-integer-type-from-args (list typing-context) t)
+(defun consistent-type-check (args context)
+  args context
+  (error "not implemented yet"))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type
