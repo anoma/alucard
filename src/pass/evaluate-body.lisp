@@ -1,14 +1,14 @@
 (in-package :alu.pass.evaluate-body)
 
-(-> evaluate-and-cache-body (spc:circuit) list)
+(-> evaluate-and-cache-body (ir:circuit) list)
 (defun evaluate-and-cache-body (circuit)
   "This function evals the given circuit body and returns the cached
 arguments"
   (values
    (if (properly-chachedp circuit)
-       (spc:exec circuit)
-       (let ((exec-body (evaluate-circuit-body (spc:body circuit))))
-         (setf (spc:exec circuit) exec-body)
+       (ir:exec circuit)
+       (let ((exec-body (evaluate-circuit-body (ir:body circuit))))
+         (setf (ir:exec circuit) exec-body)
          exec-body))))
 
 (-> evaluate-circuit-body (list) list)
@@ -21,7 +21,7 @@ arguments"
     ;; pop the nil off the cons
     (cdr new-body)))
 
-(-> properly-chachedp (spc:circuit) boolean)
+(-> properly-chachedp (ir:circuit) boolean)
 (defun properly-chachedp (circuit)
   "checks if the circuit's execution body is properly cached"
   (declare (ignore circuit))

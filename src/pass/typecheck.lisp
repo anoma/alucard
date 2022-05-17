@@ -11,7 +11,7 @@
   "Type information of a fully realized type."
   ;; if we don't know the size quite yet it will be nil
   (size nil :type (or fixnum null))
-  (type nil :type spc:type-reference))
+  (type nil :type ir:type-reference))
 
 ;; TODO :: with generics we should make this type a lot more rich and
 ;;         informative
@@ -22,11 +22,11 @@
 (deftype current-information ()
   "Represents the current knowledge we have on a given type. Thus a
 hole, or if the type is known a type reference"
-  `(or hole spc:type-reference))
+  `(or hole ir:type-reference))
 
 (defstruct hole-information
   (unrefined nil :type hole)
-  ;; We should redefine term, to be a list of spc:term-no-binding
+  ;; We should redefine term, to be a list of ir:term-no-binding
   ;; as we can be solved by various sets of equations.
   ;;
   ;; What I mean is that if we have `x = some equation', and then
@@ -106,7 +106,7 @@ _It can either be_
 2. an unrefined value
   - which we represent with a keyword.
   - TODO :: Once we update with generics, we should move this to a
-    `spc:type-reference'
+    `ir:type-reference'
 
 3. unknown
   - which we represent with null."
@@ -116,13 +116,13 @@ _It can either be_
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> annotate-term (spc:expanded-term typing-context) typing-context)
+(-> annotate-term (ir:expanded-term typing-context) typing-context)
 (defun annotate-term (term context)
   (assure typing-context
-    (match-of spc:expanded-term term
-      ((spc:standalone-ret)
+    (match-of ir:expanded-term term
+      ((ir:standalone-ret)
        context)
-      ((spc:bind :variable v :value val)
+      ((ir:bind :variable v :value val)
        (multiple-value-bind (result ctx) (annotate-term-no-binder val context)
          (with-accessors ((holes holes) (info hole-info)
                           (dep dependency) (closure typing-closure))
@@ -144,7 +144,7 @@ _It can either be_
                             ;; hole the same value as the
                             ;; reference itself
                             (make-hole-information
-                             :term (list (spc:make-reference
+                             :term (list (ir:make-reference
                                           :name (same-as-value result)))))))
              ;; here we have an integer type, but what size of
              ;; integer, we need to refine on this!
@@ -168,13 +168,13 @@ _It can either be_
                :dependency
                (dependency:determined-by dep v (depends-on-value result))))))))
       ;; The hole will be filed in via the recursive body calls.
-      ((spc:bind-constraint :variable introductions :value body)
+      ((ir:bind-constraint :variable introductions :value body)
        (mvfold (flip #'annotate-term)
                body
                (make-starting-hole introductions context))))))
 
 (-> annotate-term-no-binder
-    (spc:term-no-binding typing-context)
+    (ir:term-no-binding typing-context)
     (values (or type-info hole-conditions) typing-context))
 (defun annotate-term-no-binder (term context)
   "Annotating a term can either end up with the following results:
@@ -193,11 +193,11 @@ _It can either be_
   (with-accessors ((holes holes) (info hole-info)
                    (dep dependency) (closure typing-closure))
       context
-    (match-of spc:term-no-binding term
+    (match-of ir:term-no-binding term
       ((number _)
        (values :refine-integer
                context))
-      ((spc:reference :name name)
+      ((ir:reference :name name)
        (let ((lookup (closure:lookup closure name)))
          (values (if lookup
                      lookup
@@ -208,12 +208,12 @@ _It can either be_
       ;;
       ;; TODO :: update the code to do unification of the arguments to
       ;;         the record, and thus do CSP on values we now know.
-      ((spc:record :name name)
+      ((ir:record :name name)
        (let* ((lookup (storage:lookup-type name)))
          (if lookup
              (values (make-type-info
                       :size (determine-size-of-storage lookup)
-                      :type (spc:make-type-reference :name name))
+                      :type (ir:make-type-reference :name name))
                      context)
              (error "the record type ~A: is not defined" name))))
       ;; This case isn't hard, just mostly tedious. All we have to do
@@ -226,27 +226,27 @@ _It can either be_
       ;; Further if the record isn't known yet, that's fine, add the
       ;; record reference as a dependency and solve again after we
       ;; unify.
-      ((spc:record-lookup :record rec :field field)
-       (let* ((rec (etypecase-of spc:term-normal-form rec
+      ((ir:record-lookup :record rec :field field)
+       (let* ((rec (etypecase-of ir:term-normal-form rec
                      (number (error "can't index into a numerical literal: ~A"
                                     rec))
-                     (spc:reference (spc:name rec))))
+                     (ir:reference (ir:name rec))))
               (lookup (closure:lookup closure rec)))
-         (cond ((and lookup (typep (type-info-type lookup) 'spc:reference-type))
-                (let* ((field-name (spc:name (type-info-type lookup)))
+         (cond ((and lookup (typep (type-info-type lookup) 'ir:reference-type))
+                (let* ((field-name (ir:name (type-info-type lookup)))
                        (lookup     (storage:lookup-type field-name)))
-                  (typecase-of spc:type-storage lookup
-                    (spc:primitive
+                  (typecase-of ir:type-storage lookup
+                    (ir:primitive
                      (error "~A is a primitive type not a record type" field-name))
                     (otherwise
                      (error "type ~A does not exist" field-name))
-                    (spc:type-declaration
-                     (etypecase-of spc:type-format (spc:decl lookup)
-                       (spc:sum-decl
+                    (ir:type-declaration
+                     (etypecase-of ir:type-format (ir:decl lookup)
+                       (ir:sum-decl
                         (error "Trying to index into the sum type ~A" field-name))
-                       (spc:record-decl
+                       (ir:record-decl
                         (let ((lookup (sycamore:tree-map-find
-                                       (spc:contents (spc:decl lookup))
+                                       (ir:contents (ir:decl lookup))
                                        field)))
                           (values (make-type-info
                                    :type lookup
@@ -274,10 +274,10 @@ _It can either be_
       ;; type. Further if we add only constants. (+ 12 35), we don't
       ;; know the type of the addition until it is used
       ;; elsewhere. Thus we build up more constraints to be solved.
-      ((spc:application :name (spc:reference :name func) :arguments args)
-       (match-of (or spc:function-type null) (storage:lookup-function func)
-         ((spc:circuit :arguments circ-args :return-type ret)
-          (let ((types (mapcar #'spc:typ circ-args)))
+      ((ir:application :name (ir:reference :name func) :arguments args)
+       (match-of (or ir:function-type null) (storage:lookup-function func)
+         ((ir:circuit :arguments circ-args :return-type ret)
+          (let ((types (mapcar #'ir:typ circ-args)))
             (values (make-type-info
                      :type ret
                      :size (determine-size-of-storage (storage:lookup-function
@@ -286,7 +286,7 @@ _It can either be_
                     (mvfold (lambda (pair context)
                               (unify (car pair) (cdr pair) context))
                             (mapcar #'cons args types)))))
-         ((spc:primitive :name name)
+         ((ir:primitive :name name)
           (flet ((handle-all-int-case ()
                    (let ((integer-constraint
                            (find-integer-type-from-args args context)))
@@ -312,7 +312,7 @@ _It can either be_
                                 name)))))
          (null
           (error "Function ~A: is not defined" func))))
-      ((spc:application :name func)
+      ((ir:application :name func)
        (error "Can not apply ~A. Expecting a reference to a function not a number"
               func)))))
 
@@ -321,14 +321,14 @@ _It can either be_
   (util:copy-instance typing-context
                       :holes (append keywords (holes typing-context))))
 
-(-> unify (spc:term-normal-form current-information typing-context) typing-context)
+(-> unify (ir:term-normal-form current-information typing-context) typing-context)
 (defun unify (term expected-type context)
   "unify tries to unify term with expected-type, This can result in
 either holes being refined, unknown values being turned into unrefined
 values, or an error being thrown if the information is contradictory."
   (flet ((unification-error (type)
            (error "Could not unify Defined type ~A with int" type)))
-    (match-of spc:term-normal-form term
+    (match-of ir:term-normal-form term
       ;; For references we need to check if the reference is known. If
       ;; the term is known, then it is a simple equality check that
       ;; the types agree. Note that if `expected-type' is a `hole'
@@ -342,7 +342,7 @@ values, or an error being thrown if the information is contradictory."
       ;;
       ;; If the unification is with partial information we note the
       ;; partial information as hole information to be resolved later.
-      ((spc:reference :name term-name)
+      ((ir:reference :name term-name)
        (let ((value (find-type-info term-name context)))
          (dispatch-case  ((value         lookup-type)
                           (expected-type current-information))
@@ -350,13 +350,13 @@ values, or an error being thrown if the information is contradictory."
             (error "Internal compiler error. Tried to unify a fully
                    known type ~A with the hole ~A."
                    value expected-type))
-           ((type-info spc:type-reference)
+           ((type-info ir:type-reference)
             (if (type-equality expected-type (type-info-type value))
                 context
                 (error "The types ~A and ~A are not equivalent"
                        expected-type
                        (type-info-type value))))
-           ((hole spc:type-reference)
+           ((hole ir:type-reference)
             (etypecase-of hole value
               (null t)
               (keyword
@@ -381,58 +381,58 @@ values, or an error being thrown if the information is contradictory."
       ((number _)
        (etypecase-of current-information expected-type
          (hole context)
-         (spc:type-reference
-          (let* ((type-name (etypecase-of spc:type-reference expected-type
-                              (spc:application    (spc:name (spc:func expected-type)))
-                              (spc:reference-type (spc:name expected-type))))
+         (ir:type-reference
+          (let* ((type-name (etypecase-of ir:type-reference expected-type
+                              (ir:application    (ir:name (ir:func expected-type)))
+                              (ir:reference-type (ir:name expected-type))))
                  (lookup (storage:lookup-type type-name)))
-            (etypecase-of (or null spc:type-storage) lookup
-              (spc:type-declaration (unification-error type-name))
+            (etypecase-of (or null ir:type-storage) lookup
+              (ir:type-declaration (unification-error type-name))
               (null                 (error "Type ~A is not defined" type-name))
-              (spc:primitive
-               (typecase (spc:name lookup)
+              (ir:primitive
+               (typecase (ir:name lookup)
                  ((or (eql :int) (eql :bool)) context)
                  (otherwise                   (unification-error type-name))))))))))))
 
-(-> type-equality (spc:type-reference-full spc:type-reference-full) boolean)
+(-> type-equality (ir:type-reference-full ir:type-reference-full) boolean)
 (defun type-equality (type-1 type-2)
-  (dispatch-case ((type-1 spc:type-reference-full)
-                  (type-2 spc:type-reference-full))
-    ((spc:reference-type spc:reference-type)
-     (eq (spc:name type-1) (spc:name type-2)))
-    ((spc:application spc:application)
+  (dispatch-case ((type-1 ir:type-reference-full)
+                  (type-2 ir:type-reference-full))
+    ((ir:reference-type ir:reference-type)
+     (eq (ir:name type-1) (ir:name type-2)))
+    ((ir:application ir:application)
      (every #'type-equality
-            (cons (spc:func type-1) (spc:arguments type-1))
-            (cons (spc:func type-2) (spc:arguments type-2))))
+            (cons (ir:func type-1) (ir:arguments type-1))
+            (cons (ir:func type-2) (ir:arguments type-2))))
     ((number number)
      (= type-1 type-2))
-    ((* spc:application)
+    ((* ir:application)
      nil)
-    ((* spc:reference-type)
+    ((* ir:reference-type)
      nil)
     ((* number)
      nil)))
 
-(-> is-primitive? (spc:type-reference (-> (spc:primitive) boolean)) boolean)
+(-> is-primitive? (ir:type-reference (-> (ir:primitive) boolean)) boolean)
 (defun is-primitive? (ref predicate)
   (let* ((name-to-lookup
-           (match-of spc:type-reference ref
-             ((spc:reference-type :name name)                     name)
-             ((spc:application    :name (spc:reference spc:name)) spc:name)))
+           (match-of ir:type-reference ref
+             ((ir:reference-type :name name)                     name)
+             ((ir:application    :name (ir:reference ir:name)) ir:name)))
          (looked (storage:lookup-type name-to-lookup)))
-    (etypecase-of (or spc:type-storage null) looked
-      ((or null spc:type-declaration) nil)
-      (spc:primitive                  (funcall predicate looked)))))
+    (etypecase-of (or ir:type-storage null) looked
+      ((or null ir:type-declaration) nil)
+      (ir:primitive                  (funcall predicate looked)))))
 
-(-> void-reference? (spc:type-reference) boolean)
+(-> void-reference? (ir:type-reference) boolean)
 (defun void-reference? (ref)
-  (is-primitive? ref (lambda (v) (eql :void (spc:name v)))))
+  (is-primitive? ref (lambda (v) (eql :void (ir:name v)))))
 
-(-> int-reference? (spc:type-reference) boolean)
+(-> int-reference? (ir:type-reference) boolean)
 (defun int-reference? (ref)
   (is-primitive? ref (lambda (v)
-                       (or (eql :int (spc:name v))
-                           (eql :bool (spc:name v))))))
+                       (or (eql :int (ir:name v))
+                           (eql :bool (ir:name v))))))
 
 ;; TODO :: Fill in the details
 (-> refine-hole-with-hole (hole hole typing-context) typing-context)
@@ -443,7 +443,7 @@ typing context."
   new-hole-info
   context)
 
-(-> solve-recursively (keyword spc:type-reference typing-context) typing-context)
+(-> solve-recursively (keyword ir:type-reference typing-context) typing-context)
 (defun solve-recursively (name solved-value context)
   "Solves the given keyword with given type-reference. After solving,
 `solve-recursively', will attempt to solve any new variables that were
@@ -477,11 +477,11 @@ integer then it will error."
     integer-constraint))
 
 
-(-> normal-form-to-type-info (spc:term-normal-form typing-context) lookup-type)
+(-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
 (defun normal-form-to-type-info (arg context)
-  (etypecase-of spc:term-normal-form arg
+  (etypecase-of ir:term-normal-form arg
     (number        (assure hole :int))
-    (spc:reference (find-type-info (spc:name arg) context))))
+    (ir:reference (find-type-info (ir:name arg) context))))
 
 (-> find-integer-type-from-args (list typing-context) lookup-type)
 (defun find-most-refined-value (args context)
@@ -541,46 +541,46 @@ we try to get the unrefined type."
 ;;; Determining the Size of the type
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> determine-size (spc:type-reference) integer)
+(-> determine-size (ir:type-reference) integer)
 (defun determine-size (typ)
   (values
-    (etypecase-of spc:type-reference typ
-      (spc:reference-type
-       (let ((lookup (storage:lookup-type (spc:name typ))))
+    (etypecase-of ir:type-reference typ
+      (ir:reference-type
+       (let ((lookup (storage:lookup-type (ir:name typ))))
          (if lookup
              (determine-size-of-storage lookup)
-             (error "type not found: ~A" (spc:name typ)))))
-      (spc:application
+             (error "type not found: ~A" (ir:name typ)))))
+      (ir:application
        (or (determine-size-of-primitive typ)
            (error "generics in user defined data type is not supported"))))))
 
-(-> determine-size-of-storage (spc:type-storage) integer)
+(-> determine-size-of-storage (ir:type-storage) integer)
 (defun determine-size-of-storage (storage)
-  (etypecase-of spc:type-storage storage
-    (spc:primitive        (or (determine-size-of-primitive storage)
+  (etypecase-of ir:type-storage storage
+    (ir:primitive        (or (determine-size-of-primitive storage)
                               (error "type of primitive can not be resolved: ~A"
                                      storage)))
-    (spc:type-declaration (determine-size-of-declaration storage))))
+    (ir:type-declaration (determine-size-of-declaration storage))))
 
-(-> size-of-declaration-contents (spc:type-declaration) list)
+(-> size-of-declaration-contents (ir:type-declaration) list)
 (defun size-of-declaration-contents (decl)
-  (let ((format (spc:decl decl)))
-    (etypecase-of spc:type-format format
-      (spc:record-decl
+  (let ((format (ir:decl decl)))
+    (etypecase-of ir:type-format format
+      (ir:record-decl
        (mapcar (lambda (type-name)
                  (~>> type-name
-                      (sycamore:tree-map-find (spc:contents format))
+                      (sycamore:tree-map-find (ir:contents format))
                       determine-size))
-               (spc:order format)))
-      (spc:sum-decl
+               (ir:order format)))
+      (ir:sum-decl
        (error "Sum types are not currently supported")))))
 
-(-> determine-size-of-declaration (spc:type-declaration) integer)
+(-> determine-size-of-declaration (ir:type-declaration) integer)
 (defun determine-size-of-declaration (decl)
   (assure integer
     (sum (size-of-declaration-contents decl))))
 
-(-> determine-size-of-primitive ((or spc:primitive spc:application)) (or null fixnum))
+(-> determine-size-of-primitive ((or ir:primitive ir:application)) (or null fixnum))
 (defun determine-size-of-primitive (prim?)
   (flet ((handle-arguments (keyword-prim arguments)
            (typecase-of known-primitve-types keyword-prim
@@ -588,7 +588,7 @@ we try to get the unrefined type."
              ((eql :bool) 1)
              ((eql :void) 0)
              (otherwise   nil))))
-    (etypecase-of (or spc:primitive spc:application) prim?
-      (spc:primitive   (handle-arguments (spc:name prim?) nil))
-      (spc:application (handle-arguments (spc:name (spc:func prim?))
-                                         (spc:arguments prim?))))))
+    (etypecase-of (or ir:primitive ir:application) prim?
+      (ir:primitive   (handle-arguments (ir:name prim?) nil))
+      (ir:application (handle-arguments (ir:name (ir:func prim?))
+                                         (ir:arguments prim?))))))

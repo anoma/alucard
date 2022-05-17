@@ -11,31 +11,31 @@
          (:point . ((:x . :fi-point-x) (:y . :fi-point-y))))))
 
 (defparameter *example-bind*
-  (spc:make-bind :var :hi
-                 :val (spc:make-reference :name :fi)))
+  (ir:make-bind :var :hi
+                 :val (ir:make-reference :name :fi)))
 
 (defparameter *example-bind-app*
-  (spc:make-bind
+  (ir:make-bind
    :var :hi
-   :val (spc:make-application :function (spc:make-reference :name :arg-foo)
+   :val (ir:make-application :function (ir:make-reference :name :arg-foo)
                               :arguments '(1 5 6))))
 
 (defparameter *example-bind-record*
-  (spc:make-bind
+  (ir:make-bind
    :var :hi
-   :val (spc:make-record :name :test
-                         :own   (spc:make-reference :name :fi)
-                         :other (spc:make-reference :name :non-exist))))
+   :val (ir:make-record :name :test
+                         :own   (ir:make-reference :name :fi)
+                         :other (ir:make-reference :name :non-exist))))
 
 (defparameter *example-bind-lookup-1*
-  (spc:make-bind
+  (ir:make-bind
    :var :hi
-   :val (spc:make-record-lookup :record (spc:make-reference :name :fi)
+   :val (ir:make-record-lookup :record (ir:make-reference :name :fi)
                                 :field :plane)))
 (defparameter *example-bind-lookup-2*
-  (spc:make-bind
+  (ir:make-bind
    :var :hi
-   :val (spc:make-record-lookup :record (spc:make-reference :name :fi)
+   :val (ir:make-record-lookup :record (ir:make-reference :name :fi)
                                 :field :point)))
 
 (test relocate-let-ref
@@ -47,8 +47,8 @@
                                (:Y . :HI-POINT-Y))))
         (relocation (relocate:relocate-let *example-bind* *example-closure*)))
     (mapcar (lambda (input res bind)
-              (is (eq input (spc:var bind)))
-              (is (eq res (spc:name (spc:value bind)))))
+              (is (eq input (ir:var bind)))
+              (is (eq res (ir:name (ir:value bind)))))
             expected-let-names
             expected-let-resul
             (relocate:rel-forms relocation))
@@ -64,8 +64,8 @@
         (relocation-2 (relocate:relocate-let *example-bind-lookup-2*
                                               *example-closure*)))
     (mapcar (lambda (input res bind)
-              (is (eq input (spc:var bind)))
-              (is (eq res (spc:name (spc:value bind)))))
+              (is (eq input (ir:var bind)))
+              (is (eq res (ir:name (ir:value bind)))))
             expected-let-names
             expected-let-resul
             (relocate:rel-forms relocation-2))
@@ -75,9 +75,9 @@
     ;; time for the easier one
     (let ((only-form (car (relocate:rel-forms relocation-1))))
       (is (eq :hi
-              (spc:var only-form)))
+              (ir:var only-form)))
       (is (eq :fi-plane
-              (spc:name (spc:value only-form)))))))
+              (ir:name (ir:value only-form)))))))
 
 (test relocate-let-record
   (let ((expected-let-names '(:hi-own-plane
@@ -92,8 +92,8 @@
                               (:OTHER . :HI-OTHER)))
         (relocation (relocate:relocate-let *example-bind-record* *example-closure*)))
     (mapcar (lambda (input res bind)
-              (is (eq input (spc:var bind)))
-              (is (eq res (spc:name (spc:value bind)))))
+              (is (eq input (ir:var bind)))
+              (is (eq res (ir:name (ir:value bind)))))
             expected-let-names
             expected-let-resul
             (relocate:rel-forms relocation))
@@ -112,9 +112,9 @@
                                            *example-closure*)))
 
     ;; Tests begin here
-    (is (equalp expected-binds (spc:var (car (relocate:rel-forms relocation)))))
-    (is (equalp (spc:value *example-bind-app*)
-                (spc:value (car (relocate:rel-forms relocation))))
+    (is (equalp expected-binds (ir:var (car (relocate:rel-forms relocation)))))
+    (is (equalp (ir:value *example-bind-app*)
+                (ir:value (car (relocate:rel-forms relocation))))
         "The function should not change")
     (is (equalp expected-storage
                 (closure:lookup (relocate:rel-closure relocation)

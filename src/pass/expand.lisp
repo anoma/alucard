@@ -5,7 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftype argument ()
-  `(or expand spc:constraint))
+  `(or expand ir:constraint))
 
 (deftype argument-list ()
   "A constraint-list is a list of fully-expanded-terms"
@@ -20,7 +20,7 @@
              :type     list
              :accessor expanded
              :documentation
-             "The fully expanded argument alist from keyword to `spc:constraint'")))
+             "The fully expanded argument alist from keyword to `ir:constraint'")))
 
 (defun make-expanded (&key original expanded)
   (make-instance 'expand :original original :expanded expanded))
@@ -49,22 +49,22 @@
 the `expand' type"
   (let ((circuit (storage:lookup-function name)))
     (when circuit
-      (etypecase-of spc:function-type circuit
-        (spc:primitive nil)
-        (spc:circuit   (full-arguments-from-circuit circuit))))))
+      (etypecase-of ir:function-type circuit
+        (ir:primitive nil)
+        (ir:circuit   (full-arguments-from-circuit circuit))))))
 
-(-> full-arguments-from-circuit (spc:circuit) argument-list)
+(-> full-arguments-from-circuit (ir:circuit) argument-list)
 (defun full-arguments-from-circuit (circuit)
   "Calculates the full argument list with records being expanded into
 being the `expand' type"
   (mapcar #'expand-type-into-constituents
-          (spc:arguments circuit)))
+          (ir:arguments circuit)))
 
 (-> argument-names (argument-list) list)
 (defun argument-names (argument-list)
   (mapcan (lambda (x)
             (etypecase-of argument x
-              (spc:constraint (list (spc:name x)))
+              (ir:constraint (list (ir:name x)))
               (expand         (argument-names (util:alist-values (expanded x))))))
           argument-list))
 
@@ -72,7 +72,7 @@ being the `expand' type"
 ;; Return Type Expansion API
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> full-return-values (keyword) (or spc:type-reference list))
+(-> full-return-values (keyword) (or ir:type-reference list))
 (defun full-return-values (name)
   "Expands the return type into the constitute fields recursively and
 gives back the original output type, an empty list if primitive, or an
@@ -85,20 +85,20 @@ alist-return-example:
          (:Y . #<ALU.SPEC:REFERENCE-TYPE INT>)))"
   (let ((circuit (storage:lookup-function name)))
     (when circuit
-      (etypecase-of spc:function-type circuit
-        (spc:primitive nil)
-        (spc:circuit   (full-type-reference* (spc:return-type circuit)))))))
+      (etypecase-of ir:function-type circuit
+        (ir:primitive nil)
+        (ir:circuit   (full-type-reference* (ir:return-type circuit)))))))
 
 (-> full-type-reference*
-    (spc:type-reference &optional sycamore:tree-set)
-    (or spc:type-reference list))
+    (ir:type-reference &optional sycamore:tree-set)
+    (or ir:type-reference list))
 (defun full-type-reference* (ref &optional
                                    (seen-set (sycamore:tree-set #'util:hash-compare)))
   "Expands a type reference into it's expanded members recursively"
   (let* ((name
-           (etypecase-of spc:type-reference ref
-             (spc:application    (spc:name (spc:func ref)))
-             (spc:reference-type (spc:name ref))))
+           (etypecase-of ir:type-reference ref
+             (ir:application    (ir:name (ir:func ref)))
+             (ir:reference-type (ir:name ref))))
          (new-set
            (sycamore:tree-set-insert seen-set name)))
     (if (sycamore:tree-set-find seen-set name)
@@ -119,14 +119,14 @@ alist-return-example:
 ;; Expanding Helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> expand-type-into-constituents (spc:constraint) argument)
+(-> expand-type-into-constituents (ir:constraint) argument)
 (defun expand-type-into-constituents (circ)
   "Takes a constraint and expands user defined types into the proper
 components, otherwise returns the type given back."
-  (with-accessors ((name spc:name) (typ spc:typ) (priv spc:privacy)) circ
+  (with-accessors ((name ir:name) (typ ir:typ) (priv ir:privacy)) circ
 
     (let ((expanded-list (full-type-reference* typ)))
-      (when (and (typep typ 'spc:application)
+      (when (and (typep typ 'ir:application)
                  (listp expanded-list))
         (error "Generics in custom user types is not supported yet"))
       (assure argument
@@ -138,40 +138,40 @@ components, otherwise returns the type given back."
                                expanded-list))
             circ)))))
 
-(-> expand-type-reference (spc:type-reference) list)
+(-> expand-type-reference (ir:type-reference) list)
 (defun expand-type-reference (ref)
   (expand-type-fields
-   (etypecase-of spc:type-reference ref
-     (spc:application    (spc:name (spc:func ref)))
-     (spc:reference-type (spc:name ref)))))
+   (etypecase-of ir:type-reference ref
+     (ir:application    (ir:name (ir:func ref)))
+     (ir:reference-type (ir:name ref)))))
 
 (-> expand-type-fields (keyword) list)
 (defun expand-type-fields (name)
-  "Expands the given type to an alist of (:field-name . `spc:type-reference')"
+  "Expands the given type to an alist of (:field-name . `ir:type-reference')"
   (values
    (let ((lookup (storage:lookup-type name)))
-     (etypecase-of (or null spc:type-storage) lookup
+     (etypecase-of (or null ir:type-storage) lookup
        (null          nil)
-       (spc:primitive nil)
-       (spc:type-declaration
-        (etypecase-of spc:type-format (spc:decl lookup)
-          (spc:record-decl
-           (spc:record-declaration->alist (spc:decl lookup)))
-          (spc:sum-decl
+       (ir:primitive nil)
+       (ir:type-declaration
+        (etypecase-of ir:type-format (ir:decl lookup)
+          (ir:record-decl
+           (ir:record-declaration->alist (ir:decl lookup)))
+          (ir:sum-decl
            (error "sum types are not supported yet"))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Constraint Creation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> constraint-alist-from-dotted-pair* (list spc:privacy keyword) list)
+(-> constraint-alist-from-dotted-pair* (list ir:privacy keyword) list)
 (defun constraint-alist-from-dotted-pair* (list privacy prefix)
   "creates a constraint given an alist, a privacy modified, and the
 original argument name.
 
 (constraint-alist-from-dotted-pair*
- `(:hi . ((:bah . ,(spc:make-type-reference :name :int))
-          (:baz . ,(spc:make-type-reference :name :int))))
+ `(:hi . ((:bah . ,(ir:make-type-reference :name :int))
+          (:baz . ,(ir:make-type-reference :name :int))))
  :private
  :prefix)
 
@@ -183,7 +183,7 @@ original argument name.
       (:BAZ . #<ALU.SPEC:CONSTRAINT PRIVATE PREFIX-HI-BAZ #<REFERENCE-TYPE INT>>))>)
 
 (constraint-alist-from-dotted-pair*
-  `(:name . ,(spc:make-type-reference :name :int)) :private :prefix)
+  `(:name . ,(ir:make-type-reference :name :int)) :private :prefix)
 
 ===>
 
@@ -199,7 +199,7 @@ original argument name.
             :expanded (mapcar (lambda (p)
                                 (constraint-alist-from-dotted-pair* p privacy new-name))
                               cont))
-           (spc:make-constraint :name new-name :privacy privacy :type cont))))))
+           (ir:make-constraint :name new-name :privacy privacy :type cont))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

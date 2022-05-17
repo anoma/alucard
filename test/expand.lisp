@@ -10,7 +10,7 @@
   (let ((expanded-storage
           (expand:full-arguments-from-storage :arg-test-exp))
         (arguments
-          (spc:arguments (storage:lookup-function :arg-test-exp))))
+          (ir:arguments (storage:lookup-function :arg-test-exp))))
 
     ;; Tests begin here
     (is (eq (car arguments) (car expanded-storage))
@@ -29,11 +29,11 @@
 (test expansion-of-output
   (let ((expanded-nested
           `((:plane . ,(expand:full-type-reference*
-                        (spc:make-type-reference :name :point)))
+                        (ir:make-type-reference :name :point)))
             (:time  . ,(expand:full-type-reference*
-                        (spc:make-type-reference :name :point)))))
+                        (ir:make-type-reference :name :point)))))
         (nested-lookup
-          (expand:full-type-reference* (spc:make-type-reference :name :nested)))
+          (expand:full-type-reference* (ir:make-type-reference :name :nested)))
         (arg-test-output-expansion
           (expand:full-return-values :arg-foo)))
 

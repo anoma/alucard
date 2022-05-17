@@ -24,12 +24,12 @@
       (is (storage:lookup-type keyword))
       ;; did we add the right amount of unrolling?
       (is (= unroll-amount
-             (sycamore:tree-map-find (spc:options (storage:lookup-type keyword))
+             (sycamore:tree-map-find (ir:options (storage:lookup-type keyword))
                                      :unroll)))
       ;; did we add the field correctly
       (is (typep (sycamore:tree-map-find
-                  (spc:contents (spc:decl (storage:lookup-type keyword)))
+                  (ir:contents (ir:decl (storage:lookup-type keyword)))
                   (util:symbol-to-keyword field))
-                 'spc:application))
+                 'ir:application))
       ;; we add a global defn, check if it's there
       (is (fboundp name)))))

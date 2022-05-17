@@ -1,28 +1,28 @@
 (in-package :alu.pass.extract)
 
-(-> circuit-to-alias (aspc:prim-circuit) vspc:alias)
+(-> circuit-to-alias (ir:prim-circuit) spc:alias)
 (defun circuit-to-alias (circuit)
-  (with-accessors ((name aspc:name) (arguments aspc:arguments)
-                   (body aspc:body) (ret       aspc:returns))
+  (with-accessors ((name ir:name) (arguments ir:arguments)
+                   (body ir:body) (ret       ir:returns))
       circuit
     (values
-     (vspc:make-alias :name name
-                      :inputs  arguments
-                      :outputs ret
-                      :body (mapcan #'term->constraint body)))))
+     (spc:make-alias :name name
+                     :inputs  arguments
+                     :outputs ret
+                     :body (mapcan #'term->constraint body)))))
 
-(-> term->constraint (aspc:fully-expanded-term) vspc:constraint-list)
+(-> term->constraint (ir:fully-expanded-term) spc:constraint-list)
 (defun term->constraint (term)
   (labels ((keywords->wire (keys)
-             (mapcar (lambda (x) (vspc:make-wire :var x)) keys))
+             (mapcar (lambda (x) (spc:make-wire :var x)) keys))
            (var-val->bind (term)
-             (let ((value (aspc:value term))
-                   (names (keywords->wire (if (listp (aspc:var term))
-                                              (aspc:var term)
-                                              (list (aspc:var term))))))
+             (let ((value (ir:value term))
+                   (names (keywords->wire (if (listp (ir:var term))
+                                              (ir:var term)
+                                              (list (ir:var term))))))
                (if (not (equality-check value))
                    (list
-                    (vspc:make-bind :names names
+                    (spc:make-bind :names names
                                     :value (term->expression value)))
                    ;; This entire thing is a hack, please do better!
 
@@ -31,71 +31,71 @@
                    (let ((equality (app->constraint value)))
                      (list equality
                            ;; should only be one as it's a
-                           (vspc:make-bind :names names
-                                           :value (vspc:lhs equality))))))))
+                           (spc:make-bind :names names
+                                           :value (spc:lhs equality))))))))
     (values
-     (etypecase-of aspc:fully-expanded-term term
+     (etypecase-of ir:fully-expanded-term term
        ;; drop standalone constants, we can't emit it!
-       (aspc:standalone-ret nil)
-       ;; (aspc:application      (list (app->constraint term)))
-       (aspc:bind-constraint (mapcan #'term->constraint (aspc:value term)))
-       (aspc:bind            (var-val->bind term))
-       (aspc:multiple-bind   (var-val->bind term))))))
+       (ir:standalone-ret nil)
+       ;; (ir:application      (list (app->constraint term)))
+       (ir:bind-constraint (mapcan #'term->constraint (ir:value term)))
+       (ir:bind            (var-val->bind term))
+       (ir:multiple-bind   (var-val->bind term))))))
 
-(-> term->expression ((or aspc:term-normal-form aspc:application)) vspc:expression)
+(-> term->expression ((or ir:term-normal-form ir:application)) spc:expression)
 (defun term->expression (app-norm)
-  (etypecase-of (or aspc:term-normal-form aspc:application) app-norm
-    (aspc:application      (app->expression app-norm))
-    (aspc:term-normal-form (normal-form->normal-form app-norm))))
+  (etypecase-of (or ir:term-normal-form ir:application) app-norm
+    (ir:application      (app->expression app-norm))
+    (ir:term-normal-form (normal-form->normal-form app-norm))))
 
-(-> normal-form->normal-form (aspc:term-normal-form) vspc:normal-form)
+(-> normal-form->normal-form (ir:term-normal-form) spc:normal-form)
 (defun normal-form->normal-form (anormal)
-  (assure vspc:normal-form
-   (etypecase-of aspc:term-normal-form anormal
-     (number         (alu.vampir.spec:make-constant :const anormal))
-     (aspc:reference (vspc:make-wire :var (aspc:name anormal))))))
+  (assure spc:normal-form
+   (etypecase-of ir:term-normal-form anormal
+     (number       (spc:make-constant :const anormal))
+     (ir:reference (spc:make-wire :var (ir:name anormal))))))
 
 
-(-> app->constraint (aspc:application) vspc:constraint)
+(-> app->constraint (ir:application) spc:constraint)
 (defun app->constraint (app)
-  (let ((looked    (storage:lookup-function (aspc:name (aspc:func app))))
-        (deal-args (mapcar #'normal-form->normal-form (aspc:arguments app))))
+  (let ((looked    (storage:lookup-function (ir:name (ir:func app))))
+        (deal-args (mapcar #'normal-form->normal-form (ir:arguments app))))
     (values
-     (etypecase-of aspc:function-type looked
-       (aspc:circuit
-        (vspc:make-application :func (aspc:name (aspc:func app))
-                               :arguments deal-args))
-       (aspc:primitive
-        (cond ((not (eql (aspc:name looked) :=))
+     (etypecase-of ir:function-type looked
+       (ir:circuit
+        (spc:make-application :func (ir:name (ir:func app))
+                              :arguments deal-args))
+       (ir:primitive
+        (cond ((not (eql (ir:name looked) :=))
                (error "an infix expression is not a valid constraint"))
               ;; we should probably make = take n arguments were we can fold it
               ((= (length deal-args) 2)
-               (vspc:make-equality :lhs (car deal-args)
-                                   :rhs (cadr deal-args)))
+               (spc:make-equality :lhs (car deal-args)
+                                  :rhs (cadr deal-args)))
               (t
                (error
                 (format nil
                         "= can only be applied to 2 arguments but is applied to: ~A~%"
                         (length deal-args))))))))))
 
-(-> app->expression (aspc:application) vspc:expression)
+(-> app->expression (ir:application) spc:expression)
 (defun app->expression (app)
-  (let ((looked    (storage:lookup-function (aspc:name (aspc:func app))))
-        (deal-args (mapcar #'normal-form->normal-form (aspc:arguments app))))
+  (let ((looked    (storage:lookup-function (ir:name (ir:func app))))
+        (deal-args (mapcar #'normal-form->normal-form (ir:arguments app))))
     (values
-     (if (typep looked 'aspc:primitive)
+     (if (typep looked 'ir:primitive)
          ;; circuits are easy, as it's a straightforward mapping!
-         (prim->app (alucard-prim->vampir-name (aspc:name looked)) deal-args)
-         (vspc:make-application :func (aspc:name (aspc:func app))
-                                :arguments deal-args)))))
+         (prim->app (alucard-prim->vampir-name (ir:name looked)) deal-args)
+         (spc:make-application :func (ir:name (ir:func app))
+                               :arguments deal-args)))))
 
 
-(-> prim->app (keyword list) vspc:infix)
+(-> prim->app (keyword list) spc:infix)
 (defun prim->app (key args)
-  (if (and (not (typep key 'vspc:primitive)) (= 0 (length args)))
+  (if (and (not (typep key 'spc:primitive)) (= 0 (length args)))
       (error "primitive functions require 2 arguments")
       (reduce (lambda (lhs rhs)
-                (vspc:make-infix :lhs lhs :op key :rhs rhs))
+                (spc:make-infix :lhs lhs :op key :rhs rhs))
               args
               :from-end t)))
 
@@ -106,5 +106,5 @@
     (t    keyword)))
 
 (defun equality-check (term)
-  (and (typep term 'aspc:application)
-       (eql (aspc:name (aspc:func term)) :=)))
+  (and (typep term 'ir:application)
+       (eql (ir:name (ir:func term)) :=)))

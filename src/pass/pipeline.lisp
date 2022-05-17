@@ -4,9 +4,9 @@
 ;; half way through for easier testing! until then I'll just have many
 ;; arrow functions for where I want to stop off!
 
-(-> to-expand-away-records (spc:circuit) spc:fully-expanded-list)
-(-> to-primitive-circuit   (spc:circuit) spc:prim-circuit)
-(-> to-vampir              (spc:circuit) alu.vampir.spec:alias)
+(-> to-expand-away-records (ir:circuit) ir:fully-expanded-list)
+(-> to-primitive-circuit   (ir:circuit) ir:prim-circuit)
+(-> to-vampir              (ir:circuit) alu.vampir.spec:alias)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compile Circuit and Dependencies
@@ -26,7 +26,7 @@
   (mapcar #'pipeline
           (cons circuit
                 (filter-map (alexandria:compose (lambda (circ)
-                                                  (and (typep circ 'spc:circuit)
+                                                  (and (typep circ 'ir:circuit)
                                                        circ))
                                                 #'storage:lookup-function)
                             (dep:track-circuit-deps* circuit)))))
@@ -38,7 +38,7 @@
 (defun print-vampir (vampir &optional (stream *standard-output*))
   (vampir:extract vampir stream))
 
-(-> pipeline (spc:circuit) alu.vampir.spec:alias)
+(-> pipeline (ir:circuit) alu.vampir.spec:alias)
 (defun pipeline (circuit)
   (~> circuit
       to-vampir))

@@ -4,7 +4,7 @@
 ;; Groups of Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> linearize (spc:circuit) spc:expanded-list)
+(-> linearize (ir:circuit) ir:expanded-list)
 (defun linearize (circuit)
   (~> circuit
       eval:evaluate-and-cache-body
@@ -14,7 +14,7 @@
       let-all
       return-last-binding))
 
-(-> expand-away-records (spc:expanded-list spc:circuit) spc:fully-expanded-list)
+(-> expand-away-records (ir:expanded-list ir:circuit) ir:fully-expanded-list)
 (defun expand-away-records (terms circuit)
   "expand-away-records is responsible for removing all record instances
 and properly propagating arguments around them"
@@ -22,9 +22,9 @@ and properly propagating arguments around them"
       (relocate-records circuit)
       expand-applications))
 
-(-> primtitve-circuit (spc:fully-expanded-list spc:circuit) spc:prim-circuit)
+(-> primtitve-circuit (ir:fully-expanded-list ir:circuit) ir:prim-circuit)
 (defun primtitve-circuit (terms circuit)
-  (~>> (spc:make-prim-circuit :name (spc:name circuit) :body terms)
+  (~>> (ir:make-prim-circuit :name (ir:name circuit) :body terms)
        (fill-in-arguments circuit)
        (fill-in-output    circuit)))
 
@@ -37,27 +37,27 @@ and properly propagating arguments around them"
 ;; just rename all instances of :name into :name-calc from that point
 ;; forth
 
-(-> transform-let (spc:expression) spc:constraint-list)
+(-> transform-let (ir:expression) ir:constraint-list)
 (defun transform-let (term)
-  "transform-let takes a `spc:term' in a flatten form, and removes the
-`spc:let-node' for the more flat `spc:bind' type"
+  "transform-let takes a `ir:term' in a flatten form, and removes the
+`ir:let-node' for the more flat `ir:bind' type"
   (flet ((transform-let-node (term)
            ;; we keep this type around as it gives us more
            ;; information!
-           (with-accessors ((var spc:var) (val spc:value)) term
-             (spc:make-bind :var var :val val))))
-    (etypecase-of spc:expression term
+           (with-accessors ((var ir:var) (val ir:value)) term
+             (ir:make-bind :var var :val val))))
+    (etypecase-of ir:expression term
       ;; if it's just the term, or a list as is, then we are good
-      (spc:term-no-binding (list term))
-      (spc:let-node        (list (transform-let-node term)))
+      (ir:term-no-binding (list term))
+      (ir:let-node        (list (transform-let-node term)))
       (cons                (mapcan #'transform-let term))
-      (spc:bind-constraint (list (spc:make-bind-constraint
-                                  :var (spc:var term)
+      (ir:bind-constraint (list (ir:make-bind-constraint
+                                  :var (ir:var term)
                                   :value (mapcan #'transform-let
-                                                 (spc:value term))))))))
+                                                 (ir:value term))))))))
 
 
-(-> return-last-binding (spc:expanded-list) spc:expanded-list)
+(-> return-last-binding (ir:expanded-list) ir:expanded-list)
 (defun return-last-binding (constraint-list)
   "This transforms the last let into a straight binding, since we aren't
 going to be using a let"
@@ -65,58 +65,58 @@ going to be using a let"
        (append (butlast constraint-list)
                (let ((term (car (last constraint-list))))
                  (cons term
-                       (etypecase-of spc:expanded-term term
-                         (spc:standalone-ret  nil)
-                         (spc:bind            (list (spc:make-standalone-ret
-                                                     :var (list (spc:var term)))))
-                         (spc:bind-constraint (list (spc:make-standalone-ret
-                                                     :var (spc:var term))))))))))
+                       (etypecase-of ir:expanded-term term
+                         (ir:standalone-ret  nil)
+                         (ir:bind            (list (ir:make-standalone-ret
+                                                     :var (list (ir:var term)))))
+                         (ir:bind-constraint (list (ir:make-standalone-ret
+                                                     :var (ir:var term))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> let-all (spc:constraint-list) spc:expanded-list)
+(-> let-all (ir:constraint-list) ir:expanded-list)
 (defun let-all (term-list)
   "This function turns any value which is not the last into a let if it
 isn't so already. Perhaps we should make them be an and call instead?"
   (labels ((make-binder (term)
-             (spc:make-bind :var (util:symbol-to-keyword (gensym "&G"))
+             (ir:make-bind :var (util:symbol-to-keyword (gensym "&G"))
                             :val term))
            (let-term (term)
-             (etypecase-of spc:linear-term term
-               (spc:standalone-ret  term)
-               (spc:bind            term)
-               (spc:term-no-binding (make-binder term))
-               (spc:bind-constraint (spc:make-bind-constraint
-                                     :var   (spc:var term)
+             (etypecase-of ir:linear-term term
+               (ir:standalone-ret  term)
+               (ir:bind            term)
+               (ir:term-no-binding (make-binder term))
+               (ir:bind-constraint (ir:make-bind-constraint
+                                     :var   (ir:var term)
                                      :value (mapcar #'let-term
-                                                    (spc:value term)))))))
+                                                    (ir:value term)))))))
     (mapcar #'let-term term-list)))
 
-(-> relocate-records (spc:expanded-list spc:circuit) relocate:rel)
+(-> relocate-records (ir:expanded-list ir:circuit) relocate:rel)
 (defun relocate-records (anf-terms circuit)
   "Relocate records takes a fully anfied term where only the last form
-is not a let, and generates out a `spc:fully-expanded-list' along with
+is not a let, and generates out a `ir:fully-expanded-list' along with
 it's closure"
   (labels
       ((ingest (rel term)
          (let* ((closure (relocate:rel-closure rel))
-                (new-rel (etypecase-of spc:expanded-term term
-                           (spc:bind
+                (new-rel (etypecase-of ir:expanded-term term
+                           (ir:bind
                             (relocate:relocate-let term closure))
-                           (spc:standalone-ret
+                           (ir:standalone-ret
                             (relocate:make-rel :closure closure :forms (list term)))
                            ;; ASSUME: how would you make records or
                            ;; other things constraints, no need to
                            ;; even think about it!?
-                           (spc:bind-constraint
-                            (let ((rel (mvfold #'ingest (spc:value term)
+                           (ir:bind-constraint
+                            (let ((rel (mvfold #'ingest (ir:value term)
                                                (relocate:make-rel :closure closure))))
                               (relocate:make-rel
                                :closure (relocate:rel-closure rel)
-                               :forms   (list (spc:make-bind-constraint
-                                               :var   (spc:var term)
+                               :forms   (list (ir:make-bind-constraint
+                                               :var   (ir:var term)
                                                :value (reverse
                                                        (relocate:rel-forms rel))))))))))
            (relocate:make-rel
@@ -131,35 +131,35 @@ it's closure"
       (relocate:make-rel :forms   (reverse (relocate:rel-forms rel))
                          :closure (relocate:rel-closure rel)))))
 
-(-> expand-applications (relocate:rel) spc:fully-expanded-list)
+(-> expand-applications (relocate:rel) ir:fully-expanded-list)
 (defun expand-applications (rel)
   (let ((closure (relocate:rel-closure rel)))
     (labels ((update-val (term)
-               (if (typep (spc:value term) 'spc:application)
-                   (util:copy-instance term :value (expand-app (spc:value term)))
+               (if (typep (ir:value term) 'ir:application)
+                   (util:copy-instance term :value (expand-app (ir:value term)))
                    term))
              (expand-app (app)
                (util:copy-instance app :arguments (mapcan #'expand-argument
-                                                          (spc:arguments app))))
+                                                          (ir:arguments app))))
              (expand-argument (arg)
-               (etypecase-of spc:term-normal-form arg
+               (etypecase-of ir:term-normal-form arg
                  (number        (list arg))
-                 (spc:reference (or (mapcar (lambda (x) (spc:make-reference :name x))
-                                            (relocate:maps-to (spc:name arg) closure))
+                 (ir:reference (or (mapcar (lambda (x) (ir:make-reference :name x))
+                                            (relocate:maps-to (ir:name arg) closure))
                                     (list arg)))))
              (expand-term (term)
-               (etypecase-of spc:fully-expanded-term term
-                 ((or spc:multiple-bind spc:bind)
+               (etypecase-of ir:fully-expanded-term term
+                 ((or ir:multiple-bind ir:bind)
                   (update-val term))
-                 (spc:bind-constraint
-                  (spc:make-bind-constraint
-                   :var   (spc:var term)
-                   :value (mapcar #'expand-term (spc:value term))))
-                 (spc:standalone-ret
-                  (spc:make-standalone-ret
+                 (ir:bind-constraint
+                  (ir:make-bind-constraint
+                   :var   (ir:var term)
+                   :value (mapcar #'expand-term (ir:value term))))
+                 (ir:standalone-ret
+                  (ir:make-standalone-ret
                    :var (mapcan (lambda (x) (or (relocate:maps-to x closure)
                                             (list x)))
-                                (spc:var term)))))))
+                                (ir:var term)))))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
 
 
@@ -168,7 +168,7 @@ it's closure"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Update logic so that we can get inference on this.
-(-> remove-void-bindings (spc:fully-expanded-list) spc:fully-expanded-list)
+(-> remove-void-bindings (ir:fully-expanded-list) ir:fully-expanded-list)
 (defun remove-void-bindings (terms)
   "remove-void-bindings removes any void return value from a function
 and direct references to it. It does this by returning a multi-bind
@@ -178,21 +178,21 @@ of the user program is preserved."
   ;; mimic a map-accuml is just too much against clarity
   (let ((set (sycamore:tree-set #'util:hash-compare)))
     (labels ((value-if-void (term)
-               (let ((value (spc:value term)))
-                 (cond ((and (typep value 'spc:application)
+               (let ((value (ir:value term)))
+                 (cond ((and (typep value 'ir:application)
                              (~> value
-                                 spc:func spc:name
+                                 ir:func ir:name
                                  storage:lookup-function
-                                 spc:return-type
+                                 ir:return-type
                                  voidp))
                         (mapcar (lambda (x) (sycamore:tree-set-insertf set x))
-                                (if (listp (spc:var term))
-                                    (spc:var term)
-                                    (list (spc:var term))))
-                        (spc:make-multiple-bind :var nil :val (spc:value term)))
-                       ((and (typep value 'spc:reference)
-                             (sycamore:tree-set-find set (spc:name value)))
-                        (sycamore:tree-set-insertf set (spc:var term))
+                                (if (listp (ir:var term))
+                                    (ir:var term)
+                                    (list (ir:var term))))
+                        (ir:make-multiple-bind :var nil :val (ir:value term)))
+                       ((and (typep value 'ir:reference)
+                             (sycamore:tree-set-find set (ir:name value)))
+                        (sycamore:tree-set-insertf set (ir:var term))
                         nil)
                        (t
                         term))))
@@ -201,17 +201,17 @@ of the user program is preserved."
                                     (if (sycamore:tree-set-find set x)
                                         nil
                                         (list x)))
-                                   (spc:var term))))
+                                   (ir:var term))))
                  (and rets
-                      (spc:make-standalone-ret :var rets)))))
+                      (ir:make-standalone-ret :var rets)))))
       (filter-map (lambda (term)
-                    (etypecase-of spc:fully-expanded-term term
-                      ((or spc:bind spc:multiple-bind) (value-if-void term))
-                      (spc:standalone-ret              (remove-standalone-ret term))
-                      (spc:bind-constraint             (spc:make-bind-constraint
-                                                        :var   (spc:var term)
+                    (etypecase-of ir:fully-expanded-term term
+                      ((or ir:bind ir:multiple-bind) (value-if-void term))
+                      (ir:standalone-ret              (remove-standalone-ret term))
+                      (ir:bind-constraint             (ir:make-bind-constraint
+                                                        :var   (ir:var term)
                                                         :value (remove-void-bindings
-                                                                (spc:value term))))))
+                                                                (ir:value term))))))
                   terms))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -225,7 +225,7 @@ of the user program is preserved."
 ;; argument filling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> fill-in-arguments (spc:circuit spc:prim-circuit) spc:prim-circuit)
+(-> fill-in-arguments (ir:circuit ir:prim-circuit) ir:prim-circuit)
 (defun fill-in-arguments (alu-circuit prim-circuit)
   (values
    (util:copy-instance prim-circuit
@@ -237,81 +237,81 @@ of the user program is preserved."
 ;; Return Type Filling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> fill-in-output (spc:circuit spc:prim-circuit) spc:prim-circuit)
+(-> fill-in-output (ir:circuit ir:prim-circuit) ir:prim-circuit)
 (defun fill-in-output (alu-circuit prim-circuit)
   (values
    (util:copy-instance
     prim-circuit
-    :returns (determine-output-variables (spc:body prim-circuit)
-                                         (spc:return-type alu-circuit)))))
+    :returns (determine-output-variables (ir:body prim-circuit)
+                                         (ir:return-type alu-circuit)))))
 
 (-> determine-output-variables
-    (spc:fully-expanded-list (or spc:type-reference null)) list)
+    (ir:fully-expanded-list (or ir:type-reference null)) list)
 (defun determine-output-variables (body ret)
   "Determines which output variables are returned from a function. If
-ret is (`spc:primitive' :void) then an empty list is returned, however
+ret is (`ir:primitive' :void) then an empty list is returned, however
 if the value is not void, then the returns in the body are given back"
   (unless (voidp ret)
     (let ((filtered (remove-if-not (lambda (x)
-                                     (typep x 'spc:standalone-ret))
+                                     (typep x 'ir:standalone-ret))
                                    body)))
-      (mapcan #'spc:var filtered))))
+      (mapcan #'ir:var filtered))))
 
 (defun voidp (ret)
   (typecase ret
-    (spc:type-reference (eq (spc:name ret) :void))
+    (ir:type-reference (eq (ir:name ret) :void))
     (otherwise          nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Renaming 在蒼白的月光
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> rename-primitive-circuit (spc:prim-circuit) spc:prim-circuit)
+(-> rename-primitive-circuit (ir:prim-circuit) ir:prim-circuit)
 (defun rename-primitive-circuit (prim-circ)
-  (with-accessors ((name spc:name)    (args spc:arguments)
-                   (rets spc:returns) (body spc:body))
+  (with-accessors ((name ir:name)    (args ir:arguments)
+                   (rets ir:returns) (body ir:body))
       prim-circ
     (values
-     (spc:make-prim-circuit :name      (renaming-scheme name)
+     (ir:make-prim-circuit :name      (renaming-scheme name)
                             :arguments (mapcar #'renaming-scheme args)
                             :returns   (mapcar #'renaming-scheme rets)
                             :body      (rename-statements body)))))
 
 ;; If we do this uniformly to all terms then the references will all
 ;; be valid!
-(-> rename-statements (spc:fully-expanded-list) spc:fully-expanded-list)
+(-> rename-statements (ir:fully-expanded-list) ir:fully-expanded-list)
 (defun rename-statements (stmts)
   (labels ((rename-vars-val (con var)
              (funcall con
-                      :val (handle-base (spc:value var))
-                      :var (mapcar #'renaming-scheme (spc:var var))))
+                      :val (handle-base (ir:value var))
+                      :var (mapcar #'renaming-scheme (ir:var var))))
            (rename-var-val (con var)
              (funcall con
-                      :val (handle-base (spc:value var))
-                      :var (renaming-scheme (spc:var var))))
+                      :val (handle-base (ir:value var))
+                      :var (renaming-scheme (ir:var var))))
            (handle-ref (normal)
-             (etypecase-of spc:term-normal-form normal
-               (spc:number    normal)
-               (spc:reference (spc:make-reference
-                               :name (renaming-scheme (spc:name normal))))))
+             (etypecase-of ir:term-normal-form normal
+               (ir:number    normal)
+               (ir:reference (ir:make-reference
+                               :name (renaming-scheme (ir:name normal))))))
            ;; recursion is fine in binds, as they can't have another
-           ;; binding, has to be the `spc:application' or `spc:term-normal-form'
+           ;; binding, has to be the `ir:application' or `ir:term-normal-form'
            (handle-term (x)
-             (etypecase-of spc:fully-expanded-term x
-               (spc:bind            (rename-var-val  #'spc:make-bind x))
-               (spc:multiple-bind   (rename-vars-val #'spc:make-multiple-bind x))
-               (spc:standalone-ret  (spc:make-standalone-ret
-                                     :var (mapcar #'renaming-scheme (spc:var x))))
-               (spc:bind-constraint (spc:make-bind-constraint
-                                     :var   (mapcar #'renaming-scheme (spc:var x))
-                                     :value (rename-statements (spc:value x))))))
+             (etypecase-of ir:fully-expanded-term x
+               (ir:bind            (rename-var-val  #'ir:make-bind x))
+               (ir:multiple-bind   (rename-vars-val #'ir:make-multiple-bind x))
+               (ir:standalone-ret  (ir:make-standalone-ret
+                                     :var (mapcar #'renaming-scheme (ir:var x))))
+               (ir:bind-constraint (ir:make-bind-constraint
+                                     :var   (mapcar #'renaming-scheme (ir:var x))
+                                     :value (rename-statements (ir:value x))))))
            (handle-base (x)
-             (etypecase-of spc:base x
-               (spc:term-normal-form (handle-ref x))
-               (spc:application
-                (spc:make-application
-                 :function (handle-ref (spc:func x))
-                 :arguments (mapcar #'handle-ref (spc:arguments x)))))))
+             (etypecase-of ir:base x
+               (ir:term-normal-form (handle-ref x))
+               (ir:application
+                (ir:make-application
+                 :function (handle-ref (ir:func x))
+                 :arguments (mapcar #'handle-ref (ir:arguments x)))))))
     (mapcar #'handle-term stmts)))
 
 (-> renaming-scheme (symbol) keyword)

@@ -2,7 +2,7 @@
   (:mix #:cl #:alu.prelude #:fiveam #:serapeum)
   (:shadow #:time)
   (:local-nicknames (:util     :alu.utils)
-                    (:spc      :alu.ir)
+                    (:ir       :alu.ir)
                     (:storage  :alu.storage)
                     (:emit     :alu.spec.emit)
                     (:anf      :alu.pass.anf)

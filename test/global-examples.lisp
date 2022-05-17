@@ -107,40 +107,40 @@
 ;; my god just add storage abstraction, as wew!
 (storage:add-function
  :manual-constraint
- (spc:make-circuit
-  :return-type (spc:make-type-reference :name :bool)
+ (ir:make-circuit
+  :return-type (ir:make-type-reference :name :bool)
   :name :manual-constraint
   :arguments nil
   :body
   '(emit:instruction
-    (spc:make-bind-constraint
+    (ir:make-bind-constraint
      :var (list :a :b :c)
      :value
      (list
-      (spc:make-let :var :fi
-                    :val (spc:make-application
-                          :function (spc:make-reference :name :record-test-mult)
+      (ir:make-let :var :fi
+                    :val (ir:make-application
+                          :function (ir:make-reference :name :record-test-mult)
                           :arguments
-                          (list (spc:make-reference :name :hi)
-                           (spc:make-reference :name :hi)
-                           (spc:make-reference :name :hi))))
-      (spc:make-application
-       :function (spc:make-reference :name :=)
+                          (list (ir:make-reference :name :hi)
+                           (ir:make-reference :name :hi)
+                           (ir:make-reference :name :hi))))
+      (ir:make-application
+       :function (ir:make-reference :name :=)
        :arguments
        (list
-        (spc:make-application
-         :function (spc:make-reference :name :+)
+        (ir:make-application
+         :function (ir:make-reference :name :+)
          :arguments
-         (list (spc:make-reference :name :a)
-               (spc:make-reference :name :b)
-               (spc:make-reference :name :fi)
-               (spc:make-record-lookup
-                :record (spc:make-record :name :utxo
+         (list (ir:make-reference :name :a)
+               (ir:make-reference :name :b)
+               (ir:make-reference :name :fi)
+               (ir:make-record-lookup
+                :record (ir:make-record :name :utxo
                                          :owner 3
                                          :amount 5
-                                         :nonce (spc:make-reference :name :hi))
+                                         :nonce (ir:make-reference :name :hi))
                 :field :nonce)))
-        (spc:make-reference :name :bob))))))))
+        (ir:make-reference :name :bob))))))))
 
 (defcircuit array-lookup-equation ((public x int)
                                    (output int))

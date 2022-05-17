@@ -1,6 +1,6 @@
 (in-package :alu.pass.dependencies)
 
-(-> track-circuit-deps* (spc:function-type &optional sycamore:tree-set) list)
+(-> track-circuit-deps* (ir:function-type &optional sycamore:tree-set) list)
 (defun track-circuit-deps* (circuit &optional (exclusion-set
                                                (sycamore:tree-set
                                                 #'util:hash-compare)))
@@ -17,27 +17,27 @@ checks all functions"
                          (track-circuit-deps* circuit exclusion-set)))))))
     (mapcan #'recursively-expand (track-circuit-deps circuit))))
 
-(-> track-circuit-deps (spc:function-type) list)
+(-> track-circuit-deps (ir:function-type) list)
 (defun track-circuit-deps (circuit)
   "This function gives out a list of any functions this function calls
 in a dependency chart"
   (values
-   (etypecase-of spc:function-type circuit
-     (spc:primitive nil)
-     (spc:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
+   (etypecase-of ir:function-type circuit
+     (ir:primitive nil)
+     (ir:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
 
 ;; we assume that `pass:linearize' has been run
-(-> track-function-deps (spc:expanded-list) list)
+(-> track-function-deps (ir:expanded-list) list)
 (defun track-constraint-deps (constraint-list)
   (labels ((handle-term (term)
-             (etypecase-of spc:term-no-binding term
-               (spc:application
-                (list (spc:name (spc:func term))))
-               ((or spc:term-normal-form spc:record spc:record-lookup)
+             (etypecase-of ir:term-no-binding term
+               (ir:application
+                (list (ir:name (ir:func term))))
+               ((or ir:term-normal-form ir:record ir:record-lookup)
                 nil)))
            (handle-linear-term (constraint)
-             (etypecase-of spc:expanded-term constraint
-               (spc:bind            (handle-term (spc:value constraint)))
-               (spc:bind-constraint (track-function-deps (spc:value constraint)))
-               (spc:standalone-ret  nil))))
+             (etypecase-of ir:expanded-term constraint
+               (ir:bind            (handle-term (ir:value constraint)))
+               (ir:bind-constraint (track-function-deps (ir:value constraint)))
+               (ir:standalone-ret  nil))))
     (mapcan #'handle-linear-term constraint-list)))

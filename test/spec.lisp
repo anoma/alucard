@@ -10,19 +10,19 @@
             (value (gen-integer)))
     (let ((keyword (intern name :keyword)))
       (is
-       (equal (spc:lookup-record (spc:make-record :name :example keyword value)
+       (equal (ir:lookup-record (ir:make-record :name :example keyword value)
                                  keyword)
               value)))))
 
 (test syntax-to-refernece-format
-  (let ((applied (spc:to-type-reference-format '(int 64)))
-        (nested  (spc:to-type-reference-format '(int (int 64)))))
+  (let ((applied (ir:to-type-reference-format '(int 64)))
+        (nested  (ir:to-type-reference-format '(int (int 64)))))
     (is (eq :INT
-            (spc:name (spc:func applied))))
+            (ir:name (ir:func applied))))
     (is (= 64
-           (car (spc:arguments applied))))
+           (car (ir:arguments applied))))
     (is (eq :INT
-            (spc:name (spc:func (car (spc:arguments nested))))))))
+            (ir:name (ir:func (car (ir:arguments nested))))))))
 
 
 ;; Note for later, we can have exuastion

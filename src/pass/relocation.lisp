@@ -47,23 +47,23 @@
 ;; Core API
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> relocate-let (spc:bind closure:typ) rel)
+(-> relocate-let (ir:bind closure:typ) rel)
 (defun relocate-let (bind closure)
   "relocate-let generates out let bindings which remove the original let
 bound to a record. This function also builds up a closure to where the
 old value was relocated to."
   (let ((no-change
           (make-rel :forms (list bind) :closure closure)))
-    (with-accessors ((name spc:var) (val spc:value)) bind
-      (etypecase-of spc:term-no-binding val
-        (spc:number no-change)
-        (spc:reference
-         (let ((checked (closure:lookup closure (spc:name val))))
+    (with-accessors ((name ir:var) (val ir:value)) bind
+      (etypecase-of ir:term-no-binding val
+        (ir:number no-change)
+        (ir:reference
+         (let ((checked (closure:lookup closure (ir:name val))))
            (if checked
                (make-rel-from-alist name checked closure)
                no-change)))
-        (spc:application
-         (let* ((func-name (spc:name (spc:func val)))
+        (ir:application
+         (let* ((func-name (ir:name (ir:func val)))
                 (exp       (expand:full-return-values func-name)))
            (if (consp exp)
                ;; see doc on `expand:full-return-values' to see that
@@ -73,14 +73,14 @@ old value was relocated to."
                  (make-rel
                   :closure (closure:insert closure name new-closure-value)
                   :forms   (list
-                            (spc:make-multiple-bind :var new-bindings :val val))))
+                            (ir:make-multiple-bind :var new-bindings :val val))))
                ;; If we don't get back a cons, then we aren't dealing
                ;; with a record return type or the record is not found
                no-change)))
-        (spc:record-lookup
+        (ir:record-lookup
          ;; has to be a ref due to ANF, gotta love ANF
-         (let* ((lookup (closure:lookup closure (spc:name (spc:record val))))
-                (find   (find (spc:field val) lookup :key #'car)))
+         (let* ((lookup (closure:lookup closure (ir:name (ir:record val))))
+                (find   (find (ir:field val) lookup :key #'car)))
            ;; use something better than error for error reporting
            (cond ((null lookup)
                   (error
@@ -103,8 +103,8 @@ old value was relocated to."
                  (t (make-rel
                      :forms (list (generate-bind (cdr find) name))
                      :closure closure)))))
-        (spc:record
-         (let* ((alist (spc:record->alist val))
+        (ir:record
+         (let* ((alist (ir:record->alist val))
                 ;; we now have to recursively update the alist such that
                 ;; all the nested terms works out, and save it under the
                 ;; original name. we can do this via induction/recursion.
@@ -126,7 +126,7 @@ old value was relocated to."
                             (destructuring-bind (field-name . value) pair
                               (let* ((name    (append-keywords name field-name))
                                      (recurse (relocate-let
-                                               (spc:make-bind :var name :val value)
+                                               (ir:make-bind :var name :val value)
                                                (rel-closure rel))))
                                 (make-rel
                                  :closure (rel-closure recurse)
@@ -156,12 +156,12 @@ old value was relocated to."
                                      closure-mapping-for-current)
             :forms (rel-forms recursed-on-args))))))))
 
-(-> initial-closure-from-circuit (spc:circuit &optional closure:typ) closure:typ)
+(-> initial-closure-from-circuit (ir:circuit &optional closure:typ) closure:typ)
 (defun initial-closure-from-circuit (circ &optional (closure (closure:allocate)))
   (let ((expanded-arguments (expand:full-arguments-from-circuit circ)))
     (reduce (lambda (const closure)
               (etypecase-of expand:argument const
-                (spc:constraint closure)
+                (ir:constraint closure)
                 (expand:expand  (closure:insert closure
                                                 (expand:original const)
                                                 (argument-list-to-closure-alist
@@ -185,7 +185,7 @@ old value was relocated to."
             (destructuring-bind (field . constraint) x
               (cons field
                     (etypecase-of expand:argument constraint
-                      (spc:constraint (spc:name constraint))
+                      (ir:constraint (ir:name constraint))
                       (expand:expand  (argument-list-to-closure-alist
                                        (expand:expanded constraint)))))))
           arglist))
@@ -215,9 +215,9 @@ Example:
  #<LET HI-POINT-Y = #<REFERENCE FI-POINT-Y>>)"
   (mapcar #'generate-bind from to))
 
-(-> generate-bind (keyword keyword) spc:bind)
+(-> generate-bind (keyword keyword) ir:bind)
 (defun generate-bind (from to)
-  (spc:make-bind :var to :val (spc:make-reference :name from)))
+  (ir:make-bind :var to :val (ir:make-reference :name from)))
 
 (-> update-alist-values-with-preifx (keyword list) list)
 (defun update-alist-values-with-preifx (prefix alist)
