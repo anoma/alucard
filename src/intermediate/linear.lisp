@@ -1,4 +1,4 @@
-(in-package :alu.pass.linear-term)
+(in-package :alu.ir.linear)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linearized types Variants

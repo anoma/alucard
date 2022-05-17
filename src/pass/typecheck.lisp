@@ -357,20 +357,23 @@ values, or an error being thrown if the information is contradictory."
                        expected-type
                        (type-info-type value))))
            ((hole spc:type-reference)
-            ;; since we assume the only non refined value is `:int'
-            ;; then we just need this one check.
-            ;;
-            ;; TODO :: Rework when we get generics, where the hole can
-            ;;         be many other kinds of things
-            (if (and value (not (int-reference? expected-type)))
-                ;; Since we only have holes on integers, and the value
-                ;; is not an integer type, we thus have a unification
-                ;; error, where we refine an integer as a non integer.
-                (error "Could not refine ~A to an integer type" term-name)
-                ;; Here either the hole is not refined and we can
-                ;; unify it without remorse, or we are unifying an
-                ;; integer hole with an exact integer type.
-                (solve-recursively term-name expected-type context)))
+            (etypecase-of hole value
+              (null t)
+              (keyword
+               (typecase-of known-primitve-types value
+                 ((or (eql :int)
+                      (eql :bool))
+                  (unless (int-reference? expected-type)
+                    (error "Trying to unify an Integer type with ~A"
+                           expected-type)))
+                 ;; we should check that we unify it with void properly
+                 ((eql :void)
+                  (unless (void-reference? expected-type)
+                    (error "Trying to unify a void type with ~A"
+                           expected-type)))
+                 (otherwise
+                  (error "Unknown primitive type ~A" value)))))
+            (solve-recursively term-name expected-type context))
             ((hole hole)
              (refine-hole-with-hole value expected-type context)))))
       ;; we only succeed unification if the expected value of this is a
@@ -410,8 +413,8 @@ values, or an error being thrown if the information is contradictory."
     ((* number)
      nil)))
 
-(-> int-reference? (spc:type-reference) boolean)
-(defun int-reference? (ref)
+(-> is-primitive? (spc:type-reference (-> (spc:primitive) boolean)) boolean)
+(defun is-primitive? (ref predicate)
   (let* ((name-to-lookup
            (match-of spc:type-reference ref
              ((spc:reference-type :name name)                     name)
@@ -419,8 +422,17 @@ values, or an error being thrown if the information is contradictory."
          (looked (storage:lookup-type name-to-lookup)))
     (etypecase-of (or spc:type-storage null) looked
       ((or null spc:type-declaration) nil)
-      (spc:primitive                  (or (= :int (spc:name looked))
-                                          (= :bool (spc:name looked)))))))
+      (spc:primitive                  (funcall predicate looked)))))
+
+(-> void-reference? (spc:type-reference) boolean)
+(defun void-reference? (ref)
+  (is-primitive? ref (lambda (v) (eql :void (spc:name v)))))
+
+(-> int-reference? (spc:type-reference) boolean)
+(defun int-reference? (ref)
+  (is-primitive? ref (lambda (v)
+                       (or (eql :int (spc:name v))
+                           (eql :bool (spc:name v))))))
 
 ;; TODO :: Fill in the details
 (-> refine-hole-with-hole (hole hole typing-context) typing-context)

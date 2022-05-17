@@ -42,14 +42,20 @@
     :components ((:file "package")
                  (:file "spec")
                  (:file "vampir")))
+   (:module intermediate-representation
+    :serial t
+    :description "The various IR's of the Alucard compiler"
+    :depends-on ("util" "specification")
+    :pathname #p"intermediate/"
+    :components ((:file "package")
+                 (:file "linear")
+                 (:file "primitive-global")))
    (:module pass
     :serial t
-    :depends-on ("specification" "closure" "vampir" "util")
+    :depends-on ("specification" "closure" "vampir" "util" "intermediate-representation")
     :description "Alucard Passes"
     :components ((:file "package")
-                 (:file "linear-term")
                  (:file "evaluate-body")
-                 (:file "primitive-global")
                  (:file "expand")
                  (:file "relocation")
                  (:file "anf")

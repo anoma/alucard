@@ -1,4 +1,4 @@
-(in-package :alu.pass.primitive-global)
+(in-package :alu.ir.primitive-global)
 
 (defclass prim-circuit ()
   ((name :initarg :name

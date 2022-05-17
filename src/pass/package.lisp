@@ -2,51 +2,8 @@
 ;; Packages Regarding Extending The Specification of Terms
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defpackage #:alu.pass.linear-term
-  (:documentation "Provides a simplified term structures that has been through
-linearization, use `alu.pass.spec' for the full specification")
-  (:local-nicknames (:util :alu.utils)
-                    (:spc  :alu.spec))
-  (:use #:common-lisp #:serapeum)
-  (:export
-   ;; New Term Variants Defined
-   :linear-term
-   :expanded-term
-   :fully-expanded-term
-   :binders
-   :starting-binders
-   ;; New Term Lists Defined
-   :constraint-list
-   :expanded-list
-   :fully-expanded-list
-   ;; New Types Defined
-   :bind
-   :multiple-bind
-   :standalone-ret
-   ;; New Constructors Defined
-   :make-bind
-   :make-multi-ret
-   :make-standalone-ret
-   :make-multiple-bind))
-
-(defpackage #:alu.pass.primitive-global
-  (:documentation "Provides a more low level representation of the
-global structure")
-  (:local-nicknames (#:spc #:alu.spec))
-  (:use #:common-lisp #:serapeum)
-  (:export
-   :prim-circuit :returns
-   :make-prim-circuit))
-
-(uiop:define-package #:alu.pass.spec
-  (:documentation "Defines out the specification of the pass terms,
-namely linear terms and more primitive global type storage, this
-package strictly adds to the `alu.spec' package")
-  (:use #:common-lisp #:serapeum)
-  (:use-reexport :alu.spec :alu.pass.linear-term :alu.pass.primitive-global))
-
 (defpackage #:alu.pass.typecheck
-  (:local-nicknames (#:spc        #:alu.pass.spec)
+  (:local-nicknames (#:spc        #:alu.ir)
                     (#:closure    #:alu.closure)
                     (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)
@@ -62,7 +19,7 @@ package strictly adds to the `alu.spec' package")
 Including circuit declaration expansion, and function type
 expansion.")
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.spec)
+                    (:spc     :alu.ir)
                     (:storage :alu.storage))
   (:use #:common-lisp #:serapeum)
   (:export
@@ -82,7 +39,7 @@ expansion.")
   (:documentation "Provides mapping and functionality required to
 safely relocate record instances and generate out code which lacks records")
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.spec)
+                    (:spc     :alu.ir)
                     (:storage :alu.storage)
                     (:expand  :alu.pass.expanded)
                     (:closure :alu.closure))
@@ -108,7 +65,7 @@ safely relocate record instances and generate out code which lacks records")
 circuits execution body and tracking caching")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util :alu.utils)
-                    (:spc  :alu.pass.spec)
+                    (:spc  :alu.ir)
                     (:emit :alu.spec.emit))
   (:export :evaluate-circuit-body :evaluate-and-cache-body))
 
@@ -123,7 +80,7 @@ circuits execution body and tracking caching")
   (:documentation "Provides Extraction capabilities to vamp-ir")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (#:util    #:alu.utils)
-                    (#:aspc    #:alu.pass.spec)
+                    (#:aspc    #:alu.ir)
                     (#:vspc    #:alu.vampir.spec)
                     (#:storage #:alu.storage))
   (:export :circuit-to-alias))
@@ -132,7 +89,7 @@ circuits execution body and tracking caching")
   (:documentation "Provides simplification passes to the Alucard Language")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util     :alu.utils)
-                    (:spc      :alu.pass.spec)
+                    (:spc      :alu.ir)
                     (:eval     :alu.pass.evaluate-body)
                     (:anf      :alu.pass.anf)
                     (:expand   :alu.pass.expanded)
@@ -158,7 +115,7 @@ circuits execution body and tracking caching")
   (:documentation "Provides an API for dependency tracking")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.spec)
+                    (:spc     :alu.ir)
                     (:pass    :alu.pass)
                     (:storage :alu.storage))
   (:export
@@ -174,7 +131,7 @@ circuits execution body and tracking caching")
   (:documentation "Provides The Alucard Pipeline down to ANF")
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
-                    (:spc     :alu.pass.spec)
+                    (:spc     :alu.ir)
                     (:pass    :alu.pass)
                     (:vampir  :alu.vampir)
                     (:dep     :alu.pass.dependencies)
