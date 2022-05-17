@@ -404,19 +404,23 @@ we try to get the unrefined type."
            (error "Internal error: Value ~A is not a known hole in ~A"
                   name context)))))
 
-(-> type-equality (spc:type-reference spc:type-reference) boolean)
+(-> type-equality (spc:type-reference-full spc:type-reference-full) boolean)
 (defun type-equality (type-1 type-2)
-  (dispatch-case ((type-1 spc:type-reference)
-                  (type-2 spc:type-reference))
+  (dispatch-case ((type-1 spc:type-reference-full)
+                  (type-2 spc:type-reference-full))
     ((spc:reference-type spc:reference-type)
      (eq (spc:name type-1) (spc:name type-2)))
     ((spc:application spc:application)
      (every #'type-equality
             (cons (spc:func type-1) (spc:arguments type-1))
             (cons (spc:func type-2) (spc:arguments type-2))))
+    ((number number)
+     (= type-1 type-2))
     ((* spc:application)
      nil)
     ((* spc:reference-type)
+     nil)
+    ((* number)
      nil)))
 
 (-> int-reference? (spc:type-reference) boolean)
@@ -438,7 +442,8 @@ we try to get the unrefined type."
 typing context."
   original-hole
   new-hole-info
-  context)
+  context
+  (error "not implemented yet"))
 
 (-> solve-recursively (keyword spc:type-reference typing-context) typing-context)
 (defun solve-recursively (name solved-value context)
@@ -458,7 +463,7 @@ integer then it will error."
            (etypecase-of lookup-type most-refined-value
              (hole
               (etypecase-of hole most-refined-value
-                (null :int)
+                (null (assure hole :int))
                 (keyword (if (or (eql most-refined-value :int)
                                  (eql most-refined-value :bool))
                              (assure hole :int)

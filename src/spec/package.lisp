@@ -42,6 +42,7 @@ package and alu terms")
 
    ;; New Top Level Term Variants Defined
    :type-reference
+   :type-reference-full
 
    ;; New Types Defined Type-Storage
    :reference-type :name

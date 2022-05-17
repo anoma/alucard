@@ -7,6 +7,12 @@ reference. If we are apply a type, then "
        ;; can be found in alu/term.lisp
        application))
 
+;; dispatch-case has issue with sub checking so we inline type-reference below
+(deftype type-reference-full ()
+  "This handles the case of references to types and what they may be
+applied upon"
+  `(or reference-type application number))
+
 (defclass reference-type ()
   ((name :initarg  :name
          :type     keyword
