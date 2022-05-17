@@ -1,17 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Packages Regarding Extending The Specification of Terms
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defpackage #:alu.pass.typecheck
-  (:local-nicknames (#:ir         #:alu.ir)
-                    (#:closure    #:alu.closure)
-                    (#:storage    #:alu.storage)
-                    (#:dependency #:alu.closure.dependency)
-                    (#:util       #:alu.utils))
-  (:use #:common-lisp #:serapeum))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Packages Regarding Expanding Away And relocating Record Types
+;; Packages Regarding Expanding Away and Relocating Record Types
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defpackage #:alu.pass.expanded

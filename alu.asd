@@ -51,9 +51,21 @@
                  (:file "primitive-global")
                  (:file "new-terms")
                  (:file "spec")))
+   (:module typechecker
+    :serial t
+    :description "The type checker of the Alucard compiler"
+    :depends-on ("util" "closure" "intermediate-representation")
+    :components ((:file "package")
+                 (:file "types")
+                 (:file "size")
+                 (:file "typecheck")))
    (:module pass
     :serial t
-    :depends-on ("specification" "closure" "vampir" "util" "intermediate-representation")
+    :depends-on ("intermediate-representation"
+                 "closure"
+                 "vampir"
+                 "util"
+                 "typechecker")
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "evaluate-body")

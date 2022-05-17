@@ -1,116 +1,4 @@
-(in-package :alu.pass.typecheck)
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (setf trivia:*arity-check-by-test-call* nil))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Typing structures
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defstruct type-info
-  "Type information of a fully realized type."
-  ;; if we don't know the size quite yet it will be nil
-  (size nil :type (or fixnum null))
-  (type nil :type ir:type-reference))
-
-;; TODO :: with generics we should make this type a lot more rich and
-;;         informative
-(deftype hole ()
-  "Represents the format of holes that have yet to be fully realized."
-  `(or null keyword))
-
-(deftype current-information ()
-  "Represents the current knowledge we have on a given type. Thus a
-hole, or if the type is known a type reference"
-  `(or hole ir:type-reference))
-
-(defstruct hole-information
-  (unrefined nil :type hole)
-  ;; We should redefine term, to be a list of ir:term-no-binding
-  ;; as we can be solved by various sets of equations.
-  ;;
-  ;; What I mean is that if we have `x = some equation', and then
-  ;; later `y = x' where we solve for `y', then we've solved for `x'.
-  ;;
-  ;; Thus the hole-information should be (list equation #<reference y>)
-  ;;
-  ;; And when our dependency closure says we've solved it, try the
-  ;; list until we get the equation that satisfies the constraint.
-  (term nil :type list))
-
-(defclass typing-context ()
-  ((holes :initarg :holes
-          :accessor holes
-          :initform nil
-          :type list                    ; list (list keywords)
-          :documentation "Represents the holes to solve. List of keywords")
-   (hole-info :initarg :hole-info
-              :accessor hole-info
-              :initform (closure:allocate)
-              :type closure:typ         ; Closure:typ hole-information
-              :documentation "Represents information about the holes that we know")
-   (dependency :initarg :dependency
-               :accessor dependency
-               :initform (dependency:allocate)
-               :type dependency:typ
-               :documentation "Represents the constraint satisfaction mapping")
-   (typing-closure :initarg :typing-closure
-                   :accessor typing-closure
-                   :initform (closure:allocate)
-                   :type closure:typ    ; Closure:typ type-info
-                   :documentation
-                   "This is the typing closure for terms which we already know"))
-  (:documentation "This represents the typing context the terms we are analyzing belong
-in"))
-
-(defmethod print-object ((obj typing-context) stream)
-  (print-unreadable-object (obj stream :type t)
-    (pprint-logical-block (stream nil)
-        (format stream ":HOLES ~A~_:HOLE-INFO ~A~_:DEPENDENCY ~A~_:TYPING-CLOSURE ~A"
-                (holes obj) (hole-info obj) (dependency obj) (typing-closure obj)))))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (deftype hole-conditions ()
-    "The conditions in which a fialure can happen for "
-    `(or same-as
-         (eql :refine-integer)
-         depends-on)))
-
-(defstruct same-as
-  "Represents that the hole is the same as this other variable"
-  (value (error "fill in the value") :type keyword))
-
-(defstruct depends-on
-  "this represents that the value is tied to the list of values in some
-way."
-  (value nil :type list))
-
-(deftype known-primitve-types ()
-  `(or (eql :int)
-       (eql :bool)
-       (eql :void)))
-
-(deftype known-primitve-functions ()
-  `(or (eql :+)
-       (eql :*)
-       (eql :=)
-       (eql :=)
-       (eql :exp)))
-
-(deftype lookup-type ()
-  "represents the potential type of a reference.
-
-_It can either be_
-1. known
-
-2. an unrefined value
-  - which we represent with a keyword.
-  - TODO :: Once we update with generics, we should move this to a
-    `ir:type-reference'
-
-3. unknown
-  - which we represent with null."
-  `(or type-info hole))
+(in-package :alu.typechecker)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Annotating the Typing context
@@ -212,7 +100,7 @@ _It can either be_
        (let* ((lookup (storage:lookup-type name)))
          (if lookup
              (values (make-type-info
-                      :size (determine-size-of-storage lookup)
+                      :size (size:storage lookup)
                       :type (ir:make-type-reference :name name))
                      context)
              (error "the record type ~A: is not defined" name))))
@@ -250,7 +138,7 @@ _It can either be_
                                        field)))
                           (values (make-type-info
                                    :type lookup
-                                   :size (determine-size lookup))
+                                   :size (size:reference lookup))
                                   context))))))))
                (lookup
                 (error "Record types currently cannot be applied"))
@@ -280,8 +168,7 @@ _It can either be_
           (let ((types (mapcar #'ir:typ circ-args)))
             (values (make-type-info
                      :type ret
-                     :size (determine-size-of-storage (storage:lookup-function
-                                                       func)))
+                     :size (size:storage (storage:lookup-function func)))
                     ;; this may fail but it'll throw an error
                     (mvfold (lambda (pair context)
                               (unify (car pair) (cdr pair) context))
@@ -536,59 +423,3 @@ we try to get the unrefined type."
           (t
            (error "Internal error: Value ~A is not a known hole in ~A"
                   name context)))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Determining the Size of the type
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(-> determine-size (ir:type-reference) integer)
-(defun determine-size (typ)
-  (values
-    (etypecase-of ir:type-reference typ
-      (ir:reference-type
-       (let ((lookup (storage:lookup-type (ir:name typ))))
-         (if lookup
-             (determine-size-of-storage lookup)
-             (error "type not found: ~A" (ir:name typ)))))
-      (ir:application
-       (or (determine-size-of-primitive typ)
-           (error "generics in user defined data type is not supported"))))))
-
-(-> determine-size-of-storage (ir:type-storage) integer)
-(defun determine-size-of-storage (storage)
-  (etypecase-of ir:type-storage storage
-    (ir:primitive        (or (determine-size-of-primitive storage)
-                              (error "type of primitive can not be resolved: ~A"
-                                     storage)))
-    (ir:type-declaration (determine-size-of-declaration storage))))
-
-(-> size-of-declaration-contents (ir:type-declaration) list)
-(defun size-of-declaration-contents (decl)
-  (let ((format (ir:decl decl)))
-    (etypecase-of ir:type-format format
-      (ir:record-decl
-       (mapcar (lambda (type-name)
-                 (~>> type-name
-                      (sycamore:tree-map-find (ir:contents format))
-                      determine-size))
-               (ir:order format)))
-      (ir:sum-decl
-       (error "Sum types are not currently supported")))))
-
-(-> determine-size-of-declaration (ir:type-declaration) integer)
-(defun determine-size-of-declaration (decl)
-  (assure integer
-    (sum (size-of-declaration-contents decl))))
-
-(-> determine-size-of-primitive ((or ir:primitive ir:application)) (or null fixnum))
-(defun determine-size-of-primitive (prim?)
-  (flet ((handle-arguments (keyword-prim arguments)
-           (typecase-of known-primitve-types keyword-prim
-             ((eql :int)  (if arguments (car arguments) 256))
-             ((eql :bool) 1)
-             ((eql :void) 0)
-             (otherwise   nil))))
-    (etypecase-of (or ir:primitive ir:application) prim?
-      (ir:primitive   (handle-arguments (ir:name prim?) nil))
-      (ir:application (handle-arguments (ir:name (ir:func prim?))
-                                         (ir:arguments prim?))))))

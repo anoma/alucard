@@ -12,7 +12,7 @@
                     (:vamp     :alu.vampir)
                     (:dep      :alu.pass.dependencies)
                     (:eval     :alu.pass.evaluate-body)
-                    (:check    :alu.pass.typecheck)
+                    (:check    :alu.typechecker)
                     (:pass     :alu.pass)
                     (:pipeline :alu.pipeline)
                     (:vspc     :alu.vampir.spec)
