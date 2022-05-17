@@ -48,8 +48,9 @@
     :depends-on ("util" "specification")
     :pathname #p"intermediate/"
     :components ((:file "package")
-                 (:file "linear")
-                 (:file "primitive-global")))
+                 (:file "primitive-global")
+                 (:file "new-terms")
+                 (:file "spec")))
    (:module pass
     :serial t
     :depends-on ("specification" "closure" "vampir" "util" "intermediate-representation")
