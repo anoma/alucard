@@ -391,19 +391,6 @@ values, or an error being thrown if the information is contradictory."
                  ((or (eql :int) (eql :bool)) context)
                  (otherwise                   (unification-error type-name))))))))))))
 
-(-> find-type-info (keyword typing-context) lookup-type)
-(defun find-type-info (name context)
-  "Grabs the typing value from the given keyword. If this lookup fails,
-we try to get the unrefined type."
-  (let ((looked (closure:lookup (typing-closure context) name)))
-    (cond (looked looked)
-          ((member name (holes context))
-           (let ((value (closure:lookup (hole-info context) name)))
-             (and value (hole-information-unrefined value))))
-          (t
-           (error "Internal error: Value ~A is not a known hole in ~A"
-                  name context)))))
-
 (-> type-equality (spc:type-reference-full spc:type-reference-full) boolean)
 (defun type-equality (type-1 type-2)
   (dispatch-case ((type-1 spc:type-reference-full)
@@ -442,8 +429,7 @@ we try to get the unrefined type."
 typing context."
   original-hole
   new-hole-info
-  context
-  (error "not implemented yet"))
+  context)
 
 (-> solve-recursively (keyword spc:type-reference typing-context) typing-context)
 (defun solve-recursively (name solved-value context)
@@ -479,17 +465,42 @@ integer then it will error."
     integer-constraint))
 
 
+(-> normal-form-to-type-info (spc:term-normal-form typing-context) lookup-type)
+(defun normal-form-to-type-info (arg context)
+  (etypecase-of spc:term-normal-form arg
+    (number        (assure hole :int))
+    (spc:reference (find-type-info (spc:name arg) context))))
 
 (-> find-integer-type-from-args (list typing-context) lookup-type)
 (defun find-most-refined-value (args context)
-  args context
-  (error "not implemented yet"))
+  (mvfold (lambda (val most-refined-so-far)
+            (dispatch-case ((val                 lookup-type)
+                            (most-refined-so-far lookup-type))
+              ((type-info hole)      val)
+              ((type-info type-info) most-refined-so-far) ; these should agree
+              ((hole      type-info) most-refined-so-far)
+              ((hole      keyword)   most-refined-so-far)
+              ((hole      null)      val)))
+          (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
+          (assure hole nil)))
 
 (-> find-integer-type-from-args (list typing-context) t)
 (defun consistent-type-check (args context)
   args context
   (error "not implemented yet"))
 
+(-> find-type-info (keyword typing-context) lookup-type)
+(defun find-type-info (name context)
+  "Grabs the typing value from the given keyword. If this lookup fails,
+we try to get the unrefined type."
+  (let ((looked (closure:lookup (typing-closure context) name)))
+    (cond (looked looked)
+          ((member name (holes context))
+           (let ((value (closure:lookup (hole-info context) name)))
+             (and value (hole-information-unrefined value))))
+          (t
+           (error "Internal error: Value ~A is not a known hole in ~A"
+                  name context)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Determining the Size of the type

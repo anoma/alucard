@@ -13,3 +13,12 @@
   (is (null
        (check::type-equality (spc:to-type-reference-format '(int 64))
                              (spc:to-type-reference-format '(int 32))))))
+
+
+(test find-no-data
+  (is
+   (null
+    (check::find-type-info :foo
+                           (check::make-starting-hole
+                            '(:foo :bar)
+                            (make-instance 'check::typing-context))))))
