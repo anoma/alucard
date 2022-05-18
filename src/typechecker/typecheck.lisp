@@ -469,10 +469,10 @@ integer then it will error."
 (-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
 (defun normal-form-to-type-info (arg context)
   (etypecase-of ir:term-normal-form arg
-    (number        (assure hole :int))
+    (number       (assure hole :int))
     (ir:reference (find-type-info (ir:name arg) context))))
 
-(-> find-integer-type-from-args (list typing-context) lookup-type)
+(-> find-most-refined-value (list typing-context) lookup-type)
 (defun find-most-refined-value (args context)
   (mvfold (lambda (val most-refined-so-far)
             (dispatch-case ((val                 lookup-type)
@@ -485,7 +485,7 @@ integer then it will error."
           (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
           (assure hole nil)))
 
-(-> find-integer-type-from-args (list typing-context) t)
+(-> consistent-type-check (list typing-context) (or t null))
 (defun consistent-type-check (args context)
   (flet ((keyword-case (type keyword)
            (etypecase-of known-primitve-types keyword
@@ -496,7 +496,7 @@ integer then it will error."
                          (type-info-type type))))
              ((eql :void)
               (error "The value void should not be used as an argument")))))
-    (mvfold (lambda (val current-most-known-type)
+    (mvfold (lambda (current-most-known-type val)
               (dispatch-case ((val                     lookup-type)
                               (current-most-known-type lookup-type))
                 ((*         null)      val)
@@ -507,9 +507,13 @@ integer then it will error."
                                            val
                                            (error "Values ~A and ~A are not consistent"
                                                   val current-most-known-type)))
-                ((type-info type-info) (type-equality (type-info-type val)
-                                                      (type-info-type
-                                                       current-most-known-type)))))
+                ((type-info type-info)
+                 (if (type-equality (type-info-type val)
+                                    (type-info-type
+                                     current-most-known-type))
+                     current-most-known-type
+                     (error "Values ~A and ~A are not consistent"
+                                                  val current-most-known-type)))))
             (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
             (assure hole nil))))
 

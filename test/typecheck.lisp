@@ -24,7 +24,11 @@
                             (make-instance 'check::typing-context))))))
 
 (test Running-the-type-checker
-    (finishes
+  (finishes
       (check::annotate-circuit
        (storage:lookup-function :constrain)
-       (alu.pass:linearize (storage:lookup-function :constrain)))))
+       (alu.pass:linearize (storage:lookup-function :constrain))))
+  (finishes
+    (check::annotate-circuit
+     (storage:lookup-function :poly-check)
+     (alu.pass:linearize (storage:lookup-function :poly-check)))))
