@@ -36,6 +36,7 @@ language. The name typically refers to the value being calculated.")
   (:local-nicknames (#:ir      #:alu.ir)
                     (#:storage #:alu.storage)
                     (#:types   #:alu.typechecker.types))
+  (:shadow :declaration)
   (:use #:common-lisp #:serapeum)
   (:export
    :reference

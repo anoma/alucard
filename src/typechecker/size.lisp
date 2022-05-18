@@ -18,11 +18,12 @@
 
 (-> storage (ir:type-storage) integer)
 (defun storage (storage)
-  (etypecase-of ir:type-storage storage
-    (ir:primitive        (or (primitive storage)
-                             (error "type of primitive can not be resolved: ~A"
-                                    storage)))
-    (ir:type-declaration (declaration storage))))
+  (values
+   (etypecase-of ir:type-storage storage
+     (ir:primitive        (or (primitive storage)
+                              (error "type of primitive can not be resolved: ~A"
+                                     storage)))
+     (ir:type-declaration (declaration storage)))))
 
 (-> contents (ir:type-declaration) list)
 (defun contents (decl)
