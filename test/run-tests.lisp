@@ -1,19 +1,24 @@
 (in-package :alu-test)
 
+(defparameter *all-tests*
+  (list
+   'alucard.format
+   'alucard.pass.anf
+   'alucard.expand
+   'alucard.relocation
+   'alucard.dependencies
+   'alucard.pass
+   'alucard.typecheck
+   'alucard.evaluate-body
+   'vampir
+   'alucard))
+
 (defun run-tests ()
   (let ((swapped (storage:currently-swapped?)))
     ;; I'm sorry I destroy your custom table if it isn't the test
     ;; one... this is a bug, please FIX ME
     (swap-tables)
-    (run! 'alucard.format)
-    (run! 'alucard.pass.anf)
-    (run! 'alucard.expand)
-    (run! 'alucard.relocation)
-    (run! 'alucard.dependencies)
-    (run! 'alucard.pass)
-    (run! 'alucard.evaluate-body)
-    (run! 'vampir)
-    (run! 'alucard)
+    (mapc #'run! *all-tests*)
     (unless swapped
       (storage:restore-tables))))
 
@@ -28,17 +33,7 @@
   (swap-tables)
   (ccl:report-coverage #P"./html/report.html" :tags
                        (loop with coverage = (make-hash-table)
-                             for test in (list
-                                          'alucard.format
-                                          'alucard.pass.anf
-                                          'alucard.expand
-                                          'alucard.relocation
-                                          'alucard.pass
-                                          'alucard.dependencies
-                                          'alucard.evaluate-body
-                                          'vampir
-                                          'alucard
-                                          )
+                             for test in *all-tests*
                              do (run! test)
                              do (setf (gethash test coverage)
                                       (ccl:get-incremental-coverage))
