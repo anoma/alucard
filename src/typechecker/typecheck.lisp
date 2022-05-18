@@ -4,6 +4,25 @@
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun annotate-circuit (circuit body)
+  (mvfold (flip #'annotate-term)
+          body
+          (starting-context (ir:arguments circuit))))
+
+(defun starting-context (constraint-list)
+  (mvfold
+   (lambda (ctx constraint)
+     ;; update when we get no types for circuit arguments
+     (util:copy-instance
+      ctx
+      :typing-closure (closure:insert (typing-closure ctx)
+                                      (ir:name constraint)
+                                      (make-type-info
+                                       :size (size:reference (ir:typ constraint))
+                                       :type (ir:typ constraint)))))
+   constraint-list
+   (make-instance 'typing-context)))
+
 (-> annotate-term (ir:expanded-term typing-context) typing-context)
 (defun annotate-term (term context)
   (assure typing-context

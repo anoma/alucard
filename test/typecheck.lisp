@@ -22,3 +22,9 @@
                            (check::make-starting-hole
                             '(:foo :bar)
                             (make-instance 'check::typing-context))))))
+
+(test Running-the-type-checker
+    (finishes
+      (check::annotate-circuit
+       (storage:lookup-function :constrain)
+       (alu.pass:linearize (storage:lookup-function :constrain)))))
