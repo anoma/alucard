@@ -31,4 +31,8 @@
   (finishes
     (check::annotate-circuit
      (storage:lookup-function :poly-check)
-     (alu.pass:linearize (storage:lookup-function :poly-check)))))
+     (alu.pass:linearize (storage:lookup-function :poly-check))))
+  (finishes
+    (check::annotate-circuit
+     (storage:lookup-function :array-lookup-equation)
+     (alu.pass:linearize (storage:lookup-function :array-lookup-equation)))))

@@ -52,7 +52,7 @@
                  :hole-info
                  (closure:insert
                   (closure:insert
-                   info v               ; the hole can be the same as the value
+                   info v      ; the hole can be the same as the value
                    (make-hole-information
                     :term (list (ir:make-reference :name result-value))))
                   result-value
@@ -215,6 +215,7 @@
                              :refine-integer)
                          (util:copy-instance
                           context
+                          :hole-info (mutual-holes args (hole-info context))
                           :dependency
                           (dependency:determine-each-other (dependency context)
                                                            argument-keywords))))
@@ -247,6 +248,25 @@
       ((ir:application :name func)
        (error "Can not apply ~A. Expecting a reference to a function not a number"
               func)))))
+
+(-> mutual-holes (list closure:typ) closure:typ)
+(defun mutual-holes (normal-forms hole-map)
+  "The normal form values all entail each other, and thus we"
+  (mvfold (lambda (hole-closure normal)
+            (etypecase-of ir:term-normal-form normal
+              (number hole-closure)
+              (ir:reference
+               (let ((hole (closure:lookup hole-closure (ir:name normal)))
+                     (removed (remove-if (lambda (x) (eql x normal)) normal-forms)))
+                 (closure:insert hole-closure
+                                 (ir:name normal)
+                                 (mvfold #'add-hole-formula
+                                         removed
+                                         (if hole
+                                             hole
+                                             (make-hole-information))))))))
+          normal-forms
+          hole-map))
 
 
 (defun make-starting-hole (keywords typing-context)
@@ -348,9 +368,9 @@ values, or an error being thrown if the information is contradictory."
 (-> is-primitive? (ir:type-reference (-> (ir:primitive) boolean)) boolean)
 (defun is-primitive? (ref predicate)
   (let* ((name-to-lookup
-           (match-of ir:type-reference ref
-             ((ir:reference-type :name name)                     name)
-             ((ir:application    :name (ir:reference ir:name)) ir:name)))
+           (etypecase-of ir:type-reference ref
+             (ir:reference-type (ir:name ref))
+             (ir:application    (ir:name (ir:func ref)))))
          (looked (storage:lookup-type name-to-lookup)))
     (etypecase-of (or ir:type-storage null) looked
       ((or null ir:type-declaration) nil)
@@ -383,7 +403,10 @@ entailed by the given keyword."
   (let* ((info    (make-type-info :size (size:reference solved-value)
                                   :type solved-value))
          (context (solved name info context))
-         (solved  (dependency:get-solved (dependency context))))
+         ;; IMPORTANT :: We remove the value we solved for otherwise
+         ;; we try to solve for it again and error out
+         (solved (remove-if (lambda (x) (eql x name))
+                            (dependency:get-solved (dependency context)))))
     (labels
         ((solving-current-set (context current-resolve-symbol)
            (let ((hole (closure:lookup (hole-info context)
@@ -398,14 +421,22 @@ entailed by the given keyword."
                  (error "How can I solve hole ~A: if no equations exist for it"
                         current-resolve-symbol))))
          (solve-recursive (context symbol-set)
-           (let* ((context  (mvfold #'solving-current-set symbol-set context))
+           ;; The dependency module does not remember what values have
+           ;; been solved. Thus we need to manually filter out
+           ;; previously dealt with values, by looking in our typing
+           ;; map and seeing what we've already figured out.
+           (let* ((not-solved (remove-if
+                               (lambda (x)
+                                 (closure:lookup (typing-closure context) x))
+                               symbol-set))
+                  (context  (mvfold #'solving-current-set not-solved context))
                   (resolved (dependency:get-solved (dependency context))))
              ;; We keep dumping them, eventually we should get through
              ;; them all!
              (if resolved
                  (solve-recursive (dump-solved context) resolved)
                  context))))
-      (solve-recursive solved (dump-solved context)))))
+      (solve-recursive (dump-solved context) solved))))
 
 (-> dump-solved (typing-context) typing-context)
 (defun dump-solved (context)
