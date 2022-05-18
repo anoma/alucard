@@ -21,19 +21,24 @@
                ctx
                :typing-closure (closure:insert closure v result)))
              (same-as
-              (util:copy-instance
-               ctx
-               :holes      (cons v holes)
-               :dependency (dependency:determined-by
-                            dep v (list (same-as-value result)))
-               :hole-info  (closure:insert
-                            info v
-                            ;; here we can cheat and make the
-                            ;; hole the same value as the
-                            ;; reference itself
-                            (make-hole-information
-                             :term (list (ir:make-reference
-                                          :name (same-as-value result)))))))
+              (let ((result-value (same-as-value result)))
+                (util:copy-instance
+                 ctx
+                 :holes (cons v holes)
+                 :dependency
+                 (dependency:determined-by
+                  (dependency:determined-by dep v (list result-value))
+                  result-value
+                  (list v))
+                 :hole-info
+                 (closure:insert
+                  (closure:insert
+                   info v               ; the hole can be the same as the value
+                   (make-hole-information
+                    :term (list (ir:make-reference :name result-value))))
+                  result-value
+                  (when #1=(closure:lookup info result-value)
+                        (add-hole-formula #1# (ir:make-reference :name v)))))))
              ;; here we have an integer type, but what size of
              ;; integer, we need to refine on this!
              ((eql :refine-integer)
@@ -175,6 +180,10 @@
                             (mapcar #'cons args types)))))
          ((ir:primitive :name name)
           (flet ((handle-all-int-case ()
+                   ;; This is not finished yet, we need to
+                   ;; 1. return multiple values
+                   ;; 2. have each value be entailed by each other in all this.
+                   ;;   - Only if `find-integer-type-from-args' is a hole!
                    (let ((integer-constraint
                            (find-integer-type-from-args args context)))
                      (mvfold (lambda (context term)
@@ -335,8 +344,66 @@ typing context."
   "Solves the given keyword with given type-reference. After solving,
 `solve-recursively', will attempt to solve any new variables that were
 entailed by the given keyword."
-  name solved-value context
-  (error "not implemented yet"))
+  (let* ((info    (make-type-info :size (size:reference solved-value)
+                                  :type solved-value))
+         (context (solved name info context))
+         (solved  (dependency:get-solved (dependency context))))
+    (labels
+        ((solving-current-set (context current-resolve-symbol)
+           (let ((hole (closure:lookup (hole-info context)
+                                       current-resolve-symbol)))
+             (if hole
+                 (multiple-value-bind (context solved?)
+                     (try-equations current-resolve-symbol hole context)
+                   (if solved?
+                       context
+                       (error "could not solve value ~A"
+                              current-resolve-symbol)))
+                 (error "How can I solve hole ~A: if no equations exist for it"
+                        current-resolve-symbol))))
+         (solve-recursive (context symbol-set)
+           (let* ((context  (mvfold #'solving-current-set symbol-set context))
+                  (resolved (dependency:get-solved (dependency context))))
+             ;; We keep dumping them, eventually we should get through
+             ;; them all!
+             (if resolved
+                 (solve-recursive (dump-solved context) resolved)
+                 context))))
+      (solve-recursive solved (dump-solved context)))))
+
+(-> dump-solved (typing-context) typing-context)
+(defun dump-solved (context)
+  (util:copy-instance context
+                      :dependency (dependency:dump-solved
+                                   (dependency context))))
+
+(-> try-equations
+    (keyword hole-information typing-context)
+    (values typing-context boolean))
+(defun try-equations (name hole-info context)
+  "We try the series of equations until one of them works, once the
+first equation that is found working, we stop trying to evaluate the other expressions.
+Note that we do not recursively solve, thus the solved list may fill up"
+  (mvfold (lambda (context found? term)
+            (if found?
+                (values context found?)
+                (multiple-value-bind (result context)
+                    (annotate-term-no-binder term context)
+                  (etypecase-of (or type-info hole-conditions) result
+                    (type-info       (values (solved name result context) t))
+                    (hole-conditions (values context nil))))))
+          (hole-information-term hole-info)
+          context
+          nil))
+
+(-> solved (keyword type-info typing-context) typing-context)
+(defun solved (name info context)
+  (make-instance
+   'typing-context
+   :typing-closure (closure:insert (typing-closure context) name info)
+   :holes          (remove-if (lambda (x) (eql x name)) (holes context))
+   :hole-info      (closure:remove (hole-info context) name)
+   :dependency     (dependency:solved-for (dependency context) name)))
 
 (-> find-integer-type-from-args (list typing-context) current-information)
 (defun find-integer-type-from-args (args context)
@@ -362,7 +429,6 @@ integer then it will error."
                          (type-info-type most-refined-value)))))))
     (consistent-type-check args context)
     integer-constraint))
-
 
 (-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
 (defun normal-form-to-type-info (arg context)

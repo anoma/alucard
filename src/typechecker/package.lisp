@@ -28,7 +28,10 @@ checker")
 
    ;; Primitive information
    :known-primitve-types
-   :known-primitve-functions))
+   :known-primitve-functions
+
+   ;; Operations on Datatypes
+   :add-hole-formula))
 
 (defpackage #:alu.typechecker.size
   (:documentation "Calculates the size of various types found in the Alucard

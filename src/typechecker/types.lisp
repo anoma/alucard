@@ -127,3 +127,12 @@ _It can either be_
     (pprint-logical-block (stream nil)
         (format stream ":HOLES ~A~_:HOLE-INFO ~A~_:DEPENDENCY ~A~_:TYPING-CLOSURE ~A"
                 (holes obj) (hole-info obj) (dependency obj) (typing-closure obj)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Operations on hole Info
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> add-hole-formula (hole-information alu.spec:term-no-binding) hole-information)
+(defun add-hole-formula (hole new-formula)
+  (make-hole-information :unrefined (hole-information-unrefined hole)
+                         :term (cons new-formula (hole-information-term hole))))
