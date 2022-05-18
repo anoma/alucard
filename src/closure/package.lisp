@@ -31,4 +31,5 @@
    :solved-for*
    :get-solved
    :dump-solved
-   :add-dependencies))
+   :add-dependencies
+   :determine-each-other))

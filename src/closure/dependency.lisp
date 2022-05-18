@@ -52,6 +52,20 @@
                           :direct  (closure:insert (direct typ) term new-contents)
                           :reverse (add-reverse (reverse typ) term dependency-list)))))
 
+(-> determine-each-other (typ list) typ)
+(defun determine-each-other (dependency keywords)
+  "Each value is considered to determine each other."
+  ;; This algorithm can significantly improved
+  (mvfold (lambda (dep keyword)
+            ;; O(n²), a set would be nicer
+            (let ((remove-current (remove-if (lambda (x) (eql x keyword)) keywords)))
+              (mvfold (lambda (dep keyword-dep)
+                        (determined-by dep keyword (list keyword-dep)))
+                      remove-current
+                      dep)))
+          keywords
+          dependency))
+
 (-> lookup (typ keyword) list)
 (defun lookup (dependency term)
   (assure list
@@ -76,8 +90,8 @@
                               :solved  (adjoin term (solved dependency)))))
 
 (serapeum:-> solved-for* (typ &rest keyword) typ)
-(defun solved-for* (dependency &rest terms)
-  (mvfold #'solved-for terms dependency))
+(defun solved-for* (dependency &rest keywords)
+  (mvfold #'solved-for keywords dependency))
 
 (-> dump-solved (typ) typ)
 (defun dump-solved (dependency)

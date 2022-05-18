@@ -180,16 +180,33 @@
                             (mapcar #'cons args types)))))
          ((ir:primitive :name name)
           (flet ((handle-all-int-case ()
-                   ;; This is not finished yet, we need to
-                   ;; 1. return multiple values
-                   ;; 2. have each value be entailed by each other in all this.
-                   ;;   - Only if `find-integer-type-from-args' is a hole!
-                   (let ((integer-constraint
-                           (find-integer-type-from-args args context)))
-                     (mvfold (lambda (context term)
-                               (unify term integer-constraint context))
-                             args
-                             context))))
+                   (let* ((integer-constraint
+                            (find-integer-type-from-args args context))
+                          (argument-keywords
+                            (filter-map (lambda (x)
+                                          (etypecase-of ir:term-normal-form x
+                                            (number nil)
+                                            (ir:reference (ir:name x))))
+                                        args)))
+                     (etypecase-of current-information integer-constraint
+                       (hole
+                        (values
+                         (if argument-keywords
+                             (make-same-as :value (car argument-keywords))
+                             :refine-integer)
+                         (util:copy-instance
+                          context
+                          :dependency
+                          (dependency:determine-each-other (dependency context)
+                                                           argument-keywords))))
+                       (ir:type-reference
+                        (values
+                         (make-type-info :size (size:reference integer-constraint)
+                                         :type integer-constraint)
+                         (mvfold (lambda (context term)
+                                   (unify term integer-constraint context))
+                                 args
+                                 context)))))))
             (typecase-of known-primitve-functions name
               ((or (eql :*) (eql :+))
                (handle-all-int-case))
