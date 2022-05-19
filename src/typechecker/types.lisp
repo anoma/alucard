@@ -69,6 +69,7 @@ analyzing belong in"))
        (eql :refine-integer)
        depends-on))
 
+;; infer-from
 (defstruct same-as
   "Represents that the hole is the same as this other variable"
   (value (error "fill in the value") :type keyword))
@@ -114,7 +115,6 @@ _It can either be_
 (deftype known-primitve-functions ()
   `(or (eql :+)
        (eql :*)
-       (eql :=)
        (eql :=)
        (eql :exp)))
 

@@ -196,7 +196,8 @@
                     ;; this may fail but it'll throw an error
                     (mvfold (lambda (pair context)
                               (unify (car pair) (cdr pair) context))
-                            (mapcar #'cons args types)))))
+                            (mapcar #'cons args types)
+                            context))))
          ((ir:primitive :name name)
           (flet ((handle-all-int-case ()
                    (let* ((integer-constraint
@@ -296,8 +297,8 @@ values, or an error being thrown if the information is contradictory."
       ;; partial information as hole information to be resolved later.
       ((ir:reference :name term-name)
        (let ((value (find-type-info term-name context)))
-         (dispatch-case  ((value         lookup-type)
-                          (expected-type current-information))
+         (dispatch-case ((value         lookup-type)
+                         (expected-type current-information))
            ((type-info hole)
             (error "Internal compiler error. Tried to unify a fully
                    known type ~A with the hole ~A."

@@ -104,6 +104,7 @@
    (:file "relocation")
    (:file "evaluate-body")
    (:file "dependencies")
+   (:file "typecheck")
    (:file "pass")
    (:file "vampir")
    (:file "run-tests"))
