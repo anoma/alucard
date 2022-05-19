@@ -258,9 +258,10 @@ if the value is not void, then the returns in the body are given back"
       (mapcan #'ir:var filtered))))
 
 (defun voidp (ret)
-  (typecase ret
-    (ir:type-reference (eq (ir:name ret) :void))
-    (otherwise          nil)))
+  (typecase-of ir:type-reference ret
+    (ir:reference-type (eq (ir:name ret) :void))
+    (ir:application    nil)
+    (otherwise         nil)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Renaming 在蒼白的月光

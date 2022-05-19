@@ -143,7 +143,7 @@
         (ir:make-reference :name :bob))))))))
 
 (defcircuit array-lookup-equation ((public x (int 25))
-                                   (output int))
+                                   (output (int 25)))
   (def ((with-constraint (y z)
           (prld:= x (prld:+ (prld:* y 10) z))))
     z))
