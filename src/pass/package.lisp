@@ -130,6 +130,7 @@ circuits execution body and tracking caching")
    :pipeline
    :print-vampir
    ;; Intermediate steps
+   :to-typecheck
    :to-expand-away-records
    :to-primitive-circuit
    :to-vampir))

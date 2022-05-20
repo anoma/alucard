@@ -73,6 +73,9 @@
                      (output nested))
       3)
 
+(defcircuit int-return  ((output int))
+  3)
+
 (defcircuit arg-circuit-input ((public  root int)
                                (private sig  point)
                                (output nested))
@@ -103,6 +106,41 @@
                   (prld:* 2 x)
                   4)
      0))
+
+(defcircuit invalid-type-unification ((public x (int 64))
+                                      (public y (int 32))
+                                      (output (int 64)))
+  (prld:+ x y))
+
+(defcircuit invalid-record-lookup ((output (int 64)))
+  (x 3))
+
+(defcircuit invalid-record-creation ((output (int 64)))
+  (def ((y (ir:make-record :name :foo)))
+    y))
+
+(defcircuit invalid-record-primitive ((public x (int 32))
+                                      (output (int 64)))
+  (def ((y (prld:+ 3 x)))
+    (x y)))
+
+(defcircuit basic-unification ((public x (int 32))
+                               (output (int 32)))
+  (def ((y 55)
+        (z (prld:+ 55 y y)))
+    (prld:+ y x z)))
+
+(defcircuit invalid-record-primitive-2 ((public x int)
+                                        (output (int 64)))
+  (def ((y (prld:+ 3 x)))
+    (x y)))
+
+(defcircuit invalid-record-lookup-type ((public ntest nested)
+                                        (output (int 64)))
+  (x ntest))
+
+(defcircuit invalid-application-unification ((output (int 64)))
+  (arg-circuit-input 35 35))
 
 ;; Manual adding to the storage
 ;; my god just add storage abstraction, as wew!
