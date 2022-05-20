@@ -257,6 +257,7 @@ if the value is not void, then the returns in the body are given back"
                                    body)))
       (mapcan #'ir:var filtered))))
 
+(-> voidp (ir:type-reference) boolean)
 (defun voidp (ret)
   (typecase-of ir:type-reference ret
     (ir:reference-type (eq (ir:name ret) :void))

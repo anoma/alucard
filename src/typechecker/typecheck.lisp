@@ -4,11 +4,18 @@
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(-> check (ir:expanded-list ir:circuit) ir:expanded-list)
+(defun check (body circuit)
+  (annotate-circuit circuit body)
+  body)
+
+(-> annotate-circuit (ir:circuit ir:expanded-list) typing-context)
 (defun annotate-circuit (circuit body)
   (mvfold (flip #'annotate-term)
           body
           (starting-context (ir:arguments circuit))))
 
+(-> starting-context (list) typing-context)
 (defun starting-context (constraint-list)
   (mvfold
    (lambda (ctx constraint)
@@ -95,9 +102,9 @@
   - If the system is in an invalid state with the binder, an error is
     thrown.
 
-2. `hole-condition'
+2. `hole-conditions'
   - If the system needs more information to fully determine the type a
-    `hole-condition' is returned.
+    `hole-conditions' is returned.
 
 3. `type-info'
   - If unification is completely successful, then we get back a
@@ -144,6 +151,7 @@
                                     rec))
                      (ir:reference (ir:name rec))))
               (lookup (closure:lookup closure rec)))
+         ;; replace with typecase-of... what are you doing, me
          (cond ((and lookup (typep (type-info-type lookup) 'ir:reference-type))
                 (let* ((field-name (ir:name (type-info-type lookup)))
                        (lookup     (storage:lookup-type field-name)))
@@ -157,13 +165,16 @@
                        (ir:sum-decl
                         (error "Trying to index into the sum type ~A" field-name))
                        (ir:record-decl
-                        (let ((lookup (sycamore:tree-map-find
-                                       (ir:contents (ir:decl lookup))
-                                       field)))
-                          (values (make-type-info
-                                   :type lookup
-                                   :size (size:reference lookup))
-                                  context))))))))
+                        (let ((field-type (sycamore:tree-map-find
+                                           (ir:contents (ir:decl lookup))
+                                           field)))
+                          (if field-type
+                              (values (make-type-info
+                                       :type field-type
+                                       :size (size:reference field-type))
+                                      context)
+                              (error "the field ~A does not exist in record type: ~A"
+                                     field-name (ir:name lookup))))))))))
                (lookup
                 (error "Record types currently cannot be applied"))
                (t
@@ -192,9 +203,9 @@
           (let ((types (mapcar #'ir:typ circ-args)))
             (values (make-type-info
                      :type ret
-                     :size (size:storage (storage:lookup-function func)))
+                     :size (size:reference ret))
                     ;; this may fail but it'll throw an error
-                    (mvfold (lambda (pair context)
+                    (mvfold (lambda (context pair)
                               (unify (car pair) (cdr pair) context))
                             (mapcar #'cons args types)
                             context))))

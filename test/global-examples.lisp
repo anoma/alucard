@@ -33,7 +33,8 @@
   (nonce   tree))
 
 (alu:deftype utx ()
-  (owner  (bytes 128))
+  ;; replace with a string type once we get strings
+  (owner  int)
   (amount (int   64))
   (nonce  (int   64)))
 
@@ -59,7 +60,7 @@
                            (output void))
   (constrain foo))
 
-(defcircuit arg-test-exp ((public  root (bytes 64))
+(defcircuit arg-test-exp ((public  root int)
                           (private sig  int)
                           (private utx utx)
                           (output int))
@@ -73,20 +74,20 @@
       3)
 
 (defcircuit arg-circuit-input ((public  root int)
-                               (private sig  nested)
+                               (private sig  point)
                                (output nested))
-  3)
+  (nested :plane sig :time sig))
 
-(defcircuit record-test ((public  root (bytes 64))
+(defcircuit record-test ((public  root int)
                          (private sig  int)
                          (private utx nested)
-                         (output nested))
+                         (output point))
   (arg-circuit-input 3 (plane utx)))
 
-(defcircuit record-test-mult ((public  root (bytes 64))
+(defcircuit record-test-mult ((public  root int)
                               (private sig  int)
                               (private utx nested)
-                              (output nested))
+                              (output point))
   (def ((circ (arg-circuit-input 3 (plane utx))))
     (plane circ)))
 

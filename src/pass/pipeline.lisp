@@ -4,6 +4,7 @@
 ;; half way through for easier testing! until then I'll just have many
 ;; arrow functions for where I want to stop off!
 
+(-> to-typecheck           (ir:circuit) ir:expanded-list)
 (-> to-expand-away-records (ir:circuit) ir:fully-expanded-list)
 (-> to-primitive-circuit   (ir:circuit) ir:prim-circuit)
 (-> to-vampir              (ir:circuit) alu.vampir.spec:alias)
@@ -43,9 +44,15 @@
   (~> circuit
       to-vampir))
 
-(defun to-expand-away-records (circuit)
+(defun to-typecheck (circuit)
   (~> circuit
       pass:linearize
+      (alu.typechecker::check circuit)
+      ))
+
+(defun to-expand-away-records (circuit)
+  (~> circuit
+      to-typecheck
       (pass:expand-away-records circuit)
       pass:remove-void-bindings))
 

@@ -13,9 +13,9 @@
   ;; replace with an exhaustive match!
   (case (name primitive)
     ;; we know these return a field/int
-    ((:+ :* :- :/ :exp) (make-reference :name :int))
+    ((:+ :* :- :/ :exp) (make-type-reference :name :int))
     ;; default to int
-    (t                  (make-reference :name :int))))
+    (t                  (make-type-reference :name :int))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                      Function Type Storage Type                            ;;

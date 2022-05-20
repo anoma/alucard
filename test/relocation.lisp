@@ -121,12 +121,8 @@
                                 :hi)))))
 
 (test initial-closure-from-circuit
-  (let ((expected-storage '((:PLANE
-                             (:X . :SIG-PLANE-X)
-                             (:Y . :SIG-PLANE-Y))
-                            (:TIME
-                             (:X . :SIG-TIME-X)
-                             (:Y . :SIG-TIME-Y))))
+  (let ((expected-storage '((:X . :SIG-X) (:Y . :SIG-Y)))
+
         (closure (relocate:initial-closure-from-circuit
                   (storage:lookup-function :arg-circuit-input))))
 

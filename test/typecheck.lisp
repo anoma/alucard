@@ -25,9 +25,9 @@
 
 (test Running-the-type-checker
   (finishes
-      (check::annotate-circuit
-       (storage:lookup-function :constrain)
-       (alu.pass:linearize (storage:lookup-function :constrain))))
+    (check::annotate-circuit
+     (storage:lookup-function :constrain)
+     (alu.pass:linearize (storage:lookup-function :constrain))))
   (finishes
     (check::annotate-circuit
      (storage:lookup-function :poly-check)
