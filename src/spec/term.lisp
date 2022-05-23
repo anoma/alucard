@@ -17,6 +17,8 @@ since we want to ensure a binder does not contain another binder"
 removed until very late in the pipeline"
   `(or term-normal-form application))
 
+;; (deftype generic-data-)
+
 (deftype record-forms ()
   "Alucard forms that relate to records"
   `(or record record-lookup))
@@ -49,11 +51,15 @@ augmented with the common lisp list type."
                     ,it ,x)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Alucard Term Declaration
+;;; Alucard Term Declaration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; We are using defclass as they are more flexible.... we just pay in
 ;; terms of verbosity, but that's not a big deal.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Normal Form Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass primitive ()
   ((name :initarg  :name
@@ -61,6 +67,17 @@ augmented with the common lisp list type."
          :accessor name
          :documentation "The name of the primitive"))
   (:documentation "Primitive type in the Alu language"))
+
+(defclass reference ()
+  ((name :initarg  :name
+         :type     keyword
+         :accessor name
+         :documentation "The Variable reference"))
+  (:documentation "Represents a variable in the Alucard language"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Base Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass application ()
   ((name :initarg :function
@@ -75,32 +92,9 @@ depending on what table it is related to.")
               :documentation "The arguments in which the gate is called upon"))
   (:documentation "application is the application type of the alu ADT"))
 
-(defclass record ()
-  ((name :initarg :name
-         :accessor name
-         :type     keyword
-         :documentation "The name of the constructor of the alucard type")
-   (contents :initarg :contents
-             :initform (sycamore:make-tree-map #'util:hash-compare)
-             :type     sycamore:tree-map
-             :accessor contents
-             :documentation "the storage of the initial type mapping")
-   (order :initarg :order
-          :initform nil
-          :type     list
-          :accessor order
-          :documentation "For keeping a consistent order of fields between implementations"))
-  (:documentation "Represents an instance of a record type"))
-
-(defclass record-lookup ()
-  ((record :initarg :record
-           :accessor record
-           :documentation "the record in which we are grabbing the data out of")
-   (field :initarg  :field
-          :type     keyword
-          :accessor field
-          :documentation "The field we wish to lookup from the record"))
-  (:documentation "Represents a field lookup"))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Binder Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass let-node ()
   ((var :initarg  :variable
@@ -124,12 +118,62 @@ depending on what table it is related to.")
           :documentation "the constraints"))
   (:documentation "Represents a bind-constraint in the Alucard language"))
 
-(defclass reference ()
-  ((name :initarg  :name
-         :type     keyword
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Record Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass record ()
+  ((name :initarg :name
          :accessor name
-         :documentation "The Variable reference"))
-  (:documentation "Represents a variable in the Alucard language"))
+         :type     keyword
+         :documentation "The name of the constructor of the alucard type")
+   (contents :initarg :contents
+             :initform (sycamore:make-tree-map #'util:hash-compare)
+             :type     sycamore:tree-map
+             :accessor contents
+             :documentation "the storage of the initial type mapping")
+   (order :initarg :order
+          :initform nil
+          :type     list
+          :accessor order
+          :documentation "For keeping a consistent order of fields
+between implementations"))
+  (:documentation "Represents an instance of a record type"))
+
+(defclass record-lookup ()
+  ((record :initarg :record
+           :accessor record
+           :documentation "the record in which we are grabbing the data out of")
+   (field :initarg  :field
+          :type     keyword
+          :accessor field
+          :documentation "The field we wish to lookup from the record"))
+  (:documentation "Represents a field lookup"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defclass from-data (direct-slots-mixin)
+  ((contents :initarg :contents
+             :initform nil
+             :type     list
+             :accessor contents
+             :documentation "The data in the array"))
+  (:documentation "Represents creating an array from existing data"))
+
+(defclass allocate (protect-slots-mixin)
+  ((size :initarg :size
+         :accessor size
+         :documentation "The number of elements in the array")
+   (typ :initarg :typ
+        :accessor typ
+        :type     (or type-reference null)
+        :documentation "The type the array inhabits")
+   ;; Must provide this, as allocation happens on the super class level ☹
+   (protected :initform (make-hash-table :test #'eq) :allocation :class)))
+
+(protect-slots 'allocate 'typ)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Primitive Functionality
@@ -233,3 +277,16 @@ depending on what table it is related to.")
 (defun make-reference (&key name)
   (assure reference
     (make-instance 'reference :name name)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array Functionality
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj from-data) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A" (contents obj))))
+
+(defun make-from-data (&key contents)
+  (values
+   (make-instance 'from-data :contents contents)))
+

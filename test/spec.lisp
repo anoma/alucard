@@ -5,6 +5,26 @@
 
 (in-suite alucard.format)
 
+(defclass test-mixin ()
+  ((foo :initarg :foo)))
+
+(defclass test (test-mixin ir:protect-slots-mixin)
+  ((bar :initarg :bar)
+   (baz :initarg :baz)
+   ;; Must provide this, as allocation happens on the super class level ☹
+   (protected :initform (make-hash-table :test #'eq) :allocation :class)))
+
+(ir:protect-slots 'test 'baz)
+
+;; (slot-value (c2cl:class-prototype (find-class 'test)) 'protected)
+
+(test generic-data-considerations
+  (let ((expected '((:bar . 5))))
+    (is
+     (equalp expected
+             (ir:direct-slots (make-instance 'test :foo 3 :bar 5 :baz 10))))))
+
+
 (test record-creation-and-lookup-works
   (for-all ((name  (gen-string))
             (value (gen-integer)))

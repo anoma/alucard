@@ -4,6 +4,7 @@
 (defprimitive-type int64)
 (defprimitive-type void)
 (defprimitive-type bool)
+(defprimitive-type array)
 
 (defprimitive +)
 (defprimitive *)

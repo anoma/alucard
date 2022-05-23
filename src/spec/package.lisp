@@ -6,6 +6,22 @@ package and alu terms")
   (:export
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; Generic Data Manipulation
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+   ;; Mixins
+   :direct-slots-mixin
+   :protect-slots-mixin
+
+   ;; Operations on Mixins
+   :protect-slots
+   :direct-slots
+   :direct-slot-names
+   :direct-slot-keywords
+   :direct-slot-values
+   :update-from-alist
+
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; found in term
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -31,6 +31,7 @@
     :depends-on  ("util" "closure")
     :pathname #P"spec/"
     :components ((:file "package")
+                 (:file "data-traversal")
                  (:file "term")
                  (:file "type")
                  (:file "global")
