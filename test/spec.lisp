@@ -8,13 +8,13 @@
 (defclass test-mixin ()
   ((foo :initarg :foo)))
 
-(defclass test (test-mixin ir:protect-slots-mixin)
+(defclass test-class (test-mixin ir:protect-slots-mixin)
   ((bar :initarg :bar)
    (baz :initarg :baz)
    ;; Must provide this, as allocation happens on the super class level ☹
    (protected :initform (make-hash-table :test #'eq) :allocation :class)))
 
-(ir:protect-slots 'test 'baz)
+(ir:protect-slots 'test-class 'baz)
 
 ;; (slot-value (c2cl:class-prototype (find-class 'test)) 'protected)
 
@@ -22,7 +22,7 @@
   (let ((expected '((:bar . 5))))
     (is
      (equalp expected
-             (ir:direct-slots (make-instance 'test :foo 3 :bar 5 :baz 10))))))
+             (ir:direct-slots (make-instance 'test-class :foo 3 :bar 5 :baz 10))))))
 
 
 (test record-creation-and-lookup-works

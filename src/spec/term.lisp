@@ -151,6 +151,11 @@ between implementations"))
   (:documentation "Represents a field lookup"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Type Setting Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Array Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -174,6 +179,26 @@ between implementations"))
    (protected :initform (make-hash-table :test #'eq) :allocation :class)))
 
 (protect-slots 'allocate 'typ)
+
+(defclass array-lookup (direct-slots-mixin)
+  ((arr :initarg :arr
+        :accessor arr
+        :documentation "The array for lookup")
+   (pos :initarg :pos
+        :accessor pos
+        :documentation "The position in the array to lookup"))
+  (:documentation "An Array Lookup operation"))
+
+(defclass array-set (direct-slots-mixin)
+  ((arr :initarg :arr
+        :accessor arr
+        :documentation "The array for setting")
+   (pos :initarg :pos
+        :accessor pos
+        :documentation "The position in the array to set")
+   (value :initarg :value
+          :accessor value
+          :documentation "The data to be put into the array")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Primitive Functionality
