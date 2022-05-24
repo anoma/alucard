@@ -6,61 +6,84 @@
 
 ;; The Pipeline for how these types get used is roughly as follows.
 ;;
-;;        +--------------------------+
-;;        |        Linear-Term       |
-;;        +--------------------------+
-;;        | Alu Term through ANF     |
-;;        |                          |
-;;        | Binders contain term-…  |
-;;        |                          |
-;;        | No other changes         |
-;;        |                          |
-;;        +--------------------------+
-;;                    |
-;;                    |
-;;                    v
-;;        +--------------------------+
-;;        |       Expanded-Term      |
-;;        +--------------------------+
-;;        | Term through removal of  |
-;;        | top level normal forms   |
-;;        |                          |
-;;        | Binders contain term-…  |
-;;        |                          |
-;;        |                          |
-;;        | We run algorithms like   |
-;;        | - type checking          |
-;;        | - Expansion              |
-;;        | - ETC                    |
-;;        +--------------------------+
-;;                    |
-;;                    |
-;;                    v
-;;        +--------------------------+
-;;        |   Fully-Expanded-Term    |
-;;        +--------------------------+
-;;        | Term where concepts like |
-;;        | Arrays and records are   |
-;;        | expanded out.            |
-;;        |                          |
-;;        | Binders contain spc:base |
-;;        |                          |
-;;        | We run algorithms like   |
-;;        | - void removal           |
-;;        | - extra let removal      |
-;;        | - ETC                    |
-;;        +--------------------------+
+;;        +-----------------------------------+
+;;        |             Linear-Term           |
+;;        +-----------------------------------+
+;;        | Alu Term through ANF              |
+;;        |                                   |
+;;        | Binders contain term-type-manip… |
+;;        |                                   |
+;;        | No other changes                  |
+;;        |                                   |
+;;        +-----------------------------------+
+;;                          |
+;;                          |
+;;                          v
+;;        +-----------------------------------+
+;;        |           Type Aware Term         |
+;;        +-----------------------------------+
+;;        | Term through removal of top level |
+;;        | normal form                       |
+;;        |                                   |
+;;        | Binders contain term-type-manip… |
+;;        |                                   |
+;;        |                                   |
+;;        | We run algorithms like            |
+;;        | - type checking                   |
+;;        | - Expansion                       |
+;;        | - ETC                             |
+;;        +-----------------------------------+
+;;                          |
+;;                          |
+;;                          v
+;;        +-----------------------------------+
+;;        |             Expanded-Term         |
+;;        +-----------------------------------+
+;;        | Term through removal of top level |
+;;        | normal forms                      |
+;;        |                                   |
+;;        | Binders contain term-no-binders   |
+;;        |                                   |
+;;        |                                   |
+;;        | We run algorithms like            |
+;;        | - type checking                   |
+;;        | - Expansion                       |
+;;        | - ETC                             |
+;;        +-----------------------------------+
+;;                        |
+;;                        |
+;;                        v
+;;        +-----------------------------------+
+;;        |        Fully-Expanded-Term        |
+;;        +-----------------------------------+
+;;        | Term where concepts like          |
+;;        | Arrays and records are            |
+;;        | expanded out.                     |
+;;        |                                   |
+;;        | Binders contain spc:base          |
+;;        |                                   |
+;;        | We run algorithms like            |
+;;        | - void removal                    |
+;;        | - extra let removal               |
+;;        | - ETC                             |
+;;        +-----------------------------------+
 ;;
 
 (deftype linear-term ()
   "A Linear term is a term with no nested terms and is in proper ANF form."
   `(or spc:term-no-binding
-       (starting-binders spc:term-no-binding)
+       (starting-binders spc:term-type-manipulation)
+       terms:standalone-ret))
+
+(deftype type-aware-term ()
+  "An expanded term is a term where all top level forms have been
+expanded into lets or returns"
+  `(or (starting-binders spc:term-type-manipulation)
        terms:standalone-ret))
 
 (deftype expanded-term ()
   "An expanded term is a term where all top level forms have been
-expanded into lets or returns"
+expanded into lets or returns, and type coercions have been removed"
   `(or (starting-binders spc:term-no-binding)
        terms:standalone-ret))
 

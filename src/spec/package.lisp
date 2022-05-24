@@ -30,6 +30,8 @@ package and alu terms")
    :term
    :term-no-binding
    :base
+   :type-manipulation
+   :term-type-manipulation
    :record-forms
    :term-normal-form
 
@@ -41,6 +43,8 @@ package and alu terms")
    :let-node        :var    :value
    :reference       :name
    :bind-constraint :var    :value
+   :type-coerce     :value :typ
+   :type-check      :value :typ
 
    ;; Term Applications Defined
    :make-application :make-record :lookup-record
