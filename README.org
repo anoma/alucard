@@ -3,7 +3,7 @@ Alu is a DSL for writing VAMP-IR Circuits.
 ** Quick Start
 [TODO]
 
-** Developer Environment
+** Setting up the Developer Environment
 _Alucard works on many different implementations of CL, namely_
   + SBCL
   + CCL
@@ -18,9 +18,12 @@ following commands from their lisp REPL
     instead.
 - =(asdf:test-system :alu)=
 
+If there was an error in the above commands, look at the section below
+for some common solutions.
+
 If the commands work, then you can start hacking on Alucard!
 
-*** Setting up SBCL
+*** Errors with SBCL
 SBCL by default does not ship a new enough version of ASDF, and you
 may encounter an error like
 #+begin_src lisp
@@ -48,4 +51,4 @@ If this occurs you may need to update your asdf to a newer version.
 4. =make=
 5. In the lisp REPL: =(load "/path/to/asdf/build/asdf.lisp")=
 6. put =(load "/path/to/asdf/build/asdf.lisp")= in your =~/.sbclrc=
-7. rerun =(ql-)
+7. rerun the command that triggered the error
