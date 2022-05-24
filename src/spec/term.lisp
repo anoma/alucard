@@ -4,7 +4,7 @@
 (deftype term ()
   "The starting Alucard term. This is the starting AST in which alucard
 is expressed from"
-  `(or term-no-binding bind-constraint let-node))
+  `(or term-no-binding bind-constraint let-node type-manipulation))
 
 (deftype term-no-binding ()
   "The starting Alucard term type with no binding terms included. This
@@ -12,12 +12,19 @@ type is often used in the value slot of a binder after linearization
 since we want to ensure a binder does not contain another binder"
   `(or base record-forms))
 
+(deftype term-type-manipulation ()
+  "The Alucard term that includes type manipulation ndoes along with
+terms in the language"
+  `(or term-no-binding type-manipulation))
+
 (deftype base ()
   "Alucard terms which are apart of the core/base system. These won't be
 removed until very late in the pipeline"
   `(or term-normal-form application))
 
-;; (deftype generic-data-)
+(deftype type-manipulation ()
+  "Alucard forms that deal with type manipulation"
+  `(or type-coerce type-check))
 
 (deftype record-forms ()
   "Alucard forms that relate to records"
@@ -154,6 +161,31 @@ between implementations"))
 ;; Type Setting Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defclass type-coerce (protect-slots-mixin)
+  ((value :initarg :value
+          :accessor value
+          :documentation "The data being coerced")
+   (typ :initarg :typ
+        :accessor typ
+        :documentation "the type to coerce into")
+   ;; Must provide this, as allocation happens on the super class level ☹
+   (protected :initform (make-hash-table :test #'eq) :allocation :class))
+  (:documentation "Coerces the given type into a new type"))
+
+(protect-slots 'type-coerce 'typ)
+
+(defclass type-check (protect-slots-mixin)
+  ((value :initarg :value
+          :accessor value
+          :documentation "The data being checked against")
+   (typ :initarg :typ
+        :accessor typ
+        :documentation "the type to check against")
+   ;; Must provide this, as allocation happens on the super class level ☹
+   (protected :initform (make-hash-table :test #'eq) :allocation :class))
+  (:documentation "Tells the system to type check the value against "))
+
+(protect-slots 'type-check 'typ)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Array Declarations
@@ -167,7 +199,7 @@ between implementations"))
              :documentation "The data in the array"))
   (:documentation "Represents creating an array from existing data"))
 
-(defclass allocate (protect-slots-mixin)
+(defclass array-allocate (protect-slots-mixin)
   ((size :initarg :size
          :accessor size
          :documentation "The number of elements in the array")
@@ -178,7 +210,7 @@ between implementations"))
    ;; Must provide this, as allocation happens on the super class level ☹
    (protected :initform (make-hash-table :test #'eq) :allocation :class)))
 
-(protect-slots 'allocate 'typ)
+(protect-slots 'array-allocate 'typ)
 
 (defclass array-lookup (direct-slots-mixin)
   ((arr :initarg :arr

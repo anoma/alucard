@@ -86,7 +86,11 @@ will evaluate to this let buildup."
       ((cons _ _)
        (funcall constructor
                 (mvfoldr #'combine-expression
-                         (mapcar (lambda (ter) (normalize ter #'identity)) term)))))))
+                         (mapcar (lambda (ter) (normalize ter #'identity)) term))))
+      ;; here we stick the types that we want to do the catch all
+      ;; logic. Good to be explicit here
+      ((or (spc:type-coerce) (spc:type-check))
+       ))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from
