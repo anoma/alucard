@@ -1,2 +1,37 @@
 * Alu
 Alu is a DSL for writing VAMP-IR Circuits.
+** Quick Start
+[TODO]
+
+** Developer Environment
+_Alucard works on many different implementations of CL, namely_
+  + SBCL
+  + CCL
+  + ECL
+
+*** Setting up SBCL
+SBCL by default does not ship a new enough version of ASDF, and you
+may encounter an error like
+#+begin_src lisp
+  * (ql:quickload :alu)
+
+  debugger invoked on a ASDF/FIND-COMPONENT:MISSING-DEPENDENCY-OF-VERSION in thread
+  #<THREAD "main thread" RUNNING {1004E58073}>:
+    Component "asdf" does not match version 3.3.5, required by #<SYSTEM "alu">
+
+  Type HELP for debugger help, or (SB-EXT:EXIT) to exit from SBCL.
+
+  restarts (invokable by number or by possibly-abbreviated name):
+    0: [ABORT                  ] Give up on "alu"
+    1: [REGISTER-LOCAL-PROJECTS] Register local projects and try again.
+    2:                           Exit debugger, returning to top level.
+
+  (QUICKLISP-CLIENT::AUTOLOAD-SYSTEM-AND-DEPENDENCIES "alu" :PROMPT NIL)
+  source: (ERROR C)
+#+end_src
+If this occurs you may need to update your asdf to a newer version.
+
+1. Clone the repo: =git clone https://gitlab.common-lisp.net/asdf/asdf.git=
+2. =cd asdf  && make=
+3. In the lisp REPL: =(load "/path/to/asdf/build/asdf.lisp")=
+4. put =(load "/path/to/asdf/build/asdf.lisp")= in your =~/.sbclrc=
