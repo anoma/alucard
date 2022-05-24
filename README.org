@@ -9,6 +9,17 @@ _Alucard works on many different implementations of CL, namely_
   + CCL
   + ECL
 
+To quickly get started with Alucard development, one can run the
+following commands from their lisp REPL
+
+- =(load "alu.asd")=
+- =(ql:quickload :alu/test)=
+  + If one is using =CLPM= then you should run =(activate-project)=
+    instead.
+- =(asdf:test-system :alu)=
+
+If the commands work, then you can start hacking on Alucard!
+
 *** Setting up SBCL
 SBCL by default does not ship a new enough version of ASDF, and you
 may encounter an error like
@@ -32,6 +43,9 @@ may encounter an error like
 If this occurs you may need to update your asdf to a newer version.
 
 1. Clone the repo: =git clone https://gitlab.common-lisp.net/asdf/asdf.git=
-2. =cd asdf  && make=
-3. In the lisp REPL: =(load "/path/to/asdf/build/asdf.lisp")=
-4. put =(load "/path/to/asdf/build/asdf.lisp")= in your =~/.sbclrc=
+2. =cd asdf=
+3. =git checkout 3.3.5.8= ([[https://gitlab.common-lisp.net/asdf/asdf/-/tags][any tag in =3.3.5.*= works]])
+4. =make=
+5. In the lisp REPL: =(load "/path/to/asdf/build/asdf.lisp")=
+6. put =(load "/path/to/asdf/build/asdf.lisp")= in your =~/.sbclrc=
+7. rerun =(ql-)
