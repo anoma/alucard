@@ -56,4 +56,6 @@
   (fiveam:signals error
     (pipeline:to-typecheck (storage:lookup-function :invalid-record-creation)))
   (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-application-unification))))
+    (pipeline:to-typecheck (storage:lookup-function :invalid-application-unification)))
+  (fiveam:signals error
+    (pipeline:to-typecheck (storage:lookup-function :invalid-type-check))))

@@ -26,10 +26,12 @@ has been through linearization")
    ;; New Term Variants Defined
    :linear-term
    :expanded-term
+   :type-aware-term
    :fully-expanded-term
    :binders
    :starting-binders
    ;; New Term Lists Defined
+   :type-aware-list
    :constraint-list
    :expanded-list
    :fully-expanded-list))

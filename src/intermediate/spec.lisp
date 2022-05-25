@@ -114,6 +114,9 @@ represents what data may be in the value of the binders."
   "A constraint-list is a list of linear-terms"
   `(satisfies linear-list))
 
+(deftype type-aware-list ()
+  `(satisfies type-aware-list))
+
 (deftype expanded-list ()
   "A constraint-list is a list of expanded-terms"
   `(satisfies expanded-list))
@@ -125,6 +128,10 @@ represents what data may be in the value of the binders."
 (defun linear-list (list)
   (and (listp list)
        (every (lambda (x) (typep x 'linear-term)) list)))
+
+(defun type-aware-list (list)
+  (and (listp list)
+       (every (lambda (x) (typep x 'type-aware-term)) list)))
 
 (defun expanded-list (list)
   (and (listp list)

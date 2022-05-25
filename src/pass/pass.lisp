@@ -4,7 +4,7 @@
 ;; Groups of Passes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> linearize (ir:circuit) ir:expanded-list)
+(-> linearize (ir:circuit) ir:type-aware-list)
 (defun linearize (circuit)
   (~> circuit
       eval:evaluate-and-cache-body
@@ -57,7 +57,7 @@ and properly propagating arguments around them"
                                                        (ir:value term))))))))
 
 
-(-> return-last-binding (ir:expanded-list) ir:expanded-list)
+(-> return-last-binding (ir:type-aware-list) ir:type-aware-list)
 (defun return-last-binding (constraint-list)
   "This transforms the last let into a straight binding, since we aren't
 going to be using a let"
@@ -73,10 +73,31 @@ going to be using a let"
                                                      :var (ir:var term))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Removing Extra Type information
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> remove-type-information (ir:type-aware-list) ir:expanded-list)
+(defun remove-type-information (awares)
+  (labels ((handle-binder (binder)
+             (etypecase-of ir:type-aware-term binder
+               (ir:standalone-ret  binder)
+               (ir:bind            (util:copy-instance
+                                    binder
+                                    :value (handle-term (ir:value binder))))
+               (ir:bind-constraint (util:copy-instance
+                                    binder
+                                    :value (mapcar #'handle-binder (ir:value binder))))))
+           (handle-term (term)
+             (etypecase-of ir:term-type-manipulation term
+               (ir:term-no-binding term)
+               (ir:type-manipulation (ir:value term)))))
+    (mapcar #'handle-binder awares)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Relocation pass
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> let-all (ir:constraint-list) ir:expanded-list)
+(-> let-all (ir:constraint-list) ir:type-aware-list)
 (defun let-all (term-list)
   "This function turns any value which is not the last into a let if it
 isn't so already. Perhaps we should make them be an and call instead?"

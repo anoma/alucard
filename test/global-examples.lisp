@@ -192,6 +192,18 @@
                                      (output (int 64)))
   (prld:+ x (prld:coerce y (int 64))))
 
+(defcircuit explicit-type-check ((public x (int 64))
+                                 (public y (int 32))
+                                 (output (int 64)))
+  (def ((z (prld:+ y (check 35 (int 32)))))
+    (prld:+ x (prld:coerce z (int 64)))))
+
+(defcircuit invalid-type-check ((public x (int 64))
+                                (public y (int 32))
+                                (output (int 64)))
+  (def ((z (prld:+ y 35)))
+    (prld:+ x (prld:check z (int 64)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

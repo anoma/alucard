@@ -47,7 +47,8 @@
 (defun to-typecheck (circuit)
   (~> circuit
       pass:linearize
-      (alu.typechecker::check circuit)))
+      (alu.typechecker::check circuit)
+      pass:remove-type-information))
 
 (defun to-expand-away-records (circuit)
   (~> circuit

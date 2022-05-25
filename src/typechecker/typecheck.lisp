@@ -4,7 +4,7 @@
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> check (ir:expanded-list ir:circuit) ir:expanded-list)
+(-> check (ir:type-aware-list ir:circuit) ir:expanded-list)
 (defun check (body circuit)
   (annotate-circuit circuit body)
   body)
@@ -30,10 +30,10 @@
    constraint-list
    (make-instance 'typing-context)))
 
-(-> annotate-term (ir:expanded-term typing-context) typing-context)
+(-> annotate-term (ir:type-aware-list typing-context) typing-context)
 (defun annotate-term (term context)
   (assure typing-context
-    (match-of ir:expanded-term term
+    (match-of ir:type-aware-term term
       ((ir:standalone-ret)
        context)
       ((ir:bind :variable v :value val)
@@ -93,7 +93,7 @@
                (make-starting-hole introductions context))))))
 
 (-> annotate-term-no-binder
-    (ir:term-no-binding typing-context)
+    (ir:term-type-manipulation typing-context)
     (values (or type-info hole-conditions) typing-context))
 (defun annotate-term-no-binder (term context)
   "Annotating a term can either end up with the following results:
@@ -112,7 +112,7 @@
   (with-accessors ((holes holes) (info hole-info)
                    (dep dependency) (closure typing-closure))
       context
-    (match-of ir:term-no-binding term
+    (match-of ir:term-type-manipulation term
       ((number _)
        (values :refine-integer
                context))
@@ -259,7 +259,20 @@
           (error "Function ~A: is not defined" func))))
       ((ir:application :name func)
        (error "Can not apply ~A. Expecting a reference to a function not a number"
-              func)))))
+              func))
+      ;; we actually ignore the value for type checking as we just
+      ;; care about type information.
+      ((ir:type-coerce :typ typ)
+       (values (make-type-info :size (size:reference typ)
+                               :type typ)
+               context))
+      ;; In this case we just unify the value against the type, and
+      ;; return the type.
+      ((ir:type-check :value value :typ typ)
+       (values
+        (make-type-info :size (size:reference typ)
+                        :type typ)
+        (unify value typ context))))))
 
 (-> mutual-holes (list closure:typ) closure:typ)
 (defun mutual-holes (normal-forms hole-map)
