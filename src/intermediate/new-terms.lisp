@@ -45,7 +45,7 @@
     (with-accessors ((value spc:value) (var spc:var)) obj
       (format stream "LET ~A = ~A" var value))))
 
-(-> make-bind (&key (:var keyword) (:val spc:term-no-binding)) bind)
+(-> make-bind (&key (:var keyword) (:val spc:term-type-manipulation)) bind)
 (defun make-bind (&key (var  (error "Please provide the variable"))
                        (val  (error "Please provide the value field")))
   (values

@@ -30,7 +30,7 @@
    constraint-list
    (make-instance 'typing-context)))
 
-(-> annotate-term (ir:type-aware-list typing-context) typing-context)
+(-> annotate-term (ir:type-aware-term typing-context) typing-context)
 (defun annotate-term (term context)
   (assure typing-context
     (match-of ir:type-aware-term term
@@ -465,9 +465,10 @@ entailed by the given keyword."
 
 (-> dump-solved (typing-context) typing-context)
 (defun dump-solved (context)
-  (util:copy-instance context
-                      :dependency (dependency:dump-solved
-                                   (dependency context))))
+  (values
+   (util:copy-instance context
+                       :dependency (dependency:dump-solved
+                                    (dependency context)))))
 
 (-> try-equations
     (keyword hole-information typing-context)
@@ -490,12 +491,13 @@ Note that we do not recursively solve, thus the solved list may fill up"
 
 (-> solved (keyword type-info typing-context) typing-context)
 (defun solved (name info context)
-  (make-instance
-   'typing-context
-   :typing-closure (closure:insert (typing-closure context) name info)
-   :holes          (remove-if (lambda (x) (eql x name)) (holes context))
-   :hole-info      (closure:remove (hole-info context) name)
-   :dependency     (dependency:solved-for (dependency context) name)))
+  (values
+   (make-instance
+    'typing-context
+    :typing-closure (closure:insert (typing-closure context) name info)
+    :holes          (remove-if (lambda (x) (eql x name)) (holes context))
+    :hole-info      (closure:remove (hole-info context) name)
+    :dependency     (dependency:solved-for (dependency context) name))))
 
 (-> find-integer-type-from-args (list typing-context) current-information)
 (defun find-integer-type-from-args (args context)
