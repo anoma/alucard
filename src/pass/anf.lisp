@@ -90,7 +90,13 @@ will evaluate to this let buildup."
       ;; here we stick the types that we want to do the catch all
       ;; logic. Good to be explicit here
       ((or (spc:type-coerce) (spc:type-check))
-       ))))
+       (normalize-bind* (spc:direct-slot-values term)
+                        (lambda (args)
+                          (spc:update-from-alist
+                           term
+                           (mapcar #'cons
+                                   (spc:direct-slot-keywords term)
+                                   args))))))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from

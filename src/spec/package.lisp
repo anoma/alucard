@@ -47,7 +47,7 @@ package and alu terms")
    :type-check      :value :typ
 
    ;; Term Applications Defined
-   :make-application :make-record :lookup-record
+   :make-application :make-record :lookup-record :make-type-check :make-type-coerce
    :make-record-lookup :make-let :make-reference :make-bind-constraint
 
    ;; Functions
