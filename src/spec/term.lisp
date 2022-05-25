@@ -347,3 +347,22 @@ between implementations"))
   (values
    (make-instance 'from-data :contents contents)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Type Declarations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod print-object ((obj type-coerce) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "VALUE: ~A TYPE: ~A" (value obj) (typ obj))))
+
+(defun make-type-coerce (&key typ value)
+  (make-instance 'type-coerce :typ typ :value value))
+
+(defmethod print-object ((obj type-check) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "VALUE: ~A TYPE: ~A" (value obj) (typ obj))))
+
+(defun make-type-check (&key typ value)
+  (make-instance 'type-check :typ typ :value value))
+

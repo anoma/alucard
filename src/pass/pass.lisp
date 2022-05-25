@@ -48,13 +48,13 @@ and properly propagating arguments around them"
              (ir:make-bind :var var :val val))))
     (etypecase-of ir:expression term
       ;; if it's just the term, or a list as is, then we are good
-      (ir:term-no-binding (list term))
-      (ir:let-node        (list (transform-let-node term)))
-      (cons                (mapcan #'transform-let term))
-      (ir:bind-constraint (list (ir:make-bind-constraint
-                                  :var (ir:var term)
-                                  :value (mapcan #'transform-let
-                                                 (ir:value term))))))))
+      (ir:term-type-manipulation (list term))
+      (ir:let-node               (list (transform-let-node term)))
+      (cons                      (mapcan #'transform-let term))
+      (ir:bind-constraint        (list (ir:make-bind-constraint
+                                        :var (ir:var term)
+                                        :value (mapcan #'transform-let
+                                                       (ir:value term))))))))
 
 
 (-> return-last-binding (ir:expanded-list) ir:expanded-list)
@@ -85,13 +85,12 @@ isn't so already. Perhaps we should make them be an and call instead?"
                             :val term))
            (let-term (term)
              (etypecase-of ir:linear-term term
-               (ir:standalone-ret  term)
-               (ir:bind            term)
-               (ir:term-no-binding (make-binder term))
-               (ir:bind-constraint (ir:make-bind-constraint
-                                     :var   (ir:var term)
-                                     :value (mapcar #'let-term
-                                                    (ir:value term)))))))
+               (ir:term-type-manipulation      (make-binder term))
+               ((or ir:bind ir:standalone-ret) term)
+               (ir:bind-constraint             (ir:make-bind-constraint
+                                                :var   (ir:var term)
+                                                :value (mapcar #'let-term
+                                                               (ir:value term)))))))
     (mapcar #'let-term term-list)))
 
 (-> relocate-records (ir:expanded-list ir:circuit) relocate:rel)

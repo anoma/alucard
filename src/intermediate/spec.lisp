@@ -71,7 +71,7 @@
 
 (deftype linear-term ()
   "A Linear term is a term with no nested terms and is in proper ANF form."
-  `(or spc:term-no-binding
+  `(or spc:term-type-manipulation
        (starting-binders spc:term-type-manipulation)
        terms:standalone-ret))
 

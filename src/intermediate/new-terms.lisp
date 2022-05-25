@@ -10,7 +10,7 @@
              :documentation "The variable that will be bound")
    (value :initarg :value
           :accessor spc:value
-          :type     spc:term-no-binding
+          :type     spc:term-type-manipulation
           :documentation "the value that is bound"))
   (:documentation "A let with a more restrictive value type"))
 
@@ -21,7 +21,7 @@
               :documentation "The variables of type `keyword' that will be bound")
    (value :initarg :value
           :accessor spc:value
-          :type     spc:term-no-binding
+          :type     spc:term-type-manipulation
           :documentation "the value that is bound"))
   (:documentation "A let that can bind many return values"))
 

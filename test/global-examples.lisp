@@ -187,6 +187,11 @@
           (prld:= x (prld:+ (prld:* y 10) z))))
     z))
 
+(defcircuit explicit-type-coercsion ((public x (int 64))
+                                     (public y (int 32))
+                                     (output (int 64)))
+  (prld:+ x (prld:coerce y (int 64))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -182,6 +182,18 @@
        (serapeum:def ,name (spc:make-reference :name ,keyword))
        (storage:add-function ,keyword (spc:make-primitive :name ,keyword)))))
 
+(defmacro coerce (value type-to)
+  `(ensure-call-by-value
+    (spc:make-type-coerce
+     :typ (spc:to-type-reference-format ',type-to)
+     :value ,value)))
+
+(defmacro check (value type-check)
+  `(ensure-call-by-value
+    (spc:make-type-check
+     :typ (spc:to-type-reference-format ',type-check)
+     :value ,value)))
+
 (defmacro with-constraint (variable-names &rest body)
   (let ((body-list (gensym)))
     `(let ((,body-list (list nil)))
