@@ -34,6 +34,7 @@ package and alu terms")
    :type-manipulation
    :term-type-manipulation
    :record-forms
+   :array-forms
    :term-normal-form
 
    ;; Term ADT Constructors Defined
@@ -46,10 +47,17 @@ package and alu terms")
    :bind-constraint :var    :value
    :type-coerce     :value :typ
    :type-check      :value :typ
+   :from-data       :contents
+   :array-allocate  :size  :typ
+   :array-lookup    :arr   :pos
+   :array-set       :arr   :pos :value
 
    ;; Term Applications Defined
-   :make-application :make-record :lookup-record :make-type-check :make-type-coerce
-   :make-record-lookup :make-let :make-reference :make-bind-constraint
+   :make-application
+   :make-record :lookup-record :make-record-lookup
+   :make-type-check :make-type-coerce
+   :make-from-data :make-array-allocate :make-array-lookup :make-array-set
+   :make-let :make-reference :make-bind-constraint
 
    ;; Functions
    :record->alist
