@@ -92,6 +92,7 @@ circuits execution body and tracking caching")
    :remove-void-bindings
    :primtitve-circuit
    :rename-primitive-circuit
+   :remove-type-information
    ;; Extraction
    :circuit-to-alias))
 
