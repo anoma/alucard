@@ -30,6 +30,10 @@ removed until very late in the pipeline"
   "Alucard forms that relate to records"
   `(or record record-lookup))
 
+(deftype array-forms ()
+  "Alucard forms that relate to arrays"
+  `(or array-lookup array-allocate from-data))
+
 (deftype term-normal-form ()
   "Alucard terms which are fully in normal form"
   `(or number reference))
@@ -347,6 +351,29 @@ between implementations"))
   (values
    (make-instance 'from-data :contents contents)))
 
+(defmethod print-object ((obj array-allocate) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "SIZE: ~A TYPE: ~A" (size obj) (typ obj))))
+
+(defun make-array-allocate (&key typ size)
+  (values
+   (make-instance 'array-allocate :typ typ :size size)))
+
+(defmethod print-object ((obj array-lookup) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A[~A]" (arr obj) (pos obj))))
+
+(defun make-array-lookup (&key arr pos)
+  (values
+   (make-instance 'array-lookup :arr arr :pos pos)))
+
+(defmethod print-object ((obj array-set) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "~A[~A] = ~A" (arr obj) (pos obj) (value obj))))
+
+(defun make-array-set (&key arr pos value)
+  (values
+   (make-instance 'array-set :arr arr :pos pos :value value)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Type Declarations
