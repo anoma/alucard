@@ -27,13 +27,14 @@ in a dependency chart"
      (ir:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
 
 ;; we assume that `pass:linearize' has been run
-(-> track-function-deps (ir:expanded-list) list)
+(-> track-function-deps (ir:type-aware-list) list)
 (defun track-constraint-deps (constraint-list)
   (labels ((handle-term (term)
-             (etypecase-of ir:term-no-binding term
+             (etypecase-of ir:term-type-manipulation term
                (ir:application
                 (list (ir:name (ir:func term))))
-               ((or ir:term-normal-form ir:record ir:record-lookup)
+               ((or ir:term-normal-form ir:record ir:record-lookup
+                    ir:type-manipulation)
                 nil)))
            (handle-linear-term (constraint)
              (etypecase-of ir:expanded-term constraint
