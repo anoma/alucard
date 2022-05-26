@@ -30,6 +30,13 @@
 analyzing belong in"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Function Return Value
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(deftype typing-result ()
+  "The result of trying to annotate a term"
+  `(or type-info hole-conditions))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Known Type Cache
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -110,7 +117,8 @@ _It can either be_
 (deftype known-primitve-types ()
   `(or (eql :int)
        (eql :bool)
-       (eql :void)))
+       (eql :void)
+       (eql :array)))
 
 (deftype known-primitve-functions ()
   `(or (eql :+)

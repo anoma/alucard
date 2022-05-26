@@ -34,7 +34,7 @@ in a dependency chart"
                (ir:application
                 (list (ir:name (ir:func term))))
                ((or ir:term-normal-form ir:record ir:record-lookup
-                    ir:type-manipulation)
+                    ir:type-manipulation ir:array-forms)
                 nil)))
            (handle-linear-term (constraint)
              (etypecase-of ir:expanded-term constraint

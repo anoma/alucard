@@ -10,7 +10,7 @@ is expressed from"
   "The starting Alucard term type with no binding terms included. This
 type is often used in the value slot of a binder after linearization
 since we want to ensure a binder does not contain another binder"
-  `(or base record-forms))
+  `(or base record-forms array-forms))
 
 (deftype term-type-manipulation ()
   "The Alucard term that includes type manipulation ndoes along with
@@ -32,7 +32,7 @@ removed until very late in the pipeline"
 
 (deftype array-forms ()
   "Alucard forms that relate to arrays"
-  `(or array-lookup array-allocate from-data))
+  `(or array-lookup array-allocate from-data array-set))
 
 (deftype term-normal-form ()
   "Alucard terms which are fully in normal form"
@@ -392,4 +392,3 @@ between implementations"))
 
 (defun make-type-check (&key typ value)
   (make-instance 'type-check :typ typ :value value))
-
