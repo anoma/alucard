@@ -12,7 +12,7 @@
   ((bar :initarg :bar)
    (baz :initarg :baz)
    ;; Must provide this, as allocation happens on the super class level ☹
-   (protected :initform (make-hash-table :test #'eq) :allocation :class)))
+   (ir:protected :initform (make-hash-table :test #'eq) :allocation :class)))
 
 (ir:protect-slots 'test-class 'baz)
 

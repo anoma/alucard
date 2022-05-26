@@ -14,6 +14,7 @@ package and alu terms")
    :protect-slots-mixin
 
    ;; Operations on Mixins
+   :protected
    :protect-slots
    :direct-slots
    :direct-slot-names
