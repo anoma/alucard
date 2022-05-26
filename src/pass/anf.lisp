@@ -89,7 +89,8 @@ will evaluate to this let buildup."
                          (mapcar (lambda (ter) (normalize ter #'identity)) term))))
       ;; here we stick the types that we want to do the catch all
       ;; logic. Good to be explicit here
-      ((or (spc:type-coerce) (spc:type-check))
+      ((or (spc:type-coerce) (spc:type-check)
+           (spc:array-lookup) (spc:array-allocate) (spc:from-data))
        (normalize-bind* (spc:direct-slot-values term)
                         (lambda (args)
                           (funcall constructor

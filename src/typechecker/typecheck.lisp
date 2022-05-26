@@ -41,7 +41,7 @@
          (with-accessors ((holes holes) (info hole-info)
                           (dep dependency) (closure typing-closure))
              ctx
-           (etypecase-of (or type-info hole-conditions) result
+           (etypecase-of typing-result result
              (type-info
               (util:copy-instance
                ctx
@@ -94,7 +94,7 @@
 
 (-> annotate-term-no-binder
     (ir:term-type-manipulation typing-context)
-    (values (or type-info hole-conditions) typing-context))
+    (values typing-result typing-context))
 (defun annotate-term-no-binder (term context)
   "Annotating a term can either end up with the following results:
 
@@ -211,34 +211,9 @@
                             context))))
          ((ir:primitive :name name)
           (flet ((handle-all-int-case ()
-                   (let* ((integer-constraint
-                            (find-integer-type-from-args args context))
-                          (argument-keywords
-                            (filter-map (lambda (x)
-                                          (etypecase-of ir:term-normal-form x
-                                            (number nil)
-                                            (ir:reference (ir:name x))))
-                                        args)))
-                     (etypecase-of current-information integer-constraint
-                       (hole
-                        (values
-                         (if argument-keywords
-                             (make-same-as :value (car argument-keywords))
-                             :refine-integer)
-                         (util:copy-instance
-                          context
-                          :hole-info (mutual-holes args (hole-info context))
-                          :dependency
-                          (dependency:determine-each-other (dependency context)
-                                                           argument-keywords))))
-                       (ir:type-reference
-                        (values
-                         (make-type-info :size (size:reference integer-constraint)
-                                         :type integer-constraint)
-                         (mvfold (lambda (context term)
-                                   (unify term integer-constraint context))
-                                 args
-                                 context)))))))
+                   (arguments-have-same-type args
+                                             context
+                                             #'find-integer-type-from-args)))
             (typecase-of known-primitve-functions name
               ((or (eql :*) (eql :+))
                (handle-all-int-case))
@@ -272,7 +247,90 @@
        (values
         (make-type-info :size (size:reference typ)
                         :type typ)
-        (unify value typ context))))))
+        (unify value typ context)))
+      ((ir:array-lookup :arr arr)
+       (let ((lookup
+               (etypecase-of ir:term-normal-form arr
+                 (number (error "Array lookup on the number ~A" arr))
+                 (ir:reference (closure:lookup closure (ir:name arr))))))
+         (values
+          (if lookup
+              lookup
+              (make-depends-on :value (list arr)))
+          context)))
+      ((ir:array-set :arr arr :value value)
+       (let ((lookup-val (normal-form-to-type-info value context))
+             (lookup-arr (normal-form-to-type-info-not-number-err arr context)))
+         (dispatch-case ((lookup-arr lookup-type)
+                         (lookup-val lookup-type))
+           ((type-info type-info)
+            (error "not implemented yet"))
+           ((hole hole)
+            (error "not implemented yet"))
+           ((hole type-info)
+            (error "not implemented yet"))
+           ((type-info hole)
+            (error "not implemented yet")))))
+      ((ir:array-allocate :size s :typ t)
+       ;; abstract out this make array
+       (values
+        (ir:make-application :function (ir:make-type-reference :name :array)
+                             :arguments (list s t))
+        context))
+      ((ir:from-data :contents contents)
+       (multiple-value-bind (arg context) (arguments-have-same-type contents context)
+         (etypecase-of typing-result arg
+           (type-info
+            (values (make-type-info
+                     :size (* (length contents)
+                              (type-info-size arg))
+                     ;; abstract out this make array
+                     :type (ir:make-application
+                            :function (ir:make-type-reference :name :array)
+                            :arguments (list (length contents)
+                                             (type-info-type arg))))
+                    context))
+           (hole-conditions
+            (values arg context))))))))
+
+
+(-> arguments-have-same-type
+    (list typing-context &optional function)
+    (values typing-result typing-context))
+(defun arguments-have-same-type (args context &optional
+                                                (refine-f #'find-most-refined-value))
+  "This function handles the case when the arguments have all the same
+type. This occurs often in primitives. This function is passed the
+argument list, the context, and a refine function that lets us specify
+any constraints on the specification"
+  (let* ((constraints
+           (funcall refine-f args context))
+         (argument-keywords
+           (references-from-list args)))
+    (consistent-type-check args context)
+    (etypecase-of lookup-type constraints
+      (hole
+       (values (if argument-keywords
+                   (make-same-as :value (car argument-keywords))
+                   :refine-integer)
+               (all-mutual args context)))
+      (type-info
+       (values constraints
+               (mvfold (lambda (context term)
+                         (unify term (type-info-type constraints)
+                                context))
+                       args
+                       context))))))
+
+(-> all-mutual (list typing-context) typing-context)
+(defun all-mutual (normal-forms context)
+  "Updates the context to note that all the values entail each other"
+  (let ((argument-keywords (references-from-list normal-forms)))
+    (util:copy-instance
+     context
+     :hole-info  (mutual-holes normal-forms (hole-info context))
+     :dependency (dependency:determine-each-other (dependency context)
+                                                  argument-keywords))))
 
 (-> mutual-holes (list closure:typ) closure:typ)
 (defun mutual-holes (normal-forms hole-map)
@@ -348,6 +406,10 @@ values, or an error being thrown if the information is contradictory."
                   (unless (void-reference? expected-type)
                     (error "Trying to unify a void type with ~A"
                            expected-type)))
+                 ((eql :array)
+                  (unless (array-reference? expected-type)
+                    (error "Trying to unify an array type with ~A"
+                           expected-type)))
                  (otherwise
                   (error "Unknown primitive type ~A" value)))))
             (solve-recursively term-name expected-type context))
@@ -400,6 +462,10 @@ values, or an error being thrown if the information is contradictory."
     (etypecase-of (or ir:type-storage null) looked
       ((or null ir:type-declaration) nil)
       (ir:primitive                  (funcall predicate looked)))))
+
+(-> array-reference? (ir:type-reference) boolean)
+(defun array-reference? (ref)
+  (is-primitive? ref (lambda (v) (eql :array (ir:name v)))))
 
 (-> void-reference? (ir:type-reference) boolean)
 (defun void-reference? (ref)
@@ -482,7 +548,7 @@ Note that we do not recursively solve, thus the solved list may fill up"
                 (values context found?)
                 (multiple-value-bind (result context)
                     (annotate-term-no-binder term context)
-                  (etypecase-of (or type-info hole-conditions) result
+                  (etypecase-of typing-result result
                     (type-info       (values (solved name result context) t))
                     (hole-conditions (values context nil))))))
           (hole-information-term hole-info)
@@ -499,7 +565,7 @@ Note that we do not recursively solve, thus the solved list may fill up"
     :hole-info      (closure:remove (hole-info context) name)
     :dependency     (dependency:solved-for (dependency context) name))))
 
-(-> find-integer-type-from-args (list typing-context) current-information)
+(-> find-integer-type-from-args (list typing-context) lookup-type)
 (defun find-integer-type-from-args (args context)
   "Finds the most refined integer type in the given argument list. If
 the values are contradictory or if the most refined value is not an
@@ -518,17 +584,30 @@ integer then it will error."
              (type-info
               (if (int-reference?
                    (type-info-type most-refined-value))
-                  (type-info-type most-refined-value)
+                  most-refined-value
                   (error "Value to should be an Integer not a ~A"
                          (type-info-type most-refined-value)))))))
-    (consistent-type-check args context)
     integer-constraint))
+
+(-> normal-form-to-type-info-not-number-err (ir:term-normal-form typing-context) lookup-type)
+(defun normal-form-to-type-info-not-number-err (arg context)
+  (etypecase-of ir:term-normal-form arg
+    (number       (error "Value is a number when not expected"))
+    (ir:reference (find-type-info (ir:name arg) context))))
 
 (-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
 (defun normal-form-to-type-info (arg context)
   (etypecase-of ir:term-normal-form arg
     (number       (assure hole :int))
     (ir:reference (find-type-info (ir:name arg) context))))
+
+(-> references-from-list (list) list)
+(defun references-from-list (normal-forms)
+  (filter-map (lambda (x)
+                (etypecase-of ir:term-normal-form x
+                  (number nil)
+                  (ir:reference (ir:name x))))
+              normal-forms))
 
 (-> find-most-refined-value (list typing-context) lookup-type)
 (defun find-most-refined-value (args context)
@@ -549,6 +628,11 @@ integer then it will error."
            (etypecase-of known-primitve-types keyword
              ((or (eql :int) (eql :bool))
               (if (int-reference? (type-info-type type))
+                  type
+                  (error "Type ~A is not consistent with Integer"
+                         (type-info-type type))))
+             ((eql :array)
+              (if (array-reference? (type-info-type type))
                   type
                   (error "Type ~A is not consistent with Integer"
                          (type-info-type type))))

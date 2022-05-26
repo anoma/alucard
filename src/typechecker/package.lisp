@@ -13,6 +13,9 @@ checker")
    ;; Known Type Information
    :type-info :type-info-size :type-info-type :type-info-p :make-type-info
 
+   ;; Function return types
+   :typing-result
+
    ;; Known Hole Information
    :hole-information :hole-information-unrefined :hole-information-term
    :make-hole-information :hole-information-p
