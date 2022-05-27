@@ -60,6 +60,7 @@
     :components ((:file "package")
                  (:file "types")
                  (:file "size")
+                 (:file "unifier")
                  (:file "typecheck")))
    (:module pass
     :serial t

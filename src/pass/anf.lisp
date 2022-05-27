@@ -26,79 +26,78 @@ calling it with the ref. Thus:
 
 Note that for any term which can nest, we build up a continuation that
 will evaluate to this let buildup."
-  (assure spc:expression
-    (match-of spc:expression term
-      ;; for terms which are just references or numbers we can
-      ;; just call the constructor, and end the algorithm
-      ((spc:number numb) (funcall constructor numb))
-      ((spc:reference)   (funcall constructor term))
-      ;; For nodes which are not in normal form, recurse building
-      ;; up the let chain
-      ((spc:let-node spc:value spc:var)
-       (normalize spc:value
-                  (lambda (new-val)
-                    (funcall constructor
-                             (spc:make-let :var spc:var
-                                           :val new-val)))))
-      ((spc:application spc:name spc:arguments)
-       (normalize-bind spc:name
-                       (lambda (func-name)
-                         (normalize-bind*
-                          spc:arguments
-                          (lambda (args)
-                            (funcall constructor
-                                     (spc:make-application :function func-name
-                                                           :arguments args)))))))
-      ((spc:record spc:name spc:contents spc:order)
-       ;; probably the hardest transform just due to hash table format
-       ;; schenans. Note that an alist is like the following
-       ;; ((:key1 . term1) (:key2 . term2))
-       ;; spc:name is a keyword so no need to traverse
-       (let* ((alist-contents (sycamore:tree-map-alist spc:contents))
-              (keys           (mapcar #'car alist-contents))
-              (values         (mapcar #'cdr alist-contents)))
-         (normalize-bind*
-          values
-          (lambda (value-refs)
-            (funcall constructor
-                     (make-instance 'spc:record
-                                    :name spc:name
-                                    :order spc:order
-                                    :contents (sycamore:alist-tree-map
-                                               ;; remake our alist
-                                               (mapcar #'cons keys value-refs)
-                                               #'util:hash-compare)))))))
-      ((spc:record-lookup spc:record spc:field)
-       ;; field is a keyword, thus we are fine with it
-       (normalize-bind spc:record
-                       (lambda (rec-ref)
-                         (funcall constructor
-                                  (spc:make-record-lookup :record rec-ref
-                                                          :field  spc:field)))))
-      ((spc:bind-constraint spc:var spc:value)
-       (normalize spc:value
-                  (lambda (term)
-                    (funcall constructor
-                             (spc:make-bind-constraint :var spc:var
-                                                       :value term)))))
-      ;; we get a bad exhaustive message due to number, but it will warn
-      ;; us, if they aren't the same none the less!
-      ((cons _ _)
-       (funcall constructor
-                (mvfoldr #'combine-expression
-                         (mapcar (lambda (ter) (normalize ter #'identity)) term))))
-      ;; here we stick the types that we want to do the catch all
-      ;; logic. Good to be explicit here
-      ((or (spc:type-coerce) (spc:type-check)
-           (spc:array-lookup) (spc:array-allocate) (spc:from-data))
-       (normalize-bind* (spc:direct-slot-values term)
+  (match-of spc:expression term
+    ;; for terms which are just references or numbers we can
+    ;; just call the constructor, and end the algorithm
+    ((spc:number numb) (funcall constructor numb))
+    ((spc:reference)   (funcall constructor term))
+    ;; For nodes which are not in normal form, recurse building
+    ;; up the let chain
+    ((spc:let-node spc:value spc:var)
+     (normalize spc:value
+                (lambda (new-val)
+                  (funcall constructor
+                           (spc:make-let :var spc:var
+                                         :val new-val)))))
+    ((spc:application spc:name spc:arguments)
+     (normalize-bind spc:name
+                     (lambda (func-name)
+                       (normalize-bind*
+                        spc:arguments
                         (lambda (args)
                           (funcall constructor
-                                   (spc:update-from-alist
-                                    term
-                                    (mapcar #'cons
-                                            (spc:direct-slot-keywords term)
-                                            args)))))))))
+                                   (spc:make-application :function func-name
+                                                         :arguments args)))))))
+    ((spc:record spc:name spc:contents spc:order)
+     ;; probably the hardest transform just due to hash table format
+     ;; schenans. Note that an alist is like the following
+     ;; ((:key1 . term1) (:key2 . term2))
+     ;; spc:name is a keyword so no need to traverse
+     (let* ((alist-contents (sycamore:tree-map-alist spc:contents))
+            (keys           (mapcar #'car alist-contents))
+            (values         (mapcar #'cdr alist-contents)))
+       (normalize-bind*
+        values
+        (lambda (value-refs)
+          (funcall constructor
+                   (make-instance 'spc:record
+                                  :name spc:name
+                                  :order spc:order
+                                  :contents (sycamore:alist-tree-map
+                                             ;; remake our alist
+                                             (mapcar #'cons keys value-refs)
+                                             #'util:hash-compare)))))))
+    ((spc:record-lookup spc:record spc:field)
+     ;; field is a keyword, thus we are fine with it
+     (normalize-bind spc:record
+                     (lambda (rec-ref)
+                       (funcall constructor
+                                (spc:make-record-lookup :record rec-ref
+                                                        :field  spc:field)))))
+    ((spc:bind-constraint spc:var spc:value)
+     (normalize spc:value
+                (lambda (term)
+                  (funcall constructor
+                           (spc:make-bind-constraint :var spc:var
+                                                     :value term)))))
+    ;; we get a bad exhaustive message due to number, but it will warn
+    ;; us, if they aren't the same none the less!
+    ((cons _ _)
+     (funcall constructor
+              (mvfoldr #'combine-expression
+                       (mapcar (lambda (ter) (normalize ter #'identity)) term))))
+    ;; here we stick the types that we want to do the catch all
+    ;; logic. Good to be explicit here
+    ((or (spc:type-coerce) (spc:type-check)
+         (spc:array-lookup) (spc:array-set) (spc:array-allocate) (spc:from-data))
+     (normalize-bind* (spc:direct-slot-values term)
+                      (lambda (args)
+                        (funcall constructor
+                                 (spc:update-from-alist
+                                  term
+                                  (mapcar #'cons
+                                          (spc:direct-slot-keywords term)
+                                          args))))))))
 
 ;; replace expression with terms here!?
 ;; this function was taken from

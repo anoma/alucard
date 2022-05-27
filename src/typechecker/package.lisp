@@ -51,6 +51,7 @@ language. The name typically refers to the value being calculated.")
    :declaration-contents
    :primitive))
 
+;; This package is split-up between typecheck and unifier
 (defpackage #:alu.typechecker
   (:local-nicknames (#:ir         #:alu.ir)
                     (#:closure    #:alu.closure)

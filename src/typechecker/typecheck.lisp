@@ -322,15 +322,20 @@ any constraints on the specification"
                        args
                        context))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Hole Information Filling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (-> all-mutual (list typing-context) typing-context)
 (defun all-mutual (normal-forms context)
   "Updates the context to note that all the values entail each other"
   (let ((argument-keywords (references-from-list normal-forms)))
-    (util:copy-instance
-     context
-     :hole-info  (mutual-holes normal-forms (hole-info context))
-     :dependency (dependency:determine-each-other (dependency context)
-                                                  argument-keywords))))
+    (values
+     (util:copy-instance
+      context
+      :hole-info  (mutual-holes normal-forms (hole-info context))
+      :dependency (dependency:determine-each-other (dependency context)
+                                                   argument-keywords)))))
 
 (-> mutual-holes (list closure:typ) closure:typ)
 (defun mutual-holes (normal-forms hole-map)
@@ -356,179 +361,6 @@ any constraints on the specification"
   (util:copy-instance typing-context
                       :holes (append keywords (holes typing-context))))
 
-(-> unify (ir:term-normal-form current-information typing-context) typing-context)
-(defun unify (term expected-type context)
-  "unify tries to unify term with expected-type, This can result in
-either holes being refined, unknown values being turned into unrefined
-values, or an error being thrown if the information is contradictory."
-  (flet ((unification-error (type)
-           (error "Could not unify Defined type ~A with int" type)))
-    (match-of ir:term-normal-form term
-      ;; For references we need to check if the reference is known. If
-      ;; the term is known, then it is a simple equality check that
-      ;; the types agree. Note that if `expected-type' is a `hole'
-      ;; then we are trying to unify a known type with less
-      ;; information, thus we error (why are we even trying it?!).
-      ;;
-      ;; If the reference is unknown, then we need to unify it with
-      ;; the given type. At this point we can find contradictory
-      ;; information, from the partial data we have. If this is the
-      ;; case, we should throw and report to the user this issue.
-      ;;
-      ;; If the unification is with partial information we note the
-      ;; partial information as hole information to be resolved later.
-      ((ir:reference :name term-name)
-       (let ((value (find-type-info term-name context)))
-         (dispatch-case ((value         lookup-type)
-                         (expected-type current-information))
-           ((type-info hole)
-            (error "Internal compiler error. Tried to unify a fully
-                   known type ~A with the hole ~A."
-                   value expected-type))
-           ((type-info ir:type-reference)
-            (if (type-equality expected-type (type-info-type value))
-                context
-                (error "The types ~A and ~A are not equivalent"
-                       expected-type
-                       (type-info-type value))))
-           ((hole ir:type-reference)
-            (etypecase-of hole value
-              (null t)
-              (keyword
-               (typecase-of known-primitve-types value
-                 ((or (eql :int)
-                      (eql :bool))
-                  (unless (int-reference? expected-type)
-                    (error "Trying to unify an Integer type with ~A"
-                           expected-type)))
-                 ;; we should check that we unify it with void properly
-                 ((eql :void)
-                  (unless (void-reference? expected-type)
-                    (error "Trying to unify a void type with ~A"
-                           expected-type)))
-                 ((eql :array)
-                  (unless (array-reference? expected-type)
-                    (error "Trying to unify an array type with ~A"
-                           expected-type)))
-                 (otherwise
-                  (error "Unknown primitive type ~A" value)))))
-            (solve-recursively term-name expected-type context))
-            ((hole hole)
-             (refine-hole-with-hole value expected-type context)))))
-      ;; we only succeed unification if the expected value of this is a
-      ;; number
-      ((number _)
-       (etypecase-of current-information expected-type
-         (hole context)
-         (ir:type-reference
-          (let* ((type-name (etypecase-of ir:type-reference expected-type
-                              (ir:application    (ir:name (ir:func expected-type)))
-                              (ir:reference-type (ir:name expected-type))))
-                 (lookup (storage:lookup-type type-name)))
-            (etypecase-of (or null ir:type-storage) lookup
-              (ir:type-declaration (unification-error type-name))
-              (null                 (error "Type ~A is not defined" type-name))
-              (ir:primitive
-               (typecase (ir:name lookup)
-                 ((or (eql :int) (eql :bool)) context)
-                 (otherwise                   (unification-error type-name))))))))))))
-
-(-> type-equality (ir:type-reference-full ir:type-reference-full) boolean)
-(defun type-equality (type-1 type-2)
-  (dispatch-case ((type-1 ir:type-reference-full)
-                  (type-2 ir:type-reference-full))
-    ((ir:reference-type ir:reference-type)
-     (eq (ir:name type-1) (ir:name type-2)))
-    ((ir:application ir:application)
-     (every #'type-equality
-            (cons (ir:func type-1) (ir:arguments type-1))
-            (cons (ir:func type-2) (ir:arguments type-2))))
-    ((number number)
-     (= type-1 type-2))
-    ((* ir:application)
-     nil)
-    ((* ir:reference-type)
-     nil)
-    ((* number)
-     nil)))
-
-(-> is-primitive? (ir:type-reference (-> (ir:primitive) boolean)) boolean)
-(defun is-primitive? (ref predicate)
-  (let* ((name-to-lookup
-           (etypecase-of ir:type-reference ref
-             (ir:reference-type (ir:name ref))
-             (ir:application    (ir:name (ir:func ref)))))
-         (looked (storage:lookup-type name-to-lookup)))
-    (etypecase-of (or ir:type-storage null) looked
-      ((or null ir:type-declaration) nil)
-      (ir:primitive                  (funcall predicate looked)))))
-
-(-> array-reference? (ir:type-reference) boolean)
-(defun array-reference? (ref)
-  (is-primitive? ref (lambda (v) (eql :array (ir:name v)))))
-
-(-> void-reference? (ir:type-reference) boolean)
-(defun void-reference? (ref)
-  (is-primitive? ref (lambda (v) (eql :void (ir:name v)))))
-
-(-> int-reference? (ir:type-reference) boolean)
-(defun int-reference? (ref)
-  (is-primitive? ref (lambda (v)
-                       (or (eql :int (ir:name v))
-                           (eql :bool (ir:name v))))))
-
-;; TODO :: Fill in the details
-(-> refine-hole-with-hole (hole hole typing-context) typing-context)
-(defun refine-hole-with-hole (original-hole new-hole-info context)
-  "Refines the given hole with the new hole and stores it back into the
-typing context."
-  original-hole
-  new-hole-info
-  context)
-
-(-> solve-recursively (keyword ir:type-reference typing-context) typing-context)
-(defun solve-recursively (name solved-value context)
-  "Solves the given keyword with given type-reference. After solving,
-`solve-recursively', will attempt to solve any new variables that were
-entailed by the given keyword."
-  (let* ((info    (make-type-info :size (size:reference solved-value)
-                                  :type solved-value))
-         (context (solved name info context))
-         ;; IMPORTANT :: We remove the value we solved for otherwise
-         ;; we try to solve for it again and error out
-         (solved (remove-if (lambda (x) (eql x name))
-                            (dependency:get-solved (dependency context)))))
-    (labels
-        ((solving-current-set (context current-resolve-symbol)
-           (let ((hole (closure:lookup (hole-info context)
-                                       current-resolve-symbol)))
-             (if hole
-                 (multiple-value-bind (context solved?)
-                     (try-equations current-resolve-symbol hole context)
-                   (if solved?
-                       context
-                       (error "could not solve value ~A"
-                              current-resolve-symbol)))
-                 (error "How can I solve hole ~A: if no equations exist for it"
-                        current-resolve-symbol))))
-         (solve-recursive (context symbol-set)
-           ;; The dependency module does not remember what values have
-           ;; been solved. Thus we need to manually filter out
-           ;; previously dealt with values, by looking in our typing
-           ;; map and seeing what we've already figured out.
-           (let* ((not-solved (remove-if
-                               (lambda (x)
-                                 (closure:lookup (typing-closure context) x))
-                               symbol-set))
-                  (context  (mvfold #'solving-current-set not-solved context))
-                  (resolved (dependency:get-solved (dependency context))))
-             ;; We keep dumping them, eventually we should get through
-             ;; them all!
-             (if resolved
-                 (solve-recursive (dump-solved context) resolved)
-                 context))))
-      (solve-recursive (dump-solved context) solved))))
-
 (-> dump-solved (typing-context) typing-context)
 (defun dump-solved (context)
   (values
@@ -536,34 +368,39 @@ entailed by the given keyword."
                        :dependency (dependency:dump-solved
                                     (dependency context)))))
 
-(-> try-equations
-    (keyword hole-information typing-context)
-    (values typing-context boolean))
-(defun try-equations (name hole-info context)
-  "We try the series of equations until one of them works, once the
-first equation that is found working, we stop trying to evaluate the other expressions.
-Note that we do not recursively solve, thus the solved list may fill up"
-  (mvfold (lambda (context found? term)
-            (if found?
-                (values context found?)
-                (multiple-value-bind (result context)
-                    (annotate-term-no-binder term context)
-                  (etypecase-of typing-result result
-                    (type-info       (values (solved name result context) t))
-                    (hole-conditions (values context nil))))))
-          (hole-information-term hole-info)
-          context
-          nil))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Normal Form/Reference/Keywords Lookups
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> solved (keyword type-info typing-context) typing-context)
-(defun solved (name info context)
-  (values
-   (make-instance
-    'typing-context
-    :typing-closure (closure:insert (typing-closure context) name info)
-    :holes          (remove-if (lambda (x) (eql x name)) (holes context))
-    :hole-info      (closure:remove (hole-info context) name)
-    :dependency     (dependency:solved-for (dependency context) name))))
+(-> normal-form-to-type-info-not-number-err (ir:term-normal-form typing-context)
+    lookup-type)
+(defun normal-form-to-type-info-not-number-err (arg context)
+  (etypecase-of ir:term-normal-form arg
+    (number       (error "Value is a number when not expected"))
+    (ir:reference (find-type-info (ir:name arg) context))))
+
+(-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
+(defun normal-form-to-type-info (arg context)
+  (etypecase-of ir:term-normal-form arg
+    (number       (assure hole :int))
+    (ir:reference (find-type-info (ir:name arg) context))))
+
+(-> find-type-info (keyword typing-context) lookup-type)
+(defun find-type-info (name context)
+  "Grabs the typing value from the given keyword. If this lookup fails,
+we try to get the unrefined type."
+  (let ((looked (closure:lookup (typing-closure context) name)))
+    (cond (looked looked)
+          ((member name (holes context))
+           (let ((value (closure:lookup (hole-info context) name)))
+             (and value (hole-information-unrefined value))))
+          (t
+           (error "Internal error: Value ~A is not a known hole in ~A"
+                  name context)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Refining over a list of types
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (-> find-integer-type-from-args (list typing-context) lookup-type)
 (defun find-integer-type-from-args (args context)
@@ -588,18 +425,6 @@ integer then it will error."
                   (error "Value to should be an Integer not a ~A"
                          (type-info-type most-refined-value)))))))
     integer-constraint))
-
-(-> normal-form-to-type-info-not-number-err (ir:term-normal-form typing-context) lookup-type)
-(defun normal-form-to-type-info-not-number-err (arg context)
-  (etypecase-of ir:term-normal-form arg
-    (number       (error "Value is a number when not expected"))
-    (ir:reference (find-type-info (ir:name arg) context))))
-
-(-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
-(defun normal-form-to-type-info (arg context)
-  (etypecase-of ir:term-normal-form arg
-    (number       (assure hole :int))
-    (ir:reference (find-type-info (ir:name arg) context))))
 
 (-> references-from-list (list) list)
 (defun references-from-list (normal-forms)
@@ -658,16 +483,3 @@ integer then it will error."
                                                   val current-most-known-type)))))
             (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
             (assure hole nil))))
-
-(-> find-type-info (keyword typing-context) lookup-type)
-(defun find-type-info (name context)
-  "Grabs the typing value from the given keyword. If this lookup fails,
-we try to get the unrefined type."
-  (let ((looked (closure:lookup (typing-closure context) name)))
-    (cond (looked looked)
-          ((member name (holes context))
-           (let ((value (closure:lookup (hole-info context) name)))
-             (and value (hole-information-unrefined value))))
-          (t
-           (error "Internal error: Value ~A is not a known hole in ~A"
-                  name context)))))
