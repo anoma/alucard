@@ -259,24 +259,40 @@
               (make-depends-on :value (list arr)))
           context)))
       ((ir:array-set :arr arr :value value)
-       (let ((lookup-val (normal-form-to-type-info value context))
-             (lookup-arr (normal-form-to-type-info-not-number-err arr context)))
-         (dispatch-case ((lookup-arr lookup-type)
-                         (lookup-val lookup-type))
-           ((type-info type-info)
-            (error "not implemented yet"))
-           ((hole hole)
-            (error "not implemented yet"))
-           ((hole type-info)
-            (error "not implemented yet"))
-           ((type-info hole)
-            (error "not implemented yet")))))
-      ((ir:array-allocate :size s :typ t)
+       (let* ((lookup-val (normal-form-to-type-info value context))
+              (lookup-arr (normal-form-to-type-info-not-number-err arr context))
+              (context
+                (dispatch-case ((lookup-arr lookup-type)
+                                (lookup-val lookup-type))
+                  ;; We will leave some holes, as currently we force the
+                  ;; submission of the type with an array. This should
+                  ;; change, and we should be able to understand the length
+                  ;; of a hole
+                  ((hole type-info)
+                   ;; can't actually hit here!
+                   (error "No Type Inference for the type of the array yet!"))
+                  ((hole hole)
+                   ;; can't actually hit here!
+                   (error "No Type Inference for the type of the array yet!"))
+                  ((type-info type-info)
+                   (consistent-type-check (list (arr-content-type
+                                                 (type-info-type lookup-arr))
+                                                (type-info-type lookup-val))
+                                          context)
+                   context)
+                  ((type-info hole)
+                   (unify value
+                          (arr-content-type (type-info-type lookup-arr))
+                          context)))))
+         (values (make-type-info :size 0
+                                 :type (ir:make-type-reference :name :void))
+                 context)))
+      ((ir:array-allocate :size s :typ ty)
        ;; abstract out this make array
-       (values
-        (ir:make-application :function (ir:make-type-reference :name :array)
-                             :arguments (list s t))
-        context))
+       (values (make-type-info
+                :size (* s (size:reference ty))
+                :type (make-arr :length s :type ty))
+               context))
       ((ir:from-data :contents contents)
        (multiple-value-bind (arg context) (arguments-have-same-type contents context)
          (etypecase-of typing-result arg
@@ -284,11 +300,8 @@
             (values (make-type-info
                      :size (* (length contents)
                               (type-info-size arg))
-                     ;; abstract out this make array
-                     :type (ir:make-application
-                            :function (ir:make-type-reference :name :array)
-                            :arguments (list (length contents)
-                                             (type-info-type arg))))
+                     :type (make-arr :length (length contents)
+                                     :type (type-info-type arg)))
                     context))
            (hole-conditions
             (values arg context))))))))
@@ -483,3 +496,21 @@ integer then it will error."
                                                   val current-most-known-type)))))
             (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
             (assure hole nil))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array Helpers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> make-arr (&key (:length fixnum) (:type ir:type-reference)) ir:application)
+(defun make-arr (&key length type)
+  (ir:make-application :function (ir:make-type-reference :name :array)
+                       :arguments (list length type)))
+
+
+(-> arr-length (ir:application) fixnum)
+(defun arr-length (arr)
+  (car (ir:arguments arr)))
+
+(-> arr-content-type (ir:application) ir:type-reference)
+(defun arr-content-type (arr)
+  (cadr (ir:arguments arr)))
