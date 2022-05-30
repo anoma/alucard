@@ -74,6 +74,12 @@
                :hole-info (closure:insert info v
                                           (make-hole-information :unrefined :int
                                                                  :term (list val)))))
+             ((eql :refine-array)
+              (util:copy-instance
+               ctx
+               :holes     (cons v holes)
+               :hole-info (closure:insert info v
+                                          (make-hole-information :term (list val)))))
              ;; Here we keep the original expression, and just
              ;; note what holes need to be solved first before we
              ;; can continue.
@@ -83,7 +89,7 @@
                :holes     (cons v holes)
                :hole-info (closure:insert info
                                           v
-                                          (make-hole-information :term (list v)))
+                                          (make-hole-information :term (list val)))
                :dependency
                (dependency:determined-by dep v (depends-on-value result))))))))
       ;; The hole will be filed in via the recursive body calls.
@@ -249,14 +255,22 @@
                         :type typ)
         (unify value typ context)))
       ((ir:array-lookup :arr arr)
-       (let ((lookup
-               (etypecase-of ir:term-normal-form arr
-                 (number (error "Array lookup on the number ~A" arr))
-                 (ir:reference (closure:lookup closure (ir:name arr))))))
+       (let* ((lookup
+                (etypecase-of ir:term-normal-form arr
+                  (number (error "Array lookup on the number ~A" arr))
+                  (ir:reference (closure:lookup closure (ir:name arr)))))
+              (value-type
+                (cond ((and lookup (array-reference? (type-info-type lookup)))
+                       (let ((type (arr-content-type (type-info-type lookup))))
+                         (make-type-info :type type
+                                         :size (size:reference type))))
+                      (lookup
+                       (error "Type ~A is not of type Array" (type-info-type lookup)))
+                      (t nil))))
          (values
           (if lookup
-              lookup
-              (make-depends-on :value (list arr)))
+              value-type
+              (make-depends-on :value (list (ir:name arr))))
           context)))
       ((ir:array-set :arr arr :value value)
        (let* ((lookup-val (normal-form-to-type-info value context))
@@ -275,11 +289,12 @@
                    ;; can't actually hit here!
                    (error "No Type Inference for the type of the array yet!"))
                   ((type-info type-info)
-                   (consistent-type-check (list (arr-content-type
-                                                 (type-info-type lookup-arr))
-                                                (type-info-type lookup-val))
-                                          context)
-                   context)
+                   (if (type-equality (arr-content-type
+                                       (type-info-type lookup-arr))
+                                      (type-info-type lookup-val))
+                       context
+                       (error "Array ~A does not have element type of ~A"
+                              arr lookup-val)))
                   ((type-info hole)
                    (unify value
                           (arr-content-type (type-info-type lookup-arr))
@@ -297,14 +312,20 @@
        (multiple-value-bind (arg context) (arguments-have-same-type contents context)
          (etypecase-of typing-result arg
            (type-info
+            (format t "HERE ~a" (make-arr :length (length contents)
+                                     :type (type-info-type arg)))
             (values (make-type-info
                      :size (* (length contents)
                               (type-info-size arg))
                      :type (make-arr :length (length contents)
                                      :type (type-info-type arg)))
                     context))
-           (hole-conditions
-            (values arg context))))))))
+           (depends-on            (values arg context))
+           ((eql :refine-array)   (values arg context))
+           (same-as               (values (make-depends-on
+                                           :value (list (same-as-value arg)))
+                                          context))
+           ((eql :refine-integer) (values :refine-integer context))))))))
 
 
 (-> arguments-have-same-type
