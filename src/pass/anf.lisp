@@ -107,16 +107,18 @@ will evaluate to this let buildup."
 (defun normalize-bind (expr cont)
   "normalize-bind normalizes the given expression, creating an unique
 let binding if the result of normalization is itself not in normal form"
-  (normalize expr
-             (lambda (expr)
-               (if (normalp expr)
-                   (funcall cont expr)
-                   (let ((var (util:symbol-to-keyword (gensym "&G"))))
-                     (combine-expression
-                      (spc:make-let
-                       :var var
-                       :val expr)
-                      (funcall cont (spc:make-reference :name var))))))))
+  (if (listp expr)
+      (normalize-bind* expr cont)
+      (normalize expr
+                 (lambda (expr)
+                   (if (normalp expr)
+                       (funcall cont expr)
+                       (let ((var (util:symbol-to-keyword (gensym "&G"))))
+                         (combine-expression
+                          (spc:make-let
+                           :var var
+                           :val expr)
+                          (funcall cont (spc:make-reference :name var)))))))))
 
 (-> normalize-bind* (list (-> (list) spc:expression)) spc:expression)
 (defun normalize-bind* (list cont)

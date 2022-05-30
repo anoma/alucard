@@ -194,6 +194,27 @@
      :typ (spc:to-type-reference-format ',type-check)
      :value ,value)))
 
+(defun to-array (&rest arguments)
+  (ensure-call-by-value
+   (spc:make-from-data :contents arguments)))
+
+;; eventually make the type optional
+(defmacro array (length type)
+  `(ensure-call-by-value
+    (spc:make-array-allocate
+     :typ  (spc:to-type-reference-format ',type)
+     :size ,length)))
+
+(defun get (array position)
+  (ensure-call-by-value
+   (spc:make-array-lookup :arr array :pos position)))
+
+(defsetf get (array location) (value)
+  `(ensure-call-by-value
+     (spc:make-array-set :arr ,array
+                         :pos ,location
+                         :value ,value)))
+
 (defmacro with-constraint (variable-names &rest body)
   (let ((body-list (gensym)))
     `(let ((,body-list (list nil)))

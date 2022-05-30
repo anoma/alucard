@@ -24,38 +24,25 @@
                             (make-instance 'check::typing-context))))))
 
 (test Running-the-type-checker
-  (finishes
-    (check::annotate-circuit
-     (storage:lookup-function :constrain)
-     (alu.pass:linearize (storage:lookup-function :constrain))))
-  (finishes
-    (check::annotate-circuit
-     (storage:lookup-function :poly-check)
-     (alu.pass:linearize (storage:lookup-function :poly-check))))
-  (finishes
-    (check::annotate-circuit
-     (storage:lookup-function :array-lookup-equation)
-     (alu.pass:linearize (storage:lookup-function :array-lookup-equation))))
-  (finishes
-    (pipeline:to-typecheck (storage:lookup-function :int-return)))
-  (finishes
-    (pipeline:to-typecheck (storage:lookup-function :basic-unification)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-type-unification)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-record-lookup)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-record-lookup-type)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :manual-constraint)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-record-primitive-2)))
-  ;; different error than 2
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-record-primitive)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-record-creation)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-application-unification)))
-  (fiveam:signals error
-    (pipeline:to-typecheck (storage:lookup-function :invalid-type-check))))
+  (flet ((type-check (x)
+           (pipeline:to-typecheck (storage:lookup-function x))))
+    (finishes (type-check :constrain))
+    (finishes (type-check :poly-check))
+    (finishes (type-check :array-lookup-equation))
+    (finishes (type-check :int-return))
+    (finishes (type-check :array-type-check))
+    (finishes (type-check :array-creation-check))
+    (finishes (type-check :array-from-data-check))
+    (finishes (type-check :array-from-data-check-consts))
+    (finishes (type-check :basic-unification))
+    (fiveam:signals error (type-check :invalid-array-type-check))
+    (fiveam:signals error (type-check :invalid-type-unification))
+    (fiveam:signals error (type-check :invalid-record-lookup))
+    (fiveam:signals error (type-check :invalid-record-lookup-type))
+    (fiveam:signals error (type-check :manual-constraint))
+    (fiveam:signals error (type-check :invalid-record-primitive-2))
+    ;; different error than 2
+    (fiveam:signals error (type-check :invalid-record-primitive))
+    (fiveam:signals error (type-check :invalid-record-creation))
+    (fiveam:signals error (type-check :invalid-application-unification))
+    (fiveam:signals error (type-check :invalid-type-check))))

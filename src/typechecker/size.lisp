@@ -48,7 +48,7 @@
   (flet ((handle-arguments (keyword-prim arguments)
            (typecase-of types:known-primitve-types keyword-prim
              ((eql :int)   (if arguments (car arguments) 256))
-             ((eql :array) (* (reference (car arguments)) (cadr arguments)))
+             ((eql :array) (* (reference (cadr arguments)) (car arguments)))
              ((eql :bool)  1)
              ((eql :void)  0)
              (otherwise   nil))))

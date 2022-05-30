@@ -74,6 +74,7 @@ analyzing belong in"))
   "The conditions in which a fialure can happen for "
   `(or same-as
        (eql :refine-integer)
+       (eql :refine-array)
        depends-on))
 
 ;; infer-from

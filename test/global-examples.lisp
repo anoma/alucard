@@ -204,6 +204,35 @@
   (def ((z (prld:+ y 35)))
     (prld:+ x (prld:check z (int 64)))))
 
+
+(defcircuit array-type-check ((public arr (array 10 int))
+                              (output (array int 10)))
+  (def ((foo (prld:get arr 10)))
+    (prld:+ 25 foo)))
+
+(defcircuit invalid-array-type-check ((public arr (array 10 int))
+                                      (output (array int 10)))
+  (def ((foo (prld:get arr 10)))
+    (prld:+ (prld:check 25 (int 64)) foo)))
+
+(defcircuit array-creation-check ((output (array int 10)))
+  (def ((foo (array 10 (int 32)))
+        (bar (array 10 (int 32))))
+    (setf (prld:get foo 0) (prld:check 23 (int 32)))
+    (setf (prld:get foo 1) 25)
+    (prld:+ 25 (prld:get foo 0) (prld:get foo 1))))
+
+(defcircuit array-from-data-check ((output (array int 10)))
+  (def ((foo 35)
+        (bar (to-array foo 36)))
+    (prld:+ (prld:check foo (int 32))
+            (prld:get bar 0))))
+
+(defcircuit array-from-data-check-consts ((output (array int 10)))
+  (def ((bar (to-array 36)))
+    (prld:+ (prld:check 5 (int 32))
+            (prld:get bar 0))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
