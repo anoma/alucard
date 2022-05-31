@@ -1,4 +1,4 @@
-(in-package :alu.typechecker)
+(in-package :alu.typechecker.check)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Main Unification Algorithm

@@ -112,6 +112,35 @@ circuits execution body and tracking caching")
    :track-circuit-deps*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages Regarding Packing Infrastructure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defpackage #:alu.pass.pack
+  (:documentation "Provides expansion logic for packing uniform and non uniform
+structures")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util       :alu.utils)
+                    (:ir         :alu.ir)
+                    (:pass       :alu.pass)
+                    (:storage    :alu.storage)
+                    (:check.type :alu.typechecker.types)
+                    (:check      :alu.typechecker)
+                    (:closure    :alu.closure))
+  (:export))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Packages Regarding Arrays
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defpackage #:alu.pass.array
+  (:documentation "Provides expansion logic for arrays")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:util    :alu.utils)
+                    (:ir      :alu.ir)
+                    (:pack    :alu.pass.pack)
+                    (:storage :alu.storage))
+  (:export))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding the Pipeline
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

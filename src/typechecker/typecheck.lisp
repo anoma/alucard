@@ -1,4 +1,4 @@
-(in-package :alu.typechecker)
+(in-package :alu.typechecker.check)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Annotating the Typing context
@@ -11,9 +11,7 @@
 
 (-> annotate-circuit (ir:circuit ir:expanded-list) typing-context)
 (defun annotate-circuit (circuit body)
-  (mvfold (flip #'annotate-term)
-          body
-          (starting-context (ir:arguments circuit))))
+  (annotate-list body (starting-context (ir:arguments circuit))))
 
 (-> starting-context (list) typing-context)
 (defun starting-context (constraint-list)
@@ -29,6 +27,10 @@
                                        :type (ir:typ constraint)))))
    constraint-list
    (make-instance 'typing-context)))
+
+(-> annotate-list (ir:type-aware-list typing-context) typing-context)
+(defun annotate-list (body context)
+  (mvfold (flip #'annotate-term) body context))
 
 (-> annotate-term (ir:type-aware-term typing-context) typing-context)
 (defun annotate-term (term context)

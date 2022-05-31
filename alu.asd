@@ -61,7 +61,8 @@
                  (:file "types")
                  (:file "size")
                  (:file "unifier")
-                 (:file "typecheck")))
+                 (:file "typecheck")
+                 (:file "intro")))
    (:module pass
     :serial t
     :depends-on ("intermediate-representation"
@@ -76,6 +77,7 @@
                  (:file "relocation")
                  (:file "anf")
                  (:file "extract")
+                 (:file "pack")
                  (:file "pass")
                  (:file "dependencies")
                  (:file "pipeline")))

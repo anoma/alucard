@@ -52,11 +52,46 @@ language. The name typically refers to the value being calculated.")
    :primitive))
 
 ;; This package is split-up between typecheck and unifier
-(defpackage #:alu.typechecker
+(defpackage #:alu.typechecker.check
   (:local-nicknames (#:ir         #:alu.ir)
                     (#:closure    #:alu.closure)
                     (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)
                     (#:util       #:alu.utils)
                     (#:size       #:alu.typechecker.size))
-  (:use #:common-lisp #:serapeum #:alu.typechecker.types))
+  (:use #:common-lisp #:serapeum #:alu.typechecker.types)
+  (:export
+   :check
+   :annotate-circuit
+   :annotate-term
+   :annotate-list
+   :make-starting-hole))
+
+(defpackage #:alu.typechecker.intro
+  (:documentation "Gives an API for introducing new variables to the compiler")
+  (:local-nicknames (#:ir         #:alu.ir)
+                    (#:storage    #:alu.storage)
+                    (#:closure    #:alu.closure)
+                    (#:dependency #:alu.closure.dependency)
+                    (#:util       #:alu.utils)
+                    (#:size       #:alu.typechecker.size)
+                    (#:check      #:alu.typechecker.check))
+  (:use #:common-lisp #:serapeum #:alu.typechecker.types)
+  (:export
+   :intro
+   :with-intro))
+
+(uiop:define-package #:alu.typechecker
+  (:use #:common-lisp
+        #:serapeum
+        #:alu.typechecker.types
+        #:alu.typechecker.check
+        #:alu.typechecker.intro)
+  (:reexport #:alu.typechecker.intro)
+  ;; We don't re-export #:alu.typechecker.check as it has extra
+  ;; exports we don't want.
+  (:export
+   :check
+   :annotate-circuit
+   :annotate-term
+   :annotate-list))
