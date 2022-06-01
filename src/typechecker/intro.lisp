@@ -24,8 +24,10 @@ EXAMPLE:
 (check:with-intro (ctx bar baz) context
   ctx)"
   `(let ,(mapcar (lambda (symbol)
-                   (list symbol `(gensym (symbol-name ',symbol))))
+                   (let ((symbol-name
+                           (if (listp symbol) (car symbol) symbol)))
+                     `(,symbol-name (util:symbol-to-keyword
+                                     (gensym (symbol-name ',symbol-name))))))
                  names)
      (let ((,new-context-name (intro ,context ,@names)))
        ,@body)))
-

@@ -3,7 +3,7 @@
   (:documentation "Provides a simple closure structure")
   (:local-nicknames (:syc  :sycamore)
                     (:util :alu.utils))
-  (:shadow #:remove)
+  (:shadow #:remove #:length)
   (:use #:common-lisp #:serapeum)
   (:export
    :typ
@@ -11,13 +11,14 @@
    :from-plist
    :from-alist
    :insert
+   :length
    :lookup
    :remove))
 
 (defpackage #:alu.closure.dependency
   (:documentation "Provides a dependency closure that shows dependency
   between values")
-  (:shadow #:remove #:reverse)
+  (:shadow #:remove #:reverse #:length)
   (:local-nicknames (:syc     #:sycamore)
                     (:util    #:alu.utils)
                     (:closure #:alu.closure))

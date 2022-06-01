@@ -14,6 +14,7 @@
                     (:eval     :alu.pass.evaluate-body)
                     (:check    :alu.typechecker)
                     (:pass     :alu.pass)
+                    (:pack     :alu.pass.pack)
                     (:pipeline :alu.pipeline)
                     (:vspc     :alu.vampir.spec)
                     (:prld     :alu.prelude))

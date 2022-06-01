@@ -1,4 +1,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Package To make the pipeline available to the packages found here ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defpackage #:alu.pipeline.pipeline
+  (:documentation "Provides The Alucard Pipeline signature to functions in this package
+file. This will be filled in by alu.pipeline")
+  (:export
+   :dump-entry-point
+   :dump-entry-point-to-file
+   :pipeline
+   :print-vampir
+   ;; Intermediate steps
+   :to-typecheck
+   :to-expand-away-records
+   :to-primitive-circuit
+   :to-vampir
+   :type-check-expression))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Expanding Away and Relocating Record Types
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -88,6 +107,7 @@ circuits execution body and tracking caching")
                     (:vampir   :alu.vampir))
   (:export
    :linearize
+   :linearize-body
    :expand-away-records
    :remove-void-bindings
    :primtitve-circuit
@@ -119,14 +139,18 @@ circuits execution body and tracking caching")
   (:documentation "Provides expansion logic for packing uniform and non uniform
 structures")
   (:use #:common-lisp #:serapeum)
+  (:shadow #:array #:op)
   (:local-nicknames (:util       :alu.utils)
                     (:ir         :alu.ir)
                     (:pass       :alu.pass)
                     (:storage    :alu.storage)
                     (:check.type :alu.typechecker.types)
                     (:check      :alu.typechecker)
-                    (:closure    :alu.closure))
-  (:export))
+                    (:type-op    :alu.spec.type-op)
+                    (:term-op    :alu.spec.term-op)
+                    (:closure    :alu.closure)
+                    (:pipeline   :alu.pipeline.pipeline))
+  (:export :op :array))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Arrays
@@ -147,7 +171,7 @@ structures")
 
 (defpackage #:alu.pipeline
   (:documentation "Provides The Alucard Pipeline down to ANF")
-  (:use #:common-lisp #:serapeum)
+  (:use #:common-lisp #:serapeum #:alu.pipeline.pipeline)
   (:local-nicknames (:util    :alu.utils)
                     (:ir      :alu.ir)
                     (:pass    :alu.pass)
@@ -163,6 +187,7 @@ structures")
    :to-typecheck
    :to-expand-away-records
    :to-primitive-circuit
-   :to-vampir))
+   :to-vampir
+   :type-check-expression))
 
 

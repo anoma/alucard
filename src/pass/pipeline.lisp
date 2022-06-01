@@ -67,3 +67,17 @@
    (~> circuit
        to-primitive-circuit
        pass:circuit-to-alias)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Pipeline For Expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> type-check-expression
+    (ir:expression alu.typechecker:typing-context)
+    (values alu.typechecker:typing-context ir:expanded-list))
+(defun type-check-expression (body context)
+  (let ((body (pass:linearize-body body)))
+    (values
+     (alu.typechecker:annotate-list body context)
+     (remove-if (lambda (p) (typep p 'ir:standalone-ret))
+                (pass:remove-type-information body)))))

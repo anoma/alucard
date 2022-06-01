@@ -54,6 +54,7 @@ language. The name typically refers to the value being calculated.")
 ;; This package is split-up between typecheck and unifier
 (defpackage #:alu.typechecker.check
   (:local-nicknames (#:ir         #:alu.ir)
+                    (#:type-op    #:alu.spec.type-op)
                     (#:closure    #:alu.closure)
                     (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)
@@ -65,7 +66,8 @@ language. The name typically refers to the value being calculated.")
    :annotate-circuit
    :annotate-term
    :annotate-list
-   :make-starting-hole))
+   :make-starting-hole
+   :type-equality))
 
 (defpackage #:alu.typechecker.intro
   (:documentation "Gives an API for introducing new variables to the compiler")
@@ -94,4 +96,11 @@ language. The name typically refers to the value being calculated.")
    :check
    :annotate-circuit
    :annotate-term
-   :annotate-list))
+   :annotate-list
+   :type-equality)
+  ;; Operations from types that are good to alias
+  (:export
+   ;; Context data type
+   :typing-context :holes :hole-info :dependency :typing-closure
+   ;; Known Type Information
+   :type-info :type-info-size :type-info-type :type-info-p :make-type-info))

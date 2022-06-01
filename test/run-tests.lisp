@@ -10,6 +10,7 @@
    'alucard.pass
    'alucard.typecheck
    'alucard.evaluate-body
+   'alucard.packing
    'vampir
    'alucard))
 

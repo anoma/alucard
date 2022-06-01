@@ -262,8 +262,9 @@
                   (number (error "Array lookup on the number ~A" arr))
                   (ir:reference (closure:lookup closure (ir:name arr)))))
               (value-type
-                (cond ((and lookup (array-reference? (type-info-type lookup)))
-                       (let ((type (arr-content-type (type-info-type lookup))))
+                (cond ((and lookup (type-op:array-reference? (type-info-type lookup)))
+                       (let ((type
+                               (ir:array-type-content (type-info-type lookup))))
                          (make-type-info :type type
                                          :size (size:reference type))))
                       (lookup
@@ -291,7 +292,7 @@
                    ;; can't actually hit here!
                    (error "No Type Inference for the type of the array yet!"))
                   ((type-info type-info)
-                   (if (type-equality (arr-content-type
+                   (if (type-equality (ir:array-type-content
                                        (type-info-type lookup-arr))
                                       (type-info-type lookup-val))
                        context
@@ -299,7 +300,7 @@
                               arr lookup-val)))
                   ((type-info hole)
                    (unify value
-                          (arr-content-type (type-info-type lookup-arr))
+                          (ir:array-type-content (type-info-type lookup-arr))
                           context)))))
          (values (make-type-info :size 0
                                  :type (ir:make-type-reference :name :void))
@@ -308,19 +309,17 @@
        ;; abstract out this make array
        (values (make-type-info
                 :size (* s (size:reference ty))
-                :type (make-arr :length s :type ty))
+                :type (ir:array-type :length s :type ty))
                context))
       ((ir:from-data :contents contents)
        (multiple-value-bind (arg context) (arguments-have-same-type contents context)
          (etypecase-of typing-result arg
            (type-info
-            (format t "HERE ~a" (make-arr :length (length contents)
-                                     :type (type-info-type arg)))
             (values (make-type-info
                      :size (* (length contents)
                               (type-info-size arg))
-                     :type (make-arr :length (length contents)
-                                     :type (type-info-type arg)))
+                     :type (ir:array-type :length (length contents)
+                                          :type (type-info-type arg)))
                     context))
            (depends-on            (values arg context))
            ((eql :refine-array)   (values arg context))
@@ -455,7 +454,7 @@ integer then it will error."
                              (error "the given type ~A is not an integer type"
                                     most-refined-value)))))
              (type-info
-              (if (int-reference?
+              (if (type-op:int-reference?
                    (type-info-type most-refined-value))
                   most-refined-value
                   (error "Value to should be an Integer not a ~A"
@@ -488,12 +487,12 @@ integer then it will error."
   (flet ((keyword-case (type keyword)
            (etypecase-of known-primitve-types keyword
              ((or (eql :int) (eql :bool))
-              (if (int-reference? (type-info-type type))
+              (if (type-op:int-reference? (type-info-type type))
                   type
                   (error "Type ~A is not consistent with Integer"
                          (type-info-type type))))
              ((eql :array)
-              (if (array-reference? (type-info-type type))
+              (if (type-op:array-reference? (type-info-type type))
                   type
                   (error "Type ~A is not consistent with Integer"
                          (type-info-type type))))
@@ -519,21 +518,3 @@ integer then it will error."
                                                   val current-most-known-type)))))
             (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
             (assure hole nil))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Array Helpers
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(-> make-arr (&key (:length fixnum) (:type ir:type-reference)) ir:application)
-(defun make-arr (&key length type)
-  (ir:make-application :function (ir:make-type-reference :name :array)
-                       :arguments (list length type)))
-
-
-(-> arr-length (ir:application) fixnum)
-(defun arr-length (arr)
-  (car (ir:arguments arr)))
-
-(-> arr-content-type (ir:application) ir:type-reference)
-(defun arr-content-type (arr)
-  (cadr (ir:arguments arr)))

@@ -76,6 +76,9 @@ package and alu terms")
    ;; New Types Defined Type-Storage
    :reference-type :name
 
+   ;; New Array Abstractions
+   :array-type :array-type-len :array-type-content
+
    ;; Functions
    :to-type-reference-format
 
@@ -133,3 +136,19 @@ that we modify the current body in scope with the given instruction.")
   (:local-nicknames (:spc     :alu.spec)
                     (:storage :alu.storage))
   (:export :with-circuit-body :instruction))
+
+(defpackage #:alu.spec.type-op
+  (:documentation "Provides basic operations on types")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:spc     :alu.spec)
+                    (:storage :alu.storage))
+  (:export :primitive? :array-reference? :void-reference? :int-reference?
+           :record-reference?))
+
+(defpackage #:alu.spec.term-op
+  (:documentation "Provides basic operations on types")
+  (:shadow :exp)
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (:spc     :alu.spec)
+                    (:storage :alu.storage))
+  (:export :add :times :exp))

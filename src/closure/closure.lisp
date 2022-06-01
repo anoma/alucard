@@ -53,8 +53,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Removal Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (-> remove (typ keyword) typ)
 (defun remove (closure name)
   (values
    (make-instance 'typ
                   :table (syc:tree-map-remove (table closure) name))))
+
+(-> length (typ) integer)
+(defun length (closure)
+  (cl:length (sycamore:tree-map-keys (table closure))))
