@@ -5,7 +5,7 @@
 ;; https://github.com/phoe/trivial-package-local-nicknames
 (defpackage #:alu
   (:documentation "provides the Alucard VAMP-IR DSL")
-  (:shadow #:deftype #:def #:coerce #:get)
+  (:shadow #:deftype #:def #:coerce #:get #:array)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)

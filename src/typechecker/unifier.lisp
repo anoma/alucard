@@ -46,16 +46,16 @@ values, or an error being thrown if the information is contradictory."
                (typecase-of known-primitve-types value
                  ((or (eql :int)
                       (eql :bool))
-                  (unless (int-reference? expected-type)
+                  (unless (type-op:int-reference? expected-type)
                     (error "Trying to unify an Integer type with ~A"
                            expected-type)))
                  ;; we should check that we unify it with void properly
                  ((eql :void)
-                  (unless (void-reference? expected-type)
+                  (unless (type-op:void-reference? expected-type)
                     (error "Trying to unify a void type with ~A"
                            expected-type)))
                  ((eql :array)
-                  (unless (array-reference? expected-type)
+                  (unless (type-op:array-reference? expected-type)
                     (error "Trying to unify an array type with ~A"
                            expected-type)))
                  (otherwise
@@ -192,32 +192,3 @@ with the given `type-info'"
     :holes          (remove-if (lambda (x) (eql x name)) (holes context))
     :hole-info      (closure:remove (hole-info context) name)
     :dependency     (dependency:solved-for (dependency context) name))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Primitive data type checks
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(-> is-primitive? (ir:type-reference (-> (ir:primitive) boolean)) boolean)
-(defun is-primitive? (ref predicate)
-  (let* ((name-to-lookup
-           (etypecase-of ir:type-reference ref
-             (ir:reference-type (ir:name ref))
-             (ir:application    (ir:name (ir:func ref)))))
-         (looked (storage:lookup-type name-to-lookup)))
-    (etypecase-of (or ir:type-storage null) looked
-      ((or null ir:type-declaration) nil)
-      (ir:primitive                  (funcall predicate looked)))))
-
-(-> array-reference? (ir:type-reference) boolean)
-(defun array-reference? (ref)
-  (is-primitive? ref (lambda (v) (eql :array (ir:name v)))))
-
-(-> void-reference? (ir:type-reference) boolean)
-(defun void-reference? (ref)
-  (is-primitive? ref (lambda (v) (eql :void (ir:name v)))))
-
-(-> int-reference? (ir:type-reference) boolean)
-(defun int-reference? (ref)
-  (is-primitive? ref (lambda (v)
-                       (or (eql :int (ir:name v))
-                           (eql :bool (ir:name v))))))

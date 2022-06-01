@@ -37,6 +37,8 @@
                  (:file "type")
                  (:file "global")
                  (:file "storage")
+                 (:file "type-op")
+                 (:file "term-op")
                  (:file "emit")))
    (:module vampir
     :serial t
@@ -79,6 +81,7 @@
                  (:file "extract")
                  (:file "pack")
                  (:file "pass")
+                 (:file "array")
                  (:file "dependencies")
                  (:file "pipeline")))
    ;; only folder without a package
@@ -110,6 +113,7 @@
    (:file "evaluate-body")
    (:file "dependencies")
    (:file "typecheck")
+   (:file "packing")
    (:file "pass")
    (:file "vampir")
    (:file "run-tests"))

@@ -20,6 +20,24 @@ applied upon"
          :documentation "Type reference"))
   (:documentation "Represents a variable in the Alucard language"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array Functioanlity
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> array-type (&key (:length fixnum) (:type type-reference)) application)
+(defun array-type (&key length type)
+  (make-application :function  (make-type-reference :name :array)
+                    :arguments (list length type)))
+
+
+(-> array-type-len (application) fixnum)
+(defun array-type-len (arr)
+  (car (arguments arr)))
+
+(-> array-type-content (application) type-reference)
+(defun array-type-content (arr)
+  (cadr (arguments arr)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                     Extra Functionality On Types                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -6,24 +6,25 @@
 (in-suite alucard.typecheck)
 
 (test type-equality-works-as-expected
-  (is (check::type-equality (ir:to-type-reference-format '(int 32))
-                            (ir:to-type-reference-format '(int 32))))
-  (is (check::type-equality (ir:to-type-reference-format '(int bar))
-                            (ir:to-type-reference-format '(int bar))))
+  (is (check:type-equality (ir:to-type-reference-format '(int 32))
+                           (ir:to-type-reference-format '(int 32))))
+  (is (check:type-equality (ir:to-type-reference-format '(int bar))
+                           (ir:to-type-reference-format '(int bar))))
   (is (null
-       (check::type-equality (ir:to-type-reference-format '(int 64))
-                             (ir:to-type-reference-format '(int 32))))))
+       (check:type-equality (ir:to-type-reference-format '(int 64))
+                            (ir:to-type-reference-format '(int 32))))))
 
 
 (test find-no-data
   (is
    (null
-    (check::find-type-info :foo
-                           (check::make-starting-hole
-                            '(:foo :bar)
-                            (make-instance 'check::typing-context))))))
+    (alu.typechecker.check::find-type-info
+     :foo
+     (check::make-starting-hole
+      '(:foo :bar)
+      (make-instance 'check:typing-context))))))
 
-(test Running-the-type-checker
+(test running-the-type-checker
   (flet ((type-check (x)
            (pipeline:to-typecheck (storage:lookup-function x))))
     (finishes (type-check :constrain))

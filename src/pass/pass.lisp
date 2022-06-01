@@ -8,6 +8,11 @@
 (defun linearize (circuit)
   (~> circuit
       eval:evaluate-and-cache-body
+      linearize-body))
+
+(-> linearize-body (alu.spec:expression) ir:type-aware-list)
+(defun linearize-body (body)
+  (~> body
       ;; need to update this point forward
       anf:normalize-expression
       transform-let
