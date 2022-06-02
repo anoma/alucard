@@ -139,7 +139,7 @@ circuits execution body and tracking caching")
   (:documentation "Provides expansion logic for packing uniform and non uniform
 structures")
   (:use #:common-lisp #:serapeum)
-  (:shadow #:array #:op)
+  (:shadow #:array #:op #:+)
   (:local-nicknames (:util       :alu.utils)
                     (:ir         :alu.ir)
                     (:pass       :alu.pass)
@@ -150,7 +150,9 @@ structures")
                     (:term-op    :alu.spec.term-op)
                     (:closure    :alu.closure)
                     (:pipeline   :alu.pipeline.pipeline))
-  (:export :op :array))
+  (:export :op :array
+           :lookup-at :array-lookup-final-ref
+           :final-ref-from-op))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding Arrays
@@ -161,13 +163,14 @@ structures")
   (:local-nicknames (:util    :alu.utils)
                     (:ir      :alu.ir)
                     (:pack    :alu.pass.pack)
-                    (:storage :alu.storage))
+                    (:closure :alu.closure)
+                    (:storage :alu.storage)
+                    (:check   :alu.typechecker))
   (:export))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding the Pipeline
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (defpackage #:alu.pipeline
   (:documentation "Provides The Alucard Pipeline down to ANF")
