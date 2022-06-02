@@ -147,8 +147,8 @@ that we modify the current body in scope with the given instruction.")
 
 (defpackage #:alu.spec.term-op
   (:documentation "Provides basic operations on types")
-  (:shadow :exp)
+  (:shadow :exp :coerce :=)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (:spc     :alu.spec)
                     (:storage :alu.storage))
-  (:export :add :times :exp))
+  (:export :add :times :exp :coerce :=))
