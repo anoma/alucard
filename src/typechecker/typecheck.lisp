@@ -4,10 +4,11 @@
 ;;; Annotating the Typing context
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> check (ir:type-aware-list ir:circuit) ir:expanded-list)
+(-> check (ir:type-aware-list ir:circuit) (values ir:expanded-list typing-context))
 (defun check (body circuit)
-  (annotate-circuit circuit body)
-  body)
+  (values
+   body
+   (annotate-circuit circuit body)))
 
 (-> annotate-circuit (ir:circuit ir:expanded-list) typing-context)
 (defun annotate-circuit (circuit body)

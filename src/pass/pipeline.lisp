@@ -4,7 +4,8 @@
 ;; half way through for easier testing! until then I'll just have many
 ;; arrow functions for where I want to stop off!
 
-(-> to-typecheck           (ir:circuit) ir:expanded-list)
+(-> to-typecheck           (ir:circuit) (values ir:expanded-list check:typing-context))
+(-> to-expand-away-arrays  (ir:circuit) (values ir:expanded-list check:typing-context))
 (-> to-expand-away-records (ir:circuit) ir:fully-expanded-list)
 (-> to-primitive-circuit   (ir:circuit) ir:prim-circuit)
 (-> to-vampir              (ir:circuit) alu.vampir.spec:alias)
@@ -45,14 +46,24 @@
       to-vampir))
 
 (defun to-typecheck (circuit)
-  (~> circuit
-      pass:linearize
-      (alu.typechecker::check circuit)
-      pass:remove-type-information))
+  (mvlet ((body typing (~> circuit
+                           pass:linearize
+                           (check:check circuit))))
+    (values
+     (pass:remove-type-information body)
+     typing)))
+
+(defun to-expand-arrays (circuit)
+  (mvlet* ((body context (to-typecheck circuit))
+           (context body (~>> body
+                              (array:handle-terms context))))
+    (values
+     body
+     context)))
 
 (defun to-expand-away-records (circuit)
   (~> circuit
-      to-typecheck
+      to-expand-arrays
       (pass:expand-away-records circuit)
       pass:remove-void-bindings))
 
@@ -78,6 +89,6 @@
 (defun type-check-expression (body context)
   (let ((body (pass:linearize-body body)))
     (values
-     (alu.typechecker:annotate-list body context)
+     (check:annotate-list body context)
      (remove-if (lambda (p) (typep p 'ir:standalone-ret))
                 (pass:remove-type-information body)))))

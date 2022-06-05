@@ -166,7 +166,7 @@ structures")
                     (:closure :alu.closure)
                     (:storage :alu.storage)
                     (:check   :alu.typechecker))
-  (:export))
+  (:export :handle-terms :handle-term))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Packages Regarding the Pipeline
@@ -180,7 +180,9 @@ structures")
                     (:pass    :alu.pass)
                     (:vampir  :alu.vampir)
                     (:dep     :alu.pass.dependencies)
-                    (:storage :alu.storage))
+                    (:storage :alu.storage)
+                    (:array   :alu.pass.array)
+                    (:check   :alu.typechecker))
   (:export
    :dump-entry-point
    :dump-entry-point-to-file
@@ -188,6 +190,7 @@ structures")
    :print-vampir
    ;; Intermediate steps
    :to-typecheck
+   :to-expand-arrays
    :to-expand-away-records
    :to-primitive-circuit
    :to-vampir

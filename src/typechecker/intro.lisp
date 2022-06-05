@@ -2,7 +2,8 @@
 
 (-> intro (typing-context &rest keyword) typing-context)
 (defun intro (ctx &rest keys)
-  (check:make-starting-hole keys ctx))
+  (values
+   (check:make-starting-hole keys ctx)))
 
 ;; TODO Finish
 (-> intro-maybe-solution (typing-context &rest t) typing-context)

@@ -47,6 +47,7 @@
 ;; Core API
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO Update for Record FORMS from array lookup!
 (-> relocate-let (ir:bind closure:typ) rel)
 (defun relocate-let (bind closure)
   "relocate-let generates out let bindings which remove the original let
@@ -57,6 +58,8 @@ old value was relocated to."
     (with-accessors ((name ir:var) (val ir:value)) bind
       (etypecase-of ir:term-no-binding val
         (ir:number no-change)
+        ;; TODO Update for Record FORMS from array lookup!
+        (ir:array-forms no-change)
         (ir:reference
          (let ((checked (closure:lookup closure (ir:name val))))
            (if checked
