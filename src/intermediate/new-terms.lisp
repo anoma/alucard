@@ -5,9 +5,9 @@
 
 (defclass bind ()
   ((var :initarg  :variable
-             :type     keyword
-             :accessor spc:var
-             :documentation "The variable that will be bound")
+        :type     keyword
+        :accessor spc:var
+        :documentation "The variable that will be bound")
    (value :initarg :value
           :accessor spc:value
           :type     spc:term-type-manipulation

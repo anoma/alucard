@@ -67,7 +67,8 @@ language. The name typically refers to the value being calculated.")
    :annotate-term
    :annotate-list
    :make-starting-hole
-   :type-equality))
+   :type-equality
+   :solved))
 
 (defpackage #:alu.typechecker.intro
   (:documentation "Gives an API for introducing new variables to the compiler")
@@ -97,7 +98,8 @@ language. The name typically refers to the value being calculated.")
    :annotate-circuit
    :annotate-term
    :annotate-list
-   :type-equality)
+   :type-equality
+   :solved)
   ;; Operations from types that are good to alias
   (:export
    ;; Context data type

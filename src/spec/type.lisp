@@ -26,8 +26,9 @@ applied upon"
 
 (-> array-type (&key (:length fixnum) (:type type-reference)) application)
 (defun array-type (&key length type)
-  (make-application :function  (make-type-reference :name :array)
-                    :arguments (list length type)))
+  (values
+   (make-application :function  (make-type-reference :name :array)
+                     :arguments (list length type))))
 
 
 (-> array-type-len (application) fixnum)

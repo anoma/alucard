@@ -156,6 +156,7 @@ it's closure"
       (relocate:make-rel :forms   (reverse (relocate:rel-forms rel))
                          :closure (relocate:rel-closure rel)))))
 
+;; TODO :: Remove the type change here
 (-> expand-applications (relocate:rel) ir:fully-expanded-list)
 (defun expand-applications (rel)
   (let ((closure (relocate:rel-closure rel)))
@@ -186,7 +187,6 @@ it's closure"
                                             (list x)))
                                 (ir:var term)))))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Remove void returns and lets

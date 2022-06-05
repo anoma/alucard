@@ -43,7 +43,8 @@
         (when (slot-boundp object slot-name)
           (setf (slot-value copy slot-name)
                 (slot-value object slot-name)))))
-    (apply #'reinitialize-instance copy initargs)))
+    (values
+     (apply #'reinitialize-instance copy initargs))))
 
 ;; I should use this for object equality, namely the slot values trick
 

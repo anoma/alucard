@@ -21,13 +21,15 @@
            (append term-list
                    (list (util:copy-instance term :value updated-binding)))))
     (etypecase-of ir:expanded-term term
+      (ir:standalone-ret (do-nothing))
       (ir:bind
        (etypecase-of ir:term-no-binding (ir:value term)
          (ir:base         (do-nothing))
          (ir:record-forms (do-nothing))
-         (ir:array-set)
+         ;; TODO Fix Array Set
+         (ir:array-set    (do-nothing))
          (ir:array-lookup
-          (multiple-value-bind (context ts) (lookup context term)
+          (multiple-value-bind (context ts) (lookup context (ir:value term))
             (values context
                     (rebind-term ts
                                  (pack:array-lookup-final-ref ts)))))
@@ -39,10 +41,13 @@
             (values context
                     (rebind-term ts
                                  (pack:final-ref-from-op ts)))))))
-      (ir:bind-constraint (util:copy-instance
-                           term
-                           :value (handle-terms context (ir:value term))))
-      (ir:standalone-ret (do-nothing)))))
+      (ir:bind-constraint
+       (multiple-value-bind (context expanded) (handle-terms context
+                                                             (ir:value term))
+         (values context
+                 (list
+                  (util:copy-instance term
+                                      :value expanded))))))))
 
 (-> to-array
     (check:typing-context ir:bind)
@@ -60,7 +65,7 @@
     (values check:typing-context ir:expanded-list))
 (defun lookup (context term)
   (let* ((type  (check:typing-closure context))
-         (value (closure:lookup type (ir:arr term))))
+         (value (closure:lookup type (ir:name (ir:arr term)))))
     (if value
         (pack:lookup-at context value (ir:pos term) (ir:arr term))
         (error "Value ~A not found in the typing map" value))))
