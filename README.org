@@ -1,6 +1,20 @@
 * Alu
-Alu is a DSL for writing VAMP-IR Circuits.
+** Description
+ALucard (Alu) is a high level DSL for writing [[https://en.wikipedia.org/wiki/Zero-knowledge_proof][Zero Knowledge]]
+circuits. Alu compiles to a constraint agnostic system known as
+[[https://github.com/ZK-Garage/vamp-ir][vamp-ir]] which allows easy integration and deployment into existing
+Zero Knowledge stacks or private applications into new systems.
+
+Since Alu is a DSL, it's syntax is heavily inspired from it's host
+language [[https://common-lisp.net/][Common lisp]], extending the language with circuit compilation
+capabilities. This means that Alucard can use language infrastructure
+like [[https://fiveam.common-lisp.dev/][FiveAM]] and [[https://www.cliki.net/SWANK][SWANK]] to allow a battle tested interactive developer
+experience.
+** Editor Integration
+[TODO]
 ** Quick Start
+[TODO]
+** Documentation
 [TODO]
 
 ** Setting up the Developer Environment

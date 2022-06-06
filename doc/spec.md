@@ -6,14 +6,15 @@ This document lays out the specification and documentation for the
 various items found in the Alucard programming language.
 
 This document also serves as a companion piece to a more detailed
-syntax guide hosted <link here>
+syntax guide hosted <link here>.
 
+<!-- TODO :: Change items to the list of items like datatypes, code forms, etc. -->
+
+<!-- Alu == alucard note somewhere in here -->
 ### Interface to Alucard
-
-The Alucard language is one that allows the user a great deal of
-flexibility in its use. Due to this Alucard allow the use of using the
-system either as a traditional batch compiler, or aa a fully
-interactive system.
+In order to give users of Alucard flexiblity, Alucard can be used
+either in a traditional batch compiler or as a fully interactive
+system.
 
 #### Scripting Mode (PARTIALLY IMPLEMENTED)
 
@@ -25,27 +26,29 @@ Sadly out of the box the user interface (hereby known as the REPL)
 does not support very good editor or auto-completion facilities. To
 alleviate this we recommend:
 
-1. Launching alucard in your editor of choice (vscode, vim, emacs, etc.)
-2. Running the cli in a program like `rlwrap`
+1. Launching Alucard in your editor of choice (vscode, vim, emacs, etc.).
+2. Running the cli in a program like `rlwrap`.
 
-The alucard user interface is in reality a thin sheen over the common
-lisp REPL interface. This is due to alucard being a thin sheen over
-common lisp, and therefore able to reuse the tooling that comes with a
-common lisp system.
+The Alucard user interface is in reality a thin sheen over the Common
+Lisp REPL interface. Therefore you are able to reuse the tooling that comes with a
+Common Lisp system.
 
-This means that every time a user uses editor integration to help aid
-the writing of an alucard program, they are in essence using the
-scripting system. From this scripting mode, the user can write the
-same program they would have in batch compilation mode. Further, since
-the tooling is integrated they can experiment with:
 
-- Running tests
-- Having variations of the same circuit to optimize the performance or
-  to more rapidly test ideas
-- Having graphical outputs of the circuit live as they edit
-- Have multiple different strategies to compare
-- etc.
+Since the Common Lisp system is an interactive system, everytime one
+uses editor integration to interact with the compiler, we are using
+the scripting mode of the system.  From this scripting mode, the user
+can write the same program they would have in batch compilation
+mode. Further, since the tooling is integrated with ones editor they
+can experiment with:
 
+1. Running tests
+2. Having variations of the same circuit to optimize the performance or
+   to more rapidly investigate new ideas
+3. Having graphical outputs of the circuit live as they edit
+4. Have multiple different strategies to compare
+5. etc.
+
+<!-- Replace Etc with some more examples and non exhasutive -->
 
 #### Batch Compilation Mode (PARTIALLY IMPLEMENTED)
 
@@ -74,22 +77,22 @@ Numerical types are all variations on the finite field elements.
 
 ##### Fields Elements
 
-The Field data type is intended to represent a positive element of a
-finite field. Thus the value can be in `[0, p - 1]` where `p` is a
+The `Field` data type is intended to represent a positive element of a
+finite field. The value can be in `[0, p - 1]` where `p` is a
 large prime number.
 
-Overflow is thus at `p` and thus `0 - 1 ≡ p`
+Overflow is at `p` and thus `0 - 1 ≡ p`
 
 ##### Integers
 
 <!-- Should we just name ℤ to ℕ instead? -->
 
-The Integer type is a constrained field element to be within some bound.
+The `Integer` type is a constrained field element to be within some bound.
 
 For example if we have a circuit where we have `x` of type `(int 32)`,
 then `x` can have values between `0` and `2^32 - 1` (`[0, 2^32 - 1]`).
 
-To make working with standard integer types common the following are
+To make working with standard integer types easier the following are
 defined as short hand:
 
 - `int64`
@@ -99,11 +102,10 @@ defined as short hand:
 - `bool` ; To be thought of as `(int 2)`
 
 With the more general form being invoked like `(int k)` where `k` is
-some natural thus:
+some natural number:
 
 - `(int 9)` ; for integers `[0, 2^32 - 1]`
 - `(int 63)`
-- etc. etc. etc.
 
 ##### Booleans
 
@@ -111,18 +113,22 @@ some natural thus:
 <!-- Make a proper boolean sum type when we get those in -->
 
 Boolean types can be thought of as a field element that is constrained
-to be either be `0` for false, and `1` for true
+to either be `0` for false, and `1` for true.
 
 #### Arrays (NOT IMPLEMENTED)
 
-Arrays are a fixed length data type in alucard. Circuit functions that
-take an array must be of a specific size which is incompatible with
-other sizes.
+Arrays are a fixed length data type in Alucard. Arrays are defined in
+terms of both the field type, and the size of the Array. Because the
+type is defined over the size, arrays of different sizes are
+considered different types and are incompatible.
 
+
+<!-- Merge this sentence with the above one, we can talk about the
+lookup before delving into the types being inco mpatable-->
 Arrays have a lookup operation, and are indexed from 0.
 
-Although circuit functions are limited in the size of array they may
-take, generic functions can be defined over them in the common lisp
+Although Alucard functions take arrays of a specific size,
+generic functions over any size can be defined over them on the Common Lisp
 side. This is often seen in functions like `map` that can take any
 size array.
 
@@ -142,11 +148,18 @@ An example definition is shown below for map:
 
 #### User Defined Types
 
-Users can define more complex types with the `deftype` construct
+Users can define more complex types with the `deftype` construct.
 
 ##### Structs
 
-Structs are very much like structs in the C programming language. They are defined with a specified type and name. The name compiles to a record lookup function, meaning that we can lookup the field by simply stating `(name struct-instance)`. If a struct is returned from the circuit then the wires out of the circuit will be the fields of the struct ordered in how they were defined.
+Structs are very much like structs in the C programming language. They
+are defined with a specified type and name. The name compiles to a
+record lookup function, meaning that we can lookup the field by simply
+stating `(name struct-instance)`.
+
+<!-- If a struct is returned from the circuit then the wires out of the circuit will be the fields of the struct ordered in how they were defined.
+
+Structs at a --> 
 
 #### Array Types (NOT IMPLEMENTED)
 
@@ -158,14 +171,14 @@ Structs are very much like structs in the C programming language. They are defin
 
 #### Defcircuit
 
-Defcircuit defines a custom gate that can be applied to other alucard
+Defcircuit defines a custom gate that can be applied to other Alucard
 values.
 
 ```bnf
 (defcircuit name (<parameter>* <return>) body)
 ```
 
-evaluating a `defcircuit` causes the `name` to be bound as a function
+Evaluating a `defcircuit` causes the `name` to be bound as a function
 that is specified by the body with the parameters being in the lexical
 scope. The body consists of any number of expressions (zero or
 more). These expressions are evaluated in order and the result of the
@@ -211,7 +224,7 @@ The name return specifies the value as the return type.
 ```
 
 In this example we define out `poly-check` which takes a public input
-`x` of type int and returns the type of `bool`.
+`x` of type `int` and returns the type of `bool`.
 
 The rest of the body is a list of expressions, in this example we
 simply state the relation `0 = x^3 + 3 * x^2 + 2 * x + 4` .
