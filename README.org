@@ -27,7 +27,7 @@ Then you just have to set the default lisp program to alucard.
 If you don't wish for the default implementation to be alucard, then
 =alu.image= can be passed in manually when calling =M-x sly= (In helm
 this is =C-u= before running the command)
-*** COMMENT VSCode
+*** VSCode
 [[https://lispcookbook.github.io/cl-cookbook/vscode-alive.html][Alive]]
 
 With [[https://lispcookbook.github.io/cl-cookbook/vscode-alive.html][Alive]] Alucard integration is quite simple, just grab the
