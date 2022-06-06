@@ -15,6 +15,12 @@
      :type string :optional t :documentation "Sets compiler to compile mode and output vampir file location")
     (("help" #\h #\?)
      :type boolean :optional t :documentation "The current help message")
+    (("swank" #\s)
+     :type boolean :optional t :documentation "Launches a swank server for text editor integration")
+    (("sly" #\y)
+     :type boolean :optional t :documentation "Launches a sly server for emacs integration")
+    (("port" #\p)
+     :type integer :optional t :documentation "The port for the swank/sly server. Defaults to 4005 ")
     ;; (("check" #\c)
     ;;  :type string  :optional t :documentation "a --check or -c flag that takes a string")
     ;; (("warn" "warning" #\w)
@@ -30,19 +36,25 @@
    #'argument-handlers
    :name "alucard"))
 
-(defun argument-handlers (&key help output input)
-  (cond (help
-         (command-line-arguments:show-option-help +command-line-spec+ :sort-names t))
-        ((and output input)
-         (prepend-env)
-         (load input)
-         (alu.pipeline:dump-entry-point-to-file output))
-        (output
-         (format t "Need an input file in order to generate an output file~%"))
-        (input
-         (start-repl (lambda () (load input))))
-        (t
-         (start-repl))))
+(defun argument-handlers (&key help output input sly swank port)
+  (flet ((startup-function ()
+           (let ((port (or port 4005)))
+             (when swank
+               (swank:create-server :port port :dont-close t))
+             (when sly
+               (slynk:create-server :port port :dont-close t)))
+           (when input
+             (load input))))
+    (cond (help
+           (command-line-arguments:show-option-help +command-line-spec+ :sort-names t))
+          ((and output input)
+           (prepend-env)
+           (load input)
+           (alu.pipeline:dump-entry-point-to-file output))
+          (output
+           (format t "Need an input file in order to generate an output file~%"))
+          (t
+           (start-repl #'startup-function)))))
 
 (defun prepend-env ()
   (setf *print-pretty* t)

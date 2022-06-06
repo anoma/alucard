@@ -66,6 +66,7 @@
 ("serapeum" :version (:commit "d2985f5e42df11f0e3063625b8432f0a9eca912f")
  :source :implicit-vcs :systems ("serapeum" "serapeum/docs" "serapeum/tests"))
 ("slime" :version "2022-02-20" :source "quicklisp" :systems ("swank"))
+("sly" :version "2022-04-01" :source "quicklisp" :systems ("slynk"))
 ("split-sequence" :version "2021-05-31" :source "quicklisp" :systems
  ("split-sequence"))
 ("string-case" :version "2018-07-11" :source "quicklisp" :systems
@@ -164,7 +165,10 @@
   (:project :name "serapeum" :commit "d2985f5e42df11f0e3063625b8432f0a9eca912f"
    :source :implicit-vcs)))
 
-("slime" ((:system :name "serapeum/docs") (:system :name "swank")))
+("slime" ((:system :name "serapeum/docs") (:system :name "swank"))
+ ((:system :name "alu") (:system :name "swank")))
+
+("sly" ((:system :name "alu") (:system :name "slynk")))
 
 ("split-sequence" ((:system :name "serapeum") (:system :name "split-sequence")))
 

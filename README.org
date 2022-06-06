@@ -11,6 +11,38 @@ capabilities. This means that Alucard can use language infrastructure
 like [[https://fiveam.common-lisp.dev/][FiveAM]] and [[https://www.cliki.net/SWANK][SWANK]] to allow a battle tested interactive developer
 experience.
 ** Editor Integration
+Since Alucard Relies on Common lisp, we support all major editors. For
+the best experience emacs is recommend though the other editors work
+well!
+*** Emacs
+With Emacs you have a few choices for easy editor integration, either:
+- [[https://github.com/joaotavora/sly][Sly]]
+- [[https://github.com/slime/slime][Slime]]
+
+Then you just have to set the default lisp program to alucard.
+#+begin_src lisp
+  (setq inferior-lisp-program "alu.image")
+#+end_src
+
+If you don't wish for the default implementation to be alucard, then
+=alu.image= can be passed in manually when calling =M-x sly= (In helm
+this is =C-u= before running the command)
+*** COMMENT VSCode
+[[https://lispcookbook.github.io/cl-cookbook/vscode-alive.html][Alive]]
+
+With [[https://lispcookbook.github.io/cl-cookbook/vscode-alive.html][Alive]] Alucard integration is quite simple, just grab the
+extension off the marketplace and then edit the settings.json with
+#+begin_src javascript
+  {
+      "alive.swank.startupCommand": [
+          "alu.image",
+          "-s"
+      ]
+  }
+#+end_src
+*** Vim
+[TODO]
+*** Terminal
 [TODO]
 ** Quick Start
 [TODO]
