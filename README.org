@@ -41,13 +41,23 @@ extension off the marketplace and then edit the settings.json with
   }
 #+end_src
 *** Vim
+[[https://github.com/vlime/vlime][vlime]]
 [TODO]
 *** Terminal
-[TODO]
+Alucard can be launched from the terminal and attach to your editor as
+well. This can be done by launching the program with =-s= for swank or
+=-y= for sly. Once done you should be given a REPL on the terminal
+along with the message
+#+begin_src lisp
+  ;; Swank started at port: 4005.
+#+end_src
+This means that you can hookup your editor of choice to localhost:4005
+via =sly-connect= or =alive attach to REPL=.
 ** Quick Start
 [TODO]
 ** Documentation
-[TODO]
+- [[file:doc/spec.md][Specification]]
+- [[file:doc/using-alucard.md][Syntax Guide]]
 
 ** Setting up the Developer Environment
 _Alucard works on many different implementations of CL, namely_
