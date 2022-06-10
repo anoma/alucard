@@ -115,7 +115,7 @@ some natural number:
 Boolean types can be thought of as a field element that is constrained
 to either be `0` for false, and `1` for true.
 
-#### Arrays (NOT IMPLEMENTED)
+#### Arrays (PARTIALLY IMPLEMENTED)
 
 Arrays are a fixed length data type in Alucard. Arrays are defined in
 terms of both the field type, and the size of the Array. Because the
@@ -157,11 +157,13 @@ are defined with a specified type and name. The name compiles to a
 record lookup function, meaning that we can lookup the field by simply
 stating `(name struct-instance)`.
 
-<!-- If a struct is returned from the circuit then the wires out of the circuit will be the fields of the struct ordered in how they were defined.
+<!-- If a struct is returned from the circuit then the wires out of
+the circuit will be the fields of the struct ordered in how they were
+defined.
 
-Structs at a --> 
+Structs at a -->
 
-#### Array Types (NOT IMPLEMENTED)
+#### Array Types (PARTIALLY IMPLEMENTED)
 
 ### Standard Library Functions
 

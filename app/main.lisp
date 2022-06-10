@@ -97,5 +97,4 @@
   (sb-ext:save-lisp-and-die #p"sbcl-compressed.image"
                             :toplevel #'main
                             :executable t
-                            :COMPRESSION 1
-                            ))
+                            :COMPRESSION 1))

@@ -25,13 +25,13 @@
 (defmacro deftype (name-and-options generics &body type-declarations)
   ;; fields must not shuffle type-declaration for ordering of record
   ;; creation
-  (let* ((fields (mapcar #'car type-declarations))
-         (name (if (listp name-and-options)
-                  (car name-and-options)
-                  name-and-options))
+  (let* ((fields  (mapcar #'car type-declarations))
+         (name    (if (listp name-and-options)
+                      (car name-and-options)
+                      name-and-options))
          (options (if (listp name-and-options)
-                  (cdr name-and-options)
-                  nil))
+                      (cdr name-and-options)
+                      nil))
          (key-name (util:symbol-to-keyword name)))
     `(progn
        ;; Register the struct in the type table, so we will always
@@ -272,6 +272,7 @@ a `sycamore:tree-map' from `keyword' to `spc:constraint'"
               (destructuring-bind (priv name type) triple
                 (cons (util:symbol-to-keyword name)
                       (spc:make-constraint :privacy (util:symbol-to-keyword priv)
+                                           :name (util:symbol-to-keyword name)
                                            :type (spc:to-type-reference-format type)))))
             argument-list)
     #'util:hash-compare)))
