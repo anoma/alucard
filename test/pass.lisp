@@ -100,4 +100,6 @@
   (finishes (pipeline:pipeline (storage:lookup-function :array-lookup-equation)))
   (finishes (pipeline:pipeline (storage:lookup-function :explicit-type-coercsion)))
   (finishes (pipeline:pipeline (storage:lookup-function :explicit-type-check)))
-  (finishes (pipeline:pipeline (storage:lookup-function :array-from-data-check))))
+  (finishes (pipeline:pipeline (storage:lookup-function :array-from-data-check)))
+  ;; We should make a more full test for this
+  (finishes (pipeline:pipeline (storage:lookup-function :silly-range-check))))

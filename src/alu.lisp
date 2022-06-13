@@ -224,7 +224,10 @@
        (emit:instruction
         (spc:make-bind-constraint
          :var (mapcar #'util:symbol-to-keyword ',variable-names)
-         :value (cdr ,body-list))))))
+         :value ,body-list))
+       void)))
+
+(serapeum:def void (alu.spec:make-reference :name :void))
 
 (defun ensure-call-by-value (term &optional (name "G"))
   "This ensures that the value given back is a reference. This matters

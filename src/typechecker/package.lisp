@@ -55,6 +55,7 @@ language. The name typically refers to the value being calculated.")
 (defpackage #:alu.typechecker.check
   (:local-nicknames (#:ir         #:alu.ir)
                     (#:type-op    #:alu.spec.type-op)
+                    (#:term-op    #:alu.spec.term-op)
                     (#:closure    #:alu.closure)
                     (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)

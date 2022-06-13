@@ -12,7 +12,8 @@
                     (:storage :alu.storage)
                     (:emit    :alu.spec.emit))
   (:export #:deftype #:defcircuit #:def #:defprimitive #:defprimitive-type
-           #:entry-point #:coerce #:check #:get #:array #:to-array))
+           #:entry-point #:coerce #:check #:get #:array #:to-array
+           #:with-constraint))
 
 (uiop:define-package #:alu.prelude
   (:documentation "The Alu User pacakge")
@@ -21,7 +22,8 @@
   (:mix #:alu #:common-lisp)
   (:export #:+ #:* #:= #:exp #:deftype #:defcircuit #:def
            #:deflex #:bool #:entry-point #:coerce
-           #:check #:get #:array #:to-array))
+           #:check #:get #:array #:to-array
+           #:with-constraint))
 
 (uiop:define-package #:aluser
   (:documentation "The Alu User pacakge")

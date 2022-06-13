@@ -24,9 +24,9 @@
   (swap-tables))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Examples in the test table
+            ;; Examples in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(in-package :aluser)
+            (in-package :aluser)
 
 (alu:deftype tree ()
   (element int)
@@ -193,6 +193,12 @@
   (def ((bar (to-array 36)))
     (+ (check 5 (int 32))
        (get bar 0))))
+
+(defcircuit silly-range-check ((private input int)
+                               (output void))
+  (with-constraint (b1 b0)
+    (with-constraint (b2 b3)
+      (= input (+ b1 b2)))))
 
 (in-package :alu-test)
 

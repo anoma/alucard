@@ -127,9 +127,13 @@
                context))
       ((ir:reference :name name)
        (let ((lookup (closure:lookup closure name)))
-         (values (if lookup
-                     lookup
-                     (make-same-as :value name))
+         (values (cond (lookup
+                        lookup)
+                       ((term-op:void-reference? term)
+                        (make-type-info :size 0
+                                        :type (ir:make-type-reference :name :void)))
+                       (t
+                        (make-same-as :value name)))
                  context)))
       ;; Here we have a chance for unification, as we know the type of
       ;; the fields

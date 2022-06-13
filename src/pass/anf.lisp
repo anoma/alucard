@@ -30,6 +30,7 @@ will evaluate to this let buildup."
     ;; for terms which are just references or numbers we can
     ;; just call the constructor, and end the algorithm
     ((spc:number numb) (funcall constructor numb))
+    ((spc:number numb) (funcall constructor numb))
     ((spc:reference)   (funcall constructor term))
     ;; For nodes which are not in normal form, recurse building
     ;; up the let chain
@@ -83,9 +84,10 @@ will evaluate to this let buildup."
     ;; we get a bad exhaustive message due to number, but it will warn
     ;; us, if they aren't the same none the less!
     ((cons _ _)
-     (funcall constructor
-              (mvfoldr #'combine-expression
-                       (mapcar (lambda (ter) (normalize ter #'identity)) term))))
+     (let* ((body (mapcar (lambda (ter) (normalize ter #'identity))
+                          term))
+            (res (mvfoldr #'combine-expression body nil)))
+       (funcall constructor res)))
     ;; here we stick the types that we want to do the catch all
     ;; logic. Good to be explicit here
     ((or (spc:type-coerce) (spc:type-check)
@@ -133,12 +135,13 @@ let binding if the result of normalization is itself not in normal form"
                           (lambda (ref-cdr)
                             (funcall cont (cons ref-car ref-cdr))))))))
 
-;; Unused should we delete
-(-> combine-expression (spc:expression spc:expression) spc:expression)
+(-> combine-expression (spc:expression (or null spc:expression)) spc:expression)
 (defun combine-expression (expr1 expr2)
   (dispatch-case ((expr1 spc:expression)
-                  (expr2 spc:expression))
+                  (expr2 (or null spc:expression)))
     ((cons     cons)     (append expr1 expr2))
     ((spc:term spc:term) (list expr1 expr2))
     ((cons     spc:term) (append expr1 (list expr2)))
-    ((spc:term cons)     (cons expr1 expr2))))
+    ((spc:term cons)     (cons expr1 expr2))
+    ((cons     null)     expr1)
+    ((spc:term null)     (list expr1))))

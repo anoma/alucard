@@ -216,7 +216,8 @@ of the user program is preserved."
                                     (list (ir:var term))))
                         (ir:make-multiple-bind :var nil :val (ir:value term)))
                        ((and (typep value 'ir:reference)
-                             (sycamore:tree-set-find set (ir:name value)))
+                             (or (alu.spec.term-op:void-reference? value)
+                                 (sycamore:tree-set-find set (ir:name value))))
                         (sycamore:tree-set-insertf set (ir:var term))
                         nil)
                        (t

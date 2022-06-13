@@ -3,14 +3,23 @@
 # Alucard Specification
 
 This document lays out the specification and documentation for the
-various items found in the Alucard programming language.
+various items found in the Alucard(Alu) programming language.
 
-This document also serves as a companion piece to a more detailed
-syntax guide hosted <link here>.
+This document also serves as a companion piece to:
+- A detailed [Syntax Guide](https://hackmd.io/ko5FtwIaTwOiozDgkiLaWA?view).
+  + This piece gives an interactive tutorial to the langugage, meaning
+    that every piece of code in the tutorial can be run in the Alucard
+    REPL.
+  + The syntax guide introduces new concepts and continuously builds
+    on new ones as the tutorial goes on.
+  + The loadable file of the tutorial can be found [here in the docs
+    folder](https://github.com/heliaxdev/alu/blob/master/doc/using-alucard.lisp).
+- A [Reference Manual](https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ)
+  + This document gives a more practical overview of the functions
+    given by Alucard.
 
 <!-- TODO :: Change items to the list of items like datatypes, code forms, etc. -->
 
-<!-- Alu == alucard note somewhere in here -->
 ### Interface to Alucard
 In order to give users of Alucard flexiblity, Alucard can be used
 either in a traditional batch compiler or as a fully interactive
@@ -30,15 +39,15 @@ alleviate this we recommend:
 2. Running the cli in a program like `rlwrap`.
 
 The Alucard user interface is in reality a thin sheen over the Common
-Lisp REPL interface. Therefore you are able to reuse the tooling that comes with a
-Common Lisp system.
+Lisp REPL interface. Therefore you are able to reuse the tooling that
+comes with a Common Lisp system.
 
 
 Since the Common Lisp system is an interactive system, everytime one
 uses editor integration to interact with the compiler, we are using
 the scripting mode of the system.  From this scripting mode, the user
 can write the same program they would have in batch compilation
-mode. Further, since the tooling is integrated with ones editor they
+mode. Further, since the tooling is integrated with one's editor they
 can experiment with:
 
 1. Running tests
@@ -127,8 +136,8 @@ considered different types and are incompatible.
 lookup before delving into the types being inco mpatable-->
 Arrays have a lookup operation, and are indexed from 0.
 
-Although Alucard functions take arrays of a specific size,
-generic functions over any size can be defined over them on the Common Lisp
+Although Alucard functions take arrays of a specific size, generic
+functions over any size can be defined over them on the Common Lisp
 side. This is often seen in functions like `map` that can take any
 size array.
 
@@ -229,7 +238,7 @@ In this example we define out `poly-check` which takes a public input
 `x` of type `int` and returns the type of `bool`.
 
 The rest of the body is a list of expressions, in this example we
-simply state the relation `0 = x^3 + 3 * x^2 + 2 * x + 4` .
+simply state the relation `0 = x^3 + 3 * x^2 + 2 * x + 4`.
 
 #### Defgate (NOT IMPLEMENTED)
 

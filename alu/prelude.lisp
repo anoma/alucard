@@ -6,6 +6,7 @@
 (defprimitive-type bool)
 (defprimitive-type array)
 
+(defprimitive void)
 (defprimitive +)
 (defprimitive *)
 (defprimitive =)

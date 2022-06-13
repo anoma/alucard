@@ -30,7 +30,7 @@
           (y time)))))
 
 (defcircuit constrain-2 ((public nest nested)
-                       (output void))
+                         (output void))
   (flet ((formula (point)
            (* (x point)
               (y point))))
@@ -44,6 +44,22 @@
                    (* (x point)
                       (y point)))
                  (list (plane nest) (time nest)))))
+
+(defcircuit range-check ((private input int)
+                         (output void))
+  (with-constraint (b1 b0)
+    (with-constraint (b2 b3)
+      (= input (+ b1 b2)))))
+
+(defcircuit range-check-1 ((private input int)
+                           (output void))
+  (def ((with-constraint (b1 b0)
+          (= input (+ b1 b0))))
+    b1))
+
+;; (alu::let-refs (b0 b1)
+;;                (alu::with-constraint-standalone (b0 b1) (= input (+ b1 b0)))
+;;                (list))
 
 (def ((a 3)
       (b 5))

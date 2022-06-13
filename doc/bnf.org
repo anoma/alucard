@@ -1,23 +1,42 @@
 #+begin_src bnf
+  ;; Top Level
+
   defcircuit ::= (defcircuit <symbol> (<field>* <return>?) <expression>*)
 
   deftype ::= (deftype <symbol> () <type-field>*)
-
-  def ::= (def (<bind>*) <expressoin>*)
 
   field ::= (<privacy> <symbol> <type>)
 
   type-field ::= (<symbol> <type>)
 
-  bind ::= (<symbol> <expression>)
-
   return ::= (return <type>)
 
   privacy ::= public | private
 
+  ;; Expression
+
+  expression ::= <def>
+               | <check>
+               | <application>
+               | <coerce>
+               | <arr-get>
+               | <any-valid-lisp>
+
+  def ::= (def (<bind>*) <expressoin>*)
+
+  check ::= (check <expression> <type>)
+
+  coerce ::= (coerce <expression> <type>)
+
+  application ::= (<expression> <expression>*)
+
+  arr-get ::= (get <expression> <expression>)
+
+  bind ::= (<symbol> <expression>)
+
   expression ::= <valid-lisp>
 
-  type ::= <symbol> | (<symbol> <symbol>*)
+  type ::= <symbol> | (<symbol> <type>*)
 
   symbol ::= <utf8>
 #+end_src

@@ -25,3 +25,14 @@
   (spc:make-type-coerce
    :typ   (spc:to-type-reference-format type)
    :value value))
+
+(-> kind-of-pirmitive? (spc:reference (-> (spc:primitive) boolean)) boolean)
+(defun kind-of-pirmitive? (ref predicate)
+  (let* ((looked (storage:lookup-function (spc:name ref))))
+    (etypecase-of (or spc:function-type null) looked
+      ((or null spc:circuit) nil)
+      (spc:primitive        (funcall predicate looked)))))
+
+(-> void-reference? (spc:reference) boolean)
+(defun void-reference? (ref)
+  (kind-of-pirmitive? ref (lambda (v) (eql :void (spc:name v)))))

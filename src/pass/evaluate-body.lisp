@@ -17,9 +17,7 @@ arguments"
   (let ((new-body (list nil)))
     (emit:with-circuit-body new-body
       ;; we have actual frozen code, we must eval!
-      (eval frozen-term))
-    ;; pop the nil off the cons
-    (cdr new-body)))
+      (eval frozen-term))))
 
 (-> properly-chachedp (ir:circuit) boolean)
 (defun properly-chachedp (circuit)
