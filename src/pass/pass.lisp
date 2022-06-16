@@ -27,8 +27,8 @@ and properly propagating arguments around them"
       (relocate-records circuit)
       expand-applications))
 
-(-> primtitve-circuit (ir:fully-expanded-list ir:circuit) ir:prim-circuit)
-(defun primtitve-circuit (terms circuit)
+(-> primitive-circuit (ir:fully-expanded-list ir:circuit) ir:prim-circuit)
+(defun primitive-circuit (terms circuit)
   (~>> (ir:make-prim-circuit :name (ir:name circuit) :body terms)
        (fill-in-arguments circuit)
        (fill-in-output    circuit)))

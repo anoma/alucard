@@ -111,7 +111,7 @@ circuits execution body and tracking caching")
    :linearize-body
    :expand-away-records
    :remove-void-bindings
-   :primtitve-circuit
+   :primitive-circuit
    :rename-primitive-circuit
    :remove-type-information
    ;; Extraction

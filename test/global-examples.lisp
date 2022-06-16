@@ -24,26 +24,26 @@
   (swap-tables))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-            ;; Examples in the test table
+;; Examples in the test table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-            (in-package :aluser)
+(in-package :aluser)
 
-(alu:deftype tree ()
+(deftype tree ()
   (element int)
   (left    tree)
   (nonce   tree))
 
-(alu:deftype utx ()
+(deftype utx ()
   ;; replace with a string type once we get strings
   (owner  int)
   (amount (int 64))
   (nonce  (int 64)))
 
-(alu:deftype point ()
+(deftype point ()
   (x int)
   (y int))
 
-(alu:deftype nested ()
+(deftype nested ()
   (plane point)
   (time  point))
 
@@ -199,6 +199,36 @@
   (with-constraint (b1 b0)
     (with-constraint (b2 b3)
       (= input (+ b1 b2)))))
+
+(deftype 3d-point ()
+  (x-plane int)
+  (y-plane int)
+  (z-plane int))
+
+(defcircuit square-root ((private p int)
+                         (output int))
+  (def ((with-constraint (x₁)
+          (= p (* x₁ x₁))))
+    x₁))
+
+(defun square-root-func (p)
+  (def ((with-constraint (x₁)
+          (= p (* x₁ x₁))))
+    x₁))
+
+(defcircuit l2-norm ((public p 3d-point)
+                     (output int))
+  (square-root-func
+   (sum (mapcar (lambda (x) (exp x 2))
+                (list (x-plane p) (y-plane p) (z-plane p))))))
+
+(defcircuit l2-norm-by-hand ((public p 3d-point)
+                             (output int))
+  (square-root-func
+   (+ (exp (x-plane p) 2)
+      (exp (y-plane p) 2)
+      (exp (z-plane p) 2))))
+
 
 (in-package :alu-test)
 

@@ -12,7 +12,7 @@ like [[https://fiveam.common-lisp.dev/][FiveAM]] and [[https://www.cliki.net/SWA
 experience.
 ** Editor Integration
 Since Alucard Relies on Common lisp, we support all major editors. For
-the best experience emacs is recommend though the other editors work
+the best experience Emacs is recommend though the other editors work
 well!
 *** Emacs
 With Emacs you have a few choices for easy editor integration, either:

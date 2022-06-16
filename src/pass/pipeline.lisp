@@ -70,7 +70,7 @@
 (defun to-primitive-circuit (circuit)
   (~> circuit
       to-expand-away-records
-      (pass:primtitve-circuit circuit)
+      (pass:primitive-circuit circuit)
       pass:rename-primitive-circuit))
 
 (defun to-vampir (circuit)
