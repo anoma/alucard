@@ -168,7 +168,7 @@
 
 (defcircuit array-type-check ((public arr (array 10 int))
                               (output (array int 10)))
-  (def ((foo (get arr 10)))
+  (def ((foo (get arr 9)))
     (+ 25 foo)))
 
 (defcircuit invalid-array-type-check ((public arr (array 10 int))
@@ -212,28 +212,71 @@
     x₁))
 
 (defun square-root-func (p)
-  (def ((with-constraint (x₁)
-          (= p (* x₁ x₁))))
-    x₁))
+  (def ((with-constraint (x1)
+          (= p (* x1 x1))))
+    x1))
 
 (defcircuit l2-norm ((public p 3d-point)
                      (output int))
-  (square-root-func
-   (sum (mapcar (lambda (x) (exp x 2))
-                (list (x-plane p) (y-plane p) (z-plane p))))))
+  (flet ((sum (list)
+           (apply #'+ list)))
+    (square-root
+     (sum (mapcar (lambda (x) (exp x 2))
+                  (list (x-plane p) (y-plane p) (z-plane p)))))))
+
 
 (defcircuit l2-norm-by-hand ((public p 3d-point)
                              (output int))
-  (square-root-func
+  (square-root
    (+ (exp (x-plane p) 2)
       (exp (y-plane p) 2)
       (exp (z-plane p) 2))))
 
+(deftype transfer ()
+  (from-address (int 16))
+  (to-address   (int 16))
+  (amount       int))
 
 (in-package :alu-test)
 
 ;; Manual adding to the storage
 ;; my god just add storage abstraction, as wew!
+(storage:add-function
+          :manual-constraint
+          (ir:make-circuit
+           :return-type (ir:make-type-reference :name :bool)
+           :name :manual-constraint
+           :arguments nil
+           :body
+           '(emit:instruction
+             (ir:make-bind-constraint
+              :var (list :a :b :c)
+              :value
+              (list
+               (ir:make-let :var :fi
+                            :val (ir:make-application
+                                  :function (ir:make-reference :name :record-test-mult)
+                                  :arguments
+                                  (list (ir:make-reference :name :hi)
+                                   (ir:make-reference :name :hi)
+                                   (ir:make-reference :name :hi))))
+               (ir:make-application
+                :function (ir:make-reference :name :=)
+                :arguments
+                (list
+                 (ir:make-application
+                  :function (ir:make-reference :name :+)
+                  :arguments
+                  (list (ir:make-reference :name :a)
+                        (ir:make-reference :name :b)
+                        (ir:make-reference :name :fi)
+                        (ir:make-record-lookup
+                         :record (ir:make-record :name :utxo
+                                                 :owner 3
+                                                 :amount 5
+                                                 :nonce (ir:make-reference :name :hi))
+                         :field :nonce)))
+                 (ir:make-reference :name :bob))))))))
 (storage:add-function
           :manual-constraint
           (ir:make-circuit

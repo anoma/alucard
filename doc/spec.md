@@ -222,8 +222,6 @@ return ::= (return <type>)
 ```
 The name return specifies the value as the return type.
 
-
-
 ```lisp=
 (defcircuit poly-check ((public x int)
                         (output bool))
