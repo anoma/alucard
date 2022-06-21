@@ -57,7 +57,6 @@ swapping to another env")
 (defun lookup-type (name)
   (gethash name *types*))
 
-
 (-> swap-tables (hash-table hash-table) null)
 (defun swap-tables (func-table type-table)
   (when (and (not *cannonical-function-table*)

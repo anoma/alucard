@@ -3,8 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defpackage #:alu.pipeline.pipeline
-  (:documentation "Provides The Alucard Pipeline signature to functions in this package
-file. This will be filled in by alu.pipeline")
+  (:documentation "Provides The Alucard Pipeline signature to functions
+ in this package file. This will be filled in by alu.pipeline")
   (:export
    :dump-entry-point
    :dump-entry-point-to-file
@@ -196,5 +196,3 @@ structures")
    :to-primitive-circuit
    :to-vampir
    :type-check-expression))
-
-
