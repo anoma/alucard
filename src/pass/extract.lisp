@@ -7,7 +7,7 @@
       circuit
     (values
      (spc:make-alias :name name
-                     :inputs  arguments
+                     :inputs arguments
                      :outputs ret
                      :body (mapcan #'term->constraint body)))))
 

@@ -232,6 +232,25 @@
       (exp (y-plane p) 2)
       (exp (z-plane p) 2))))
 
+;; Write some tests over these
+
+(defcircuit upper-half-of-the-first-element ((public arr (array 4 (int 32))))
+  (def ((foo (coerce arr (array 8 (int 16)))))
+    (get foo 0)))
+
+(defmacro reshape (array length &key type)
+  `(coerce ,array (array ,length ,type)))
+
+(defcircuit reveal-bit ((private arr (array 16 (int 32)))
+                        (public  bit (int 32)))
+  (def ((bit-array (reshape arr 512 :type (int 1))))
+    (get bit-array bit)))
+
+(defcircuit first-16-bits ((private number (int 64)))
+  (get (coerce number (array 4 (int 16))) 0))
+
+;; Write some test over these END
+
 (deftype transfer ()
   (from-address (int 16))
   (to-address   (int 16))

@@ -389,14 +389,84 @@ conversions like In Java, Lisp, or C do not occur.
 Coercions between number types like this are free, and no cost is
 paid.
 
-However there are some more interesting Coercisons that we can employ
-that can help general circuit array programming.
+However there are some more interesting coercions that we can employ
+that can help general circuit array programming. For example, we may
+wish to reveal a single bit of an array. The [Zokrates programming language](https://zokrates.github.io/examples/rng_tutorial.html#reveal-a-single-bit) lists this as an example.
 
-### Hidden Costs in the circuit model
+In Alucard we can use coercions to change the array format from
+`int32`'s to a list of `int1`'s.
+
+```lisp
+(defcircuit reveal-bit ((private arr (array 16 (int 32)))
+                        (public  bit (int 32)))
+  (def ((bit-array (coerce arr (array 512 (int 1)))))
+    (get bit-array bit)))
+```
+
+Note :: Our example lacks the `sha256` function that Zokrates has, so
+it's not an exact copy!
+
+We can even give the coerce a nicer interface for our use case!
+
+```lisp
+;; have to macro due to coerce being a macro ☹
+(defmacro reshape (array length &key type)
+  `(coerce ,array (array ,length ,type)))
+
+(defcircuit reveal-bit ((private arr (array 16 (int 32)))
+                        (public  bit (int 32)))
+  (def ((bit-array (reshape arr 512 :type (int 1))))
+    (get bit-array bit)))
+```
+
+Or maybe we want to get the first 16 bits of a number.
+
+```lisp
+(defcircuit first-16-bits ((private number (int 64)))
+  (get (coerce number (array 4 (int 16))) 0))
+```
+
+All the variants that allows us to index part of data have to pay the
+cost of [packing and unpacking](#Packing-in-detail). An example
+decompilation of `first-16-bits` is
+
+```lisp
+ALU-TEST> (pipeline:pipeline (storage:lookup-function :first-16-bits))
+def first_16_bits number -> vg65413 {
+  g65411 = number
+  vg65418 = g65411
+  vg65419 = 0
+  vg65420 = 16 * vg65419
+  vg65421 = 2 ^ vg65420
+  vg65422 = vg65421 * smaller_array65416
+  vg65423 = vg65422 + unused_mod65415
+  vg65418 = vg65423
+  vg65427 = vg65418
+  vg65424 = 2 ^ 16
+  vg65425 = vg65424 * unused_array65414
+  vg65426 = vg65425 + lookup_answer65417
+  smaller_array65416 = vg65426
+  vg65428 = smaller_array65416
+  vg65429 = lookup_answer65417
+  g65412 = vg65429
+  vg65413 = g65412
+}
+```
+
+The key takeaway is that coercions have a very useful function in
+circuit code, however they come with a high computational cost.
+
+### Hidden Costs in the Circuit Model
 
 ### Type Checking and Inference
 
 ## How Alucard Interoperates with Common Lisp
+
+This is an important section, as Alucard code tends to utilizes a lot
+of Common Lisp code, and it is good to know the boundary between the
+two.
+
+A good
 
 ## Definition Facilities
 
@@ -553,4 +623,3 @@ A simple example is as follows:
 ### to-array
 
 ### get
-

@@ -88,7 +88,7 @@
           (target-type (ir:array-type-content (check:type-info-type type))))
       (check:with-intro (closure unused-array unused-mod
                                  smaller-array lookup-answer)
-                        closure
+          closure
         ;; The equation here is trying to do the following equation
         ;;
         ;; want : array[index]

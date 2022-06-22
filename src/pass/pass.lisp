@@ -95,6 +95,7 @@ going to be using a let"
            (handle-term (term)
              (etypecase-of ir:term-type-manipulation term
                (ir:term-no-binding term)
+               ;; TODO :: COERCION Record --> Number
                (ir:type-manipulation (ir:value term)))))
     (mapcar #'handle-binder awares)))
 
@@ -108,7 +109,7 @@ going to be using a let"
 isn't so already. Perhaps we should make them be an and call instead?"
   (labels ((make-binder (term)
              (ir:make-bind :var (util:symbol-to-keyword (gensym "&G"))
-                            :val term))
+                           :val term))
            (let-term (term)
              (etypecase-of ir:linear-term term
                (ir:term-type-manipulation      (make-binder term))
@@ -122,7 +123,7 @@ isn't so already. Perhaps we should make them be an and call instead?"
 (-> relocate-records (ir:expanded-list ir:circuit) relocate:rel)
 (defun relocate-records (anf-terms circuit)
   "Relocate records takes a fully anfied term where only the last form
-is not a let, and generates out a `ir:fully-expanded-list' along with
+is not a let, and generates out a `ir:expanded-list' along with
 it's closure"
   (labels
       ((ingest (rel term)
