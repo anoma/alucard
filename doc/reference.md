@@ -466,7 +466,143 @@ This is an important section, as Alucard code tends to utilizes a lot
 of Common Lisp code, and it is good to know the boundary between the
 two.
 
-A good
+A good rule of thumb is that Alucard definition creation forms like
+`defcircuit` and `deftype`, make functions which can only take Alucard
+terms. Common Lisp functions are **inlined** away, meaning they have
+no computational cost in Alucard, as they can not show up the compiled
+Alucard code. Thus anything that returns an alucard term is
+admissible.
+
+For example.
+
+<!-- ;; rewrite with defgate and sig once done -->
+<!-- (sig add-int32 (-> (int 32) (int 32) (int 32))) -->
+<!-- (defgate add-int32 (x1 x2) -->
+<!--   (+ x1 x2)) -->
+
+```lisp
+(sig add-int32 (-> (int 32) (int 32) (int 32)))
+(defcircuit add-int32 ((private x1 (int 32))
+                       (private x2 (int 32))
+                       (output (int 32)))
+  (+ x1 x2))
+
+(defun add (x y)
+  (+ x y))
+
+(add-int32 (add 3 5)
+           (add-int32 7 10))
+```
+
+In this code, we made an Alucard function `add-int32`, and a Common
+Lisp function `add`. Since `add` calls the alucard function `+`, it
+really takes two Alucard values, and returns an Alucard value.
+
+However, if we use a Cl return type, then we can not do the same
+action. Instead we must use other CL functions to do it.
+
+```lisp
+(deftype point ()
+  (x (int 32))
+  (y (int 32)))
+
+(defun point-to-list (point)
+  (list (x point) (y point)))
+
+;; can't apply add directly
+;; (add-int32 (point-to-list point))
+
+;; Instead we must do
+(apply #'add-int32 (point-to-list point))
+
+;; Also Invalid
+;; (defcircuit point-to-list ((private point point))
+;;   (list (x point) (y point)))
+
+```
+
+As we see in the example, that we can use Common lisp to indirectly
+allow this functionality. The apply here, can be best thought of
+moving the operation to the start of the list, so that, the
+`add-int32` call really looks like `(add-int32 (x point) (y point))`.
+Also `defcircuit`'s along with any other Alucard defining form can not
+return a non Alucard type, like hte Common Lisp let.
+
+Also all the rules of Common Lisp apply, meaning that Alucard is
+mostly a `lisp-2`, meaning that functions and variables live in
+different namespaces, `(defun x-point (x) (x x))` is therefore
+valid. And that to refer to the function version we must use
+`#'function-name` or `(function function-name)` to refer to the
+function version of a function.
+
+With that said, the CL facilities are what allows Alucard to be a very
+high level language. Abstractions with Lambda and local functions can
+be applied even though the Alucard langauge is not rich enough to
+express them natively.
+
+For example:
+
+```lisp
+(in-package :aluser)
+
+(deftype point ()
+  (x int)
+  (y int)
+  (z int))
+
+(defcircuit l2-norm-by-hand ((private point point)
+                             (output int))
+  (square-root
+   (+ (exp (x point) 2)
+      (exp (y point) 2)
+      (exp (z point) 2))))
+
+(defun point-to-list (point)
+  (list (x point) (y point) (z point)))
+
+(defcircuit l2-norm ((private point point)
+                     (output int))
+  (flet ((pow-2 (numb) (exp numb 2)))
+    (square-root
+     (apply #'+ (mapcar #'pow-2 (point-to-list point))))))
+```
+Here we computed the `l2-norm` by hand in two different ways, one is a
+more low level way, of just doing the computation, and the other
+utilizies many abstractions of CL to extract out the boiler plate. For
+this problem, the `l2-norm` may be overkill, but we've created some
+general abstractions to help us work over our bespoke `point` type. As
+mentioned before, CL functions like `apply`, `flet`, and `mapcar` are
+inlined away as they have no representation in Alucard. Meaning the
+two code have equivalence performance.
+
+The starting `package` of the Alucard image is `aluser`, which has
+it's own set of primitive functions that overlap with CL's
+defaults. For example, `+` is alucard's `+` and not CL's `+`. All of
+CL's functions should be accessible via the `cl` package.
+
+```lisp
+ALUSER> (cl:+ 1 2 3)
+6 (3 bits, #x6, #o6, #b110)
+```
+
+Further, we can use Common Lisp to make new high level looking
+abstractions for Alucard. Functions like `map-array` (not yet
+implemented), are examples of how high level abstractions from every
+day programming can fit into the circuit model.
+
+There are many planned extensions of Alucard and the API between the
+language that should allow even more general code to be written in
+Alucard!
+
+[This is an interactive tutorial that should help you get up and
+running with lisp](https://cs.gmu.edu/~sean/lisp/LispTutorial.html).
+This should help those who come from a more procedural background get
+up and running with CL. I also highly suggest switching the package to
+`cl-user` via `(in-package :cl-user)` before starting the tutorial and
+[setting up the editor integration for
+Alucard/lisp](https://github.com/heliaxdev/alu#editor-integration). To
+learn more about the CL package system, one can read about it
+[here](https://lispcookbook.github.io/cl-cookbook/packages.html).
 
 ## Definition Facilities
 
@@ -476,7 +612,7 @@ along with functions which create binders.
 A common theme among all these functions is that they all take Alucard
 values, and return Alucard values. Which means that
 
-Note that functions from the CL standard that are often used as
+Note that functions from the Common Lisp (CL) standard that are often used as
 Alucard definers aren't described here even though they fit the
 topic. Go to the [Common Lisp Facilities](Common Lisp Facilities)
 section to learn more about those.

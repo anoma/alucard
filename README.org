@@ -56,6 +56,9 @@ via =sly-connect= or =alive attach to REPL=.
 ** Quick Start
 [TODO]
 ** Documentation
+The most complete documentation is the [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Alucard Reference Manual]].
+
+- [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Reference Manual]]
 - [[file:doc/spec.md][Specification]]
 - [[file:doc/using-alucard.md][Syntax Guide]]
 
