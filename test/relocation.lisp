@@ -121,10 +121,13 @@
                                 :hi)))))
 
 (test initial-closure-from-circuit
-  (let ((expected-storage '((:X . :SIG-X) (:Y . :SIG-Y)))
+  (let* ((sig-arugment
+           (ir:name
+            (cadr (ir:arguments (storage:lookup-function :arg-circuit-input)))))
+         (expected-storage '((:X . :SIG-X) (:Y . :SIG-Y)))
 
-        (closure (relocate:initial-closure-from-circuit
-                  (storage:lookup-function :arg-circuit-input))))
+         (closure (relocate:initial-closure-from-circuit
+                   (storage:lookup-function :arg-circuit-input))))
 
     ;; Tests begin here
     (is (equalp expected-storage (closure:lookup closure :sig)))
