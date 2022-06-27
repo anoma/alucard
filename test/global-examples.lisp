@@ -176,20 +176,26 @@
   (def ((foo (get arr 10)))
     (+ (check 25 (int 64)) foo)))
 
-(defcircuit array-creation-check ((output (array int 10)))
+(defcircuit array-creation-check ((output (array 10 int)))
   (def ((foo (array 10 (int 32)))
         (bar (array 10 (int 32))))
     (setf (get foo 0) (check 23 (int 32)))
     (setf (get foo 1) 25)
     (+ 25 (get foo 0) (get foo 1))))
 
-(defcircuit array-from-data-check ((output (array int 10)))
+(defcircuit array-from-data-check ((output (array 10 int)))
   (def ((foo 35)
         (bar (to-array foo 36)))
     (+ (check foo (int 32))
        (get bar 0))))
 
-(defcircuit array-from-data-check-consts ((output (array int 10)))
+(defcircuit type-checking-fun! ((output (int 32)))
+  (def ((foo 35)
+        (bar (to-array foo 36)))
+    (+ (check 32 (int 32))
+       (get bar 0))))
+
+(defcircuit array-from-data-check-consts ((output (array 10 int)))
   (def ((bar (to-array 36)))
     (+ (check 5 (int 32))
        (get bar 0))))
@@ -255,6 +261,22 @@
   (from-address (int 16))
   (to-address   (int 16))
   (amount       int))
+
+(deftype complex-number ()
+  (real      int)
+  (imaginary int))
+
+(defcircuit complex-norm ((private c complex-number) (output int))
+  (flet ((square (x)
+           (exp x 2)))
+    (def ((r-squared (square (real c)))
+          (i-squared (square (imaginary c)))
+          ;; doing square-root by hand!
+          (with-constraint (root)
+            (= (* r-squared i-squared)
+               (square root))))
+      root)))
+
 
 (in-package :alu-test)
 

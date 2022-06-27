@@ -458,6 +458,8 @@ circuit code, however they come with a high computational cost.
 
 ### Hidden Costs in the Circuit Model
 
+### Constraints
+
 ### Type Checking and Inference
 
 ## How Alucard Interoperates with Common Lisp
@@ -685,7 +687,11 @@ record-field = (field-name type)
 
 Creates a record type with the given `name`. each `record-field`
 specifies both the type of the field along with the name for accessing
-and creating the field.
+and creating the field. See [the record section above to see how
+records are compiled](#Records).
+
+The second argument `()`, is currently a place holder for a future
+generics system.
 
 ```lisp
 (deftype transfer ()
@@ -718,8 +724,44 @@ and creating the field.
 ### def
 
 ```lisp
+(def (binders*)
+  body*)
 
+binders = (variable-name expression)
+        | (with-constraint (variable-name*) body*)
 ```
+
+Binds the `variable-names` to the given `expression` to be used within
+the `body`. The first bound `variable-names` can be used in later
+expressions within the `binders` themselves. `def` has a special case
+where the name `with-constraint` can be used to introduce variables
+that don't have direct bodies. See [the constraints
+section](#Constraints) to see how it all works.
+
+For example
+
+```lisp
+(defcircuit complex-norm ((private c complex-number) (output int))
+  (flet ((square (x)
+           (exp x 2)))
+    (def ((r-squared (square (real c)))
+          (i-squared (square (imaginary c)))
+          ;; doing square-root by hand!
+          (with-constraint (root)
+            (= (* r-squared i-squared)
+               (square root))))
+      root)))
+```
+as we can see here, we let `r-squared` by the squared value of the
+
+real part of `c`, and `i-squared` for the imaginary part. Finally, we
+use `with-constraint` to do the `square-root` function by hand (if `p
+= x²`, then `x = √p`). Notice how we are able to use `r-squared` and
+`i-squared` within the body of the `with-constraint`.
+
+All these values are in-socpe for the `def`'s body, in which we just
+return the `root`, giving the norm of the complex number that was
+passed in.
 
 ## Typing Facilities
 
@@ -729,7 +771,7 @@ and creating the field.
 (coerce term type)
 ```
 
-Coerces the given expression to the desired type.
+Coerces the given `term` to the desired `type`.
 
 A simple example is as follows:
 
@@ -739,8 +781,37 @@ A simple example is as follows:
   (= x (coerce x (int 32))))
 ```
 
+`coerce` can also be used for more complex patterns, see [coercions
+for fun and profit](#coercions-for-fun-and-profit) for more complex
+patterns that can be had with `coerce`.
 
 ### check
+
+```lisp
+(check term type)
+```
+
+Informs the type checker that `term` has the given `type`. This may
+help the inference algorithm to understand the given type, or force
+the type checker to try unify some literals to the desired type. The
+`term` is returned from the `check` call.
+
+```lisp
+(defcircuit type-checking-fun! ((output (int 32)))
+  (def ((foo 35)
+        (bar (to-array foo 36)))
+    (+ (check foo (int 32))
+       (get bar 0))))
+```
+
+In `type-checking-fun!` the `to-array` call initially does not have
+enough information to determine the type of the array. Later we write
+`(check foo (int 32))`, which states that `foo` is of type `(int 32)`,
+and that informs us that `bar` must be of type `(array 2 (int 32))`!
+
+Some notes. See the section [type checking and
+inference](#Type-Checking-and-Inference) for limitations of the
+current type checking algorithm.
 
 ## Common Lisp Facilities
 
