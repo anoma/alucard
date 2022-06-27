@@ -218,9 +218,16 @@
     x₁))
 
 (defun square-root-func (p)
-  (def ((with-constraint (x1)
+  (def ((x2 5)
+        (with-constraint (x1)
           (= p (* x1 x1))))
     x1))
+
+(defcircuit test-square ((output int))
+  (def ((x1 5))
+    (square-root-func 7)
+    x1))
+
 
 (defcircuit l2-norm ((public p 3d-point)
                      (output int))
@@ -229,7 +236,6 @@
     (square-root
      (sum (mapcar (lambda (x) (exp x 2))
                   (list (x-plane p) (y-plane p) (z-plane p)))))))
-
 
 (defcircuit l2-norm-by-hand ((public p 3d-point)
                              (output int))

@@ -95,6 +95,17 @@
                           arguments
                           :key #'car))
          (argument-names (mapcar #'cadr just-args))
+         ;; Gensym unique names to avoid clashes
+         (gensym-argument-names (mapcar #'gensym-symbol argument-names))
+         ;; update just-args to use the gensymed name instead of the original name
+         (just-args-gensym
+           (mapcar (lambda (arg gensym)
+                     ;; replace the cadr of arg
+                     (list* (car arg)
+                            gensym
+                            (cddr arg)))
+                   just-args
+                   gensym-argument-names))
          ;; Outputs are laid out like (output int)
          (just-output
            (remove-if (lambda (x) (typep (util:symbol-to-keyword x) 'spc:privacy))
@@ -119,15 +130,20 @@
         (spc:make-circuit
          :return-type (spc:to-type-reference-format ',(cadr just-output))
          :name ,key-name
-         :arguments (mapcar #'make-constraint-from-list ',just-args)
+         :arguments (mapcar #'make-constraint-from-list ',just-args-gensym)
          ;; the body is a list of terms that we combine
          :body '(emit:instruction
-                 (let-refs
-                  ,argument-names
+                 (let-refs-alist
+                  ;; sad as we lose our nice naming for generated code ☹
+                  ,(mapcar #'cons argument-names gensym-argument-names)
                   ,(if (cl:= 1 (length body))
                        (car body)
                        `(list ,@body))))))
        ',name)))
+
+(defun gensym-symbol (symbol)
+  "gensyms with the given symbol name"
+  (gensym (symbol-name symbol)))
 
 (defmacro defgate (name arguments &body body)
   `(defcircuit ,name ,@(mapcar (lambda (x)
@@ -140,24 +156,39 @@
 (defmacro def (bind-values &rest body)
   "defines the values in the presence of the body"
   ;; bind the values at the CL level, so we can just reference it
-  `(let-refs
-    ,(mapcan (lambda (x)
-               (if (equalp (util:symbol-to-keyword (car x)) :with-constraint)
-                   (cadr x)
-                   (list (car x))))
-             bind-values)
-    ;; Generate out the Alucard level binding
-    ,@(mapcar (lambda (bind-pair)
-                (if (equalp (util:symbol-to-keyword (car bind-pair)) :with-constraint)
-                    `(with-constraint ,@(cdr bind-pair))
-                    `(emit:instruction
-                      (spc:make-let
-                       :var (util:symbol-to-keyword ',(car bind-pair))
-                       :val ,(cadr bind-pair)))))
-              bind-values)
-    ,(if (cl:= (length body) 1)
-         (car body)
-         (cons 'list body))))
+  (flet ((constraint? (x)
+           (equalp (util:symbol-to-keyword (car x)) :with-constraint)))
+    (let* ((bound-names
+             ;; list in the case of with-constraint, symbol otherwise
+             (mapcar (lambda (x)
+                       (if (constraint? x) (cadr x) (car x)))
+                     bind-values))
+           (gensym-names
+             (mapcar (lambda (x)
+                       (if (listp x)
+                           (mapcar #'gensym-symbol x)
+                           (gensym-symbol x)))
+                     bound-names)))
+      `(let-refs-alist
+        ;; remove check
+        ,(mapcan (lambda (bound gensym)
+                   (if (listp bound)
+                       (mapcar #'cons bound gensym)
+                       (list (cons bound gensym))))
+                 bound-names gensym-names)
+        ;; Generate out the Alucard level binding
+        ,@(mapcar (lambda (bind-pair gensym)
+                    (if (constraint? bind-pair)
+                        `(with-constraint ,gensym ,@(cddr bind-pair))
+                        `(emit:instruction
+                          (spc:make-let
+                           :var (util:symbol-to-keyword ',gensym)
+                           :val ,(cadr bind-pair)))))
+                  bind-values
+                  gensym-names)
+        ,(if (cl:= (length body) 1)
+             (car body)
+             (cons 'list body))))))
 
 (defmacro entry-point (symbol)
   "Sets the entry point of the circuit to the desired function"
@@ -247,13 +278,21 @@ and we are given back a reference to operate on."
 the body at the CL level. The values are simply references to the
 value in the Alucard environment. An example usage may
 be (let-refs (a b) (+ a b))"
+  `(let-refs-alist ,(mapcar (lambda (x) (cons x x)) variables) ,@body))
+
+(defmacro let-refs-alist (variables &rest body)
+  "lets the variables in the argument list be referred to at the CL
+level. However the input is an alist so it is unique at the Alucard
+Level. An example usage may be
+(let-refs-alist ((a . a123123) (b . b123123)) (prld:+ a b))"
   `(let ,(mapcar (lambda (var)
-                   (list var `(spc:make-reference
-                               :name ,(util:symbol-to-keyword var))))
+                   (list (car var)
+                         `(spc:make-reference
+                           :name ,(util:symbol-to-keyword (cdr var)))))
           variables)
      ;; Declare the values as ignoreable
      ;; Should we keep the warning!?
-     (declare (ignorable ,@variables))
+     (declare (ignorable ,@(mapcar #'car variables)))
      ,@body))
 
 (-> make-constraint-from-list (list) spc:constraint)
