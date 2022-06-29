@@ -17,7 +17,9 @@
                     (:pack     :alu.pass.pack)
                     (:pipeline :alu.pipeline)
                     (:vspc     :alu.vampir.spec)
-                    (:prld     :alu.prelude))
+                    (:prld     :alu.prelude)
+                    (:ref      :alu.reference)
+                    (:stack    :alu.stack))
   (:export #:run-tests))
 
 (in-package :alu-test)
