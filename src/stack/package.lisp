@@ -8,4 +8,5 @@ variable and offer rebinding and passing in capabilities.")
   (:use #:common-lisp #:serapeum)
   (:export :push :pop :get :new
            :with-empty-stack
-           :*stack*))
+           :*stack*
+           :stack-compiler-macro))

@@ -391,7 +391,9 @@ paid.
 
 However there are some more interesting coercions that we can employ
 that can help general circuit array programming. For example, we may
-wish to reveal a single bit of an array. The [Zokrates programming language](https://zokrates.github.io/examples/rng_tutorial.html#reveal-a-single-bit) lists this as an example.
+wish to reveal a single bit of an array. The [Zokrates programming
+language](https://zokrates.github.io/examples/rng_tutorial.html#reveal-a-single-bit)
+lists this as an example.
 
 In Alucard we can use coercions to change the array format from
 `int32`'s to a list of `int1`'s.
@@ -483,7 +485,6 @@ For example.
 <!--   (+ x1 x2)) -->
 
 ```lisp
-(sig add-int32 (-> (int 32) (int 32) (int 32)))
 (defcircuit add-int32 ((private x1 (int 32))
                        (private x2 (int 32))
                        (output (int 32)))
@@ -821,9 +822,27 @@ current type checking algorithm.
 
 ### +
 
+```lisp
+(+ body*)
+```
+Adds n numbers of the same type, and returns the sum of its arguments.
+
 ### *
 
+```lisp
+(* body*)
+```
+Multiplies n numbers of the same type, and returns the sum of its arguments.
+
+
 ### exp
+
+```lisp
+(exp base power)
+```
+
+Returns the `base` raised to the `power`. Both arguments have to be of
+the same type.
 
 ## Array Facilities
 
