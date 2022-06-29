@@ -19,6 +19,16 @@
     :components ((:file "package")
                  (:file "bit")
                  (:file "utils")))
+   (:module reference
+    :serial t
+    :depends-on ()
+    :components ((:file "package")
+                 (:file "ref")))
+   (:module stack
+    :serial t
+    :depends-on ("reference")
+    :components ((:file "package")
+                 (:file "stack")))
    (:module closure
     :serial t
     :description "Closure data type and utilities"
