@@ -389,3 +389,43 @@ if the value is not void, then the returns in the body are given back"
 
 (defalias circuit-to-alias #'extract:circuit-to-alias
   "Turns the circuit to a vamp-ir alias")
+
+(-> find-redundant-let (ir:fully-expanded-list &optional closure:typ) closure:typ)
+(defun find-redundant-let (xs &optional (map (closure:allocate)))
+  (mvfold (lambda (map x)
+	    (etypecase-of ir:fully-expanded-term x
+	      (ir:standalone-ret map)
+	      (ir:bind
+	       (etypecase-of ir:base (ir:value x)
+		 (ir:application map)
+		 (ir:reference (let* ((value (ir:value x))
+				      (find (closure:lookup map  (ir:name value) )))
+				 (closure:insert map (ir:var x) (or find value))))
+		 (number map)))
+	      (ir:bind-constraint (find-redundant-let (ir:value x) map))
+              (ir:multiple-bind map))) ;TODO: do logic
+          xs map))
+
+
+(-> replace-references (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
+(defun replace-references (xs map)
+  (mapcar (lambda (x)
+            (etypecase-of ir:fully-expanded-term x
+              (ir:standalone-ret (let* ((vars (ir:var x))
+                                        (updated-rets
+                                          (mapcar (lambda (y)
+                                                    (if (closure:lookup map y)
+                                                        (ir:name (closure:lookup map y))
+                                                        y)) vars )))
+                                   (ir:make-standalone-ret
+                                    :var updated-rets)))
+              (ir:bind x)
+              ;;(etypecase-of ir:base (ir:value x)
+              ;;  (ir:application map)
+              ;;  (ir:reference map)
+              ;;  (number map))
+              (ir:bind-constraint x)
+              (ir:multiple-bind x)))
+          xs))
+
+
