@@ -30,7 +30,6 @@ will evaluate to this let buildup."
     ;; for terms which are just references or numbers we can
     ;; just call the constructor, and end the algorithm
     ((spc:number numb) (funcall constructor numb))
-    ((spc:number numb) (funcall constructor numb))
     ((spc:reference)   (funcall constructor term))
     ;; For nodes which are not in normal form, recurse building
     ;; up the let chain
@@ -135,7 +134,7 @@ let binding if the result of normalization is itself not in normal form"
                           (lambda (ref-cdr)
                             (funcall cont (cons ref-car ref-cdr))))))))
 
-(-> combine-expression (spc:expression (or null spc:expression)) spc:expression)
+(-> combine-expression (t (or null spc:expression)) spc:expression)
 (defun combine-expression (expr1 expr2)
   (dispatch-case ((expr1 spc:expression)
                   (expr2 (or null spc:expression)))
