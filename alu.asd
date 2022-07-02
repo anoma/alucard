@@ -1,7 +1,7 @@
 (asdf:defsystem :alu
   :depends-on (:trivia :alexandria :sycamore :serapeum :closer-mop :command-line-arguments
-                       (:version "asdf" "3.3.5")
-                       :swank :slynk)
+                       ;; (:version "asdf" "3.3.5")
+               :swank :slynk)
   :version "0.0.0"
   :description "Powering Vamp-IR with the power of the original lineage"
   :author "Mariari"
@@ -97,6 +97,19 @@
                  (:file "array")
                  (:file "dependencies")
                  (:file "pipeline")))
+   (:module stepper
+    :serial t
+    ;; we need symbols like `alu:def' in scope, in the future we
+    ;; should remove the dependency on package and have a way of
+    ;; extending our stepper with new primitives, and ways of stepping
+    ;; through it. So we can instrument our specials in (:file alu)
+    ;; instead.
+    :depends-on (package stack)
+    :description "Provides a syntax stepper that can step through the
+    syntax of common lisp and allow instrumenting syntax such that a
+    stack can be implemented."
+    :components ((:file "package")
+                 (:file "stepper")))
    ;; only folder without a package
    (:module prelude
     :serial t
@@ -104,8 +117,8 @@
     :depends-on  ("alu")
     :pathname #P"../alu/"
     :components ((:file "prelude")))
-   (:file "package" :depends-on ("specification"))
-   (:file "alu"     :depends-on ("package"))
+   (:file "package"     :depends-on ("specification"))
+   (:file "alu"         :depends-on ("package"))
    (:file "../app/main" :depends-on ("alu" "prelude")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 
@@ -131,6 +144,21 @@
    (:file "vampir")
    (:file "stack")
    (:file "run-tests"))
+  :perform (asdf:test-op (o s)
+                         (uiop:symbol-call :alu-test :run-tests)))
+
+;; Big TODO, figure out how to get good docs for Our project!
+(asdf:defsystem :alu/documentation
+  :depends-on (:fiveam
+               :swank :slynk
+               :staple
+               :staple-server :asdf-package-system
+               :staple-restructured-text)
+  :description "Documenting alu"
+  :pathname "test/"
+  :serial t
+  :components
+  ()
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))
 
