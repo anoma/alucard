@@ -15,17 +15,19 @@
   :components
   ((:module util
     :serial t
-    :description "Internal Utility Functions"
+    :description "Internal utility functions"
     :components ((:file "package")
                  (:file "bit")
                  (:file "utils")))
    (:module reference
     :serial t
+    :description "Defines a mutable pass by reference module"
     :depends-on ()
     :components ((:file "package")
                  (:file "ref")))
    (:module stack
     :serial t
+    :description "Defines a simple stack data structure designed for stack traces"
     :depends-on ("reference")
     :components ((:file "package")
                  (:file "stack")))
