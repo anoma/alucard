@@ -54,13 +54,13 @@
 
 (defun handle-cl-special (form)
   (typecase-of specials (car form)
-    ((eql let)  (handle-let form))
-    ((eql let*) (handle-let form))
+    ((eql let)       (handle-let form))
+    ((eql let*)      (handle-let form))
+    ((eql eval-when) (handle-eval-when form))
     ((eql flet))
     ((eql labels))
     ((eql block))
     ((eql catch))
-    ((eql eval-when))
     ((eql function))
     ((eql go))
     ((eql if))
@@ -84,21 +84,34 @@
 
 (defun handle-alu-special (form)
   (typecase-of alu-specials (car form)
-    ((eql alu:def) (handle-let form t))
-    ((eql alu:with-constraint))
+    ((eql alu:def)             (handle-let form t))
+    ((eql alu:with-constraint) (handle-constraint form))
     ((eql alu:coerce))
     ((eql alu:check))
     ((eql alu:array))
     (otherwise (error "Alucard Special ~A handed to handle-alu special"
                       form))))
 
+;; TODO :: Major Flaw
+;;
+;; for binders like let and flet we need to freeze with a lambda
+;; technique.  generate out to a lambda call, further we should pass
+;; around the environment so that we refer to the correct values
 (defun handle-let (form &optional handle-constrain)
   (destructuring-bind (let args &rest body) form
     (list* let (handle-binder args handle-constrain) (handle-body body))))
 
+(defun handle-eval-when (form)
+  (destructuring-bind (eval-when declaration &rest body) form
+    (list* eval-when declaration (handle-body body))))
+
 (defun handle-binder (binders &optional handle-constrain)
-  binders
-  handle-constrain)
+  (mapcar (lambda (bind-pair)
+            (if (and handle-constrain (eql (car bind-pair) 'alu:with-constraint))
+                (handle-constraint bind-pair)
+                ;; TODO ∷ STEP is wrong here due to introducing a binder which is not a macro
+                (step bind-pair)))
+          binders))
 
 (defun handle-body (body)
   "Handles a body that may have declarations upfront"
@@ -106,8 +119,12 @@
             (if (declarationp x) x (step x)))
           body))
 
+(defun handle-constraint (form)
+  "Handles an `alu:with-constraint' form"
+  form)
 
 (defun declarationp (form)
   "determines if a form is a declaration or not"
   (or (eql (car form) 'declare)
+      ;; probably overkill given declaims are top level
       (eql (car form) 'declaim)))
