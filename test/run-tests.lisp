@@ -24,6 +24,32 @@
     (unless swapped
       (storage:restore-tables))))
 
+(defun profile-all ()
+  (let* ((packages
+           (list-all-packages))
+         (alu-packages
+           (remove-if-not (lambda (p)
+                            (let ((search (search "ALU" (package-name p))))
+                              (and search (= 0 search))))
+                          packages))
+         (without-aluser
+             (remove-if (lambda (p)
+                          (member (package-name p) '("aluser" "alu-test")
+                                  :test #'equalp))
+                        alu-packages)))
+    (mapc (lambda (alu)
+            (slynk-backend:profile-package alu t t))
+          without-aluser)))
+
+(defun unprofile-all ()
+  (slynk-backend:unprofile-all))
+
+(defun profiler-report ()
+  (slynk-backend:profile-report))
+
+(defun profiler-reset ()
+  (slynk-backend:profile-reset))
+
 
 #+ccl
 (defun code-coverage ()
