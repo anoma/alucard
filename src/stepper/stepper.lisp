@@ -48,20 +48,22 @@
 
 
 (defun step (holder)
+  "Runs the stepper through the code, inserting stack traces if
+*step-mode* is :stack"
   holder)
 
 (defun handle-cl-special (form)
   (typecase-of specials (car form)
+    ((eql let)  (handle-let form))
+    ((eql let*) (handle-let form))
+    ((eql flet))
+    ((eql labels))
     ((eql block))
     ((eql catch))
     ((eql eval-when))
-    ((eql flet))
     ((eql function))
     ((eql go))
     ((eql if))
-    ((eql labels))
-    ((eql let))
-    ((eql let*))
     ((eql load-time-value))
     ((eql locally))
     ((eql macrolet))
@@ -82,10 +84,30 @@
 
 (defun handle-alu-special (form)
   (typecase-of alu-specials (car form)
-    ((eql alu:def))
+    ((eql alu:def) (handle-let form t))
     ((eql alu:with-constraint))
     ((eql alu:coerce))
     ((eql alu:check))
     ((eql alu:array))
     (otherwise (error "Alucard Special ~A handed to handle-alu special"
                       form))))
+
+(defun handle-let (form &optional handle-constrain)
+  (destructuring-bind (let args &rest body) form
+    (list* let (handle-binder args handle-constrain) (handle-body body))))
+
+(defun handle-binder (binders &optional handle-constrain)
+  binders
+  handle-constrain)
+
+(defun handle-body (body)
+  "Handles a body that may have declarations upfront"
+  (mapcar (lambda (x)
+            (if (declarationp x) x (step x)))
+          body))
+
+
+(defun declarationp (form)
+  "determines if a form is a declaration or not"
+  (or (eql (car form) 'declare)
+      (eql (car form) 'declaim)))
