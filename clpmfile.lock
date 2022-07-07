@@ -34,44 +34,103 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :releases
+("3bmd" :version "2021-04-11" :source "quicklisp" :systems
+ ("3bmd" "3bmd-ext-code-blocks"))
+("acclimation" :version "2020-09-25" :source "quicklisp" :systems
+ ("acclimation"))
 ("alexandria" :version "2022-04-01" :source "quicklisp" :systems ("alexandria"))
-("alu.asd" :version :newest :source :implicit-file :systems ("alu" "alu/test"))
+("alu.asd" :version :newest :source :implicit-file :systems
+ ("alu" "alu/documentation" "alu/test"))
+("anaphora" :version "2022-02-20" :source "quicklisp" :systems ("anaphora"))
+("array-utils" :version "2020-12-20" :source "quicklisp" :systems
+ ("array-utils"))
 ("asdf-flv" :version "2016-04-21" :source "quicklisp" :systems
  ("net.didierverna.asdf-flv"))
+("asdf-package-system" :version "2015-06-08" :source "quicklisp" :systems
+ ("asdf-package-system"))
 ("atomics" :version "2021-06-30" :source "quicklisp" :systems ("atomics"))
+("babel" :version "2020-09-25" :source "quicklisp" :systems ("babel"))
 ("bordeaux-threads" :version "2020-06-10" :source "quicklisp" :systems
  ("bordeaux-threads"))
+("cffi" :version "2021-04-11" :source "quicklisp" :systems ("cffi"))
+("chunga" :version "2022-04-01" :source "quicklisp" :systems ("chunga"))
+("cl+ssl" :version "2022-04-01" :source "quicklisp" :systems ("cl+ssl"))
+("cl-base64" :version "2020-10-16" :source "quicklisp" :systems ("cl-base64"))
+("cl-data-format-validation" :version "2014-07-13" :source "quicklisp" :systems
+ ("data-format-validation"))
+("cl-docutils" :version "2013-01-28" :source "quicklisp" :systems ("docutils"))
+("cl-environments" :version "2021-10-21" :source "quicklisp" :systems
+ ("cl-environments"))
+("cl-fad" :version "2022-02-20" :source "quicklisp" :systems ("cl-fad"))
 ("cl-fuzz" :version "2018-10-18" :source "quicklisp" :systems ("cl-fuzz"))
+("cl-markless" :version "2022-04-01" :source "quicklisp" :systems
+ ("cl-markless" "cl-markless-plump"))
 ("cl-ppcre" :version "2022-02-20" :source "quicklisp" :systems ("cl-ppcre"))
+("clip" :version "2021-12-09" :source "quicklisp" :systems ("clip"))
 ("closer-mop" :version "2022-04-01" :source "quicklisp" :systems ("closer-mop"))
+("clss" :version "2019-11-30" :source "quicklisp" :systems ("clss"))
+("collectors" :version "2022-02-20" :source "quicklisp" :systems ("collectors"))
+("colorize" :version "2018-02-28" :source "quicklisp" :systems ("colorize"))
 ("command-line-arguments" :version "2021-08-07" :source "quicklisp" :systems
  ("command-line-arguments"))
+("concrete-syntax-tree" :version "2021-10-21" :source "quicklisp" :systems
+ ("concrete-syntax-tree" "concrete-syntax-tree-base"
+  "concrete-syntax-tree-destructuring" "concrete-syntax-tree-lambda-list"))
+("definitions" :version "2021-05-31" :source "quicklisp" :systems
+ ("definitions"))
+("dissect" :version "2021-05-31" :source "quicklisp" :systems ("dissect"))
 ("documentation-utils" :version "2019-07-11" :source "quicklisp" :systems
  ("documentation-utils"))
+("eclector" :version "2021-10-21" :source "quicklisp" :systems
+ ("eclector" "eclector-concrete-syntax-tree"))
+("esrap" :version "2022-04-01" :source "quicklisp" :systems ("esrap"))
 ("fiveam" :version (:commit "e11dee752a8f59065033ef9d60641d4a2f1e8379") :source
  :implicit-vcs :systems ("fiveam" "fiveam/test"))
+("flexi-streams" :version "2022-02-20" :source "quicklisp" :systems
+ ("flexi-streams"))
+("form-fiddle" :version "2019-07-11" :source "quicklisp" :systems
+ ("form-fiddle"))
 ("global-vars" :version "2014-11-06" :source "quicklisp" :systems
  ("global-vars"))
+("html-encode" :version "2010-10-07" :source "quicklisp" :systems
+ ("html-encode"))
+("hunchentoot" :version "2020-06-10" :source "quicklisp" :systems
+ ("hunchentoot"))
 ("introspect-environment" :version "2022-02-20" :source "quicklisp" :systems
  ("introspect-environment"))
 ("iterate" :version "2021-05-31" :source "quicklisp" :systems ("iterate"))
+("language-codes" :version "2021-05-31" :source "quicklisp" :systems
+ ("language-codes"))
 ("lisp-namespace" :version "2021-10-21" :source "quicklisp" :systems
  ("lisp-namespace"))
 ("lisp-unit" :version "2017-01-24" :source "quicklisp" :systems ("lisp-unit"))
 ("local-time" :version "2021-01-24" :source "quicklisp" :systems ("local-time"))
+("lquery" :version "2020-12-20" :source "quicklisp" :systems ("lquery"))
+("md5" :version "2021-06-30" :source "quicklisp" :systems ("md5"))
+("optima" :version "2015-07-10" :source "quicklisp" :systems ("optima"))
 ("parse-declarations" :version "2010-10-07" :source "quicklisp" :systems
  ("parse-declarations-1.0"))
 ("parse-number" :version "2018-02-28" :source "quicklisp" :systems
  ("parse-number"))
+("pathname-utils" :version "2021-05-31" :source "quicklisp" :systems
+ ("pathname-utils"))
+("plump" :version "2021-06-30" :source "quicklisp" :systems
+ ("plump" "plump-dom"))
+("rfc2388" :version "2018-08-31" :source "quicklisp" :systems ("rfc2388"))
 ("serapeum" :version (:commit "d2985f5e42df11f0e3063625b8432f0a9eca912f")
  :source :implicit-vcs :systems ("serapeum" "serapeum/docs" "serapeum/tests"))
 ("slime" :version "2022-02-20" :source "quicklisp" :systems ("swank"))
 ("sly" :version "2022-04-01" :source "quicklisp" :systems ("slynk"))
 ("split-sequence" :version "2021-05-31" :source "quicklisp" :systems
  ("split-sequence"))
+("staple" :version "2021-10-21" :source "quicklisp" :systems
+ ("staple" "staple-code-parser" "staple-markdown" "staple-markless"
+  "staple-package-recording" "staple-restructured-text" "staple-server"))
 ("string-case" :version "2018-07-11" :source "quicklisp" :systems
  ("string-case"))
 ("sycamore" :version "2021-10-21" :source "quicklisp" :systems ("sycamore"))
+("symbol-munger" :version "2022-02-20" :source "quicklisp" :systems
+ ("symbol-munger"))
 ("trivia" :version "2022-04-01" :source "quicklisp" :systems
  ("trivia" "trivia.balland2006" "trivia.level0" "trivia.level1" "trivia.level2"
   "trivia.trivial"))
@@ -79,15 +138,22 @@
  ("trivial-backtrace"))
 ("trivial-cltl2" :version "2021-12-30" :source "quicklisp" :systems
  ("trivial-cltl2"))
+("trivial-features" :version "2021-12-09" :source "quicklisp" :systems
+ ("trivial-features"))
 ("trivial-file-size" :version "2020-04-27" :source "quicklisp" :systems
  ("trivial-file-size"))
 ("trivial-garbage" :version "2021-12-30" :source "quicklisp" :systems
  ("trivial-garbage"))
+("trivial-gray-streams" :version "2021-01-24" :source "quicklisp" :systems
+ ("trivial-gray-streams"))
 ("trivial-indent" :version "2021-05-31" :source "quicklisp" :systems
  ("trivial-indent"))
 ("trivial-macroexpand-all" :version "2017-10-23" :source "quicklisp" :systems
  ("trivial-macroexpand-all"))
+("trivial-with-current-source-form" :version "2021-10-21" :source "quicklisp"
+ :systems ("trivial-with-current-source-form"))
 ("type-i" :version "2019-12-27" :source "quicklisp" :systems ("type-i"))
+("usocket" :version "2022-04-01" :source "quicklisp" :systems ("usocket"))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -95,56 +161,186 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 :reverse-dependencies
+("3bmd" ((:system :name "staple-markdown") (:system :name "3bmd"))
+ ((:system :name "staple-markdown") (:system :name "3bmd-ext-code-blocks"))
+ ((:system :name "3bmd-ext-code-blocks") (:system :name "3bmd")))
+
+("acclimation" ((:system :name "eclector") (:system :name "acclimation"))
+ ((:system :name "concrete-syntax-tree-base") (:system :name "acclimation")))
+
 ("alexandria" ((:system :name "type-i") (:system :name "alexandria"))
+ ((:system :name "trivial-with-current-source-form")
+  (:system :name "alexandria"))
  ((:system :name "trivia.level0") (:system :name "alexandria"))
  ((:system :name "trivia.balland2006") (:system :name "alexandria"))
+ ((:system :name "symbol-munger") (:system :name "alexandria"))
  ((:system :name "sycamore") (:system :name "alexandria"))
+ ((:system :name "staple-code-parser") (:system :name "alexandria"))
  ((:system :name "serapeum") (:system :name "alexandria"))
+ ((:system :name "optima") (:system :name "alexandria"))
  ((:system :name "lisp-namespace") (:system :name "alexandria"))
+ ((:system :name "hunchentoot") (:system :name "alexandria"))
  ((:system :name "fiveam") (:system :name "alexandria"))
+ ((:system :name "esrap") (:system :name "alexandria"))
+ ((:system :name "eclector-concrete-syntax-tree") (:system :name "alexandria"))
+ ((:system :name "eclector") (:system :name "alexandria"))
+ ((:system :name "colorize") (:system :name "alexandria"))
+ ((:system :name "collectors") (:system :name "alexandria"))
  ((:system :name "cl-fuzz") (:system :name "alexandria"))
+ ((:system :name "cl-fad") (:system :name "alexandria"))
+ ((:system :name "cl-environments") (:system :name "alexandria"))
+ ((:system :name "cl+ssl") (:system :name "alexandria"))
+ ((:system :name "cffi") (:system :name "alexandria"))
  ((:system :name "bordeaux-threads") (:system :name "alexandria"))
- ((:system :name "alu") (:system :name "alexandria")))
+ ((:system :name "babel") (:system :name "alexandria"))
+ ((:system :name "alu") (:system :name "alexandria"))
+ ((:system :name "3bmd-ext-code-blocks") (:system :name "alexandria"))
+ ((:system :name "3bmd") (:system :name "alexandria")))
 
 ("alu.asd" ((:system :name "alu/test") (:system :name "alu"))
  (t (:asd-file :name "alu.asd")))
 
+("anaphora" ((:system :name "cl-environments") (:system :name "anaphora")))
+
+("array-utils" ((:system :name "plump") (:system :name "array-utils"))
+ ((:system :name "lquery") (:system :name "array-utils"))
+ ((:system :name "clss") (:system :name "array-utils"))
+ ((:system :name "clip") (:system :name "array-utils")))
+
 ("asdf-flv"
  ((:system :name "fiveam") (:system :name "net.didierverna.asdf-flv")))
 
+("asdf-package-system"
+ ((:system :name "alu/documentation") (:system :name "asdf-package-system")))
+
 ("atomics" ((:system :name "serapeum/tests") (:system :name "atomics")))
 
+("babel" ((:system :name "staple") (:system :name "babel"))
+ ((:system :name "cffi") (:system :name "babel")))
+
 ("bordeaux-threads"
- ((:system :name "serapeum") (:system :name "bordeaux-threads")))
+ ((:system :name "serapeum") (:system :name "bordeaux-threads"))
+ ((:system :name "hunchentoot") (:system :name "bordeaux-threads"))
+ ((:system :name "cl-fad") (:system :name "bordeaux-threads"))
+ ((:system :name "cl+ssl") (:system :name "bordeaux-threads")))
+
+("cffi" ((:system :name "cl+ssl") (:system :name "cffi")))
+
+("chunga" ((:system :name "hunchentoot") (:system :name "chunga")))
+
+("cl+ssl" ((:system :name "hunchentoot") (:system :name "cl+ssl")))
+
+("cl-base64" ((:system :name "hunchentoot") (:system :name "cl-base64")))
+
+("cl-data-format-validation"
+ ((:system :name "docutils") (:system :name "data-format-validation")))
+
+("cl-docutils"
+ ((:system :name "staple-restructured-text") (:system :name "docutils")))
+
+("cl-environments" ((:system :name "alu") (:system :name "cl-environments")))
+
+("cl-fad" ((:system :name "hunchentoot") (:system :name "cl-fad")))
 
 ("cl-fuzz" ((:system :name "sycamore") (:system :name "cl-fuzz")))
 
+("cl-markless"
+ ((:system :name "staple-markless") (:system :name "cl-markless-plump"))
+ ((:system :name "cl-markless-plump") (:system :name "cl-markless")))
+
 ("cl-ppcre" ((:system :name "sycamore") (:system :name "cl-ppcre"))
- ((:system :name "serapeum/docs") (:system :name "cl-ppcre")))
+ ((:system :name "staple") (:system :name "cl-ppcre"))
+ ((:system :name "serapeum/docs") (:system :name "cl-ppcre"))
+ ((:system :name "hunchentoot") (:system :name "cl-ppcre"))
+ ((:system :name "docutils") (:system :name "cl-ppcre"))
+ ((:system :name "data-format-validation") (:system :name "cl-ppcre")))
+
+("clip" ((:system :name "staple") (:system :name "clip")))
 
 ("closer-mop" ((:system :name "trivia.level2") (:system :name "closer-mop"))
+ ((:system :name "optima") (:system :name "closer-mop"))
+ ((:system :name "eclector") (:system :name "closer-mop"))
+ ((:system :name "collectors") (:system :name "closer-mop"))
  ((:system :name "alu") (:system :name "closer-mop")))
+
+("clss" ((:system :name "lquery") (:system :name "clss")))
+
+("collectors" ((:system :name "cl-environments") (:system :name "collectors")))
+
+("colorize" ((:system :name "3bmd-ext-code-blocks") (:system :name "colorize")))
 
 ("command-line-arguments"
  ((:system :name "alu") (:system :name "command-line-arguments")))
 
+("concrete-syntax-tree"
+ ((:system :name "staple-code-parser") (:system :name "concrete-syntax-tree"))
+ ((:system :name "staple-code-parser")
+  (:system :name "concrete-syntax-tree-lambda-list"))
+ ((:system :name "staple-code-parser")
+  (:system :name "concrete-syntax-tree-destructuring"))
+ ((:system :name "eclector-concrete-syntax-tree")
+  (:system :name "concrete-syntax-tree"))
+ ((:system :name "concrete-syntax-tree-lambda-list")
+  (:system :name "concrete-syntax-tree-base"))
+ ((:system :name "concrete-syntax-tree-destructuring")
+  (:system :name "concrete-syntax-tree-lambda-list"))
+ ((:system :name "concrete-syntax-tree")
+  (:system :name "concrete-syntax-tree-base"))
+ ((:system :name "concrete-syntax-tree")
+  (:system :name "concrete-syntax-tree-lambda-list")))
+
+("definitions"
+ ((:system :name "staple-code-parser") (:system :name "definitions"))
+ ((:system :name "staple") (:system :name "definitions")))
+
+("dissect" ((:system :name "staple-server") (:system :name "dissect")))
+
 ("documentation-utils"
+ ((:system :name "staple-server") (:system :name "documentation-utils"))
+ ((:system :name "staple-code-parser") (:system :name "documentation-utils"))
+ ((:system :name "staple") (:system :name "documentation-utils"))
+ ((:system :name "plump") (:system :name "documentation-utils"))
+ ((:system :name "language-codes") (:system :name "documentation-utils"))
+ ((:system :name "form-fiddle") (:system :name "documentation-utils"))
+ ((:system :name "definitions") (:system :name "documentation-utils"))
+ ((:system :name "cl-markless") (:system :name "documentation-utils"))
  ((:system :name "atomics") (:system :name "documentation-utils")))
+
+("eclector" ((:system :name "staple-code-parser") (:system :name "eclector"))
+ ((:system :name "staple-code-parser")
+  (:system :name "eclector-concrete-syntax-tree"))
+ ((:system :name "eclector-concrete-syntax-tree") (:system :name "eclector")))
+
+("esrap" ((:system :name "3bmd") (:system :name "esrap")))
 
 ("fiveam" ((:system :name "serapeum/tests") (:system :name "fiveam"))
  ((:system :name "fiveam/test") (:system :name "fiveam"))
  ((:system :name "alu/test") (:system :name "fiveam"))
+ ((:system :name "alu/documentation") (:system :name "fiveam"))
  (t
   (:project :name "fiveam" :commit "e11dee752a8f59065033ef9d60641d4a2f1e8379"
    :source :implicit-vcs)))
 
+("flexi-streams"
+ ((:system :name "hunchentoot") (:system :name "flexi-streams"))
+ ((:system :name "cl+ssl") (:system :name "flexi-streams")))
+
+("form-fiddle" ((:system :name "lquery") (:system :name "form-fiddle")))
+
 ("global-vars" ((:system :name "serapeum") (:system :name "global-vars")))
+
+("html-encode" ((:system :name "colorize") (:system :name "html-encode")))
+
+("hunchentoot" ((:system :name "staple-server") (:system :name "hunchentoot")))
 
 ("introspect-environment"
  ((:system :name "type-i") (:system :name "introspect-environment"))
  ((:system :name "serapeum") (:system :name "introspect-environment")))
 
-("iterate" ((:system :name "trivia.balland2006") (:system :name "iterate")))
+("iterate" ((:system :name "trivia.balland2006") (:system :name "iterate"))
+ ((:system :name "symbol-munger") (:system :name "iterate")))
+
+("language-codes" ((:system :name "staple") (:system :name "language-codes")))
 
 ("lisp-namespace" ((:system :name "type-i") (:system :name "lisp-namespace"))
  ((:system :name "trivia.level2") (:system :name "lisp-namespace")))
@@ -153,10 +349,26 @@
 
 ("local-time" ((:system :name "serapeum/tests") (:system :name "local-time")))
 
+("lquery" ((:system :name "clip") (:system :name "lquery")))
+
+("md5" ((:system :name "hunchentoot") (:system :name "md5")))
+
+("optima" ((:system :name "cl-environments") (:system :name "optima")))
+
 ("parse-declarations"
- ((:system :name "serapeum") (:system :name "parse-declarations-1.0")))
+ ((:system :name "serapeum") (:system :name "parse-declarations-1.0"))
+ ((:system :name "cl-environments") (:system :name "parse-declarations-1.0")))
 
 ("parse-number" ((:system :name "serapeum") (:system :name "parse-number")))
+
+("pathname-utils" ((:system :name "staple") (:system :name "pathname-utils")))
+
+("plump" ((:system :name "plump-dom") (:system :name "plump"))
+ ((:system :name "lquery") (:system :name "plump"))
+ ((:system :name "clss") (:system :name "plump"))
+ ((:system :name "cl-markless-plump") (:system :name "plump-dom")))
+
+("rfc2388" ((:system :name "hunchentoot") (:system :name "rfc2388")))
 
 ("serapeum" ((:system :name "serapeum/tests") (:system :name "serapeum"))
  ((:system :name "serapeum/docs") (:system :name "serapeum"))
@@ -166,15 +378,35 @@
    :source :implicit-vcs)))
 
 ("slime" ((:system :name "serapeum/docs") (:system :name "swank"))
+ ((:system :name "alu/documentation") (:system :name "swank"))
  ((:system :name "alu") (:system :name "swank")))
 
-("sly" ((:system :name "alu") (:system :name "slynk")))
+("sly" ((:system :name "alu/documentation") (:system :name "slynk"))
+ ((:system :name "alu") (:system :name "slynk")))
 
-("split-sequence" ((:system :name "serapeum") (:system :name "split-sequence")))
+("split-sequence" ((:system :name "usocket") (:system :name "split-sequence"))
+ ((:system :name "serapeum") (:system :name "split-sequence"))
+ ((:system :name "colorize") (:system :name "split-sequence"))
+ ((:system :name "3bmd-ext-code-blocks") (:system :name "split-sequence"))
+ ((:system :name "3bmd") (:system :name "split-sequence")))
+
+("staple" ((:system :name "staple-server") (:system :name "staple-markdown"))
+ ((:system :name "staple-server") (:system :name "staple-markless"))
+ ((:system :name "staple-restructured-text") (:system :name "staple"))
+ ((:system :name "staple-markless") (:system :name "staple"))
+ ((:system :name "staple-markdown") (:system :name "staple"))
+ ((:system :name "staple") (:system :name "staple-code-parser"))
+ ((:system :name "staple") (:system :name "staple-package-recording"))
+ ((:system :name "alu/documentation") (:system :name "staple"))
+ ((:system :name "alu/documentation") (:system :name "staple-server"))
+ ((:system :name "alu/documentation")
+  (:system :name "staple-restructured-text")))
 
 ("string-case" ((:system :name "serapeum") (:system :name "string-case")))
 
 ("sycamore" ((:system :name "alu") (:system :name "sycamore")))
+
+("symbol-munger" ((:system :name "collectors") (:system :name "symbol-munger")))
 
 ("trivia" ((:system :name "type-i") (:system :name "trivia.trivial"))
  ((:system :name "trivia.trivial") (:system :name "trivia.level2"))
@@ -186,24 +418,44 @@
  ((:system :name "alu") (:system :name "trivia")))
 
 ("trivial-backtrace"
+ ((:system :name "hunchentoot") (:system :name "trivial-backtrace"))
  ((:system :name "fiveam") (:system :name "trivial-backtrace")))
 
 ("trivial-cltl2"
  ((:system :name "trivia.level2") (:system :name "trivial-cltl2"))
  ((:system :name "serapeum") (:system :name "trivial-cltl2")))
 
+("trivial-features"
+ ((:system :name "cl+ssl") (:system :name "trivial-features"))
+ ((:system :name "cffi") (:system :name "trivial-features"))
+ ((:system :name "babel") (:system :name "trivial-features")))
+
 ("trivial-file-size"
  ((:system :name "serapeum") (:system :name "trivial-file-size")))
 
 ("trivial-garbage"
- ((:system :name "serapeum") (:system :name "trivial-garbage")))
+ ((:system :name "serapeum") (:system :name "trivial-garbage"))
+ ((:system :name "cl+ssl") (:system :name "trivial-garbage")))
+
+("trivial-gray-streams"
+ ((:system :name "flexi-streams") (:system :name "trivial-gray-streams"))
+ ((:system :name "docutils") (:system :name "trivial-gray-streams"))
+ ((:system :name "cl+ssl") (:system :name "trivial-gray-streams"))
+ ((:system :name "chunga") (:system :name "trivial-gray-streams")))
 
 ("trivial-indent"
- ((:system :name "documentation-utils") (:system :name "trivial-indent")))
+ ((:system :name "documentation-utils") (:system :name "trivial-indent"))
+ ((:system :name "cl-markless") (:system :name "trivial-indent")))
 
 ("trivial-macroexpand-all"
  ((:system :name "serapeum/tests") (:system :name "trivial-macroexpand-all"))
  ((:system :name "serapeum") (:system :name "trivial-macroexpand-all")))
 
+("trivial-with-current-source-form"
+ ((:system :name "esrap") (:system :name "trivial-with-current-source-form")))
+
 ("type-i" ((:system :name "trivia.balland2006") (:system :name "type-i")))
+
+("usocket" ((:system :name "hunchentoot") (:system :name "usocket"))
+ ((:system :name "cl+ssl") (:system :name "usocket")))
 
