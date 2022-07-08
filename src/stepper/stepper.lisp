@@ -33,7 +33,7 @@
           (lambda (x) `(eql ,x))
           `(block catch eval-when flet function go if
                   labels let let* load-time-value locally
-                  macrolet multiple-vlaue-call
+                  macrolet multiple-value-call
                   multiple-value-prog1 progn progv
                   quote return-from setq symbol-macrolet
                   tagbody the throw unwind-protect))))
@@ -116,31 +116,31 @@
 
 (defun handle-cl-special (form env)
   (typecase-of specials (car form)
-    ((eql let)         (handle-let form env))
-    ((eql let*)        (handle-let form env))
-    ((eql eval-when)   (handle-eval-when form env))
-    ((eql flet)        (handle-local-function form env :recursive nil))
-    ((eql labels)      (handle-local-function form env :recursive t))
-    ((eql macrolet)    (handle-local-function form env :recursive t :macro t))
-    ((eql if)          (handle-if form env))
-    ((eql progn)       (handle-progn form env))
-    ((eql progv)       (handle-progv form env))
-    ((eql block)       (handle-block form env))
-    ((eql catch)       (handle-catch form env))
-    ((eql function)    (handle-function form env))
-    ((eql go)          (handle-go form env))
-    ((eql quote)       (handle-quote form env))
-    ((eql return-from) (handle-return form env))
-    ((eql symbol-macrolet))
-    ((eql load-time-value))
-    ((eql locally))
-    ((eql multiple-vlaue-call))
-    ((eql multiple-value-prog1))
-    ((eql setq))
-    ((eql tagbody))
-    ((eql the))
-    ((eql throw))
-    ((eql unwind-protect))
+    ((eql let)                  (handle-let form env))
+    ((eql let*)                 (handle-let form env))
+    ((eql eval-when)            (handle-eval-when form env))
+    ((eql flet)                 (handle-local-function form env :recursive nil))
+    ((eql labels)               (handle-local-function form env :recursive t))
+    ((eql macrolet)             (handle-local-function form env :recursive t :macro t))
+    ((eql if)                   (handle-if form env))
+    ((eql progn)                (handle-progn form env))
+    ((eql progv)                (handle-progv form env))
+    ((eql block)                (handle-block form env))
+    ((eql catch)                (handle-catch form env))
+    ((eql function)             (handle-function form env))
+    ((eql go)                   (handle-go form env))
+    ((eql quote)                (handle-quote form env))
+    ((eql return-from)          (handle-return form env))
+    ((eql load-time-value)      (handle-load-time-value form env))
+    ((eql symbol-macrolet)      (handle-symbol-macrolet form env))
+    ((eql locally)              (handle-locally form env))
+    ((eql multiple-value-call)  (handle-multiple-value-call form env))
+    ((eql multiple-value-prog1) (handle-multiple-value-prog1 form env))
+    ((eql setq)                 (handle-setq form env))
+    ((eql tagbody)              (handle-tagbody form env))
+    ((eql the)                  (handle-the form env))
+    ((eql throw)                (handle-throw form env))
+    ((eql unwind-protect)       (handle-unwind-protect form env))
     (otherwise
      (error "special ~A not supported yet" (car form)))))
 
@@ -148,9 +148,9 @@
   (typecase-of alu-specials (car form)
     ((eql alu:def)             (handle-let form env t))
     ((eql alu:with-constraint) (handle-constraint form env))
-    ((eql alu:coerce))
-    ((eql alu:check))
-    ((eql alu:array))
+    ((eql alu:coerce)          (handle-coerce form env))
+    ((eql alu:check)           (handle-check form env))
+    ((eql alu:array)           (handle-array form env))
     (otherwise (error "Alucard Special ~A handed to handle-alu special"
                       form))))
 
@@ -233,19 +233,77 @@
         (list* return-from from (step code env))
         form)))
 
+(defun handle-load-time-value (form env)
+  (destructuring-bind (load-time-value form &optional read-only-p) form
+    (list load-time-value (step form env) read-only-p)))
+
+(defun handle-locally (form env)
+  (handle-body form env :handle-declaration t))
+
+(defun handle-multiple-value-call (form env)
+  (handle-generic form env))
+
+(defun handle-multiple-value-prog1 (form env)
+  (handle-generic form env))
+
+;; we can do this one generically cause we don't touch symbols
+(defun handle-setq (form env)
+  (handle-generic form env))
+
+;; same for tagbody
+(defun handle-tagbody (form env)
+  (handle-generic form env))
+
+(defun handle-the (form env)
+  (destructuring-bind (the type form) form
+    (list the type (step form env))))
+
+(defun handle-throw (form env)
+  (destructuring-bind (throw cond form) form
+    (list throw cond (step form env))))
+
+;; I think we can be generic about this
+(defun handle-unwind-protect (form env)
+  (handle-generic form env))
+
+;; we don't attempt to handle symbol macros, note when we do we will
+;; have to rewrite many special forms that use symbols
+(defun handle-symbol-macrolet (form env)
+  (destructuring-bind (symbol-macrolet binds &rest body) form
+    (list* symbol-macrolet binds (handle-body body env))))
+
 (defun handle-local-function (form env &key recursive macro)
   "Handles functions like flet, labels, and macrolet.
 
 :recursive   means that the binding is recursive and should be all
              considered together
 :macro       means the binding form should be considered a macro. We
-             assume the macro is also :recursive t
-"
-  (list form env macro recursive))
+             assume the macro is also :recursive t"
+  (destructuring-bind (func bindings &rest body) form
+    (let* ((new-env
+             (if (not macro)
+                 (cltl2:augment-environment
+                  env :function (mapcar (lambda (x) (car x)) bindings))
+                 (cltl2:augment-environment
+                  env
+                  :macro (mapcar (lambda (x)
+                                   (destructuring-bind (name args &rest def) x
+                                     (cltl2:parse-macro name args def env)))
+                                 bindings))))
+           (body-env
+             (if (or macro recursive) new-env env)))
+      (flet ((handle-binding-body (func)
+               (destructuring-bind (name args &rest body) func
+                 (list* name args (handle-body body body-env)))))
+        (list* func
+               (handle-binding-body bindings)
+               (handle-body body new-env))))))
 
 (defun handle-body (body env &key (handle-declaration t))
   "Handles a body that may have declarations upfront"
-  ;; Maybe I should mark what argument number each are for better tracing
+  ;; Maybe I should mark what argument number each are for better
+  ;; tracing Further after the first non declaration, we should stop
+  ;; checking for it!
   (mapcar (lambda (x)
             (if (and handle-declaration (listp x) (declarationp x))
                 x
@@ -259,6 +317,18 @@
 (defun handle-constraint (form env)
   "Handles an `alu:with-constraint' form"
   env
+  form)
+
+(defun handle-coerce (form env)
+  (destructuring-bind (coerce value type-to) form
+    (list coerce (step value env) type-to)))
+
+(defun handle-check (form env)
+  (destructuring-bind (check value type-against) form
+    (list check (step value env) type-against)))
+
+(defun handle-array (form env)
+  (declare (ignore env))
   form)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
