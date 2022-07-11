@@ -13,7 +13,8 @@
    :insert
    :length
    :lookup
-   :remove))
+   :remove
+   :keys))
 
 (defpackage #:alu.closure.dependency
   (:documentation "Provides a dependency closure that shows dependency
