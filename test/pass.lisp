@@ -37,14 +37,10 @@
     (is (= 1 (length ran)))))
 
 (test renaming
-  (let ((expected-args '(:ROOT :SIG :UTX_PLANE_X :UTX_PLANE_Y
-                         :UTX_TIME_X :UTX_TIME_Y))
-        (ran  (pipeline:to-primitive-circuit (storage:lookup-function :record-test)))
+  (let ((ran  (pipeline:to-primitive-circuit (storage:lookup-function :record-test)))
         (ran2 (pipeline:to-primitive-circuit (storage:lookup-function :record-test-mult)))
         (ran3 (pipeline:to-primitive-circuit (storage:lookup-function :use-constrain))))
     ran2 ran3
-    (is (equalp expected-args (ir:arguments ran))
-        "Renaming is consistent")
     (is (every (lambda (x)
                  (not
                   (or (string-contains-p "&" x)

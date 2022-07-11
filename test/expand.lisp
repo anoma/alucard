@@ -21,7 +21,9 @@
         "utx is not a primitve type and should be expanded properly")
     (is (typep (caddr expanded-storage) 'expand:expand)
         (format nil "UTX should turn into an expand type"))
-    (is (eq :utx (expand:original (caddr expanded-storage)))
+    (is (alexandria:starts-with-subseq
+         "UTX"
+         (symbol-name (expand:original (caddr expanded-storage))))
         "we preserve the name of the utx")
     (is (= 3 (length (expand:expanded (caddr expanded-storage))))
         "The arguments should be expanded to 3 argument wide")))

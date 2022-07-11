@@ -121,15 +121,15 @@
                                 :hi)))))
 
 (test initial-closure-from-circuit
-  (let* ((sig-arugment
-           (ir:name
-            (cadr (ir:arguments (storage:lookup-function :arg-circuit-input)))))
-         (expected-storage '((:X . :SIG-X) (:Y . :SIG-Y)))
+  (let* ((closure (relocate:initial-closure-from-circuit
+                   (storage:lookup-function :arg-circuit-input)))
 
-         (closure (relocate:initial-closure-from-circuit
-                   (storage:lookup-function :arg-circuit-input))))
+         (keys (closure:keys closure))
+         (expected-storage `((:X . ,(intern (format nil "~A-X" (car keys)) :keyword))
+                             (:Y . ,(intern (format nil "~A-Y" (car keys)) :keyword)))))
 
     ;; Tests begin here
-    (is (equalp expected-storage (closure:lookup closure :sig)))
+    (is (= 1 (length keys)))
+    (is (equalp expected-storage (closure:lookup closure (car keys))))
     (is (equalp nil (closure:lookup closure :root))
         "Root is not a record, we don't ingest it.")))
