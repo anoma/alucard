@@ -19,7 +19,9 @@
                     (:vspc     :alu.vampir.spec)
                     (:prld     :alu.prelude)
                     (:ref      :alu.reference)
-                    (:stack    :alu.stack))
+                    (:stack    :alu.stack)
+                    (:step     :alu.stepper)
+                    (:step.def :alu.stepper.define))
   (:export #:run-tests))
 
 (in-package :alu-test)

@@ -5,7 +5,6 @@
 
 (in-suite alucard.stack)
 
-
 (test dynamic-variable-respected
   (let ((current-stack (stack:get)))
     (stack:with-empty-stack ()
