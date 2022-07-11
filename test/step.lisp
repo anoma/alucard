@@ -5,6 +5,10 @@
 
 (in-suite alucard.step)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Definitions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (step.def:defun base ()
   (car (list (stack:get))))
 
@@ -17,6 +21,18 @@
 
 (step.def:defun expansion-call ()
   (expansion-test (stack:get)))
+
+(step.def:defun prince-of-clarity (w)
+  "Take a cons of two lists and make a list of conses.
+   Think of this function as being like a zipper."
+  (do ((y (car w) (cdr y))
+       (z (cdr w) (cdr z))
+       (x '() (cons (cons (car y) (car z)) x)))
+      ((null y) x)
+    (when (null z)
+      (cerror "Will self-pair extraneous items"
+              "Mismatch - gleep!  ~S" y)
+      (setq z y))))
 
 (step.def:defun king-of-confusion (w)
   "Take a cons of two lists and make a list of conses.
@@ -40,8 +56,28 @@
   (flet ((expansion-test (x) (list x (stack:get))))
     (expansion-test x)))
 
+(step.def:defun alu-primitives (x)
+  (prld:with-constraint (b2 b3)
+    (prld:= x (prld:+ b2 b3)))
+  (prld:= (prld:+ (prld:exp x 3)
+                  (prld:* 3 (prld:exp x 2))
+                  (prld:* 2 x)
+                  4)
+          0)
+  (prld:def ((bar (prld:to-array 36)))
+    (prld:+ (prld:check 5 (int 32))
+            (prld:get bar 0))))
+
 (step.def:defun lets-explore (x)
   (funcall (lambda (x) (+ x 5)) x))
+
+(step.def:defun macro-let-test ()
+  (macrolet ((lets-explore (x) `(progn ,x)))
+    (lets-explore (stack:get))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Tests
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (test nesting-respected
   (is (>= (length (calling-base)) 3)
@@ -56,14 +92,22 @@
            '(5
              ((STACK:GET) (LIST X (STACK:GET)) (EXPANSION-TEST X)
               (FLET ((EXPANSION-TEST (X) (LIST X (STACK:GET)))) (EXPANSION-TEST X)))))
-   "Fletting beats macros!"))
+   "Fletting beats macros!")
+  (is (= (length (macro-let-test))
+         4)
+      "Macro expansion from a macrolet works as expected"))
 
 (test instrumentation-does-not-interfere
   (is (equalp (king-of-confusion (cons (list 1 2 3)
                                        (list 4 6 7)))
               '((3 . 7) (2 . 6) (1 . 4)))
       "Instrumenting simply adds debugging information does not change semantics")
+  (is (equalp (prince-of-clarity (cons (list 1 2 3)
+                                       (list 4 6 7)))
+              '((3 . 7) (2 . 6) (1 . 4)))
+      "Instrumenting simply adds debugging information does not change semantics")
   (is (equalp (lets-explore 10) 15)
       "lambda should not loop forever")
   (is (equalp (stack:get) nil)
-      "Cleanup should be had after all these calls!"))
+      "Cleanup should be had after all these calls!")
+  (finishes (alu-primitives 3)))

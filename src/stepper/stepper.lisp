@@ -183,7 +183,7 @@
   ;; we don't need to update the environment as we don't care about
   ;; symbols as much.
   (destructuring-bind (let args &rest body) form
-    (list* let (handle-binder args handle-constrain) (step-body body env))))
+    (list* let (handle-binder args env handle-constrain) (step-body body env))))
 
 (defun handle-eval-when (form env)
   (destructuring-bind (eval-when declaration &rest body) form
@@ -313,7 +313,8 @@
                   env
                   :macro (mapcar (lambda (x)
                                    (destructuring-bind (name args &rest def) x
-                                     (cltl2:parse-macro name args def env)))
+                                     (list name
+                                           (cl-environments.cltl2:enclose-macro name args def env))))
                                  bindings))))
            (body-env
              (if (or macro recursive) new-env env)))
