@@ -114,8 +114,8 @@
 
 ;; we make this macro to just make the generated code pretty
 (defmacro with-stack (original-form continue-form)
-  `(prog2 (stack:push ',original-form)
-       ,continue-form
+  `(unwind-protect (progn (stack:push ',original-form)
+                          ,continue-form)
      (stack:pop)))
 
 (defun run-mode (original-form continue-form)
@@ -191,13 +191,16 @@
 
 (defun handle-binder (binders env &optional handle-constrain)
   (mapcar (lambda (bind-pair)
-            (if (and handle-constrain (eql (car bind-pair) 'alu:with-constraint))
-                (run-mode bind-pair
-                          (handle-constraint bind-pair env))
-                ;; Should I mark the variable name in the stack trace?
-                ;; would make sense, but I currently don't do it.
-                (cons (car bind-pair)
-                      (step-body (cdr bind-pair) env :handle-declaration nil))))
+            (cond ((not (listp bind-pair))
+                   bind-pair)
+                  ((and handle-constrain (eql (car bind-pair) 'alu:with-constraint))
+                   (run-mode bind-pair
+                             (handle-constraint bind-pair env)))
+                  ;; Should I mark the variable name in the stack trace?
+                  ;; would make sense, but I currently don't do it.
+                  (t
+                   (cons (car bind-pair)
+                         (step-body (cdr bind-pair) env :handle-declaration nil)))))
           binders))
 
 (defun handle-generic (form env)
@@ -252,7 +255,7 @@
 (defun handle-return (form env)
   (destructuring-bind (return-from from &optional code) form
     (if code
-        (list* return-from from (step code env))
+        (list return-from from (step code env))
         form)))
 
 (defun handle-load-time-value (form env)
@@ -318,7 +321,7 @@
                (destructuring-bind (name args &rest body) func
                  (list* name args (step-body body body-env)))))
         (list* func
-               (handle-binding-body bindings)
+               (mapcar #'handle-binding-body bindings)
                (step-body body new-env))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

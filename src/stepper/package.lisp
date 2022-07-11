@@ -8,7 +8,7 @@
 
 (defpackage #:alu.stepper.define
   (:documentation "Provides custom definers that shadow CL base definers")
-  (:shadow :defun)
+  (:shadow #:defun)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (#:step #:alu.stepper))
   (:export #:defun))

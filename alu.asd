@@ -145,6 +145,7 @@
    (:file "pass")
    (:file "vampir")
    (:file "stack")
+   (:file "step")
    (:file "run-tests"))
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :alu-test :run-tests)))
