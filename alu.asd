@@ -1,6 +1,6 @@
 (asdf:defsystem :alu
   :depends-on (:trivia :alexandria :sycamore :serapeum :closer-mop :command-line-arguments
-                       ;; (:version "asdf" "3.3.5")
+                       (:version "asdf" "3.3.5")
                        :swank :slynk
                        :cl-environments)
   :version "0.0.0"
