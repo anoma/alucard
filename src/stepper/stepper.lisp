@@ -314,7 +314,8 @@
                   :macro (mapcar (lambda (x)
                                    (destructuring-bind (name args &rest def) x
                                      (list name
-                                           (cl-environments.cltl2:enclose-macro name args def env))))
+                                           (cl-environments.cltl2:enclose-macro
+                                            name args def env))))
                                  bindings))))
            (body-env
              (if (or macro recursive) new-env env)))
