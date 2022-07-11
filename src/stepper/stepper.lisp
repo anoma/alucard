@@ -46,18 +46,17 @@
        (eql alu:coerce) (eql alu:check)
        (eql alu:array)))
 
-(deftype step-mode ()
+(deftype mode ()
   `(or (eql :stack) (eql :run)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Global Value Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar *step-mode* :stack
+(defvar *mode* :stack
   "Determines what mode to run in.
 :stack put user syntactical forms on the stack.
 :run   leaves the user program unperturbed.")
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Main Logic
@@ -65,14 +64,18 @@
 
 (defun step (form env)
   "Runs the stepper through the code, inserting stack traces if
-*step-mode* is :stack"
+*mode* is :stack"
   (cond
-    ((eql *step-mode* :run)
+    ((eql *mode* :run)
      form)
     ;; maybe we should macroexpand symbol macros?
     ;; I don't think for our purposes it matters
     ((or (atom form) (symbolp form))
      form)
+    ;; Work on our own specials, we should treat these with care!
+    ((typep (car form) 'alu-specials env)
+     (run-mode form
+               (handle-alu-special form env)))
     ((macro-function (car form) env)
      ;; we thus record any function and any macro expansion that has
      ;; been ran as well. This may be helpful, as we are likely going
@@ -98,6 +101,17 @@
   (run-mode form
             (mapcar (lambda (x) (step x env)) form)))
 
+(defun step-body (body env &key (handle-declaration t))
+  "Handles a body that may have declarations upfront"
+  ;; Maybe I should mark what argument number each are for better
+  ;; tracing Further after the first non declaration, we should stop
+  ;; checking for it!
+  (mapcar (lambda (x)
+            (if (and handle-declaration (listp x) (declarationp x))
+                x
+                (step x env)))
+          body))
+
 ;; we make this macro to just make the generated code pretty
 (defmacro with-stack (original-form continue-form)
   `(prog2 (stack:push ',original-form)
@@ -106,12 +120,19 @@
 
 (defun run-mode (original-form continue-form)
   "runs the selected user mode."
-  (etypecase-of step-mode *step-mode*
+  (etypecase-of mode *mode*
     ((eql :run)   original-form)
     ((eql :stack) `(with-stack ,original-form ,continue-form))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Special Case Handling
+;;; Alias Exports
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defalias single #'step)
+(defalias body   #'step-body)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Special Case Handling Dispatch
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun handle-cl-special (form env)
@@ -154,38 +175,29 @@
     (otherwise (error "Alucard Special ~A handed to handle-alu special"
                       form))))
 
-;; TODO :: Major Flaw
-;;
-;; Note Early:
-;; for binders like let and flet we need to freeze with a lambda
-;; technique. generate out to a lambda call, further we should pass
-;; around the environment so that we refer to the correct values. Or
-;; rather we should continue in that lambda, thus generate out a
-;; lambda to continue this evaluation. Rather cheeky all things
-;; considered.
-;;
-;; Note Later:
-;; seems like we can just use the env variable, and update it with
-;; `cltl2:augment-environment' to get it to work
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; CL special handling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun handle-let (form env &optional handle-constrain)
   ;; we don't need to update the environment as we don't care about
   ;; symbols as much.
   (destructuring-bind (let args &rest body) form
-    (list* let (handle-binder args handle-constrain) (handle-body body env))))
+    (list* let (handle-binder args handle-constrain) (step-body body env))))
 
 (defun handle-eval-when (form env)
   (destructuring-bind (eval-when declaration &rest body) form
-    (list* eval-when declaration (handle-body body env))))
+    (list* eval-when declaration (step-body body env))))
 
 (defun handle-binder (binders env &optional handle-constrain)
   (mapcar (lambda (bind-pair)
             (if (and handle-constrain (eql (car bind-pair) 'alu:with-constraint))
-                (handle-constraint bind-pair env)
+                (run-mode bind-pair
+                          (handle-constraint bind-pair env))
                 ;; Should I mark the variable name in the stack trace?
                 ;; would make sense, but I currently don't do it.
                 (cons (car bind-pair)
-                      (handle-body (cdr bind-pair) env :handle-declaration nil))))
+                      (step-body (cdr bind-pair) env :handle-declaration nil))))
           binders))
 
 (defun handle-generic (form env)
@@ -200,18 +212,28 @@
 
 (defun handle-progv (form env)
   (destructuring-bind (prov vars values &rest body) form
-    (list* prov vars values (handle-body body env :handle-declaration nil))))
+    (list* prov vars values (step-body body env :handle-declaration nil))))
 
 (defun handle-block (form env)
   (destructuring-bind (block name &rest code) form
-    (list* block name (handle-body code env :handle-declaration nil))))
+    (list* block name (step-body code env :handle-declaration nil))))
 
 (defun handle-catch (form env)
   (destructuring-bind (catch name &rest body) form
-    (list* catch name (handle-body body env :handle-declaration nil))))
+    (list* catch name (step-body body env :handle-declaration nil))))
 
 (defun handle-function (form env)
-  (handle-generic form env))
+  (destructuring-bind (function thing) form
+    (if (listp thing)
+        (list function
+              ;; sbcl has a macro which expands itslef to function,
+              ;; which would cause issues
+              (if (listp (cadr thing))
+                  (list* (car thing) (cadr thing)
+                         (step-body (cddr thing) env))
+                  (list* (car thing) (cadr thing) (caddr thing)
+                         (step-body (cdddr thing) env))))
+        (handle-generic form env))))
 
 (defun handle-go (form env)
   (declare (ignore env))
@@ -238,7 +260,7 @@
     (list load-time-value (step form env) read-only-p)))
 
 (defun handle-locally (form env)
-  (handle-body form env :handle-declaration t))
+  (step-body form env :handle-declaration t))
 
 (defun handle-multiple-value-call (form env)
   (handle-generic form env))
@@ -270,7 +292,7 @@
 ;; have to rewrite many special forms that use symbols
 (defun handle-symbol-macrolet (form env)
   (destructuring-bind (symbol-macrolet binds &rest body) form
-    (list* symbol-macrolet binds (handle-body body env))))
+    (list* symbol-macrolet binds (step-body body env))))
 
 (defun handle-local-function (form env &key recursive macro)
   "Handles functions like flet, labels, and macrolet.
@@ -294,21 +316,10 @@
              (if (or macro recursive) new-env env)))
       (flet ((handle-binding-body (func)
                (destructuring-bind (name args &rest body) func
-                 (list* name args (handle-body body body-env)))))
+                 (list* name args (step-body body body-env)))))
         (list* func
                (handle-binding-body bindings)
-               (handle-body body new-env))))))
-
-(defun handle-body (body env &key (handle-declaration t))
-  "Handles a body that may have declarations upfront"
-  ;; Maybe I should mark what argument number each are for better
-  ;; tracing Further after the first non declaration, we should stop
-  ;; checking for it!
-  (mapcar (lambda (x)
-            (if (and handle-declaration (listp x) (declarationp x))
-                x
-                (step x env)))
-          body))
+               (step-body body new-env))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Alucard Special Form Handling
@@ -316,8 +327,8 @@
 
 (defun handle-constraint (form env)
   "Handles an `alu:with-constraint' form"
-  env
-  form)
+  (destructuring-bind (with-constraint bindings &rest body) form
+    (list* with-constraint bindings (step-body body env))))
 
 (defun handle-coerce (form env)
   (destructuring-bind (coerce value type-to) form

@@ -110,7 +110,8 @@
     syntax of common lisp and allow instrumenting syntax such that a
     stack can be implemented."
     :components ((:file "package")
-                 (:file "stepper")))
+                 (:file "stepper")
+                 (:file "define")))
    ;; only folder without a package
    (:module prelude
     :serial t
