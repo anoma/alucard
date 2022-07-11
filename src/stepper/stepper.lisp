@@ -320,8 +320,10 @@
            (body-env
              (if (or macro recursive) new-env env)))
       (flet ((handle-binding-body (func)
-               (destructuring-bind (name args &rest body) func
-                 (list* name args (step-body body body-env)))))
+               (if macro
+                   func
+                   (destructuring-bind (name args &rest body) func
+                     (list* name args (step-body body body-env))))))
         (list* func
                (mapcar #'handle-binding-body bindings)
                (step-body body new-env))))))
