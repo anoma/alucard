@@ -19,3 +19,6 @@ stack-mixin   service"))
 (defmethod copy-meta progn ((obj1 stack-mixin) (obj2 stack-mixin))
   (setf (stack obj2) (stack obj1))
   obj2)
+
+(defmethod copy-meta progn ((obj1 number) (obj2 stack-mixin))
+  obj2)

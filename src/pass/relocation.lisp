@@ -76,7 +76,10 @@ old value was relocated to."
                  (make-rel
                   :closure (closure:insert closure name new-closure-value)
                   :forms   (list
-                            (ir:make-multiple-bind :var new-bindings :val val))))
+                            ;; application is in the source, propagate it
+                            (ir:copy-meta
+                             val
+                             (ir:make-multiple-bind :var new-bindings :val val)))))
                ;; If we don't get back a cons, then we aren't dealing
                ;; with a record return type or the record is not found
                no-change)))
@@ -129,7 +132,9 @@ old value was relocated to."
                             (destructuring-bind (field-name . value) pair
                               (let* ((name    (append-keywords name field-name))
                                      (recurse (relocate-let
-                                               (ir:make-bind :var name :val value)
+                                               (ir:copy-meta
+                                                value
+                                                (ir:make-bind :var name :val value))
                                                (rel-closure rel))))
                                 (make-rel
                                  :closure (rel-closure recurse)
@@ -220,7 +225,7 @@ Example:
 
 (-> generate-bind (keyword keyword) ir:bind)
 (defun generate-bind (from to)
-  (ir:make-bind :var to :val (ir:make-reference :name from)))
+    (ir:make-bind :var to :val (ir:make-reference :name from)))
 
 (-> update-alist-values-with-preifx (keyword list) list)
 (defun update-alist-values-with-preifx (prefix alist)
