@@ -37,17 +37,20 @@ will evaluate to this let buildup."
      (normalize spc:value
                 (lambda (new-val)
                   (funcall constructor
-                           (spc:make-let :var spc:var
-                                         :val new-val)))))
+                           (spc:copy-meta term
+                                          (spc:make-let :var spc:var
+                                                        :val new-val))))))
     ((spc:application spc:name spc:arguments)
-     (normalize-bind spc:name
-                     (lambda (func-name)
-                       (normalize-bind*
-                        spc:arguments
-                        (lambda (args)
-                          (funcall constructor
+     (normalize-bind
+      spc:name
+      (lambda (func-name)
+        (normalize-bind*
+         spc:arguments
+         (lambda (args)
+           (funcall constructor
+                    (spc:copy-meta term
                                    (spc:make-application :function func-name
-                                                         :arguments args)))))))
+                                                         :arguments args))))))))
     ((spc:record spc:name spc:contents spc:order)
      ;; probably the hardest transform just due to hash table format
      ;; schenans. Note that an alist is like the following
@@ -60,26 +63,32 @@ will evaluate to this let buildup."
         values
         (lambda (value-refs)
           (funcall constructor
-                   (make-instance 'spc:record
-                                  :name spc:name
-                                  :order spc:order
-                                  :contents (sycamore:alist-tree-map
-                                             ;; remake our alist
-                                             (mapcar #'cons keys value-refs)
-                                             #'util:hash-compare)))))))
+                   (spc:copy-meta
+                    term
+                    (make-instance 'spc:record
+                                   :name spc:name
+                                   :order spc:order
+                                   :contents (sycamore:alist-tree-map
+                                              ;; remake our alist
+                                              (mapcar #'cons keys value-refs)
+                                              #'util:hash-compare))))))))
     ((spc:record-lookup spc:record spc:field)
      ;; field is a keyword, thus we are fine with it
      (normalize-bind spc:record
                      (lambda (rec-ref)
                        (funcall constructor
-                                (spc:make-record-lookup :record rec-ref
-                                                        :field  spc:field)))))
+                                (spc:copy-meta
+                                 term
+                                 (spc:make-record-lookup :record rec-ref
+                                                         :field  spc:field))))))
     ((spc:bind-constraint spc:var spc:value)
      (normalize spc:value
-                (lambda (term)
+                (lambda (constraint)
                   (funcall constructor
-                           (spc:make-bind-constraint :var spc:var
-                                                     :value term)))))
+                           (spc:copy-meta
+                            term
+                            (spc:make-bind-constraint :var spc:var
+                                                      :value constraint))))))
     ;; we get a bad exhaustive message due to number, but it will warn
     ;; us, if they aren't the same none the less!
     ((cons _ _)
@@ -116,10 +125,13 @@ let binding if the result of normalization is itself not in normal form"
                        (funcall cont expr)
                        (let ((var (util:symbol-to-keyword (gensym "&G"))))
                          (combine-expression
-                          (spc:make-let
-                           :var var
-                           :val expr)
-                          (funcall cont (spc:make-reference :name var)))))))))
+                          (spc:copy-meta expr
+                                         (spc:make-let
+                                          :var var
+                                          :val expr))
+                          (funcall cont (spc:copy-meta
+                                         expr
+                                         (spc:make-reference :name var))))))))))
 
 (-> normalize-bind* (list (-> (list) spc:expression)) spc:expression)
 (defun normalize-bind* (list cont)
