@@ -57,7 +57,7 @@
          (value (closure:lookup type (ir:var term))))
     (assert (typep (ir:value term) 'ir:from-data))
     (if value
-        (apply #'pack:op context value (ir:contents (ir:value term)))
+        (apply #'pack:op context value (ir:value term) (ir:contents (ir:value term)))
         (error "Value ~A not found in the typing map ~A" value term))))
 
 (-> lookup
@@ -67,7 +67,7 @@
   (let* ((type  (check:typing-closure context))
          (value (closure:lookup type (ir:name (ir:arr term)))))
     (if value
-        (pack:lookup-at context value (ir:pos term) (ir:arr term))
+        (pack:lookup-at context value term (ir:pos term) (ir:arr term))
         (error "Value ~A not found in the typing map" value))))
 
 (-> allocate (ir:array-allocate) ir:term-normal-form)
