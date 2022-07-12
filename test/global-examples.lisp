@@ -288,77 +288,78 @@
 ;; Manual adding to the storage
 ;; my god just add storage abstraction, as wew!
 (storage:add-function
-          :manual-constraint
-          (ir:make-circuit
-           :return-type (ir:make-type-reference :name :bool)
-           :name :manual-constraint
-           :arguments nil
-           :body
-           '(emit:instruction
-             (ir:make-bind-constraint
-              :var (list :a :b :c)
-              :value
-              (list
-               (ir:make-let :var :fi
-                            :val (ir:make-application
-                                  :function (ir:make-reference :name :record-test-mult)
-                                  :arguments
-                                  (list (ir:make-reference :name :hi)
-                                   (ir:make-reference :name :hi)
-                                   (ir:make-reference :name :hi))))
-               (ir:make-application
-                :function (ir:make-reference :name :=)
-                :arguments
-                (list
-                 (ir:make-application
-                  :function (ir:make-reference :name :+)
-                  :arguments
-                  (list (ir:make-reference :name :a)
-                        (ir:make-reference :name :b)
-                        (ir:make-reference :name :fi)
-                        (ir:make-record-lookup
-                         :record (ir:make-record :name :utxo
-                                                 :owner 3
-                                                 :amount 5
-                                                 :nonce (ir:make-reference :name :hi))
-                         :field :nonce)))
-                 (ir:make-reference :name :bob))))))))
+ :manual-constraint
+ (ir:make-circuit
+  :return-type (ir:make-type-reference :name :bool)
+  :name :manual-constraint
+  :arguments nil
+  :body
+  '(emit:instruction
+    (ir:make-bind-constraint
+     :var (list :a :b :c)
+     :value
+     (list
+      (ir:make-let :var :fi
+                   :val (ir:make-application
+                         :function (ir:make-reference :name :record-test-mult)
+                         :arguments
+                         (list (ir:make-reference :name :hi)
+                          (ir:make-reference :name :hi)
+                          (ir:make-reference :name :hi))))
+      (ir:make-application
+       :function (ir:make-reference :name :=)
+       :arguments
+       (list
+        (ir:make-application
+         :function (ir:make-reference :name :+)
+         :arguments
+         (list (ir:make-reference :name :a)
+               (ir:make-reference :name :b)
+               (ir:make-reference :name :fi)
+               (ir:make-record-lookup
+                :record (ir:make-record :name :utxo
+                                        :owner 3
+                                        :amount 5
+                                        :nonce (ir:make-reference :name :hi))
+                :field :nonce)))
+        (ir:make-reference :name :bob))))))))
+
 (storage:add-function
-          :manual-constraint
-          (ir:make-circuit
-           :return-type (ir:make-type-reference :name :bool)
-           :name :manual-constraint
-           :arguments nil
-           :body
-           '(emit:instruction
-             (ir:make-bind-constraint
-              :var (list :a :b :c)
-              :value
-              (list
-               (ir:make-let :var :fi
-                            :val (ir:make-application
-                                  :function (ir:make-reference :name :record-test-mult)
-                                  :arguments
-                                  (list (ir:make-reference :name :hi)
-                                   (ir:make-reference :name :hi)
-                                   (ir:make-reference :name :hi))))
-               (ir:make-application
-                :function (ir:make-reference :name :=)
-                :arguments
-                (list
-                 (ir:make-application
-                  :function (ir:make-reference :name :+)
-                  :arguments
-                  (list (ir:make-reference :name :a)
-                        (ir:make-reference :name :b)
-                        (ir:make-reference :name :fi)
-                        (ir:make-record-lookup
-                         :record (ir:make-record :name :utxo
-                                                 :owner 3
-                                                 :amount 5
-                                                 :nonce (ir:make-reference :name :hi))
-                         :field :nonce)))
-                 (ir:make-reference :name :bob))))))))
+ :manual-constraint
+ (ir:make-circuit
+  :return-type (ir:make-type-reference :name :bool)
+  :name :manual-constraint
+  :arguments nil
+  :body
+  '(emit:instruction
+    (ir:make-bind-constraint
+     :var (list :a :b :c)
+     :value
+     (list
+      (ir:make-let :var :fi
+                   :val (ir:make-application
+                         :function (ir:make-reference :name :record-test-mult)
+                         :arguments
+                         (list (ir:make-reference :name :hi)
+                          (ir:make-reference :name :hi)
+                          (ir:make-reference :name :hi))))
+      (ir:make-application
+       :function (ir:make-reference :name :=)
+       :arguments
+       (list
+        (ir:make-application
+         :function (ir:make-reference :name :+)
+         :arguments
+         (list (ir:make-reference :name :a)
+               (ir:make-reference :name :b)
+               (ir:make-reference :name :fi)
+               (ir:make-record-lookup
+                :record (ir:make-record :name :utxo
+                                        :owner 3
+                                        :amount 5
+                                        :nonce (ir:make-reference :name :hi))
+                :field :nonce)))
+        (ir:make-reference :name :bob))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restoring the original table if we didn't start in the test table

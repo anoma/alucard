@@ -5,19 +5,31 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (-> op
-    (check:typing-context check:type-info &rest ir:term-normal-form)
+    (check:typing-context
+     check:type-info
+     ir:term-no-binding
+     &rest ir:term-normal-form)
     (values check:typing-context ir:expanded-list))
-(defun op (closure type-format &rest data)
-  "Packs the given data into the format specified by the `type-format'"
+(defun op (closure type-format term &rest data)
+  "Packs the given data into the format specified by the
+`type-format'. the `term' is used solely for meta information
+propagation"
   (let ((ref (check:type-info-type type-format)))
-    (cond ((type-op:array-reference?  ref) (apply #'array closure type-format data))
-          ((type-op:record-reference? ref) (apply #'record closure type-format data))
-          (t (error "Reference of type ~A can not be packed" ref)))))
+    (cond ((type-op:array-reference?  ref)
+           (apply #'array  closure type-format term data))
+          ((type-op:record-reference? ref)
+           (apply #'record closure type-format term data))
+          (t
+           (error "Reference of type ~A can not be packed" ref)))))
 
 (-> array
-    (check:typing-context check:type-info &rest ir:term-normal-form)
+    (check:typing-context
+     check:type-info
+     ir:term-no-binding
+     &rest
+     ir:term-normal-form)
     (values check:typing-context ir:expanded-list))
-(defun array (closure type-format &rest data)
+(defun array (closure type-format term &rest data)
   (let ((length    (ir:array-type-len (check:type-info-type type-format)))
         (data-size (array-data-size type-format)))
     (pipeline:type-check-expression
@@ -33,12 +45,14 @@
      ;; TODO :: Add type coercing on the element, as we will want a
      ;;         bignum out of the computation. This only matters when
      ;;         we generate code mod n
-     (apply #'term-op:add
-            (mapcar (lambda (element position)
-                      (term-op:times element
-                                     (expt 2 (* position data-size))))
-                    data
-                    (alexandria:iota length)))
+     (ir:copy-meta
+      term
+      (apply #'term-op:add
+             (mapcar (lambda (element position)
+                       (term-op:times element
+                                      (expt 2 (* position data-size))))
+                     data
+                     (alexandria:iota length))))
      closure)))
 
 (-> final-ref-from-op (ir:expanded-list) ir:reference)
@@ -48,10 +62,10 @@
 
 
 (-> record
-    (check:typing-context check:type-info ir:term-normal-form)
+    (check:typing-context check:type-info ir:record-lookup ir:term-normal-form)
     (values check:typing-context ir:expanded-list))
-(defun record (closure type-format data)
-  type-format closure data
+(defun record (closure type-format term data)
+  type-format closure data term
   (error "not implemented"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,13 +73,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (-> lookup-at
-    (check:typing-context check:type-info (or ir:term-normal-form keyword) ir:term-normal-form)
+    (check:typing-context
+     check:type-info
+     ir:term-no-binding
+     (or ir:term-normal-form keyword)
+     ir:term-normal-form)
     (values check:typing-context ir:expanded-list))
-(defun lookup-at (context type to-find data)
+(defun lookup-at (context type term to-find data)
   (let ((ref (check:type-info-type type)))
     (cond ((and (type-op:array-reference?  ref)
                 (not (keywordp to-find)))
-           (array-lookup context type to-find data))
+           (array-lookup context type term to-find data))
           ((type-op:record-reference? ref)
            (error "not implemented"))
           (t
@@ -73,9 +91,13 @@
 
 
 (-> array-lookup
-    (check:typing-context check:type-info ir:term-normal-form ir:term-normal-form)
+    (check:typing-context
+     check:type-info
+     ir:array-lookup
+     ir:term-normal-form
+     ir:term-normal-form)
     (values check:typing-context ir:expanded-list))
-(defun array-lookup (closure type index data)
+(defun array-lookup (closure type term index data)
   (flet ((int (data)
            (term-op:coerce :int data))
          (ref (keyword)
@@ -119,20 +141,23 @@
         ;;         elements to properly constrain the values. Thus we
         ;;         need to do 0 <= mod value <= 2 ^ value
         (pipeline:type-check-expression
-         (ir:make-bind-constraint
-          :var (list unused-array unused-mod smaller-array lookup-answer)
-          :value
-          (list
-           (term-op:= (int data)
-                      (+ (× (term-op:exp 2 (term-op:times size (int index)))
-                            (ref smaller-array))
-                         (ref unused-mod)))
-           (term-op:= (ref smaller-array)
-                      (+ (× (term-op:exp 2 size)
-                            (ref unused-array))
-                         (ref lookup-answer)))
-           (ir:make-type-coerce :typ target-type
-                                :value (ref lookup-answer))))
+         (ir:copy-meta
+          term
+          (ir:make-bind-constraint
+           :var (list unused-array unused-mod smaller-array lookup-answer)
+           :value
+           (list
+            (term-op:= (int data)
+                       (+ (× (term-op:exp 2 (term-op:times size (int index)))
+                              (ref smaller-array))
+                          (ref unused-mod)))
+            (term-op:= (ref smaller-array)
+                       (+ (× (term-op:exp 2 size)
+                              (ref unused-array))
+                          (ref lookup-answer)))
+            (ir:copy-meta term
+                          (ir:make-type-coerce :typ target-type
+                                               :value (ref lookup-answer))))))
          closure)))))
 
 (-> array-lookup-final-ref (ir:expanded-list) ir:reference)

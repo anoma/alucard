@@ -53,5 +53,8 @@ produce over 6 let bindings")
         :type (ir:array-type :length 5
                              :type (ir:to-type-reference-format '(int 32)))
         :size (* 32 5))
+       (ir:make-array-lookup
+        :arr (ir:make-reference :name bar)
+        :pos 3)
        3
        (ir:make-reference :name bar)))))
