@@ -50,16 +50,19 @@ and properly propagating arguments around them"
            ;; we keep this type around as it gives us more
            ;; information!
            (with-accessors ((var ir:var) (val ir:value)) term
-             (ir:make-bind :var var :val val))))
+             (ir:copy-meta term
+                           (ir:make-bind :var var :val val)))))
     (etypecase-of ir:expression term
       ;; if it's just the term, or a list as is, then we are good
       (ir:term-type-manipulation (list term))
       (ir:let-node               (list (transform-let-node term)))
       (cons                      (mapcan #'transform-let term))
-      (ir:bind-constraint        (list (ir:make-bind-constraint
-                                        :var (ir:var term)
-                                        :value (mapcan #'transform-let
-                                                       (ir:value term))))))))
+      (ir:bind-constraint        (list (ir:copy-meta
+                                        term
+                                        (ir:make-bind-constraint
+                                         :var (ir:var term)
+                                         :value (mapcan #'transform-let
+                                                        (ir:value term)))))))))
 
 
 (-> return-last-binding (ir:type-aware-list) ir:type-aware-list)
@@ -69,13 +72,15 @@ going to be using a let"
   (and constraint-list
        (append (butlast constraint-list)
                (let ((term (car (last constraint-list))))
-                 (cons term
-                       (etypecase-of ir:expanded-term term
-                         (ir:standalone-ret  nil)
-                         (ir:bind            (list (ir:make-standalone-ret
-                                                     :var (list (ir:var term)))))
-                         (ir:bind-constraint (list (ir:make-standalone-ret
-                                                     :var (ir:var term))))))))))
+                 (flet ((mk (term var)
+                          (ir:copy-meta term
+                                        (ir:make-standalone-ret :var var))))
+                   (cons
+                    term
+                    (etypecase-of ir:expanded-term term
+                      (ir:standalone-ret  nil)
+                      (ir:bind            (list (mk term (list (ir:var term)))))
+                      (ir:bind-constraint (list (mk term (ir:var term)))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Removing Extra Type information
@@ -108,16 +113,20 @@ going to be using a let"
   "This function turns any value which is not the last into a let if it
 isn't so already. Perhaps we should make them be an and call instead?"
   (labels ((make-binder (term)
-             (ir:make-bind :var (util:symbol-to-keyword (gensym "&G"))
-                           :val term))
+             (ir:copy-meta term
+                           (ir:make-bind :var (util:symbol-to-keyword
+                                               (gensym "&G"))
+                                         :val term)))
            (let-term (term)
              (etypecase-of ir:linear-term term
                (ir:term-type-manipulation      (make-binder term))
                ((or ir:bind ir:standalone-ret) term)
-               (ir:bind-constraint             (ir:make-bind-constraint
-                                                :var   (ir:var term)
-                                                :value (mapcar #'let-term
-                                                               (ir:value term)))))))
+               (ir:bind-constraint
+                (ir:copy-meta term
+                              (ir:make-bind-constraint
+                               :var   (ir:var term)
+                               :value (mapcar #'let-term
+                                              (ir:value term))))))))
     (mapcar #'let-term term-list)))
 
 (-> relocate-records (ir:expanded-list ir:circuit) relocate:rel)
@@ -141,10 +150,14 @@ it's closure"
                                                (relocate:make-rel :closure closure))))
                               (relocate:make-rel
                                :closure (relocate:rel-closure rel)
-                               :forms   (list (ir:make-bind-constraint
-                                               :var   (ir:var term)
-                                               :value (reverse
-                                                       (relocate:rel-forms rel))))))))))
+                               :forms
+                               (list
+                                (ir:copy-meta
+                                 term
+                                 (ir:make-bind-constraint
+                                  :var   (ir:var term)
+                                  :value (reverse
+                                          (relocate:rel-forms rel)))))))))))
            (relocate:make-rel
             :forms   (append (reverse (relocate:rel-forms new-rel))
                              (relocate:rel-forms rel))
@@ -170,23 +183,30 @@ it's closure"
                                                           (ir:arguments app))))
              (expand-argument (arg)
                (etypecase-of ir:term-normal-form arg
-                 (number        (list arg))
-                 (ir:reference (or (mapcar (lambda (x) (ir:make-reference :name x))
-                                            (relocate:maps-to (ir:name arg) closure))
-                                    (list arg)))))
+                 (number
+                  (list arg))
+                 (ir:reference
+                  (or (mapcar (lambda (x)
+                                (ir:copy-meta arg
+                                              (ir:make-reference :name x)))
+                              (relocate:maps-to (ir:name arg) closure))
+                      (list arg)))))
              (expand-term (term)
                (etypecase-of ir:fully-expanded-term term
                  ((or ir:multiple-bind ir:bind)
                   (update-val term))
                  (ir:bind-constraint
-                  (ir:make-bind-constraint
-                   :var   (ir:var term)
-                   :value (mapcar #'expand-term (ir:value term))))
+                  (ir:copy-meta term
+                                (ir:make-bind-constraint
+                                 :var   (ir:var term)
+                                 :value (mapcar #'expand-term (ir:value term)))))
                  (ir:standalone-ret
-                  (ir:make-standalone-ret
-                   :var (mapcan (lambda (x) (or (relocate:maps-to x closure)
-                                            (list x)))
-                                (ir:var term)))))))
+                  (ir:copy-meta
+                   term
+                   (ir:make-standalone-ret
+                    :var (mapcan (lambda (x) (or (relocate:maps-to x closure)
+                                             (list x)))
+                                 (ir:var term))))))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -215,7 +235,9 @@ of the user program is preserved."
                                 (if (listp (ir:var term))
                                     (ir:var term)
                                     (list (ir:var term))))
-                        (ir:make-multiple-bind :var nil :val (ir:value term)))
+                        (ir:copy-meta
+                         term
+                         (ir:make-multiple-bind :var nil :val (ir:value term))))
                        ((and (typep value 'ir:reference)
                              (or (alu.spec.term-op:void-reference? value)
                                  (sycamore:tree-set-find set (ir:name value))))
@@ -234,11 +256,13 @@ of the user program is preserved."
       (filter-map (lambda (term)
                     (etypecase-of ir:fully-expanded-term term
                       ((or ir:bind ir:multiple-bind) (value-if-void term))
-                      (ir:standalone-ret              (remove-standalone-ret term))
-                      (ir:bind-constraint             (ir:make-bind-constraint
-                                                        :var   (ir:var term)
-                                                        :value (remove-void-bindings
-                                                                (ir:value term))))))
+                      (ir:standalone-ret             (remove-standalone-ret term))
+                      (ir:bind-constraint
+                       (ir:copy-meta term
+                                     (ir:make-bind-constraint
+                                      :var   (ir:var term)
+                                      :value (remove-void-bindings
+                                              (ir:value term)))))))
                   terms))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
