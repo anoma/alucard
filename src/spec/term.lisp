@@ -72,14 +72,14 @@ augmented with the common lisp list type."
 ;; Normal Form Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass primitive ()
+(defclass primitive (meta-mixin)
   ((name :initarg  :name
          :type     keyword
          :accessor name
          :documentation "The name of the primitive"))
   (:documentation "Primitive type in the Alu language"))
 
-(defclass reference ()
+(defclass reference (meta-mixin)
   ((name :initarg  :name
          :type     keyword
          :accessor name
@@ -90,7 +90,7 @@ augmented with the common lisp list type."
 ;; Base Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass application ()
+(defclass application (meta-mixin)
   ((name :initarg :function
          :accessor func
          :documentation "the name of the gate that we wish to
@@ -107,7 +107,7 @@ depending on what table it is related to.")
 ;; Binder Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass let-node ()
+(defclass let-node (meta-mixin)
   ((var :initarg  :variable
         :type     keyword
         :accessor var
@@ -118,7 +118,7 @@ depending on what table it is related to.")
           :documentation "the value that is bound"))
   (:documentation "Represents a variable binding in the Alucard language"))
 
-(defclass bind-constraint ()
+(defclass bind-constraint (meta-mixin)
   ((var :initarg  :variable
         :type     list
         :accessor var
@@ -133,7 +133,7 @@ depending on what table it is related to.")
 ;; Record Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass record ()
+(defclass record (meta-mixin)
   ((name :initarg :name
          :accessor name
          :type     keyword
@@ -151,7 +151,7 @@ depending on what table it is related to.")
 between implementations"))
   (:documentation "Represents an instance of a record type"))
 
-(defclass record-lookup ()
+(defclass record-lookup (meta-mixin)
   ((record :initarg :record
            :accessor record
            :documentation "the record in which we are grabbing the data out of")
@@ -165,7 +165,7 @@ between implementations"))
 ;; Type Setting Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass type-coerce (protect-slots-mixin)
+(defclass type-coerce (protect-slots-mixin meta-mixin)
   ((value :initarg :value
           :accessor value
           :documentation "The data being coerced")
@@ -178,7 +178,7 @@ between implementations"))
 
 (protect-slots 'type-coerce 'typ)
 
-(defclass type-check (protect-slots-mixin)
+(defclass type-check (protect-slots-mixin meta-mixin)
   ((value :initarg :value
           :accessor value
           :documentation "The data being checked against")
@@ -195,7 +195,7 @@ between implementations"))
 ;; Array Declarations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass from-data (direct-slots-mixin)
+(defclass from-data (direct-slots-mixin meta-mixin)
   ((contents :initarg :contents
              :initform nil
              :type     list
@@ -203,7 +203,7 @@ between implementations"))
              :documentation "The data in the array"))
   (:documentation "Represents creating an array from existing data"))
 
-(defclass array-allocate (protect-slots-mixin)
+(defclass array-allocate (protect-slots-mixin meta-mixin)
   ((size :initarg :size
          :accessor size
          :documentation "The number of elements in the array")
@@ -216,7 +216,7 @@ between implementations"))
 
 (protect-slots 'array-allocate 'typ)
 
-(defclass array-lookup (direct-slots-mixin)
+(defclass array-lookup (direct-slots-mixin meta-mixin)
   ((arr :initarg :arr
         :accessor arr
         :documentation "The array for lookup")
@@ -225,7 +225,7 @@ between implementations"))
         :documentation "The position in the array to lookup"))
   (:documentation "An Array Lookup operation"))
 
-(defclass array-set (direct-slots-mixin)
+(defclass array-set (direct-slots-mixin meta-mixin)
   ((arr :initarg :arr
         :accessor arr
         :documentation "The array for setting")

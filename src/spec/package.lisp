@@ -2,18 +2,25 @@
   (:documentation "the type specification and layout of the alu
 package and alu terms")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util :alu.utils))
+  (:local-nicknames (:util :alu.utils)
+                    (:stack :alu.stack))
   (:export
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ;; Generic Data Manipulation
+   ;;; Mixin Services
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-   ;; Mixins
+   ;; Generic Data Manipulation
    :direct-slots-mixin
    :protect-slots-mixin
 
-   ;; Operations on Mixins
+   ;; Meta data information
+   :stack-mixin
+   :meta-mixin
+
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; Operations on data traversal
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    :protected
    :protect-slots
    :direct-slots
@@ -21,6 +28,12 @@ package and alu terms")
    :direct-slot-keywords
    :direct-slot-values
    :update-from-alist
+
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; Operations on meta data
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   :stack
+   :copy-meta
 
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ;; found in term

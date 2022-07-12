@@ -43,10 +43,11 @@
    (:module specification
     :serial t
     :description "Internal Alucard Specification"
-    :depends-on  ("util" "closure")
+    :depends-on  ("util" "closure" "stack")
     :pathname #P"spec/"
     :components ((:file "package")
                  (:file "data-traversal")
+                 (:file "meta")
                  (:file "term")
                  (:file "type")
                  (:file "global")

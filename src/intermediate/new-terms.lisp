@@ -3,7 +3,7 @@
 ;; New Terms
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defclass bind ()
+(defclass bind (spc:meta-mixin)
   ((var :initarg  :variable
         :type     keyword
         :accessor spc:var
@@ -14,7 +14,7 @@
           :documentation "the value that is bound"))
   (:documentation "A let with a more restrictive value type"))
 
-(defclass multiple-bind ()
+(defclass multiple-bind (spc:meta-mixin)
   ((variables :initarg  :variables
               :type     list
               :accessor spc:var
@@ -25,7 +25,7 @@
           :documentation "the value that is bound"))
   (:documentation "A let that can bind many return values"))
 
-(defclass standalone-ret ()
+(defclass standalone-ret (spc:meta-mixin)
   ((variable :initarg  :variable
              :type     list
              :accessor spc:var
