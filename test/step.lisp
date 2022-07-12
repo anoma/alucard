@@ -111,6 +111,7 @@
 
 (step.def:defun rest-test ()
   (list
+   (= ((lambda (x) x) 3) 3)
    (equalp (multiple-value-call #'list 1 '/ (values 2 3) '/ (values) '/ (floor 2.5))
            '(1 / 2 3 / / 2 0.5))
    (let* ((temp '(1 2 3)))

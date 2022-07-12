@@ -76,6 +76,9 @@
     ((typep (car form) 'alu-specials env)
      (run-mode form
                (handle-alu-special form env)))
+    ((listp (car form))
+     (run-mode form
+               (handle-list-car form env)))
     ((macro-function (car form) env)
      ;; we thus record any function and any macro expansion that has
      ;; been ran as well. This may be helpful, as we are likely going
@@ -178,6 +181,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CL special handling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun handle-list-car (form env)
+  (step (cons 'funcall form)
+        env))
 
 (defun handle-let (form env &optional handle-constrain)
   ;; we don't need to update the environment as we don't care about
