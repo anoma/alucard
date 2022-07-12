@@ -60,7 +60,11 @@
 
     (prld:def ((bar (prld:to-array 36)))
       (prld:+ (prld:check 5 (int 32))
-              (prld:get bar 0)))))
+              (prld:get bar 0)))
+
+    (def ((with-constraint (y z)
+          (prld:= x (prld:+ (prld:* y 10) z))))
+      z)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Doing Examples from the wiki

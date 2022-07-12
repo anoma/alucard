@@ -194,8 +194,7 @@
             (cond ((not (listp bind-pair))
                    bind-pair)
                   ((and handle-constrain (eql (car bind-pair) 'alu:with-constraint))
-                   (run-mode bind-pair
-                             (handle-constraint bind-pair env)))
+                   (handle-constraint bind-pair env))
                   ;; Should I mark the variable name in the stack trace?
                   ;; would make sense, but I currently don't do it.
                   (t
