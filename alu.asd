@@ -121,7 +121,7 @@
     :pathname #P"../alu/"
     :components ((:file "prelude")))
    (:file "package"     :depends-on ("specification"))
-   (:file "alu"         :depends-on ("package"))
+   (:file "alu"         :depends-on (package stepper))
    (:file "../app/main" :depends-on ("alu" "prelude")))
   :in-order-to ((asdf:test-op (asdf:test-op :alu/test))))
 

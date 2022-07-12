@@ -10,7 +10,8 @@
   (:local-nicknames (:util    :alu.utils)
                     (:spc     :alu.spec)
                     (:storage :alu.storage)
-                    (:emit    :alu.spec.emit))
+                    (:emit    :alu.spec.emit)
+                    (:step    :alu.stepper))
   (:export #:deftype #:defcircuit #:def #:defprimitive #:defprimitive-type
            #:entry-point #:coerce #:check #:get #:array #:to-array
            #:with-constraint))

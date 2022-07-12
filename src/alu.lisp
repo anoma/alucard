@@ -120,6 +120,7 @@
     `(progn
        ;; make a lexical variable so we can just say it
        (serapeum:def ,name (spc:make-reference :name ,key-name))
+       ;; we call our custom definer
        ;; defun a function to apply the function
        (defun ,name (,@argument-names)
          (ensure-call-by-value
@@ -137,8 +138,8 @@
                   ;; sad as we lose our nice naming for generated code ☹
                   ,(mapcar #'cons argument-names gensym-argument-names)
                   ,(if (cl:= 1 (length body))
-                       (car body)
-                       `(list ,@body))))))
+                       (step:single (car body) nil)
+                       `(list ,@(step:body body nil)))))))
        ',name)))
 
 (defun gensym-symbol (symbol)

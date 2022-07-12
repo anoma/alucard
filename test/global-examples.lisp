@@ -228,7 +228,6 @@
     (square-root-func 7)
     x1))
 
-
 (defcircuit l2-norm ((public p 3d-point)
                      (output int))
   (flet ((sum (list)
