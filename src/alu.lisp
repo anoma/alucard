@@ -138,8 +138,8 @@
                   ;; sad as we lose our nice naming for generated code ☹
                   ,(mapcar #'cons argument-names gensym-argument-names)
                   ,(if (cl:= 1 (length body))
-                       (step:single (car body) nil)
-                       `(list ,@(step:body body nil)))))))
+                       (alu.stepper:single (car body) nil)
+                       `(list ,@(alu.stepper:body body nil)))))))
        ',name)))
 
 (defun gensym-symbol (symbol)

@@ -14,7 +14,8 @@ stack-mixin   service"))
 
 (defgeneric copy-meta (obj1 obj2)
   (:method-combination progn)
-  (:documentation "copies meta data from one object to another"))
+  (:documentation "copies meta data from `obj1' into `obj2'"))
 
 (defmethod copy-meta progn ((obj1 stack-mixin) (obj2 stack-mixin))
-  (setf (stack obj2) (stack obj1)))
+  (setf (stack obj2) (stack obj1))
+  obj2)
