@@ -12,6 +12,7 @@ variable and offer rebinding and passing in capabilities.")
    ;; Functional Interface
    :cons :cdr
    :emptyp
+   :cdr-current-section
    ;; functional getters
    :stack
    :current-section

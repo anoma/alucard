@@ -130,22 +130,29 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (test nesting-respected
-  (is (>= (length (stack:stack (calling-base))) 3)
-      "calling a traced function should have the parents call put in there as well!"))
+  (let ((base (calling-base)))
+    (is (= (length (stack:stack (stack:current-section base))) 3)
+        "The current get should be in the parent!")
+    (is (= (length (stack:stack (stack:current-section
+                                 (stack:cdr-current-section base))))
+           2)
+        "calling a traced function should have the parents call put in
+        there as well!")))
 
 (test macro-expected
-  (is (equalp (stack:stack (expansion-call))
+  (is (equalp (stack:stack (stack:current-section (expansion-call)))
               '((STACK:GET) (PROGN (STACK:GET)) (EXPANSION-TEST (STACK:GET))))
       "The macro should be recorded wholesale along with it's expansion")
   (is
-   (equalp (stack:stack (cadr (local-expansion-test 5)))
+   (equalp (stack:stack (stack:current-section (cadr (local-expansion-test 5))))
            `((STACK:GET)
              (LIST X (STACK:GET))
              (EXPANSION-TEST X)
              (FLET ((EXPANSION-TEST (X) (LIST X (STACK:GET)))) (EXPANSION-TEST X))))
    "Fletting beats macros!")
   (is
-   (equalp (stack:stack (cadr (local-expansion-test-labels 3)))
+   (equalp (stack:stack (stack:current-section
+                         (cadr (local-expansion-test-labels 3))))
            `((STACK:GET)
              (LIST X (STACK:GET))
              (EXPANSION-TEST X)
@@ -154,7 +161,7 @@
                       (FAZ (X) (EXPANSION-TEST X)))
                (FAZ X))))
    "Labels removes the recursive macro calls")
-  (is (= (length (stack:stack (macro-let-test)))
+  (is (= (length (stack:stack (stack:current-section (macro-let-test))))
          4)
       "Macro expansion from a macrolet works as expected"))
 
