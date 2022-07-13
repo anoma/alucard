@@ -13,7 +13,7 @@
   (car (list (stack:get))))
 
 (step.def:defun calling-base ()
-  (if (listp (base))
+  (if (listp (stack:stack (base)))
       (base)))
 
 (defmacro expansion-test (x)
@@ -130,33 +130,31 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (test nesting-respected
-  (is (>= (length (calling-base)) 3)
+  (is (>= (length (stack:stack (calling-base))) 3)
       "calling a traced function should have the parents call put in there as well!"))
 
 (test macro-expected
-  (is (equalp (expansion-call)
+  (is (equalp (stack:stack (expansion-call))
               '((STACK:GET) (PROGN (STACK:GET)) (EXPANSION-TEST (STACK:GET))))
       "The macro should be recorded wholesale along with it's expansion")
   (is
-   (equalp (local-expansion-test 5)
-           '(5
-             ((STACK:GET)
-              (LIST X (STACK:GET))
-              (EXPANSION-TEST X)
-              (FLET ((EXPANSION-TEST (X) (LIST X (STACK:GET)))) (EXPANSION-TEST X)))))
+   (equalp (stack:stack (cadr (local-expansion-test 5)))
+           `((STACK:GET)
+             (LIST X (STACK:GET))
+             (EXPANSION-TEST X)
+             (FLET ((EXPANSION-TEST (X) (LIST X (STACK:GET)))) (EXPANSION-TEST X))))
    "Fletting beats macros!")
   (is
-   (equalp (local-expansion-test-labels 3)
-           '(3
-             ((STACK:GET)
-              (LIST X (STACK:GET))
-              (EXPANSION-TEST X)
-              (FAZ X)
-              (LABELS ((EXPANSION-TEST (X) (LIST X (STACK:GET)))
-                       (FAZ (X) (EXPANSION-TEST X)))
-                (FAZ X)))))
+   (equalp (stack:stack (cadr (local-expansion-test-labels 3)))
+           `((STACK:GET)
+             (LIST X (STACK:GET))
+             (EXPANSION-TEST X)
+             (FAZ X)
+             (LABELS ((EXPANSION-TEST (X) (LIST X (STACK:GET)))
+                      (FAZ (X) (EXPANSION-TEST X)))
+               (FAZ X))))
    "Labels removes the recursive macro calls")
-  (is (= (length (macro-let-test))
+  (is (= (length (stack:stack (macro-let-test)))
          4)
       "Macro expansion from a macrolet works as expected"))
 
@@ -171,7 +169,7 @@
       "Instrumenting simply adds debugging information does not change semantics")
   (is (equalp (lets-explore 10) 15)
       "lambda should not loop forever")
-  (is (equalp (stack:get) nil)
+  (is (stack:emptyp (stack:get))
       "Cleanup should be had after all these calls!")
   (finishes (alu-primitives 3 5))
   (is (eql (throwing-test) :outer-catch))

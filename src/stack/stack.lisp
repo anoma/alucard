@@ -4,7 +4,7 @@
   ((current-section
     :initarg  :current-section
     :accessor current-section
-    :type     `(or nil section)
+    :type     (or null section)
     :initform nil
     :documentation "the current section to push into if there even is one")
    (stack :initarg  :stack
@@ -80,6 +80,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pure functions on stacks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(-> emptyp (stack) boolean)
+(defun emptyp (stack)
+  (with-accessors ((stack stack) (current current-section)) stack
+    (and (null stack)
+         (null current))))
 
 (-> cons (symbol stack) stack)
 (defun new-section (name stack)

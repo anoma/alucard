@@ -11,6 +11,7 @@ variable and offer rebinding and passing in capabilities.")
    :push :pop :get :new
    ;; Functional Interface
    :cons :cdr
+   :emptyp
    ;; functional getters
    :stack
    :current-section
