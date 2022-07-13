@@ -4,8 +4,12 @@ define and promote functions to automatically push and pull from the
 stack when possible. Further, operations operate on a global dynamic
 variable and offer rebinding and passing in capabilities.")
   (:local-nicknames (:ref :alu.reference))
-  (:shadow :push :pop :get)
+  (:shadow :push :pop :get :cdr :cons)
   (:use #:common-lisp #:serapeum)
-  (:export :push :pop :get :new
-           :with-empty-stack
-           :*stack*))
+  (:export
+   ;; Mutable interface
+   :push :pop :get :new
+   ;; Functional Interface
+   :cons :cdr
+   :with-empty-stack
+   :*stack*))
