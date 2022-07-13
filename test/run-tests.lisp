@@ -51,22 +51,28 @@
 (defun profiler-reset ()
   (slynk-backend:profile-reset))
 
-
 #+ccl
 (defun code-coverage ()
   (ccl:reset-incremental-coverage)
   (ccl:reset-coverage)
+
   (setq ccl:*compile-code-coverage* t)
   (asdf:compile-system :alu :force t)
   (asdf:compile-system :alu/test :force t)
   (swap-tables)
-  (ccl:report-coverage #P"./html/report.html" :tags
-                       (loop with coverage = (make-hash-table)
-                             for test in *all-tests*
-                             do (run! test)
-                             do (setf (gethash test coverage)
-                                      (ccl:get-incremental-coverage))
-                             finally (return coverage)))
+
+  (let ((coverage (make-hash-table)))
+    ;; we want to note that some code loads before we can even test
+    ;; it, so mark these under their own section
+    (setf (gethash 'alucard.startup coverage)
+          (ccl:get-incremental-coverage))
+    (mapc (lambda (test)
+            (run! test)
+            (setf (gethash test coverage)
+                  (ccl:get-incremental-coverage)))
+          *all-tests*)
+    (ccl:report-coverage #P"./html/report.html" :tags coverage))
+
   (setq ccl:*compile-code-coverage* nil)
   (asdf:compile-system :alu :force t)
   (asdf:compile-system :alu/test :force t))
