@@ -11,5 +11,11 @@ variable and offer rebinding and passing in capabilities.")
    :push :pop :get :new
    ;; Functional Interface
    :cons :cdr
+   ;; functional getters
+   :stack
+   :current-section
+   :name
+   ;; Helper Macros
    :with-empty-stack
+   :with-section
    :*stack*))

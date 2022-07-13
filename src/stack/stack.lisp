@@ -27,7 +27,9 @@
 (defmethod print-object ((obj stack) stream)
   (pprint-logical-block (stream nil :prefix "(" :suffix ")")
     (when (current-section obj)
-      (format stream "~A~:@_" (current-section obj)))
+      (format stream "~A" (current-section obj))
+      (when (stack obj)
+        (format stream "~:@_")))
     (format stream "~{~A~^~:@_~}" (stack obj))))
 
 (defmethod print-object ((obj section) stream)
@@ -69,6 +71,11 @@
 (defmacro with-empty-stack (() &rest body)
   `(let ((*stack* (new)))
      ,@body))
+
+(defmacro with-section (name &rest body)
+  `(unwind-protect (progn (push-section ',name)
+                          ,@body)
+     (pop-section)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pure functions on stacks
