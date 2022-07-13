@@ -4,11 +4,12 @@
   (:shadow #:step #:single)
   (:use #:common-lisp #:serapeum)
   (:local-nicknames (#:stack #:alu.stack))
-  (:export #:single #:body #:mode #:*mode*))
+  (:export #:single #:body #:mode #:*mode* #:split-declaration))
 
 (defpackage #:alu.stepper.define
   (:documentation "Provides custom definers that shadow CL base definers")
   (:shadow #:defun)
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (#:step #:alu.stepper))
+  (:local-nicknames (#:step #:alu.stepper)
+                    (#:stack #:alu.stack))
   (:export #:defun))

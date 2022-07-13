@@ -109,11 +109,11 @@
   ;; Maybe I should mark what argument number each are for better
   ;; tracing Further after the first non declaration, we should stop
   ;; checking for it!
-  (mapcar (lambda (x)
-            (if (and handle-declaration (listp x) (declarationp x))
-                x
-                (step x env)))
-          body))
+  (if handle-declaration
+      (destructuring-bind (decs body) (split-declaration body)
+        (append decs
+                (mapcar (lambda (x) (step x env)) body)))
+      (mapcar (lambda (x) (step x env)) body)))
 
 ;; we make this macro to just make the generated code pretty
 (defmacro with-stack (original-form continue-form)
@@ -359,8 +359,15 @@
 ;;; Checking Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun split-declaration (form)
+  (list
+   (take-while #'declarationp form)
+   (drop-while #'declarationp form)))
+
 (defun declarationp (form)
   "determines if a form is a declaration or not"
-  (or (eql (car form) 'declare)
-      ;; probably overkill given declaims are top level
-      (eql (car form) 'declaim)))
+  (and (listp form)
+       (or (eql (car form) 'declare)
+           ;; probably overkill given declaims are top level
+           (eql (car form) 'declaim)
+           (eql (car form) 'proclaim))))
