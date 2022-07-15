@@ -50,24 +50,10 @@
                ctx
                :typing-closure (closure:insert closure v result)))
              (same-as
-              (let ((result-value (same-as-value result)))
-                (util:copy-instance
-                 ctx
-                 :holes (cons v holes)
-                 :dependency
-                 (dependency:determined-by
-                  (dependency:determined-by dep v (list result-value))
-                  result-value
-                  (list v))
-                 :hole-info
-                 (closure:insert
-                  (closure:insert
-                   info v      ; the hole can be the same as the value
-                   (make-hole-information
-                    :term (list (ir:make-reference :name result-value))))
-                  result-value
-                  (when #1=(closure:lookup info result-value)
-                        (add-hole-formula #1# (ir:make-reference :name v)))))))
+              (all-mutual (list (ir:copy-meta term (ir:make-reference :name v))
+                                (ir:copy-meta val (ir:make-reference
+                                                   :name (same-as-value result))))
+                          (util:copy-instance ctx :holes (cons v holes))))
              ;; here we have an integer type, but what size of
              ;; integer, we need to refine on this!
              ((eql :refine-integer)
@@ -468,6 +454,7 @@ integer then it will error."
 
 (-> references-from-list (list) list)
 (defun references-from-list (normal-forms)
+  "Turns a list of normal forms into the list of their keywords"
   (filter-map (lambda (x)
                 (etypecase-of ir:term-normal-form x
                   (number nil)
