@@ -4,7 +4,8 @@
 checker")
   (:local-nicknames (#:ir         #:alu.ir)
                     (#:closure    #:alu.closure)
-                    (#:dependency #:alu.closure.dependency))
+                    (#:dependency #:alu.closure.dependency)
+                    (#:closure    #:alu.closure))
   (:use #:common-lisp #:serapeum)
   (:export
    ;; Context data type
@@ -41,7 +42,8 @@ checker")
 language. The name typically refers to the value being calculated.")
   (:local-nicknames (#:ir      #:alu.ir)
                     (#:storage #:alu.storage)
-                    (#:types   #:alu.typechecker.types))
+                    (#:types   #:alu.typechecker.types)
+                    (#:log     #:alu.log))
   (:shadow :declaration)
   (:use #:common-lisp #:serapeum)
   (:export
@@ -60,7 +62,8 @@ language. The name typically refers to the value being calculated.")
                     (#:storage    #:alu.storage)
                     (#:dependency #:alu.closure.dependency)
                     (#:util       #:alu.utils)
-                    (#:size       #:alu.typechecker.size))
+                    (#:size       #:alu.typechecker.size)
+                    (#:log        #:alu.log))
   (:use #:common-lisp #:serapeum #:alu.typechecker.types)
   (:export
    :check
@@ -79,7 +82,8 @@ language. The name typically refers to the value being calculated.")
                     (#:dependency #:alu.closure.dependency)
                     (#:util       #:alu.utils)
                     (#:size       #:alu.typechecker.size)
-                    (#:check      #:alu.typechecker.check))
+                    (#:check      #:alu.typechecker.check)
+                    (#:log        #:alu.log))
   (:use #:common-lisp #:serapeum #:alu.typechecker.types)
   (:export
    :intro

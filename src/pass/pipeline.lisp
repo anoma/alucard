@@ -42,8 +42,12 @@
 
 (-> pipeline (ir:circuit) alu.vampir.spec:alias)
 (defun pipeline (circuit)
-  (~> circuit
-      to-vampir))
+  (handler-case (~> circuit
+                    to-vampir)
+    (log:error (c)
+      (log:data c))
+    (simple-error (c)
+      (format t "~A" c))))
 
 (defun to-typecheck (circuit)
   (mvlet ((body typing (~> circuit

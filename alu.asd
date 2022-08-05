@@ -2,7 +2,8 @@
   :depends-on (:trivia :alexandria :sycamore :serapeum :closer-mop :command-line-arguments
                        (:version "asdf" "3.3.5")
                        :swank :slynk
-                       :cl-environments)
+                       :cl-environments
+                       :verbose)
   :version "0.0.0"
   :description "Powering Vamp-IR with the power of the original lineage"
   :author "Mariari"
@@ -73,7 +74,7 @@
    (:module typechecker
     :serial t
     :description "The type checker of the Alucard compiler"
-    :depends-on ("util" "closure" "intermediate-representation")
+    :depends-on ("util" "closure" "intermediate-representation" log)
     :components ((:file "package")
                  (:file "types")
                  (:file "size")
@@ -86,7 +87,8 @@
                  "closure"
                  "vampir"
                  "util"
-                 "typechecker")
+                 typechecker
+                 log)
     :description "Alucard Passes"
     :components ((:file "package")
                  (:file "evaluate-body")
@@ -113,6 +115,11 @@
     :components ((:file "package")
                  (:file "stepper")
                  (:file "define")))
+   (:module log
+    :serial t
+    :depends-on (specification)
+    :components ((:file "package")
+                 (:file "log")))
    ;; only folder without a package
    (:module prelude
     :serial t

@@ -217,7 +217,7 @@
           (= p (* x₁ x₁))))
     x₁))
 
-(defun square-root-func (p)
+(alu.stepper.define:defun square-root-func (p)
   (def ((x2 5)
         (with-constraint (x1)
           (= p (* x1 x1))))

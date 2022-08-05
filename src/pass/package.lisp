@@ -183,7 +183,8 @@ structures")
                     (:dep     :alu.pass.dependencies)
                     (:storage :alu.storage)
                     (:array   :alu.pass.array)
-                    (:check   :alu.typechecker))
+                    (:check   :alu.typechecker)
+                    (:log     :alu.log))
   (:export
    :dump-entry-point
    :dump-entry-point-to-file

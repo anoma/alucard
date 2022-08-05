@@ -133,7 +133,8 @@
                       :size (size:storage lookup)
                       :type (ir:make-type-reference :name name))
                      context)
-             (error "the record type ~A: is not defined" name))))
+             (log:error term '(:type :not-defined)
+                         "the record type ~A: is not defined" name))))
       ;; This case isn't hard, just mostly tedious. All we have to do
       ;; is get the field of the record. Which can be done
       ;; mechanically...
