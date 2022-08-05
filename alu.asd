@@ -96,6 +96,7 @@
                  (:file "relocation")
                  (:file "anf")
                  (:file "extract")
+                 (:file "redundant-let")
                  (:file "pack")
                  (:file "pass")
                  (:file "array")
