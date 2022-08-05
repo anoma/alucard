@@ -76,6 +76,7 @@
 (defun to-primitive-circuit (circuit)
   (~> circuit
       to-expand-away-records
+      pass:filter-redundant-lets
       (pass:primitive-circuit circuit)
       pass:rename-primitive-circuit))
 

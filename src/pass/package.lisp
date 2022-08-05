@@ -109,6 +109,7 @@ circuits execution body and tracking caching")
   (:export
    :linearize
    :linearize-body
+   :filter-redundant-lets
    :expand-away-records
    :remove-void-bindings
    :primitive-circuit
