@@ -147,8 +147,10 @@
       ;; unify.
       ((ir:record-lookup :record rec :field field)
        (let* ((rec (etypecase-of ir:term-normal-form rec
-                     (number (error "can't index into a numerical literal: ~A"
-                                    rec))
+                     (number (log:error term
+                                        '(:type)
+                                        "can't index into a numerical literal: ~A"
+                                        rec))
                      (ir:reference (ir:name rec))))
               (lookup (closure:lookup closure rec)))
          ;; replace with typecase-of... what are you doing, me
@@ -157,13 +159,15 @@
                        (lookup     (storage:lookup-type field-name)))
                   (typecase-of ir:type-storage lookup
                     (ir:primitive
-                     (error "~A is a primitive type not a record type" field-name))
+                     (log:error term :type
+                                "~A is a primitive type not a record type" field-name))
                     (otherwise
                      (error "type ~A does not exist" field-name))
                     (ir:type-declaration
                      (etypecase-of ir:type-format (ir:decl lookup)
                        (ir:sum-decl
-                        (error "Trying to index into the sum type ~A" field-name))
+                        (log:error term :type
+                                   "Trying to index into the sum type ~A" field-name))
                        (ir:record-decl
                         (let ((field-type (sycamore:tree-map-find
                                            (ir:contents (ir:decl lookup))
@@ -173,10 +177,11 @@
                                        :type field-type
                                        :size (size:reference field-type))
                                       context)
-                              (error "the field ~A does not exist in record type: ~A"
-                                     field-name (ir:name lookup))))))))))
+                              (log:error term :type
+                                         "the field ~A does not exist in record type: ~A"
+                                         field-name (ir:name lookup))))))))))
                (lookup
-                (error "Record types currently cannot be applied"))
+                (log:error term :type "Record types currently cannot be applied"))
                (t
                 (values
                  (make-depends-on :value (list rec))
@@ -227,14 +232,16 @@
                (handle-all-int-case))
               ;; TODO :: Find a way to type custom user primitives for
               ;;         better interopt.
-              (otherwise (error "unknown primitive ~A. Don't know how
-                                 to type it."
-                                name)))))
+              (otherwise (log:error
+                          term :type
+                          "unknown primitive ~A. Don't know how to type it."
+                          name)))))
          (null
-          (error "Function ~A: is not defined" func))))
+          (log:error term :type "Function ~A: is not defined" func))))
       ((ir:application :name func)
-       (error "Can not apply ~A. Expecting a reference to a function not a number"
-              func))
+       (log:error term :type
+                  "Can not apply ~A. Expecting a reference to a function not a number"
+                  func))
       ;; we actually ignore the value for type checking as we just
       ;; care about type information.
       ((ir:type-coerce :typ typ)
@@ -251,7 +258,7 @@
       ((ir:array-lookup :arr arr)
        (let* ((lookup
                 (etypecase-of ir:term-normal-form arr
-                  (number (error "Array lookup on the number ~A" arr))
+                  (number (log:error term :type "Array lookup on the number ~A" arr))
                   (ir:reference (closure:lookup closure (ir:name arr)))))
               (value-type
                 (cond ((and lookup (type-op:array-reference? (type-info-type lookup)))
@@ -260,7 +267,8 @@
                          (make-type-info :type type
                                          :size (size:reference type))))
                       (lookup
-                       (error "Type ~A is not of type Array" (type-info-type lookup)))
+                       (log:error term :type
+                                  "Type ~A is not of type Array" (type-info-type lookup)))
                       (t nil))))
          (values
           (if lookup
@@ -269,7 +277,7 @@
           context)))
       ((ir:array-set :arr arr :value value)
        (let* ((lookup-val (normal-form-to-type-info value context))
-              (lookup-arr (normal-form-to-type-info-not-number-err arr context))
+              (lookup-arr (normal-form-to-type-info-not-number-err term arr context))
               (context
                 (dispatch-case ((lookup-arr lookup-type)
                                 (lookup-val lookup-type))
@@ -279,17 +287,20 @@
                   ;; of a hole
                   ((hole type-info)
                    ;; can't actually hit here!
-                   (error "No Type Inference for the type of the array yet!"))
+                   (log:error term :type
+                              "No Type Inference for the type of the array yet!"))
                   ((hole hole)
                    ;; can't actually hit here!
-                   (error "No Type Inference for the type of the array yet!"))
+                   (log:error term :type
+                              "No Type Inference for the type of the array yet!"))
                   ((type-info type-info)
                    (if (type-equality (ir:array-type-content
                                        (type-info-type lookup-arr))
                                       (type-info-type lookup-val))
                        context
-                       (error "Array ~A does not have element type of ~A"
-                              arr lookup-val)))
+                       (log:error term :type
+                                  "Array ~A does not have element type of ~A"
+                                  arr lookup-val)))
                   ((type-info hole)
                    (unify value
                           (ir:array-type-content (type-info-type lookup-arr))
@@ -399,21 +410,23 @@ any constraints on the specification"
 ;; Normal Form/Reference/Keywords Lookups
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(-> normal-form-to-type-info-not-number-err (ir:term-normal-form typing-context)
+(-> normal-form-to-type-info-not-number-err (ir:term-type-manipulation
+                                             ir:term-normal-form
+                                             typing-context)
     lookup-type)
-(defun normal-form-to-type-info-not-number-err (arg context)
+(defun normal-form-to-type-info-not-number-err (term arg context)
   (etypecase-of ir:term-normal-form arg
-    (number       (error "Value is a number when not expected"))
-    (ir:reference (find-type-info (ir:name arg) context))))
+    (number       (log:error term :type "Value is a number when not expected"))
+    (ir:reference (find-type-info arg (ir:name arg) context))))
 
 (-> normal-form-to-type-info (ir:term-normal-form typing-context) lookup-type)
 (defun normal-form-to-type-info (arg context)
   (etypecase-of ir:term-normal-form arg
     (number       (assure hole :int))
-    (ir:reference (find-type-info (ir:name arg) context))))
+    (ir:reference (find-type-info arg (ir:name arg) context))))
 
-(-> find-type-info (keyword typing-context) lookup-type)
-(defun find-type-info (name context)
+(-> find-type-info (ir:reference keyword typing-context) lookup-type)
+(defun find-type-info (ref name context)
   "Grabs the typing value from the given keyword. If this lookup fails,
 we try to get the unrefined type."
   (let ((looked (closure:lookup (typing-closure context) name)))
@@ -422,8 +435,9 @@ we try to get the unrefined type."
            (let ((value (closure:lookup (hole-info context) name)))
              (and value (hole-information-unrefined value))))
           (t
-           (error "Internal error: Value ~A is not a known hole in ~A"
-                  name context)))))
+           (log:error ref :type
+                      "Internal error: Value ~A is not a known hole in ~A"
+                      name context)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Refining over a list of types
@@ -443,13 +457,15 @@ integer then it will error."
                 (keyword (if (or (eql most-refined-value :int)
                                  (eql most-refined-value :bool))
                              most-refined-value
-                             (error "the given type ~A is not an integer type"
-                                    most-refined-value)))))
+                             (log:error (car (references-from-list args))
+                                        :type
+                                        "the given type ~A is not an integer type"
+                                        most-refined-value)))))
              (type-info
               (if (type-op:int-reference?
                    (type-info-type most-refined-value))
                   most-refined-value
-                  (error "Value to should be an Integer not a ~A"
+                  (log:error most-refined-value :type
                          (type-info-type most-refined-value)))))))
     integer-constraint))
 
@@ -477,20 +493,26 @@ integer then it will error."
 
 (-> consistent-type-check (list typing-context) (or t null))
 (defun consistent-type-check (args context)
-  (flet ((keyword-case (type keyword)
-           (etypecase-of known-primitve-types keyword
-             ((or (eql :int) (eql :bool))
-              (if (type-op:int-reference? (type-info-type type))
-                  type
-                  (error "Type ~A is not consistent with Integer"
-                         (type-info-type type))))
-             ((eql :array)
-              (if (type-op:array-reference? (type-info-type type))
-                  type
-                  (error "Type ~A is not consistent with Integer"
-                         (type-info-type type))))
-             ((eql :void)
-              (error "The value void should not be used as an argument")))))
+  ;; we just bind this term to get better error messages
+  (labels ((get-error-term ()
+             (car (references-from-list args)))
+           (keyword-case (type keyword)
+             (etypecase-of known-primitve-types keyword
+               ((or (eql :int) (eql :bool))
+                (if (type-op:int-reference? (type-info-type type))
+                    type
+                    (log:error (get-error-term) '(:type :unification)
+                               "Type ~A is not consistent with Integer"
+                               (type-info-type type))))
+               ((eql :array)
+                (if (type-op:array-reference? (type-info-type type))
+                    type
+                    (log:error (get-error-term) '(:type :unification)
+                               "Type ~A is not consistent with Integer"
+                               (type-info-type type))))
+               ((eql :void)
+                (log:error (get-error-term) '(:type :unification)
+                           "The value void should not be used as an argument")))))
     (mvfold (lambda (current-most-known-type val)
               (dispatch-case ((val                     lookup-type)
                               (current-most-known-type lookup-type))
@@ -498,16 +520,19 @@ integer then it will error."
                 ((null      *)         current-most-known-type)
                 ((type-info keyword)   (keyword-case val current-most-known-type))
                 ((keyword   type-info) (keyword-case current-most-known-type val))
-                ((keyword   keyword)   (if (eql val current-most-known-type)
-                                           val
-                                           (error "Values ~A and ~A are not consistent"
-                                                  val current-most-known-type)))
+                ((keyword   keyword)
+                 (if (eql val current-most-known-type)
+                     val
+                     (log:error (get-error-term) '(:type :unification)
+                                "Values ~A and ~A are not consistent"
+                                val current-most-known-type)))
                 ((type-info type-info)
                  (if (type-equality (type-info-type val)
                                     (type-info-type
                                      current-most-known-type))
                      current-most-known-type
-                     (error "Values ~A and ~A are not consistent"
-                                                  val current-most-known-type)))))
+                     (log:error (get-error-term) '(:type :unification)
+                                "Values ~A and ~A are not consistent"
+                                val current-most-known-type)))))
             (mapcar (lambda (arg) (normal-form-to-type-info arg context)) args)
             (assure hole nil))))

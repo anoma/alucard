@@ -45,6 +45,8 @@
   (handler-case (~> circuit
                     to-vampir)
     (log:error (c)
+      (format t "~%;;;;;;;;;;;;;;;;;;;;;;~%In Function ~A~%;;;;;;;;;;;;;;;;;;;;;;"
+              (ir:name circuit))
       (log:data c))
     (simple-error (c)
       (format t "~A" c))))

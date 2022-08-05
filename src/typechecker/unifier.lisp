@@ -10,7 +10,8 @@
 either holes being refined, unknown values being turned into unrefined
 values, or an error being thrown if the information is contradictory."
   (flet ((unification-error (type)
-           (error "Could not unify Defined type ~A with int" type)))
+           (log:error term '(:unifier :type)
+                      "Could not unify Defined type ~A with int" type)))
     (match-of ir:term-normal-form term
       ;; For references we need to check if the reference is known. If
       ;; the term is known, then it is a simple equality check that
@@ -26,19 +27,21 @@ values, or an error being thrown if the information is contradictory."
       ;; If the unification is with partial information we note the
       ;; partial information as hole information to be resolved later.
       ((ir:reference :name term-name)
-       (let ((value (find-type-info term-name context)))
+       (let ((value (find-type-info term term-name context)))
          (dispatch-case ((value         lookup-type)
                          (expected-type current-information))
            ((type-info hole)
-            (error "Internal compiler error. Tried to unify a fully
-                   known type ~A with the hole ~A."
-                   value expected-type))
+            (log:error term '(:unifier :type)
+                       "Internal compiler error. Tried to unify a fully
+                        known type ~A with the hole ~A."
+                       value expected-type))
            ((type-info ir:type-reference)
             (if (type-equality expected-type (type-info-type value))
                 context
-                (error "The types ~A and ~A are not equivalent"
-                       expected-type
-                       (type-info-type value))))
+                (log:error term '(:unifier :type)
+                           "The types ~A and ~A are not equivalent"
+                           expected-type
+                           (type-info-type value))))
            ((hole ir:type-reference)
             (etypecase-of hole value
               (null t)
@@ -47,20 +50,24 @@ values, or an error being thrown if the information is contradictory."
                  ((or (eql :int)
                       (eql :bool))
                   (unless (type-op:int-reference? expected-type)
-                    (error "Trying to unify an Integer type with ~A"
-                           expected-type)))
+                    (log:error term '(:unifier :type)
+                               "Trying to unify an Integer type with ~A"
+                               expected-type)))
                  ;; we should check that we unify it with void properly
                  ((eql :void)
                   (unless (type-op:void-reference? expected-type)
-                    (error "Trying to unify a void type with ~A"
-                           expected-type)))
+                    (log:error term '(:unifier :type)
+                               "Trying to unify a void type with ~A"
+                               expected-type)))
                  ((eql :array)
                   (unless (type-op:array-reference? expected-type)
-                    (error "Trying to unify an array type with ~A"
-                           expected-type)))
+                    (log:error term '(:unifier :type)
+                               "Trying to unify an array type with ~A"
+                               expected-type)))
                  (otherwise
-                  (error "Unknown primitive type ~A" value)))))
-            (solve-recursively term-name expected-type context))
+                  (log:error term '(:unifier :type)
+                             "Unknown primitive type ~A" value)))))
+            (solve-recursively term term-name expected-type context))
             ((hole hole)
              (refine-hole-with-hole value expected-type context)))))
       ;; we only succeed unification if the expected value of this is a
@@ -75,14 +82,19 @@ values, or an error being thrown if the information is contradictory."
                  (lookup (storage:lookup-type type-name)))
             (etypecase-of (or null ir:type-storage) lookup
               (ir:type-declaration (unification-error type-name))
-              (null                 (error "Type ~A is not defined" type-name))
+              (null                 (log:error term '(:unifier :type)
+                                               "Type ~A is not defined"
+                                               type-name))
               (ir:primitive
                (typecase (ir:name lookup)
                  ((or (eql :int) (eql :bool)) context)
                  (otherwise                   (unification-error type-name))))))))))))
 
-(-> solve-recursively (keyword ir:type-reference typing-context) typing-context)
-(defun solve-recursively (name solved-value context)
+(-> solve-recursively
+    ;; term normal form is just for error reporting
+    (ir:term-normal-form keyword ir:type-reference typing-context)
+    typing-context)
+(defun solve-recursively (term name solved-value context)
   "Solves the given keyword with given type-reference. After solving,
 `solve-recursively', will attempt to solve any new variables that were
 entailed by the given keyword."
@@ -102,10 +114,12 @@ entailed by the given keyword."
                      (try-equations current-resolve-symbol hole context)
                    (if solved?
                        context
-                       (error "could not solve value ~A"
-                              current-resolve-symbol)))
-                 (error "How can I solve hole ~A: if no equations exist for it"
-                        current-resolve-symbol))))
+                       (log:error term '(:unifier :type)
+                                  "could not solve value ~A"
+                                  current-resolve-symbol)))
+                 (log:error term '(:unifier :type)
+                            "How can I solve hole ~A: if no equations exist for it"
+                            current-resolve-symbol))))
          (solve-recursive (context symbol-set)
            ;; The dependency module does not remember what values have
            ;; been solved. Thus we need to manually filter out
