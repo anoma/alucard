@@ -441,7 +441,7 @@ integer then it will error."
                 (null (assure hole :int))
                 (keyword (if (or (eql most-refined-value :int)
                                  (eql most-refined-value :bool))
-                             (assure hole :int)
+                             most-refined-value
                              (error "the given type ~A is not an integer type"
                                     most-refined-value)))))
              (type-info

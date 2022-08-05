@@ -14,19 +14,3 @@
   (:export #:deftype #:defcircuit #:def #:defprimitive #:defprimitive-type
            #:entry-point #:coerce #:check #:get #:array #:to-array
            #:with-constraint))
-
-(uiop:define-package #:alu.prelude
-  (:documentation "The Alu User pacakge")
-  ;; we shouldn't use CL
-  (:shadow #:range #:+ #:* #:= #:exp)
-  (:mix #:alu #:common-lisp)
-  (:export #:+ #:* #:= #:exp #:deftype #:defcircuit #:def
-           #:deflex #:bool #:entry-point #:coerce
-           #:check #:get #:array #:to-array
-           #:with-constraint))
-
-(uiop:define-package #:aluser
-  (:documentation "The Alu User pacakge")
-  (:shadow #:time)
-  (:mix #:alu.prelude #:common-lisp)
-  (:reexport #:alu.prelude))

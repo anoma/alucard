@@ -40,10 +40,10 @@
 (defcircuit constrain-3 ((public nest nested)
                          (output void))
   (reduce #'=
-         (mapcar (lambda (point)
-                   (* (x point)
-                      (y point)))
-                 (list (plane nest) (time nest)))))
+          (mapcar (lambda (point)
+                    (* (x point)
+                       (y point)))
+                  (list (plane nest) (time nest)))))
 
 (defcircuit range-check ((private input int)
                          (output void))

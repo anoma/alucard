@@ -37,3 +37,12 @@ gain in efficiency.
 a separate variable and initialized as if by `(setf (values VAR...)
 VAL)`."
   `(serapeum:def ,var ,val ,documentation))
+
+(defmacro vampir (function-name)
+  `(vampir-keyword ,(util:symbol-to-keyword function-name)))
+
+(defun vampir-keyword (keyword)
+  (let ((lookup (storage:lookup-function keyword)))
+    (if lookup
+        (pipeline:pipeline lookup)
+        (format t "Function ~A is not found" keyword))))

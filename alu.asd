@@ -117,9 +117,10 @@
    (:module prelude
     :serial t
     :description "Alucard Prelude"
-    :depends-on  ("alu")
+    :depends-on  (alu pass)
     :pathname #P"../alu/"
-    :components ((:file "prelude")))
+    :components ((:file "package")
+                 (:file "prelude")))
    (:file "package"     :depends-on ("specification"))
    (:file "alu"         :depends-on (package stepper))
    (:file "../app/main" :depends-on ("alu" "prelude")))
