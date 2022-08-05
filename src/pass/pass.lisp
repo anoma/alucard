@@ -27,6 +27,15 @@ and properly propagating arguments around them"
       (relocate-records circuit)
       expand-applications))
 
+
+(-> filter-redundant-lets (ir:fully-expanded-list) ir:fully-expanded-list)
+(defun filter-redundant-lets (xs)
+  (let ((map (redundant:find-redundant-lets xs)))
+    (~> map
+        (redundant:replace-references xs _)
+        (redundant:remove-redundant-lets map))))
+
+
 (-> primitive-circuit (ir:fully-expanded-list ir:circuit) ir:prim-circuit)
 (defun primitive-circuit (terms circuit)
   (~>> (ir:make-prim-circuit :name (ir:name circuit) :body terms)
@@ -43,7 +52,6 @@ and properly propagating arguments around them"
 ;; forth
 
 (-> transform-let (ir:expression) ir:constraint-list)
-
 (defun transform-let (term)
   "transform-let takes a `ir:term' in a flatten form, and removes the
 `ir:let-node' for the more flat `ir:bind' type"
@@ -389,79 +397,3 @@ if the value is not void, then the returns in the body are given back"
 
 (defalias circuit-to-alias #'extract:circuit-to-alias
   "Turns the circuit to a vamp-ir alias")
-
-(-> find-redundant-let (ir:fully-expanded-list &optional closure:typ) closure:typ)
-(defun find-redundant-lets (xs &optional (map (closure:allocate)))
-  (mvfold (lambda (map x)
-	    (etypecase-of ir:fully-expanded-term x
-	      ((or ir:standalone-ret ir:multiple-bind) map)
-	      (ir:bind
-	       (etypecase-of ir:base (ir:value x)
-		 (ir:application map)
-		 (ir:reference (let* ((value (ir:value x))
-				      (find (closure:lookup map  (ir:name value) )))
-				 (closure:insert map (ir:var x) (or find value))))
-		 (number (closure:insert map (ir:var x) (ir:value x)) )))
-	      (ir:bind-constraint (find-redundant-lets (ir:value x) map)))) ;TODO: do logic
-          xs map))
-
-
-
-
-(-> replace-references (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
-(defun replace-references (xs map)
-  (mapcar (lambda (x)
-            (etypecase-of ir:fully-expanded-term x
-              (ir:standalone-ret (let* ((vars (ir:var x))
-                                        (updated-rets
-                                          (mapcar (lambda (y)
-                                                    (let ((find (closure:lookup map y)))
-                                                      (if find
-                                                          (etypecase-of ir:base (closure:lookup map y)
-                                                            (ir:application y)
-                                                            (ir:reference (ir:name (closure:lookup map y)))
-                                                            (number (closure:lookup map y))))))
-                                                  vars)))
-                                   (ir:make-standalone-ret
-                                    :var updated-rets)))
-              (ir:bind
-               (etypecase-of ir:base (ir:value x)
-                 (ir:application
-                  (let* ((value (ir:value x))
-                         (updated-refs
-                           (mapcar  (lambda (y) (etypecase-of ir:base y
-                                             (ir:reference
-                                              (or (closure:lookup map (ir:name y)) y))
-                                             (number y)
-                                             (ir:application y)))
-                                    (ir:arguments value))))
-                    (util:copy-instance x
-                                        :value (util:copy-instance value
-                                                                   :arguments updated-refs))))
-                 (ir:reference x)
-                 (number x)))
-              (ir:bind-constraint
-               (util:copy-instance x
-                                   :value (replace-references (ir:value x) map)))
-              (ir:multiple-bind x)))
-          xs))
-
-
-(-> remove-redundant-lets (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
-(defun remove-redundant-lets (xs map)
-  (filter-map (lambda (x)
-            (etypecase-of ir:fully-expanded-term x
-              ((or ir:standalone-ret ir:multiple-bind)  x)
-              (ir:bind  (if (closure:lookup map (ir:var x)) nil x ))
-              (ir:multiple-bind x)
-              (ir:bind-constraint
-               (util:copy-instance x
-                                   :value (remove-redundant-lets (ir:value x) map)))))
-          xs))
-
-(-> filter-redundant-lets (ir:fully-expanded-list) ir:fully-expanded-list)
-(defun filter-redundant-lets (xs)
-  (let ((map (find-redundant-lets xs)))
-    (~> map
-        (replace-references xs _)
-        (remove-redundant-lets map))))

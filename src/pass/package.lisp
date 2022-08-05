@@ -83,6 +83,19 @@ circuits execution body and tracking caching")
                     (:spc  :alu.spec))
   (:export :normalize-expression))
 
+(defpackage #:alu.pass.redundant
+  (:documentation "Provides redundant let removal for alucard")
+  (:use #:common-lisp #:serapeum)
+  (:local-nicknames (#:util    #:alu.utils)
+                    (#:ir      #:alu.ir)
+                    (#:spc     #:alu.vampir.spec)
+                    (#:storage #:alu.storage)
+                    (:closure  :alu.closure))
+  (:export
+   :remove-redundant-lets
+   :replace-references
+   :find-redundant-lets))
+
 (defpackage #:alu.pass.extract
   (:documentation "Provides Extraction capabilities to vamp-ir")
   (:use #:common-lisp #:serapeum)
@@ -95,17 +108,18 @@ circuits execution body and tracking caching")
 (defpackage #:alu.pass
   (:documentation "Provides simplification passes to the Alucard Language")
   (:use #:common-lisp #:serapeum)
-  (:local-nicknames (:util     :alu.utils)
-                    (:ir       :alu.ir)
-                    (:eval     :alu.pass.evaluate-body)
-                    (:anf      :alu.pass.anf)
-                    (:expand   :alu.pass.expanded)
-                    (:relocate :alu.pass.relocation)
-                    (:term-op    :alu.spec.term-op)
-                    (:storage  :alu.storage)
-                    (:closure  :alu.closure)
-                    (:extract  :alu.pass.extract)
-                    (:vampir   :alu.vampir))
+  (:local-nicknames (:util      :alu.utils)
+                    (:ir        :alu.ir)
+                    (:eval      :alu.pass.evaluate-body)
+                    (:anf       :alu.pass.anf)
+                    (:expand    :alu.pass.expanded)
+                    (:relocate  :alu.pass.relocation)
+                    (:term-op   :alu.spec.term-op)
+                    (:storage   :alu.storage)
+                    (:closure   :alu.closure)
+                    (:redundant :alu.pass.redundant)
+                    (:extract   :alu.pass.extract)
+                    (:vampir    :alu.vampir))
   (:export
    :linearize
    :linearize-body
