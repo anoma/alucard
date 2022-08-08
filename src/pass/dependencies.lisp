@@ -27,7 +27,7 @@ in a dependency chart"
      (ir:circuit   (track-constraint-deps (alu.pass:linearize circuit))))))
 
 ;; we assume that `pass:linearize' has been run
-(-> track-function-deps (ir:type-aware-list) list)
+(-> track-constraint-deps (ir:type-aware-list) list)
 (defun track-constraint-deps (constraint-list)
   (labels ((handle-term (term)
              (etypecase-of ir:term-type-manipulation term
@@ -39,6 +39,6 @@ in a dependency chart"
            (handle-linear-term (constraint)
              (etypecase-of ir:expanded-term constraint
                (ir:bind            (handle-term (ir:value constraint)))
-               (ir:bind-constraint (track-function-deps (ir:value constraint)))
+               (ir:bind-constraint (track-constraint-deps (ir:value constraint)))
                (ir:standalone-ret  nil))))
     (mapcan #'handle-linear-term constraint-list)))
