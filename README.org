@@ -10,6 +10,15 @@ language [[https://common-lisp.net/][Common lisp]], extending the language with 
 capabilities. This means that Alucard can use language infrastructure
 like [[https://fiveam.common-lisp.dev/][FiveAM]] and [[https://www.cliki.net/SWANK][SWANK]] to allow a battle tested interactive developer
 experience.
+** Quick Start
+[[https://hackmd.io/KTN_7tyGTe2RvJ5-aC4rBw][A friendly introduction can be found here]]
+** Documentation
+The most complete documentation is the [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Alucard Reference Manual]].
+
+- [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Reference Manual]]
+- [[file:doc/spec.md][Specification]]
+- [[file:doc/using-alucard.md][Syntax Guide]]
+
 ** Editor Integration
 Since Alucard Relies on Common lisp, we support all major editors. For
 the best experience Emacs is recommend though the other editors work
@@ -53,15 +62,6 @@ along with the message
 #+end_src
 This means that you can hookup your editor of choice to localhost:4005
 via =sly-connect= or =alive attach to REPL=.
-** Quick Start
-[TODO]
-** Documentation
-The most complete documentation is the [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Alucard Reference Manual]].
-
-- [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrMQ][Reference Manual]]
-- [[file:doc/spec.md][Specification]]
-- [[file:doc/using-alucard.md][Syntax Guide]]
-
 ** Setting up the Developer Environment
 _Alucard works on many different implementations of CL, namely_
   + SBCL
@@ -81,6 +81,9 @@ If there was an error in the above commands, look at the section below
 for some common solutions.
 
 If the commands work, then you can start hacking on Alucard!
+
+Currently binary extraction does not work with SBCL, but it is
+perfectly fit to load the environment like any normal CL library!
 
 *** Errors with SBCL
 SBCL by default does not ship a new enough version of ASDF, and you
