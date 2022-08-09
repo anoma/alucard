@@ -37,6 +37,7 @@
    :name "alucard"))
 
 (defun argument-handlers (&key help output input sly swank port)
+  (verbose:restart-global-controller)
   (flet ((startup-function ()
            (let ((port (or port 4005)))
              (when swank
@@ -94,7 +95,7 @@
   (ccl:save-application "image" :prepend-kernel t
                                 :toplevel-function #'main)
   #+sbcl
-  (sb-ext:save-lisp-and-die #p"sbcl-compressed.image"
+  (sb-ext:save-lisp-and-die #p"./build/alu.image"
                             :toplevel #'main
                             :executable t
                             :COMPRESSION 1))

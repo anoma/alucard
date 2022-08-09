@@ -62,7 +62,6 @@
          :type     constraint-list))
   (:documentation "An alias gate in vamp-ir"))
 
-
 (defclass pub ()
   ((wires :initarg :wires
           :type    list
