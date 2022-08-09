@@ -182,3 +182,14 @@ default project. Note that the repl must be in the ALU directory for
 the fileplath to work!"
   (uiop:symbol-call :clpm-client '#:activate-context (truename "clpmfile")
                     :activate-asdf-integration t))
+
+(defun make-system ()
+  (handler-case (asdf:load-system :alu)
+    (error (c)
+      (declare (ignorable c))
+      (ql:quickload :alu)))
+  (uiop:symbol-call :verbose 'remove-global-controller)
+  #+sbcl
+  (uiop:symbol-call :alu 'save-alu-and-die)
+  #-sbcl
+  (asdf:make :alu))
