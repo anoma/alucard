@@ -1,12 +1,7 @@
 (in-package :alu)
 
-
 ;; We can generate out our image with
-
-
 ;; (asdf:make :alu)
-
-;; however if we want a compressed
 
 (defparameter +command-line-spec+
   '((("input" #\i)
@@ -37,7 +32,6 @@
    :name "alucard"))
 
 (defun argument-handlers (&key help output input sly swank port)
-  (verbose:restart-global-controller)
   (flet ((startup-function ()
            (let ((port (or port 4005)))
              (when swank
@@ -49,7 +43,6 @@
     (cond (help
            (command-line-arguments:show-option-help +command-line-spec+ :sort-names t))
           ((and output input)
-           (prepend-env)
            (load input)
            (alu.pipeline:dump-entry-point-to-file output))
           (output
@@ -57,12 +50,7 @@
           (t
            (start-repl #'startup-function)))))
 
-(defun prepend-env ()
-  (setf *print-pretty* t)
-  (in-package :aluser))
-
 (defun start-repl (&optional (func (lambda () 1)))
-  (prepend-env)
   (funcall func)
   #+ccl
   (ccl:toplevel-loop)
@@ -71,25 +59,8 @@
   #+ecl
   (si:top-level t))
 
-;; these don't seem to do much sadly
-
-;; (uiop/image:register-image-restore-hook (lambda () (in-package :aluser)) nil)
-
-;; (uiop/image:register-image-restore-hook
-;;  (lambda ()
-;;    (setf *package* (find-package :alu))
-;;    (setf *print-pretty* t))
-;;  nil)
-
-;; (uiop/image:register-image-dump-hook
-;;  (lambda ()
-;;    (setf *package* (find-package :alu))
-;;    (setf *print-pretty* t))
-;;  nil)
-
-
-
 ;; If you want compression on your asdf
+;; Though I overload so this isn't needed anymore
 (defun save-alu-and-die ()
   #+ccl
   (ccl:save-application "image" :prepend-kernel t

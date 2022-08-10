@@ -183,6 +183,18 @@ the fileplath to work!"
   (uiop:symbol-call :clpm-client '#:activate-context (truename "clpmfile")
                     :activate-asdf-integration t))
 
+(uiop/image:register-image-restore-hook
+ (lambda ()
+   (uiop:symbol-call :verbose 'restart-global-controller)
+   (setf *package* (find-package :aluser))
+   (setf *print-pretty* t))
+ nil)
+
+(uiop/image:register-image-dump-hook
+ (lambda ()
+   (uiop:symbol-call :verbose 'remove-global-controller))
+ nil)
+
 #+sb-core-compression
 (defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
   (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
@@ -192,5 +204,4 @@ the fileplath to work!"
     (error (c)
       (declare (ignorable c))
       (ql:quickload :alu)))
-  (uiop:symbol-call :verbose 'remove-global-controller)
   (asdf:make :alu))
