@@ -57,4 +57,10 @@ VAL)`."
   (slynk:create-server :port port :dont-close t))
 
 (defun start-swank (&key (port 4005))
+  ;; this maybe works?
+  (swank::add-hook swank::*new-connection-hook*
+                   (lambda (connection)
+                     (declare (ignore connection))
+                     (slynk:set-package :aluser)
+                     (setf *print-pretty* t)))
   (swank:create-server :port port :dont-close t))
