@@ -35,9 +35,9 @@
   (flet ((startup-function ()
            (let ((port (or port 4005)))
              (when swank
-               (swank:create-server :port port :dont-close t))
+               (aluser:start-swank :port port))
              (when sly
-               (slynk:create-server :port port :dont-close t)))
+               (aluser:start-slynk :port port)))
            (when input
              (load input))))
     (cond (help

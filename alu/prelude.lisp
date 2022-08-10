@@ -46,3 +46,14 @@ VAL)`."
     (if lookup
         (pipeline:pipeline lookup)
         (format t "Function ~A is not found" keyword))))
+
+(defun start-slynk (&key (port 4005))
+  ;; doesn't work in CCL for some reason...
+  (slynk-api:add-hook slynk-api:*new-connection-hook*
+                      (lambda (connection)
+                        (declare (ignore connection))
+                        (slynk:set-package :aluser)))
+  (slynk:create-server :port port :dont-close t))
+
+(defun start-swank (&key (port 4005))
+  (swank:create-server :port port :dont-close t))

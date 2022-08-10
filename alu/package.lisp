@@ -16,7 +16,9 @@
            #:with-constraint
            #:vampir
            #:vampir-keyword
-           #:quit))
+           #:quit
+           #:start-swank
+           #:start-slynk))
 
 ;; we should probably move this to the very end of the load order, so
 ;; we can make it a very nice package for users to use.
