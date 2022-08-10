@@ -1,4 +1,4 @@
-	all:
+all:
 	make clean || true
 	ros run --load "alu.asd" --eval "(progn (load \"alu.asd\") (make-system))"
 

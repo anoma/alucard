@@ -87,7 +87,7 @@
     (and (null stack)
          (null current))))
 
-(-> cons (symbol stack) stack)
+(-> new-section (symbol stack) stack)
 (defun new-section (name stack)
   (with-accessors ((stack stack) (current current-section)) stack
     (let ((new-stack
