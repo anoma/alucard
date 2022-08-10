@@ -183,13 +183,14 @@ the fileplath to work!"
   (uiop:symbol-call :clpm-client '#:activate-context (truename "clpmfile")
                     :activate-asdf-integration t))
 
+#+sb-core-compression
+(defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
+  (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
+
 (defun make-system ()
   (handler-case (asdf:load-system :alu)
     (error (c)
       (declare (ignorable c))
       (ql:quickload :alu)))
   (uiop:symbol-call :verbose 'remove-global-controller)
-  #+sbcl
-  (uiop:symbol-call :alu 'save-alu-and-die)
-  #-sbcl
   (asdf:make :alu))
