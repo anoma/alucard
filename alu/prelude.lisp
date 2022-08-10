@@ -52,7 +52,8 @@ VAL)`."
   (slynk-api:add-hook slynk-api:*new-connection-hook*
                       (lambda (connection)
                         (declare (ignore connection))
-                        (slynk:set-package :aluser)))
+                        (slynk:set-package :aluser)
+                        (setf *print-pretty* t)))
   (slynk:create-server :port port :dont-close t))
 
 (defun start-swank (&key (port 4005))
