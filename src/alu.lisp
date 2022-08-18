@@ -147,12 +147,12 @@
   (gensym (symbol-name symbol)))
 
 (defmacro defgate (name arguments &body body)
-  `(defcircuit ,name ,@(mapcar (lambda (x)
-                                 (if (equalp :output (util:symbol-to-keyword (car x)))
-                                     x
-                                     (cons 'private x)))
-                               arguments)
-     ,body))
+  `(defcircuit ,name ,(mapcar (lambda (x)
+                                (if (equalp :output (util:symbol-to-keyword (car x)))
+                                    x
+                                    (cons 'private x)))
+                              arguments)
+     ,@body))
 
 (defmacro def (bind-values &rest body)
   "defines the values in the presence of the body"
