@@ -10,3 +10,6 @@ install:
 
 clean:
 	rm "./build/alu.image"
+
+uninstall:
+	rm '${HOME}/.local/bin/alu.image'
