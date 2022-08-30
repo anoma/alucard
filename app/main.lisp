@@ -42,7 +42,7 @@
                (aluser:start-slynk :port port))
              (when alive
                ;; really janky please fix
-               (asdf:load-system :alive-lsp)
+               (ql:quickload :alive-lsp)
                (uiop:symbol-call :alive/server :start)))
            (when input
              (load input))))
