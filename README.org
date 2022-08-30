@@ -41,14 +41,25 @@ this is =C-u= before running the command)
 
 With [[https://lispcookbook.github.io/cl-cookbook/vscode-alive.html][Alive]] Alucard integration is quite simple, just grab the
 extension off the marketplace and then edit the settings.json with
+
+However the following dependencies will also be needed
+- [[https://github.com/nobody-famous/alive-lsp][alive-lsp]]
+  + This can be installed with
+  + =ros install "nobody-famous/alive-lsp"=
+
 #+begin_src javascript
   {
-      "alive.swank.startupCommand": [
+      "alive.lsp.startCommand": [
           "alu.image",
-          "-s"
+          "-a"
       ]
   }
 #+end_src
+
+when now connecting to a =.lisp= file, alucard will automatically be
+booted up. Note that to get =alucard= in the right package, in the
+bottom left prompt in the =REPL= tab, you should click on the
+=cl-user= and type in =aluser= to set the system in the right package.
 *** Vim
 [[https://github.com/vlime/vlime][vlime]]
 [TODO]
