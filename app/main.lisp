@@ -12,6 +12,8 @@
      :type boolean :optional t :documentation "The current help message")
     (("swank" #\s)
      :type boolean :optional t :documentation "Launches a swank server for text editor integration")
+    (("alive" #\a)
+     :type boolean :optional t :documentation "Launches an alive server for text editor integration")
     (("sly" #\y)
      :type boolean :optional t :documentation "Launches a sly server for emacs integration")
     (("port" #\p)
@@ -31,13 +33,17 @@
    #'argument-handlers
    :name "alucard"))
 
-(defun argument-handlers (&key help output input sly swank port)
+(defun argument-handlers (&key help output input sly swank port alive)
   (flet ((startup-function ()
            (let ((port (or port 4005)))
              (when swank
                (aluser:start-swank :port port))
              (when sly
-               (aluser:start-slynk :port port)))
+               (aluser:start-slynk :port port))
+             (when alive
+               ;; really janky please fix
+               (asdf:load-system :alive-lsp)
+               (uiop:symbol-call :alive/server :start)))
            (when input
              (load input))))
     (cond (help
