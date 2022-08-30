@@ -5,6 +5,7 @@ all:
 install:
 	make clean || true
 	make all
+	mkdir -p '${HOME}/.local/bin/'
 	mv "./build/alu.image" '${HOME}/.local/bin/'
 
 clean:
