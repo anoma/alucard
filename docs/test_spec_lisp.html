@@ -1,0 +1,115 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_spec_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;spec.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;format
+<span class='line'>4</span>     :description &#34;Tests the alucard storage format&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;format)
+<span class='line'>7</span> 
+<span class='line'>8</span> (defclass test-mixin ()
+<span class='line'>9</span>   ((foo :initarg :foo)))
+<span class='line'>10</span> 
+<span id='f0s0'><span class='line'>11</span> (defclass test-class (test-mixin ir:protect-slots-mixin)
+<span class='line'>12</span>   ((bar :initarg :bar)
+<span class='line'>13</span>    (baz :initarg :baz)
+<span class='line'>14</span>    &#59;&#59; Must provide this&#44; as allocation happens on the super class level &#9785;
+<span class='line'>15</span>    (ir:protected :initform <span id='f0s1'>(make-hash-table :test <span id='f0s2'>&#35;&#39;eq</span>)</span> :allocation :class)))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c3'> (lambda nil <span id='f0c2'>(funcall &#39;make-hash-table <span id='f0c1'>&#39;:test</span> <span id='f0c0'>(function eq)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>16</span> 
+<span class='line'>17</span> (ir:protect-slots &#39;test-class &#39;baz)
+<span class='line'>18</span> 
+<span class='line'>19</span> &#59;&#59; (slot-value (c2cl:class-prototype (find-class &#39;test)) &#39;protected)
+<span class='line'>20</span> 
+<span class='line'>21</span> (test generic-data-considerations
+<span class='line'>22</span>   (let ((expected &#39;((:bar &#46; 5))))
+<span class='line'>23</span>     (is
+<span class='line'>24</span>      (equalp expected
+<span class='line'>25</span>              (ir:direct-slots (make-instance &#39;test-class :foo 3 :bar 5 :baz 10))))))
+<span class='line'>26</span> 
+<span class='line'>27</span> 
+<span class='line'>28</span> (test record-creation-and-lookup-works
+<span class='line'>29</span>   (for-all ((name  (gen-string))
+<span class='line'>30</span>             (value (gen-integer)))
+<span class='line'>31</span>     (let ((keyword (intern name :keyword)))
+<span class='line'>32</span>       (is
+<span class='line'>33</span>        (equal (ir:lookup-record (ir:make-record :name :example keyword value)
+<span class='line'>34</span>                                  keyword)
+<span class='line'>35</span>               value)))))
+<span class='line'>36</span> 
+<span class='line'>37</span> (test syntax-to-refernece-format
+<span class='line'>38</span>   (let ((applied (ir:to-type-reference-format &#39;(int 64)))
+<span class='line'>39</span>         (nested  (ir:to-type-reference-format &#39;(int (int 64)))))
+<span class='line'>40</span>     (is (eq :INT
+<span class='line'>41</span>             (ir:name (ir:func applied))))
+<span class='line'>42</span>     (is (&#61; 64
+<span class='line'>43</span>            (car (ir:arguments applied))))
+<span class='line'>44</span>     (is (eq :INT
+<span class='line'>45</span>             (ir:name (ir:func (car (ir:arguments nested))))))))
+<span class='line'>46</span> 
+<span class='line'>47</span> 
+<span class='line'>48</span> &#59;&#59; Note for later&#44; we can have exuastion
+<span class='line'>49</span> &#59;&#59; (match-of term (make-application :function :hi )
+<span class='line'>50</span> &#59;&#59;   ((application func) func))
+<span class='line'>51</span> 
+<span class='line'>52</span> &#59;&#59; (typecase-of term 3
+<span class='line'>53</span> &#59;&#59;   (number
+<span class='line'>54</span> &#59;&#59;    2)
+<span class='line'>55</span> &#59;&#59;   (application
+<span class='line'>56</span> &#59;&#59;    2)
+<span class='line'>57</span> &#59;&#59;   (otherwise
+<span class='line'>58</span> &#59;&#59;    2))
+</code></div>
+</body></html>

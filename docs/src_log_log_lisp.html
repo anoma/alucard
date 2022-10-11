@@ -1,0 +1,138 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_log_log_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;log;log.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;log)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (deftype mode ()
+<span class='line'>4</span>   &#34;Determines the behavior of the &#34;
+<span class='line'>5</span>   <span id='f0s1'>&#96;(or (eql :report) (eql :error))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c86'> (lambda (&#35;:whole54858 &#35;:environment54859)
+   <span id='f0c85'>(let* ((&#35;:args54860 <span id='f0c83'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c80'>(cdr &#35;:whole54858)</span> nil 0 0)</span>))
+     <span id='f0c84'>&#39;(or (eql :report) (eql :error))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>6</span> 
+<span class='line'>7</span> (defparameter *mode*
+<span class='line'>8</span>   :error
+<span class='line'>9</span>   &#34;The mode in which the error reporter works in&#46;
+<span class='line'>10</span> :report    Reports the error to the user&#44; with the object being returned
+<span class='line'>11</span> :error     Reports the error to the user&#44; with a simple error thrown&#34;)
+<span class='line'>12</span> 
+<span class='line'>13</span> (define-condition error (cl:error)
+<span class='line'>14</span>   ((data :initarg :data
+<span class='line'>15</span>          :reader  data)))
+<span class='line'>16</span> 
+<span id='f0s2'><span class='line'>17</span> (defun error (object-in-question cat message &#38;rest args-to-message)
+<span class='line'>18</span>   &#34;Reports Errors to the user&#34;
+<span class='line'>19</span>   <span id='f0s3'>(let ((stack   <span id='f0s4'>(ignore-errors <span id='f0s5'>(spc:stack object-in-question)</span>)</span>)
+<span class='line'>20</span>         (message <span id='f0s6'>(apply &#35;&#39;format nil message args-to-message)</span>))
+<span class='line'>21</span>     <span id='f0s7'>(v:error cat <span id='f0s8'>&#34;&#126;A&#126;&#37;&#91;STACK&#93;&#126;&#37;&#126;A&#34;</span> message stack)</span>
+<span class='line'>22</span>     <span id='f0s9'>(etypecase-of mode *mode*
+<span class='line'>23</span>       ((eql :report) object-in-question)
+<span class='line'>24</span>       ((eql :error)  <span id='f0s10'>(cl:error <span id='f0s11'>&#39;error </span>:data object-in-question)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c78'> (lambda (object-in-question cat message &#38;rest args-to-message)
+   <span id='f0c77'>(let ((stack
+          <span id='f0c76'>(block &#35;:g54899
+            <span id='f0c75'>(ccl::lambda-bind (condition)
+             (<span id='f0c72'>(let* ((&#35;:g54900 <span id='f0c71'>(cons <span id='f0c70'>&#39;common-lisp:error</span> nil)</span>))
+                <span id='f0c69'>(catch &#35;:g54900
+                  <span id='f0c67'>(let* ((ccl::&#37;handlers&#37; <span id='f0c66'>(cons &#35;:g54900 ccl::&#37;handlers&#37;)</span>))
+                    <span id='f0c63'>(return-from &#35;:g54899 <span id='f0c62'>(funcall &#39;spc:stack object-in-question)</span>)</span>)</span>)</span>)</span>)
+             <span id='f0c74'>(values nil condition)</span>)</span>)</span>)
+         (message <span id='f0c51'>(apply &#39;format nil message args-to-message)</span>))
+     (progn <span id='f0c60'>(funcall &#39;dissect::stack-capper
+                     <span id='f0c59'>(function <span id='f0c58'>(lambda nil <span id='f0c57'>(funcall &#39;verbose:log <span id='f0c56'>&#39;:error</span> cat <span id='f0c53'>&#39;&#34;&#126;A&#126;&#37;&#91;STACK&#93;&#126;&#37;&#126;A&#34;</span> message stack)</span>)</span>)</span>)</span>
+            <span id='f0c48'>(let* ((&#35;:x54901 *mode*))
+              <span id='f0c46'>(let* ((&#35;:g54902 &#35;:x54901))
+                <span id='f0c45'>(if <span id='f0c23'>(not &#39;:ne <span id='f0c22'>(if <span id='f0c21'>(eq &#35;:g54902 &#39;:report)</span> <span id='f0c19'>&#39;(:report)</span> nil)</span>)</span>
+                    <span id='f0c18'>(progn nil object-in-question)</span>
+                    <span id='f0c44'>(if <span id='f0c33'>(not &#39;:ne <span id='f0c32'>(if <span id='f0c30'>(eq &#35;:g54902 &#39;:error)</span> <span id='f0c31'>&#39;(:error)</span> nil)</span>)</span>
+                        <span id='f0c28'>(progn nil <span id='f0c27'>(values (funcall &#39;common-lisp:error <span id='f0c25'>&#39;error</span> <span id='f0c24'>&#39;:data</span> object-in-question))</span>)</span>
+                        <span id='f0c43'>(if <span id='f0c42'>(progn &#35;:g54902 t)</span>
+                            <span id='f0c40'>(progn nil
+                                   <span id='f0c39'>(values (funcall &#39;common-lisp:error
+                                                    <span id='f0c36'>&#39;type-error</span>
+                                                    <span id='f0c35'>&#39;:datum</span>
+                                                    &#35;:x54901
+                                                    <span id='f0c34'>&#39;:expected-type</span>
+                                                    <span id='f0c38'>&#39;mode</span>))</span>)</span>
+                            nil)</span>)</span>)</span>)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>25</span> 
+<span id='f0s12'><span class='line'>26</span> (defmethod v:format-message ((stream stream) (message v:message))
+<span class='line'>27</span>   <span id='f0s13'>(format stream <span id='f0s14'>&#34;&#126;a&#126;&#37;&#91;&#126;5&#44;a&#93; &#126;&#123;&#60;&#126;a&#62;&#126;&#125;:&#126;&#37;&#126;A&#34;</span>
+<span class='line'>28</span>           <span id='f0s15'>(local-time:format-timestring
+<span class='line'>29</span>            NIL <span id='f0s16'>(v:timestamp message)</span> :format v:*timestamp-format*)</span>
+<span class='line'>30</span>           <span id='f0s17'>(v:level message)</span>
+<span class='line'>31</span>           <span id='f0s18'>(v:categories message)</span>
+<span class='line'>32</span>           <span id='f0s19'>(v:format-message NIL <span id='f0s20'>(v:content message)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c16'> (lambda (&#35;:next-method-context stream message)
+   <span id='f0c15'>(flet ()
+     <span id='f0c14'>(funcall &#39;format
+              stream
+              <span id='f0c7'>&#39;&#34;&#126;a&#126;&#37;&#91;&#126;5&#44;a&#93; &#126;&#123;&#60;&#126;a&#62;&#126;&#125;:&#126;&#37;&#126;A&#34;</span>
+              <span id='f0c13'>(funcall &#39;local-time:format-timestring
+                       nil
+                       <span id='f0c12'>(funcall &#39;verbose:timestamp message)</span>
+                       <span id='f0c10'>&#39;:format</span>
+                       verbose:*timestamp-format*)</span>
+              <span id='f0c6'>(funcall &#39;verbose:level message)</span>
+              <span id='f0c1'>(funcall &#39;verbose:categories message)</span>
+              <span id='f0c4'>(funcall &#39;verbose:format-message nil <span id='f0c3'>(funcall &#39;verbose:content message)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

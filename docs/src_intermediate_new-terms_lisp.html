@@ -1,0 +1,205 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_intermediate_new-terms_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;intermediate;new-terms.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;ir&#46;new-terms)
+<span class='line'>2</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>3</span> &#59;&#59; New Terms
+<span class='line'>4</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>5</span> 
+<span class='line'>6</span> (defclass bind (spc:meta-mixin)
+<span class='line'>7</span>   ((var :initarg  :variable
+<span class='line'>8</span>         :type     keyword
+<span class='line'>9</span>         :accessor spc:var
+<span class='line'>10</span>         :documentation &#34;The variable that will be bound&#34;)
+<span class='line'>11</span>    (value :initarg :value
+<span class='line'>12</span>           :accessor spc:value
+<span class='line'>13</span>           :type     spc:term-type-manipulation
+<span class='line'>14</span>           :documentation &#34;the value that is bound&#34;))
+<span class='line'>15</span>   (:documentation &#34;A let with a more restrictive value type&#34;))
+<span class='line'>16</span> 
+<span class='line'>17</span> (defclass multiple-bind (spc:meta-mixin)
+<span class='line'>18</span>   ((variables :initarg  :variables
+<span class='line'>19</span>               :type     list
+<span class='line'>20</span>               :accessor spc:var
+<span class='line'>21</span>               :documentation &#34;The variables of type &#96;keyword&#39; that will be bound&#34;)
+<span class='line'>22</span>    (value :initarg :value
+<span class='line'>23</span>           :accessor spc:value
+<span class='line'>24</span>           :type     spc:term-type-manipulation
+<span class='line'>25</span>           :documentation &#34;the value that is bound&#34;))
+<span class='line'>26</span>   (:documentation &#34;A let that can bind many return values&#34;))
+<span class='line'>27</span> 
+<span class='line'>28</span> (defclass standalone-ret (spc:meta-mixin)
+<span class='line'>29</span>   ((variable :initarg  :variable
+<span class='line'>30</span>              :type     list
+<span class='line'>31</span>              :accessor spc:var
+<span class='line'>32</span>              :documentation &#34;The name that will be returned&#34;))
+<span class='line'>33</span>   (:documentation &#34;Values which will be returned&#34;))
+<span class='line'>34</span> 
+<span class='line'>35</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>36</span> &#59;&#59; Constructors
+<span class='line'>37</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>38</span> 
+<span class='line'>39</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>40</span> &#59;&#59; Bind Functionality
+<span class='line'>41</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>42</span> 
+<span id='f0s0'><span class='line'>43</span> (defmethod print-object ((obj bind) stream)
+<span class='line'>44</span>   <span id='f0s1'>(print-unreadable-object (obj stream)
+<span class='line'>45</span>     <span id='f0s2'>(with-accessors ((value spc:value) (var spc:var)) obj
+<span class='line'>46</span>       <span id='f0s3'>(format stream <span id='f0s4'>&#34;LET &#126;A &#61; &#126;A&#34;</span> var value)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c45'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c44'>(flet ()
+     <span id='f0c43'>(let* ((&#35;:g54465
+             <span id='f0c38'>(function <span id='f0c37'>(lambda nil
+                         <span id='f0c36'>(let* ((&#35;:g54466 obj))
+                           <span id='f0c35'>(funcall &#39;format
+                                    stream
+                                    <span id='f0c32'>&#39;&#34;LET &#126;A &#61; &#126;A&#34;</span>
+                                    <span id='f0c34'>(funcall &#39;spc:var &#35;:g54466)</span>
+                                    <span id='f0c30'>(funcall &#39;spc:value &#35;:g54466)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c42'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream nil nil &#35;:g54465)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>47</span> 
+<span class='line'>48</span> (-&#62; make-bind (&#38;key (:var keyword) (:val spc:term-type-manipulation)) bind)
+<span id='f0s5'><span class='line'>49</span> (defun make-bind (&#38;key (var  <span id='f0s6'>(error <span id='f0s7'>&#34;Please provide the variable&#34;</span>)</span>)
+<span class='line'>50</span>                        (val  <span id='f0s8'>(error <span id='f0s9'>&#34;Please provide the value field&#34;</span>)</span>))
+<span class='line'>51</span>   <span id='f0s10'>(values
+<span class='line'>52</span>    <span id='f0s11'>(make-instance &#39;bind :value val :variable var)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c60'> (lambda (&#38;key ((:var var) <span id='f0c49'>(values (funcall &#39;error <span id='f0c48'>&#39;&#34;Please provide the variable&#34;</span>))</span> &#35;:compiler-var)
+          ((:val val) <span id='f0c47'>(values (funcall &#39;error <span id='f0c46'>&#39;&#34;Please provide the value field&#34;</span>))</span> &#35;:compiler-var))
+   <span id='f0c59'>(values <span id='f0c58'>(let* ()
+             <span id='f0c57'>(funcall <span id='f0c56'>(ccl::&#37;svref <span id='f0c55'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003C26DBF&#62;))</span> 3)</span>
+                      <span id='f0c54'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003C26DBF&#62;))</span>
+                      <span id='f0c52'>&#39;:value</span>
+                      val
+                      <span id='f0c53'>&#39;:variable</span>
+                      var)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>53</span> 
+<span class='line'>54</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>55</span> &#59;&#59; Multiple Bind Functionality
+<span class='line'>56</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>57</span> 
+<span id='f0s12'><span class='line'>58</span> (defmethod print-object ((obj multiple-bind) stream)
+<span class='line'>59</span>   <span id='f0s13'>(print-unreadable-object (obj stream)
+<span class='line'>60</span>     <span id='f0s14'>(with-accessors ((value spc:value) (var spc:var)) obj
+<span class='line'>61</span>       <span id='f0s15'>(format stream <span id='f0s16'>&#34;MULTI-LET &#126;A &#61; &#126;A&#34;</span> var value)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c88'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c87'>(flet ()
+     <span id='f0c86'>(let* ((&#35;:g54497
+             <span id='f0c85'>(function <span id='f0c84'>(lambda nil
+                         <span id='f0c83'>(let* ((&#35;:g54498 obj))
+                           <span id='f0c82'>(funcall &#39;format
+                                    stream
+                                    <span id='f0c81'>&#39;&#34;MULTI-LET &#126;A &#61; &#126;A&#34;</span>
+                                    <span id='f0c77'>(funcall &#39;spc:var &#35;:g54498)</span>
+                                    <span id='f0c79'>(funcall &#39;spc:value &#35;:g54498)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c75'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream nil nil &#35;:g54497)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>62</span> 
+<span class='line'>63</span> (-&#62; make-multiple-bind
+<span class='line'>64</span>     (&#38;key (:var list) (:val spc:term-no-binding)) multiple-bind)
+<span id='f0s17'><span class='line'>65</span> (defun make-multiple-bind (&#38;key (var  <span id='f0s18'>(error <span id='f0s19'>&#34;Please provide the variable&#34;</span>)</span>)
+<span class='line'>66</span>                                 (val  <span id='f0s20'>(error <span id='f0s21'>&#34;Please provide the value field&#34;</span>)</span>))
+<span class='line'>67</span>   <span id='f0s22'>(values
+<span class='line'>68</span>    <span id='f0s23'>(make-instance &#39;multiple-bind :value val :variables var)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t17')><span class='toggle' id='pf0t17'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(17)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t17'><code><span id='f0c28'> (lambda (&#38;key ((:var var) <span id='f0c15'>(values (funcall &#39;error <span id='f0c14'>&#39;&#34;Please provide the variable&#34;</span>))</span> &#35;:compiler-var)
+          ((:val val) <span id='f0c17'>(values (funcall &#39;error <span id='f0c16'>&#39;&#34;Please provide the value field&#34;</span>))</span> &#35;:compiler-var))
+   <span id='f0c27'>(values <span id='f0c26'>(let* ()
+             <span id='f0c25'>(funcall <span id='f0c23'>(ccl::&#37;svref <span id='f0c22'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035DE87F&#62;))</span> 3)</span>
+                      <span id='f0c18'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035DE87F&#62;))</span>
+                      <span id='f0c19'>&#39;:value</span>
+                      val
+                      <span id='f0c20'>&#39;:variables</span>
+                      var)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>69</span> 
+<span class='line'>70</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>71</span> &#59;&#59; Return Functionality
+<span class='line'>72</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span id='f0s24'><span class='line'>73</span> (defmethod print-object ((obj standalone-ret) stream)
+<span class='line'>74</span>   <span id='f0s25'>(print-unreadable-object (obj stream :type t)
+<span class='line'>75</span>     <span id='f0s26'>(format stream <span id='f0s27'>&#34;&#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125;&#34;</span> <span id='f0s28'>(spc:var obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c13'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c12'>(flet ()
+     <span id='f0c11'>(let* ((&#35;:g54529 <span id='f0c10'>(function <span id='f0c9'>(lambda nil <span id='f0c8'>(funcall &#39;format stream <span id='f0c5'>&#39;&#34;&#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125;&#34;</span> <span id='f0c7'>(funcall &#39;spc:var obj)</span>)</span>)</span>)</span>))
+       <span id='f0c3'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g54529)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>76</span> 
+<span class='line'>77</span> 
+<span id='f0s29'><span class='line'>78</span> (defun make-standalone-ret (&#38;key (var <span id='f0s30'>(error <span id='f0s31'>&#34;Please provide the return name&#34;</span>)</span>))
+<span class='line'>79</span>   <span id='f0s32'>(values
+<span class='line'>80</span>    <span id='f0s33'>(make-instance &#39;standalone-ret :variable var)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t29')><span class='toggle' id='pf0t29'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(29)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t29'><code><span id='f0c71'> (lambda (&#38;key ((:var var) <span id='f0c70'>(values (funcall &#39;error <span id='f0c69'>&#39;&#34;Please provide the return name&#34;</span>))</span> &#35;:compiler-var))
+   <span id='f0c68'>(values <span id='f0c67'>(let* ()
+             <span id='f0c66'>(funcall <span id='f0c63'>(ccl::&#37;svref <span id='f0c62'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035FBC3F&#62;))</span> 3)</span>
+                      <span id='f0c65'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035FBC3F&#62;))</span>
+                      <span id='f0c64'>&#39;:variable</span>
+                      var)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

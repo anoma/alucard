@@ -1,0 +1,106 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_typecheck_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;typecheck.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;typecheck
+<span class='line'>4</span>     :description &#34;Tests the type checker of alucard&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;typecheck)
+<span class='line'>7</span> 
+<span class='line'>8</span> (test type-equality-works-as-expected
+<span class='line'>9</span>   (is (check:type-equality (ir:to-type-reference-format &#39;(int 32))
+<span class='line'>10</span>                            (ir:to-type-reference-format &#39;(int 32))))
+<span class='line'>11</span>   (is (check:type-equality (ir:to-type-reference-format &#39;(int bar))
+<span class='line'>12</span>                            (ir:to-type-reference-format &#39;(int bar))))
+<span class='line'>13</span>   (is (null
+<span class='line'>14</span>        (check:type-equality (ir:to-type-reference-format &#39;(int 64))
+<span class='line'>15</span>                             (ir:to-type-reference-format &#39;(int 32))))))
+<span class='line'>16</span> 
+<span class='line'>17</span> 
+<span class='line'>18</span> (test find-no-data
+<span class='line'>19</span>   (is
+<span class='line'>20</span>    (null
+<span class='line'>21</span>     (alu&#46;typechecker&#46;check::find-type-info
+<span class='line'>22</span>      (ir:make-reference :name :foo)
+<span class='line'>23</span>      :foo
+<span class='line'>24</span>      (check::make-starting-hole
+<span class='line'>25</span>       &#39;(:foo :bar)
+<span class='line'>26</span>       (make-instance &#39;check:typing-context))))))
+<span class='line'>27</span> 
+<span class='line'>28</span> (test running-the-type-checker
+<span class='line'>29</span>   (flet ((type-check (x)
+<span class='line'>30</span>            (pipeline:to-typecheck (storage:lookup-function x))))
+<span class='line'>31</span>     (let ((old-categories (v:repl-categories)))
+<span class='line'>32</span>       (setf (v:repl-categories) nil)
+<span class='line'>33</span>       &#59;&#59; Ignore categories
+<span class='line'>34</span>       (finishes (type-check :constrain))
+<span class='line'>35</span>       (finishes (type-check :poly-check))
+<span class='line'>36</span>       (finishes (type-check :array-lookup-equation))
+<span class='line'>37</span>       (finishes (type-check :int-return))
+<span class='line'>38</span>       (finishes (type-check :array-type-check))
+<span class='line'>39</span>       (finishes (type-check :array-creation-check))
+<span class='line'>40</span>       (finishes (type-check :array-from-data-check))
+<span class='line'>41</span>       (finishes (type-check :array-from-data-check-consts))
+<span class='line'>42</span>       (finishes (type-check :basic-unification))
+<span class='line'>43</span>       (signals error (type-check :invalid-array-type-check))
+<span class='line'>44</span>       (signals error (type-check :invalid-type-unification))
+<span class='line'>45</span>       (signals error (type-check :invalid-record-lookup))
+<span class='line'>46</span>       (signals error (type-check :invalid-record-lookup-type))
+<span class='line'>47</span>       (signals error (type-check :manual-constraint))
+<span class='line'>48</span>       (signals error (type-check :invalid-record-primitive-2))
+<span class='line'>49</span>       &#59;&#59; different error than 2
+<span class='line'>50</span>       (signals error (type-check :invalid-record-primitive))
+<span class='line'>51</span>       (signals error (type-check :invalid-record-creation))
+<span class='line'>52</span>       (signals error (type-check :invalid-application-unification))
+<span class='line'>53</span>       (signals error (type-check :invalid-type-check))
+<span class='line'>54</span>       (setf (v:repl-categories) old-categories))))
+</code></div>
+</body></html>

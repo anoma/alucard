@@ -1,0 +1,187 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_relocation_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;relocation.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;relocation
+<span class='line'>4</span>   :description &#34;Test the relocation functionality&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;relocation)
+<span class='line'>7</span> 
+<span class='line'>8</span> (defparameter *example-closure*
+<span class='line'>9</span>   (closure:allocate
+<span class='line'>10</span>    :fi &#39;((:plane &#46; :fi-plane)
+<span class='line'>11</span>          (:point &#46; ((:x &#46; :fi-point-x) (:y &#46; :fi-point-y))))))
+<span class='line'>12</span> 
+<span class='line'>13</span> (defparameter *example-bind*
+<span class='line'>14</span>   (ir:make-bind :var :hi
+<span class='line'>15</span>                  :val (ir:make-reference :name :fi)))
+<span class='line'>16</span> 
+<span class='line'>17</span> (defparameter *example-bind-app*
+<span class='line'>18</span>   (ir:make-bind
+<span class='line'>19</span>    :var :hi
+<span class='line'>20</span>    :val (ir:make-application :function (ir:make-reference :name :arg-foo)
+<span class='line'>21</span>                               :arguments &#39;(1 5 6))))
+<span class='line'>22</span> 
+<span class='line'>23</span> (defparameter *example-bind-record*
+<span class='line'>24</span>   (ir:make-bind
+<span class='line'>25</span>    :var :hi
+<span class='line'>26</span>    :val (ir:make-record :name :test
+<span class='line'>27</span>                          :own   (ir:make-reference :name :fi)
+<span class='line'>28</span>                          :other (ir:make-reference :name :non-exist))))
+<span class='line'>29</span> 
+<span class='line'>30</span> (defparameter *example-bind-lookup-1*
+<span class='line'>31</span>   (ir:make-bind
+<span class='line'>32</span>    :var :hi
+<span class='line'>33</span>    :val (ir:make-record-lookup :record (ir:make-reference :name :fi)
+<span class='line'>34</span>                                 :field :plane)))
+<span class='line'>35</span> (defparameter *example-bind-lookup-2*
+<span class='line'>36</span>   (ir:make-bind
+<span class='line'>37</span>    :var :hi
+<span class='line'>38</span>    :val (ir:make-record-lookup :record (ir:make-reference :name :fi)
+<span class='line'>39</span>                                 :field :point)))
+<span class='line'>40</span> 
+<span class='line'>41</span> (test relocate-let-ref
+<span class='line'>42</span>   (let ((expected-let-names &#39;(:hi-plane :hi-point-x :hi-point-y))
+<span class='line'>43</span>         (expected-let-resul &#39;(:fi-plane :fi-point-x :fi-point-y))
+<span class='line'>44</span>         (expected-storage   &#39;((:PLANE &#46; :HI-PLANE)
+<span class='line'>45</span>                               (:POINT
+<span class='line'>46</span>                                (:X &#46; :HI-POINT-X)
+<span class='line'>47</span>                                (:Y &#46; :HI-POINT-Y))))
+<span class='line'>48</span>         (relocation (relocate:relocate-let *example-bind* *example-closure*)))
+<span class='line'>49</span>     (mapcar (lambda (input res bind)
+<span class='line'>50</span>               (is (eq input (ir:var bind)))
+<span class='line'>51</span>               (is (eq res (ir:name (ir:value bind)))))
+<span class='line'>52</span>             expected-let-names
+<span class='line'>53</span>             expected-let-resul
+<span class='line'>54</span>             (relocate:rel-forms relocation))
+<span class='line'>55</span>     (is (equalp expected-storage (closure:lookup (relocate:rel-closure relocation)
+<span class='line'>56</span>                                                  :hi)))))
+<span class='line'>57</span> (test relocate-let-lookup
+<span class='line'>58</span>   (let ((expected-let-names &#39;(:hi-point-x :hi-point-y))
+<span class='line'>59</span>         (expected-let-resul &#39;(:fi-point-x :fi-point-y))
+<span class='line'>60</span>         (expected-storage   &#39;((:X &#46; :HI-POINT-X)
+<span class='line'>61</span>                               (:Y &#46; :HI-POINT-Y)))
+<span class='line'>62</span>         (relocation-1 (relocate:relocate-let *example-bind-lookup-1*
+<span class='line'>63</span>                                               *example-closure*))
+<span class='line'>64</span>         (relocation-2 (relocate:relocate-let *example-bind-lookup-2*
+<span class='line'>65</span>                                               *example-closure*)))
+<span class='line'>66</span>     (mapcar (lambda (input res bind)
+<span class='line'>67</span>               (is (eq input (ir:var bind)))
+<span class='line'>68</span>               (is (eq res (ir:name (ir:value bind)))))
+<span class='line'>69</span>             expected-let-names
+<span class='line'>70</span>             expected-let-resul
+<span class='line'>71</span>             (relocate:rel-forms relocation-2))
+<span class='line'>72</span>     (is (equalp expected-storage
+<span class='line'>73</span>                 (closure:lookup (relocate:rel-closure relocation-2)
+<span class='line'>74</span>                                 :hi)))
+<span class='line'>75</span>     &#59;&#59; time for the easier one
+<span class='line'>76</span>     (let ((only-form (car (relocate:rel-forms relocation-1))))
+<span class='line'>77</span>       (is (eq :hi
+<span class='line'>78</span>               (ir:var only-form)))
+<span class='line'>79</span>       (is (eq :fi-plane
+<span class='line'>80</span>               (ir:name (ir:value only-form)))))))
+<span class='line'>81</span> 
+<span class='line'>82</span> (test relocate-let-record
+<span class='line'>83</span>   (let ((expected-let-names &#39;(:hi-own-plane
+<span class='line'>84</span>                               :hi-own-point-x :hi-own-point-y
+<span class='line'>85</span>                               :hi-other))
+<span class='line'>86</span>         (expected-let-resul &#39;(:fi-plane
+<span class='line'>87</span>                               :fi-point-x :fi-point-y
+<span class='line'>88</span>                               :non-exist))
+<span class='line'>89</span>         (expected-storage   &#39;((:OWN &#46; ((:PLANE &#46; :HI-OWN-PLANE)
+<span class='line'>90</span>                                        (:POINT &#46; ((:X &#46; :HI-OWN-POINT-X)
+<span class='line'>91</span>                                                   (:Y &#46; :HI-OWN-POINT-Y)))))
+<span class='line'>92</span>                               (:OTHER &#46; :HI-OTHER)))
+<span class='line'>93</span>         (relocation (relocate:relocate-let *example-bind-record* *example-closure*)))
+<span class='line'>94</span>     (mapcar (lambda (input res bind)
+<span class='line'>95</span>               (is (eq input (ir:var bind)))
+<span class='line'>96</span>               (is (eq res (ir:name (ir:value bind)))))
+<span class='line'>97</span>             expected-let-names
+<span class='line'>98</span>             expected-let-resul
+<span class='line'>99</span>             (relocate:rel-forms relocation))
+<span class='line'>100</span>     (is (equalp expected-storage (closure:lookup (relocate:rel-closure relocation)
+<span class='line'>101</span>                                                  :hi)))))
+<span class='line'>102</span> 
+<span class='line'>103</span> (test relocate-let-app
+<span class='line'>104</span>   (let ((expected-binds   &#39;(:HI-PLANE-X :HI-PLANE-Y :HI-TIME-X :HI-TIME-Y))
+<span class='line'>105</span>         (expected-storage &#39;((:PLANE
+<span class='line'>106</span>                              (:X &#46; :HI-PLANE-X)
+<span class='line'>107</span>                              (:Y &#46; :HI-PLANE-Y))
+<span class='line'>108</span>                             (:TIME
+<span class='line'>109</span>                              (:X &#46; :HI-TIME-X)
+<span class='line'>110</span>                              (:Y &#46; :HI-TIME-Y))))
+<span class='line'>111</span>         (relocation (relocate:relocate-let *example-bind-app*
+<span class='line'>112</span>                                            *example-closure*)))
+<span class='line'>113</span> 
+<span class='line'>114</span>     &#59;&#59; Tests begin here
+<span class='line'>115</span>     (is (equalp expected-binds (ir:var (car (relocate:rel-forms relocation)))))
+<span class='line'>116</span>     (is (equalp (ir:value *example-bind-app*)
+<span class='line'>117</span>                 (ir:value (car (relocate:rel-forms relocation))))
+<span class='line'>118</span>         &#34;The function should not change&#34;)
+<span class='line'>119</span>     (is (equalp expected-storage
+<span class='line'>120</span>                 (closure:lookup (relocate:rel-closure relocation)
+<span class='line'>121</span>                                 :hi)))))
+<span class='line'>122</span> 
+<span class='line'>123</span> (test initial-closure-from-circuit
+<span class='line'>124</span>   (let* ((closure (relocate:initial-closure-from-circuit
+<span class='line'>125</span>                    (storage:lookup-function :arg-circuit-input)))
+<span class='line'>126</span> 
+<span class='line'>127</span>          (keys (closure:keys closure))
+<span class='line'>128</span>          (expected-storage &#96;((:X &#46; &#44;(intern (format nil &#34;&#126;A-X&#34; (car keys)) :keyword))
+<span class='line'>129</span>                              (:Y &#46; &#44;(intern (format nil &#34;&#126;A-Y&#34; (car keys)) :keyword)))))
+<span class='line'>130</span> 
+<span class='line'>131</span>     &#59;&#59; Tests begin here
+<span class='line'>132</span>     (is (&#61; 1 (length keys)))
+<span class='line'>133</span>     (is (equalp expected-storage (closure:lookup closure (car keys))))
+<span class='line'>134</span>     (is (equalp nil (closure:lookup closure :root))
+<span class='line'>135</span>         &#34;Root is not a record&#44; we don&#39;t ingest it&#46;&#34;)))
+</code></div>
+</body></html>

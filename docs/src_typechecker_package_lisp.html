@@ -1,0 +1,165 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_typechecker_package_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;typechecker;package.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> 
+<span class='line'>2</span> (defpackage &#35;:alu&#46;typechecker&#46;types
+<span class='line'>3</span>   (:documentation &#34;Holds the various types needed for the type
+<span class='line'>4</span> checker&#34;)
+<span class='line'>5</span>   (:local-nicknames (&#35;:ir         &#35;:alu&#46;ir)
+<span class='line'>6</span>                     (&#35;:closure    &#35;:alu&#46;closure)
+<span class='line'>7</span>                     (&#35;:dependency &#35;:alu&#46;closure&#46;dependency)
+<span class='line'>8</span>                     (&#35;:closure    &#35;:alu&#46;closure))
+<span class='line'>9</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>10</span>   (:export
+<span class='line'>11</span>    &#59;&#59; Context data type
+<span class='line'>12</span>    :typing-context :holes :hole-info :dependency :typing-closure
+<span class='line'>13</span> 
+<span class='line'>14</span>    &#59;&#59; Known Type Information
+<span class='line'>15</span>    :type-info :type-info-size :type-info-type :type-info-p :make-type-info
+<span class='line'>16</span> 
+<span class='line'>17</span>    &#59;&#59; Function return types
+<span class='line'>18</span>    :typing-result
+<span class='line'>19</span> 
+<span class='line'>20</span>    &#59;&#59; Known Hole Information
+<span class='line'>21</span>    :hole-information :hole-information-unrefined :hole-information-term
+<span class='line'>22</span>    :make-hole-information :hole-information-p
+<span class='line'>23</span> 
+<span class='line'>24</span>    :hole
+<span class='line'>25</span>    :hole-conditions
+<span class='line'>26</span>    :same-as :same-as-value :make-same-as :same-as-p
+<span class='line'>27</span>    :depends-on :depends-on-value :make-depends-on :depends-on-p
+<span class='line'>28</span> 
+<span class='line'>29</span>    &#59;&#59; Querying information
+<span class='line'>30</span>    :current-information
+<span class='line'>31</span>    :lookup-type
+<span class='line'>32</span> 
+<span class='line'>33</span>    &#59;&#59; Primitive information
+<span class='line'>34</span>    :known-primitve-types
+<span class='line'>35</span>    :known-primitve-functions
+<span class='line'>36</span> 
+<span class='line'>37</span>    &#59;&#59; Operations on Datatypes
+<span class='line'>38</span>    :add-hole-formula))
+<span class='line'>39</span> 
+<span class='line'>40</span> (defpackage &#35;:alu&#46;typechecker&#46;size
+<span class='line'>41</span>   (:documentation &#34;Calculates the size of various types found in the Alucard
+<span class='line'>42</span> language&#46; The name typically refers to the value being calculated&#46;&#34;)
+<span class='line'>43</span>   (:local-nicknames (&#35;:ir      &#35;:alu&#46;ir)
+<span class='line'>44</span>                     (&#35;:storage &#35;:alu&#46;storage)
+<span class='line'>45</span>                     (&#35;:types   &#35;:alu&#46;typechecker&#46;types)
+<span class='line'>46</span>                     (&#35;:log     &#35;:alu&#46;log))
+<span class='line'>47</span>   (:shadow :declaration)
+<span class='line'>48</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>49</span>   (:export
+<span class='line'>50</span>    :reference
+<span class='line'>51</span>    :storage
+<span class='line'>52</span>    :declaration
+<span class='line'>53</span>    :declaration-contents
+<span class='line'>54</span>    :primitive))
+<span class='line'>55</span> 
+<span class='line'>56</span> &#59;&#59; This package is split-up between typecheck and unifier
+<span class='line'>57</span> (defpackage &#35;:alu&#46;typechecker&#46;check
+<span class='line'>58</span>   (:local-nicknames (&#35;:ir         &#35;:alu&#46;ir)
+<span class='line'>59</span>                     (&#35;:type-op    &#35;:alu&#46;spec&#46;type-op)
+<span class='line'>60</span>                     (&#35;:term-op    &#35;:alu&#46;spec&#46;term-op)
+<span class='line'>61</span>                     (&#35;:closure    &#35;:alu&#46;closure)
+<span class='line'>62</span>                     (&#35;:storage    &#35;:alu&#46;storage)
+<span class='line'>63</span>                     (&#35;:dependency &#35;:alu&#46;closure&#46;dependency)
+<span class='line'>64</span>                     (&#35;:util       &#35;:alu&#46;utils)
+<span class='line'>65</span>                     (&#35;:size       &#35;:alu&#46;typechecker&#46;size)
+<span class='line'>66</span>                     (&#35;:log        &#35;:alu&#46;log))
+<span class='line'>67</span>   (:use &#35;:common-lisp &#35;:serapeum &#35;:alu&#46;typechecker&#46;types)
+<span class='line'>68</span>   (:export
+<span class='line'>69</span>    :check
+<span class='line'>70</span>    :annotate-circuit
+<span class='line'>71</span>    :annotate-term
+<span class='line'>72</span>    :annotate-list
+<span class='line'>73</span>    :make-starting-hole
+<span class='line'>74</span>    :type-equality
+<span class='line'>75</span>    :solved))
+<span class='line'>76</span> 
+<span class='line'>77</span> (defpackage &#35;:alu&#46;typechecker&#46;intro
+<span class='line'>78</span>   (:documentation &#34;Gives an API for introducing new variables to the compiler&#34;)
+<span class='line'>79</span>   (:local-nicknames (&#35;:ir         &#35;:alu&#46;ir)
+<span class='line'>80</span>                     (&#35;:storage    &#35;:alu&#46;storage)
+<span class='line'>81</span>                     (&#35;:closure    &#35;:alu&#46;closure)
+<span class='line'>82</span>                     (&#35;:dependency &#35;:alu&#46;closure&#46;dependency)
+<span class='line'>83</span>                     (&#35;:util       &#35;:alu&#46;utils)
+<span class='line'>84</span>                     (&#35;:size       &#35;:alu&#46;typechecker&#46;size)
+<span class='line'>85</span>                     (&#35;:check      &#35;:alu&#46;typechecker&#46;check)
+<span class='line'>86</span>                     (&#35;:log        &#35;:alu&#46;log))
+<span class='line'>87</span>   (:use &#35;:common-lisp &#35;:serapeum &#35;:alu&#46;typechecker&#46;types)
+<span class='line'>88</span>   (:export
+<span class='line'>89</span>    :intro
+<span class='line'>90</span>    :with-intro))
+<span class='line'>91</span> 
+<span class='line'>92</span> (uiop:define-package &#35;:alu&#46;typechecker
+<span class='line'>93</span>   (:use &#35;:common-lisp
+<span class='line'>94</span>         &#35;:serapeum
+<span class='line'>95</span>         &#35;:alu&#46;typechecker&#46;types
+<span class='line'>96</span>         &#35;:alu&#46;typechecker&#46;check
+<span class='line'>97</span>         &#35;:alu&#46;typechecker&#46;intro)
+<span class='line'>98</span>   (:reexport &#35;:alu&#46;typechecker&#46;intro)
+<span class='line'>99</span>   &#59;&#59; We don&#39;t re-export &#35;:alu&#46;typechecker&#46;check as it has extra
+<span class='line'>100</span>   &#59;&#59; exports we don&#39;t want&#46;
+<span class='line'>101</span>   (:export
+<span class='line'>102</span>    :check
+<span class='line'>103</span>    :annotate-circuit
+<span class='line'>104</span>    :annotate-term
+<span class='line'>105</span>    :annotate-list
+<span class='line'>106</span>    :type-equality
+<span class='line'>107</span>    :solved)
+<span class='line'>108</span>   &#59;&#59; Operations from types that are good to alias
+<span class='line'>109</span>   (:export
+<span class='line'>110</span>    &#59;&#59; Context data type
+<span class='line'>111</span>    :typing-context :holes :hole-info :dependency :typing-closure
+<span class='line'>112</span>    &#59;&#59; Known Type Information
+<span class='line'>113</span>    :type-info :type-info-size :type-info-type :type-info-p :make-type-info))
+</code></div>
+</body></html>

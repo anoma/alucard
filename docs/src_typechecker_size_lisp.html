@@ -1,0 +1,274 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_typechecker_size_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;typechecker;size.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;typechecker&#46;size)
+<span class='line'>2</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>3</span> &#59;&#59;&#59; Determining the Size of the type
+<span class='line'>4</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>5</span> 
+<span class='line'>6</span> (-&#62; reference (ir:type-reference) integer)
+<span id='f0s0'><span class='line'>7</span> (defun reference (typ)
+<span class='line'>8</span>   <span id='f0s1'>(values
+<span class='line'>9</span>     <span id='f0s2'>(etypecase-of ir:type-reference typ
+<span class='line'>10</span>       (ir:reference-type
+<span class='line'>11</span>        <span id='f0s3'>(let ((lookup <span id='f0s4'>(storage:lookup-type <span id='f0s5'>(ir:name typ)</span>)</span>))
+<span class='line'>12</span>          <span id='f0s6'>(if lookup
+<span class='line'>13</span>              <span id='f0s7'>(storage lookup)</span>
+<span class='line'>14</span>              <span id='f0s8'>(error <span id='f0s9'>&#34;type not found: &#126;A&#34;</span> <span id='f0s10'>(ir:name typ)</span>)</span>)</span>)</span>)
+<span class='line'>15</span>       (ir:application
+<span class='line'>16</span>        <span id='f0s11'>(or <span id='f0s12'>(primitive typ)</span>
+<span class='line'>17</span>            <span id='f0s13'>(error <span id='f0s14'>&#34;generics in user defined data type is not supported&#34;</span>)</span>)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c43'> (lambda (typ)
+   <span id='f0c42'>(values <span id='f0c41'>(let* ((&#35;:x55438 typ))
+             <span id='f0c40'>(let* ((&#35;:g55439 &#35;:x55438))
+               <span id='f0c39'>(if <span id='f0c17'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g55439
+                            <span id='f0c16'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200374516F&#62;))</span>)</span>
+                   <span id='f0c14'>(progn nil
+                          <span id='f0c13'>(let* ((lookup
+                                  <span id='f0c3'>(funcall &#39;storage:lookup-type
+                                           <span id='f0c2'>(ccl::typed-form &#39;keyword <span id='f0c1'>(funcall &#39;alu&#46;spec:name typ)</span>)</span>)</span>))
+                            <span id='f0c12'>(if lookup
+                                <span id='f0c10'>(funcall &#39;storage
+                                         <span id='f0c9'>(ccl::typed-form &#39;(or alu&#46;spec:primitive alu&#46;spec:type-declaration) lookup)</span>)</span>
+                                <span id='f0c7'>(values (funcall &#39;error <span id='f0c6'>&#39;&#34;type not found: &#126;A&#34;</span> <span id='f0c5'>(funcall &#39;alu&#46;spec:name typ)</span>))</span>)</span>)</span>)</span>
+                   <span id='f0c38'>(if <span id='f0c30'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g55439
+                                <span id='f0c29'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200377E66F&#62;))</span>)</span>
+                       <span id='f0c37'>(progn nil
+                              <span id='f0c36'>(or <span id='f0c35'>(funcall &#39;primitive
+                                           <span id='f0c34'>(ccl::typed-form &#39;(or alu&#46;spec:primitive alu&#46;spec:application) typ)</span>)</span>
+                                  <span id='f0c32'>(values (funcall &#39;error <span id='f0c31'>&#39;&#34;generics in user defined data type is not supported&#34;</span>))</span>)</span>)</span>
+                       <span id='f0c27'>(if <span id='f0c19'>(progn &#35;:g55439 t)</span>
+                           <span id='f0c26'>(progn nil
+                                  <span id='f0c25'>(values (funcall &#39;error
+                                                   <span id='f0c24'>&#39;type-error</span>
+                                                   <span id='f0c22'>&#39;:datum</span>
+                                                   &#35;:x55438
+                                                   <span id='f0c21'>&#39;:expected-type</span>
+                                                   <span id='f0c20'>&#39;alu&#46;spec:type-reference</span>))</span>)</span>
+                           nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>18</span> 
+<span class='line'>19</span> (-&#62; storage (ir:type-storage) integer)
+<span id='f0s15'><span class='line'>20</span> (defun storage (storage)
+<span class='line'>21</span>   <span id='f0s16'>(values
+<span class='line'>22</span>    <span id='f0s17'>(etypecase-of ir:type-storage storage
+<span class='line'>23</span>      (ir:primitive        <span id='f0s18'>(or <span id='f0s19'>(primitive storage)</span>
+<span class='line'>24</span>                               <span id='f0s20'>(error <span id='f0s21'>&#34;type of primitive can not be resolved: &#126;A&#34;</span>
+<span class='line'>25</span>                                      storage)</span>)</span>)
+<span class='line'>26</span>      (ir:type-declaration <span id='f0s22'>(declaration storage)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c223'> (lambda (storage)
+   <span id='f0c222'>(values <span id='f0c221'>(let* ((&#35;:x55455 storage))
+             <span id='f0c220'>(let* ((&#35;:g55456 &#35;:x55455))
+               <span id='f0c219'>(if <span id='f0c192'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g55456
+                            <span id='f0c190'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037871DF&#62;))</span>)</span>
+                   <span id='f0c200'>(progn nil
+                          <span id='f0c199'>(or <span id='f0c195'>(funcall &#39;primitive
+                                       <span id='f0c194'>(ccl::typed-form &#39;(or alu&#46;spec:primitive alu&#46;spec:application) storage)</span>)</span>
+                              <span id='f0c198'>(values (funcall &#39;error <span id='f0c196'>&#39;&#34;type of primitive can not be resolved: &#126;A&#34;</span> storage))</span>)</span>)</span>
+                   <span id='f0c218'>(if <span id='f0c217'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g55456
+                                <span id='f0c216'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200378178F&#62;))</span>)</span>
+                       <span id='f0c214'>(progn nil <span id='f0c213'>(funcall &#39;declaration <span id='f0c212'>(ccl::typed-form &#39;alu&#46;spec:type-declaration storage)</span>)</span>)</span>
+                       <span id='f0c210'>(if <span id='f0c209'>(progn &#35;:g55456 t)</span>
+                           <span id='f0c207'>(progn nil
+                                  <span id='f0c206'>(values (funcall &#39;error
+                                                   <span id='f0c203'>&#39;type-error</span>
+                                                   <span id='f0c205'>&#39;:datum</span>
+                                                   &#35;:x55455
+                                                   <span id='f0c202'>&#39;:expected-type</span>
+                                                   <span id='f0c204'>&#39;alu&#46;spec:type-storage</span>))</span>)</span>
+                           nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>27</span> 
+<span class='line'>28</span> (-&#62; contents (ir:type-declaration) list)
+<span id='f0s23'><span class='line'>29</span> (defun contents (decl)
+<span class='line'>30</span>   <span id='f0s24'>(let ((format <span id='f0s25'>(ir:decl decl)</span>))
+<span class='line'>31</span>     <span id='f0s26'>(etypecase-of ir:type-format format
+<span class='line'>32</span>       (ir:record-decl
+<span class='line'>33</span>        <span id='f0s27'>(mapcar <span id='f0s28'>(lambda (type-name)
+<span class='line'>34</span>                  <span id='f0s29'>(&#126;&#62;&#62; type-name
+<span class='line'>35</span>                       (sycamore:tree-map-find <span id='f0s30'>(ir:contents format)</span>)
+<span class='line'>36</span>                       reference)</span>)</span>
+<span class='line'>37</span>                <span id='f0s31'>(ir:order format)</span>)</span>)
+<span class='line'>38</span>       (ir:sum-decl
+<span class='line'>39</span>        <span id='f0s32'>(error <span id='f0s33'>&#34;Sum types are not currently supported&#34;</span>)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t23')><span class='toggle' id='pf0t23'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(23)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t23'><code><span id='f0c189'> (lambda (decl)
+   <span id='f0c188'>(let* ((format <span id='f0c127'>(funcall &#39;alu&#46;spec:decl decl)</span>))
+     <span id='f0c187'>(let* ((&#35;:x55472 format))
+       <span id='f0c186'>(let* ((&#35;:g55473 &#35;:x55472))
+         <span id='f0c185'>(if <span id='f0c184'>(funcall &#39;ccl::std-instance-class-cell-typep
+                      &#35;:g55473
+                      <span id='f0c182'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037D55FF&#62;))</span>)</span>
+             <span id='f0c181'>(progn nil
+                    <span id='f0c180'>(let* ((&#35;:g55477 <span id='f0c179'>(cons nil nil)</span>)
+                           (&#35;:g55478 &#35;:g55477)
+                           (&#35;:g55480
+                            <span id='f0c178'>(function <span id='f0c177'>(lambda (type-name)
+                                        <span id='f0c176'>(funcall &#39;reference
+                                                 <span id='f0c175'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+                                                  <span id='f0c174'>(funcall &#39;sycamore:tree-map-find
+                                                           <span id='f0c173'>(funcall &#39;alu&#46;spec:contents format)</span>
+                                                           type-name)</span>)</span>)</span>)</span>)</span>))
+                      <span id='f0c169'>(let* ((&#35;:g55481 <span id='f0c146'>(funcall &#39;alu&#46;spec:order format)</span>))
+                        (progn <span id='f0c165'>(tagbody <span id='f0c164'>(go &#35;:g55483)</span>
+                                        (&#35;:g55482 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037D163D&#62; t t)
+                                        <span id='f0c163'>(tagbody <span id='f0c162'>(let* ((&#35;:g55479 <span id='f0c161'>(car &#35;:g55481)</span>))
+                                                   <span id='f0c159'>(tagbody <span id='f0c158'>(setq &#35;:g55477
+                                                                  <span id='f0c157'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g55477
+                                                                                           <span id='f0c156'>(cons <span id='f0c155'>(funcall &#35;:g55480
+                                                                                                          &#35;:g55479)</span>
+                                                                                                 nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c152'>(setq &#35;:g55481 <span id='f0c151'>(ccl::&#37;cdr <span id='f0c150'>(ccl::typed-form &#39;list &#35;:g55481)</span>)</span>)</span>
+                                        (&#35;:g55483 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037D163D&#62; t nil)
+                                        <span id='f0c148'>(if <span id='f0c147'>(not &#39;:ne &#35;:g55481)</span> (go &#35;:g55482) nil)</span>)</span>
+                               <span id='f0c168'>(let* () <span id='f0c167'>(ccl::&#37;cdr &#35;:g55478)</span>)</span>))</span>)</span>)</span>
+             <span id='f0c144'>(if <span id='f0c140'>(funcall &#39;ccl::std-instance-class-cell-typep
+                          &#35;:g55473
+                          <span id='f0c139'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037CBDCF&#62;))</span>)</span>
+                 <span id='f0c143'>(progn nil <span id='f0c142'>(values (funcall &#39;error <span id='f0c141'>&#39;&#34;Sum types are not currently supported&#34;</span>))</span>)</span>
+                 <span id='f0c137'>(if <span id='f0c129'>(progn &#35;:g55473 t)</span>
+                     <span id='f0c136'>(progn nil
+                            <span id='f0c135'>(values (funcall &#39;error
+                                             <span id='f0c134'>&#39;type-error</span>
+                                             <span id='f0c133'>&#39;:datum</span>
+                                             &#35;:x55472
+                                             <span id='f0c132'>&#39;:expected-type</span>
+                                             <span id='f0c131'>&#39;alu&#46;spec:type-format</span>))</span>)</span>
+                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>40</span> 
+<span class='line'>41</span> (-&#62; declaration (ir:type-declaration) integer)
+<span id='f0s34'><span class='line'>42</span> (defun declaration (decl)
+<span class='line'>43</span>   <span id='f0s35'>(assure integer
+<span class='line'>44</span>     <span id='f0s36'>(sum <span id='f0s37'>(contents decl)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t34')><span class='toggle' id='pf0t34'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(34)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t34'><code><span id='f0c244'> (lambda (decl)
+   <span id='f0c243'>(ccl::typed-form &#39;integer
+    <span id='f0c242'>(let* ((&#35;:datum55499 <span id='f0c227'>(funcall &#39;sum <span id='f0c226'>(funcall &#39;contents <span id='f0c225'>(ccl::typed-form &#39;alu&#46;spec:type-declaration decl)</span>)</span>)</span>))
+      <span id='f0c241'>(if <span id='f0c235'>(let* ((&#35;:g55501 <span id='f0c234'>(ccl::typecode &#35;:datum55499)</span>))
+            <span id='f0c232'>(if <span id='f0c229'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g55501 0)</span> t <span id='f0c231'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g55501 25)</span>)</span>)</span>
+          &#35;:datum55499
+          <span id='f0c239'>(ccl::typed-form &#39;integer <span id='f0c238'>(funcall &#39;serapeum::&#37;require-type &#35;:datum55499 <span id='f0c237'>&#39;integer</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>45</span> 
+<span class='line'>46</span> (-&#62; primitive ((or ir:primitive ir:application)) (or null integer))
+<span id='f0s38'><span class='line'>47</span> (defun primitive (prim&#63;)
+<span class='line'>48</span>   <span id='f0s39'>(flet (<span id='f0s40'>(handle-arguments (keyword-prim arguments)
+<span class='line'>49</span>            <span id='f0s41'>(typecase-of types:known-primitve-types keyword-prim
+<span class='line'>50</span>              ((eql :int)   <span id='f0s42'>(if arguments <span id='f0s43'>(car arguments)</span> 256)</span>)
+<span class='line'>51</span>              ((eql :array) <span id='f0s44'>(* <span id='f0s45'>(reference <span id='f0s46'>(cadr arguments)</span>)</span> <span id='f0s47'>(car arguments)</span>)</span>)
+<span class='line'>52</span>              ((eql :bool)  1)
+<span class='line'>53</span>              ((eql :void)  0)
+<span class='line'>54</span>              (otherwise   nil))</span>)</span>)
+<span class='line'>55</span>     <span id='f0s48'>(etypecase-of (or ir:primitive ir:application) prim&#63;
+<span class='line'>56</span>       (ir:primitive   <span id='f0s49'>(handle-arguments <span id='f0s50'>(ir:name prim&#63;)</span> nil)</span>)
+<span class='line'>57</span>       (ir:application <span id='f0s51'>(handle-arguments <span id='f0s52'>(ir:name <span id='f0s53'>(ir:func prim&#63;)</span>)</span>
+<span class='line'>58</span>                                         <span id='f0s54'>(ir:arguments prim&#63;)</span>)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t38')><span class='toggle' id='pf0t38'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(38)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t38'><code><span id='f0c125'> (lambda (prim&#63;)
+   <span id='f0c124'>(flet ((&#35;:handle-arguments &#35;1&#61;<span id='f0c92'>(lambda (keyword-prim arguments)
+                                   <span id='f0c91'>(let* ((&#35;:g55519 keyword-prim))
+                                     <span id='f0c90'>(if <span id='f0c48'>(not &#39;:ne <span id='f0c47'>(if <span id='f0c46'>(eq &#35;:g55519 &#39;:int)</span> <span id='f0c44'>&#39;(:int)</span> nil)</span>)</span>
+                                         <span id='f0c54'>(progn nil <span id='f0c53'>(if arguments <span id='f0c50'>(car arguments)</span> 256)</span>)</span>
+                                         <span id='f0c89'>(if <span id='f0c88'>(not &#39;:ne <span id='f0c87'>(if <span id='f0c86'>(eq &#35;:g55519 &#39;:array)</span> <span id='f0c84'>&#39;(:array)</span> nil)</span>)</span>
+                                             <span id='f0c83'>(progn nil
+                                                    <span id='f0c82'>(ccl::mul2
+                                                     <span id='f0c79'>(funcall &#39;reference
+                                                              <span id='f0c78'>(ccl::typed-form
+                                                               &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+                                                               <span id='f0c77'>(car <span id='f0c76'>(cdr arguments)</span>)</span>)</span>)</span>
+                                                     <span id='f0c81'>(car arguments)</span>)</span>)</span>
+                                             <span id='f0c74'>(if <span id='f0c59'>(not &#39;:ne <span id='f0c58'>(if <span id='f0c57'>(eq &#35;:g55519 &#39;:bool)</span> <span id='f0c55'>&#39;(:bool)</span> nil)</span>)</span>
+                                                 <span id='f0c73'>(progn nil 1)</span>
+                                                 <span id='f0c71'>(if <span id='f0c70'>(not &#39;:ne <span id='f0c69'>(if <span id='f0c67'>(eq &#35;:g55519 &#39;:void)</span> <span id='f0c68'>&#39;(:void)</span> nil)</span>)</span>
+                                                     <span id='f0c61'>(progn nil 0)</span>
+                                                     <span id='f0c65'>(if <span id='f0c64'>(progn &#35;:g55519 t)</span> <span id='f0c62'>(progn nil nil)</span> nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c123'>(let* ((&#35;:x55511 prim&#63;))
+       <span id='f0c122'>(let* ((&#35;:g55512 &#35;:x55511))
+         <span id='f0c121'>(if <span id='f0c120'>(funcall &#39;ccl::std-instance-class-cell-typep
+                      &#35;:g55512
+                      <span id='f0c118'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003821C6F&#62;))</span>)</span>
+             <span id='f0c96'>(progn nil <span id='f0c95'>(funcall &#35;1&#35; <span id='f0c94'>(funcall &#39;alu&#46;spec:name prim&#63;)</span> nil)</span>)</span>
+             <span id='f0c117'>(if <span id='f0c116'>(funcall &#39;ccl::std-instance-class-cell-typep
+                          &#35;:g55512
+                          <span id='f0c114'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200385E68F&#62;))</span>)</span>
+                 <span id='f0c113'>(progn nil
+                        <span id='f0c112'>(funcall &#35;1&#35;
+                                 <span id='f0c109'>(funcall &#39;alu&#46;spec:name <span id='f0c108'>(funcall &#39;alu&#46;spec:func prim&#63;)</span>)</span>
+                                 <span id='f0c111'>(funcall &#39;alu&#46;spec:arguments prim&#63;)</span>)</span>)</span>
+                 <span id='f0c106'>(if <span id='f0c105'>(progn &#35;:g55512 t)</span>
+                     <span id='f0c103'>(progn nil
+                            <span id='f0c102'>(values (funcall &#39;error
+                                             <span id='f0c98'>&#39;type-error</span>
+                                             <span id='f0c97'>&#39;:datum</span>
+                                             &#35;:x55511
+                                             <span id='f0c100'>&#39;:expected-type</span>
+                                             <span id='f0c101'>&#39;(or alu&#46;spec:primitive alu&#46;spec:application)</span>))</span>)</span>
+                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>59</span> 
+</code></div>
+</body></html>

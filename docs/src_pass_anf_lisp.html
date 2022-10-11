@@ -1,0 +1,1209 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_anf_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;anf.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;pass&#46;anf)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59; After the let change&#44; I&#39;m not sure this code is correct&#44; hard to
+<span class='line'>4</span> &#59;&#59;&#59; even test&#44; as our pass already puts it into anf form&#33;
+<span class='line'>5</span> 
+<span class='line'>6</span> (-&#62; normalize-expression (spc:expression) spc:expression)
+<span id='f0s0'><span class='line'>7</span> (defun normalize-expression (expression)
+<span class='line'>8</span>   &#34;Takes a potentially nested term&#44; and flattens it with let bindings&#34;
+<span class='line'>9</span>   <span id='f0s1'>(normalize expression <span id='f0s2'>&#35;&#39;identity</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c774'> (lambda (expression)
+   <span id='f0c773'>(funcall &#39;normalize
+            <span id='f0c772'>(ccl::typed-form
+             &#39;(or cons
+                  number
+                  spc:reference
+                  spc:application
+                  spc:record
+                  spc:record-lookup
+                  spc:array-lookup
+                  spc:array-allocate
+                  spc:from-data
+                  spc:array-set
+                  spc:bind-constraint
+                  spc:let-node
+                  spc:type-coerce
+                  spc:type-check)
+             expression)</span>
+            <span id='f0c770'>(ccl::typed-form &#39;function <span id='f0c769'>(function identity)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>10</span> 
+<span class='line'>11</span> (-&#62; normalp (spc:expression) boolean)
+<span id='f0s3'><span class='line'>12</span> (defun normalp (expr)
+<span class='line'>13</span>   <span id='f0s4'>(typep expr &#39;spc:term-normal-form)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c782'> (lambda (expr)
+   <span id='f0c781'>(let* ((&#35;:g57259 expr))
+     <span id='f0c780'>(or <span id='f0c776'>(funcall &#39;numberp &#35;:g57259)</span>
+         <span id='f0c779'>(funcall &#39;ccl::std-instance-class-cell-typep
+                  &#35;:g57259
+                  <span id='f0c777'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003CE951F&#62;))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>14</span> 
+<span class='line'>15</span> (-&#62; normalize
+<span class='line'>16</span>     (spc:expression (-&#62; (spc:expression) spc:expression)) spc:expression)
+<span id='f0s5'><span class='line'>17</span> (defun normalize (term constructor)
+<span class='line'>18</span>   &#34;normalize works by taking a term&#44; deciding if it needs to be let
+<span class='line'>19</span> abstracted&#46; if so&#44; then we generate a let binding over the constructor
+<span class='line'>20</span> calling it with the ref&#46; Thus:
+<span class='line'>21</span> 
+<span class='line'>22</span> (normalize 3       g) &#61;
+<span class='line'>23</span>   (g 3)
+<span class='line'>24</span> (normalize (h x y) g) &#61;
+<span class='line'>25</span>   (make-let :var (gen-sym &#46;&#46;&#46;) :val (h x y) :body (g gen-sym))
+<span class='line'>26</span> 
+<span class='line'>27</span> Note that for any term which can nest&#44; we build up a continuation that
+<span class='line'>28</span> will evaluate to this let buildup&#46;&#34;
+<span class='line'>29</span>   <span id='f0s6'>(match-of spc:expression term
+<span class='line'>30</span>     &#59;&#59; for terms which are just references or numbers we can
+<span class='line'>31</span>     &#59;&#59; just call the constructor&#44; and end the algorithm
+<span class='line'>32</span>     ((spc:number numb) <span id='f0s7'>(funcall constructor numb)</span>)
+<span class='line'>33</span>     ((spc:reference)   <span id='f0s8'>(funcall constructor term)</span>)
+<span class='line'>34</span>     &#59;&#59; For nodes which are not in normal form&#44; recurse building
+<span class='line'>35</span>     &#59;&#59; up the let chain
+<span class='line'>36</span>     ((spc:let-node spc:value spc:var)
+<span class='line'>37</span>      <span id='f0s9'>(normalize spc:value
+<span class='line'>38</span>                 <span id='f0s10'>(lambda (new-val)
+<span class='line'>39</span>                   <span id='f0s11'>(funcall constructor
+<span class='line'>40</span>                            <span id='f0s12'>(spc:copy-meta term
+<span class='line'>41</span>                                           <span id='f0s13'>(spc:make-let :var spc:var
+<span class='line'>42</span>                                                         :val new-val)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>43</span>     ((spc:application spc:name spc:arguments)
+<span class='line'>44</span>      <span id='f0s14'>(normalize-bind
+<span class='line'>45</span>       spc:name
+<span class='line'>46</span>       <span id='f0s15'>(lambda (func-name)
+<span class='line'>47</span>         <span id='f0s16'>(normalize-bind*
+<span class='line'>48</span>          spc:arguments
+<span class='line'>49</span>          <span id='f0s17'>(lambda (args)
+<span class='line'>50</span>            <span id='f0s18'>(funcall constructor
+<span class='line'>51</span>                     <span id='f0s19'>(spc:copy-meta term
+<span class='line'>52</span>                                    <span id='f0s20'>(spc:make-application :function func-name
+<span class='line'>53</span>                                                          :arguments args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>54</span>     ((spc:record spc:name spc:contents spc:order)
+<span class='line'>55</span>      &#59;&#59; probably the hardest transform just due to hash table format
+<span class='line'>56</span>      &#59;&#59; schenans&#46; Note that an alist is like the following
+<span class='line'>57</span>      &#59;&#59; ((:key1 &#46; term1) (:key2 &#46; term2))
+<span class='line'>58</span>      &#59;&#59; spc:name is a keyword so no need to traverse
+<span class='line'>59</span>      <span id='f0s21'>(let* ((alist-contents <span id='f0s22'>(sycamore:tree-map-alist spc:contents)</span>)
+<span class='line'>60</span>             (keys           <span id='f0s23'>(mapcar <span id='f0s24'>&#35;&#39;car </span>alist-contents)</span>)
+<span class='line'>61</span>             (values         <span id='f0s25'>(mapcar <span id='f0s26'>&#35;&#39;cdr </span>alist-contents)</span>))
+<span class='line'>62</span>        <span id='f0s27'>(normalize-bind*
+<span class='line'>63</span>         values
+<span class='line'>64</span>         <span id='f0s28'>(lambda (value-refs)
+<span class='line'>65</span>           <span id='f0s29'>(funcall constructor
+<span class='line'>66</span>                    <span id='f0s30'>(spc:copy-meta
+<span class='line'>67</span>                     term
+<span class='line'>68</span>                     <span id='f0s31'>(make-instance &#39;spc:record
+<span class='line'>69</span>                                    :name spc:name
+<span class='line'>70</span>                                    :order spc:order
+<span class='line'>71</span>                                    :contents <span id='f0s32'>(sycamore:alist-tree-map
+<span class='line'>72</span>                                               &#59;&#59; remake our alist
+<span class='line'>73</span>                                               <span id='f0s33'>(mapcar <span id='f0s34'>&#35;&#39;cons </span>keys value-refs)</span>
+<span class='line'>74</span>                                               <span id='f0s35'>&#35;&#39;util:hash-compare</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>75</span>     ((spc:record-lookup spc:record spc:field)
+<span class='line'>76</span>      &#59;&#59; field is a keyword&#44; thus we are fine with it
+<span class='line'>77</span>      <span id='f0s36'>(normalize-bind spc:record
+<span class='line'>78</span>                      <span id='f0s37'>(lambda (rec-ref)
+<span class='line'>79</span>                        <span id='f0s38'>(funcall constructor
+<span class='line'>80</span>                                 <span id='f0s39'>(spc:copy-meta
+<span class='line'>81</span>                                  term
+<span class='line'>82</span>                                  <span id='f0s40'>(spc:make-record-lookup :record rec-ref
+<span class='line'>83</span>                                                          :field  spc:field)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>84</span>     ((spc:bind-constraint spc:var spc:value)
+<span class='line'>85</span>      <span id='f0s41'>(normalize spc:value
+<span class='line'>86</span>                 <span id='f0s42'>(lambda (constraint)
+<span class='line'>87</span>                   <span id='f0s43'>(funcall constructor
+<span class='line'>88</span>                            <span id='f0s44'>(spc:copy-meta
+<span class='line'>89</span>                             term
+<span class='line'>90</span>                             <span id='f0s45'>(spc:make-bind-constraint :var spc:var
+<span class='line'>91</span>                                                       :value constraint)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>92</span>     &#59;&#59; we get a bad exhaustive message due to number&#44; but it will warn
+<span class='line'>93</span>     &#59;&#59; us&#44; if they aren&#39;t the same none the less&#33;
+<span class='line'>94</span>     ((cons &#95; &#95;)
+<span class='line'>95</span>      <span id='f0s46'>(let* ((body <span id='f0s47'>(mapcar <span id='f0s48'>(lambda (ter) <span id='f0s49'>(normalize ter <span id='f0s50'>&#35;&#39;identity</span>)</span>)</span>
+<span class='line'>96</span>                           term)</span>)
+<span class='line'>97</span>             (res <span id='f0s51'>(mvfoldr <span id='f0s52'>&#35;&#39;combine-expression </span>body nil)</span>))
+<span class='line'>98</span>        <span id='f0s53'>(funcall constructor res)</span>)</span>)
+<span class='line'>99</span>     &#59;&#59; here we stick the types that we want to do the catch all
+<span class='line'>100</span>     &#59;&#59; logic&#46; Good to be explicit here
+<span class='line'>101</span>     ((or (spc:type-coerce) (spc:type-check)
+<span class='line'>102</span>          (spc:array-lookup) (spc:array-set) (spc:array-allocate) (spc:from-data))
+<span class='line'>103</span>      <span id='f0s54'>(normalize-bind* <span id='f0s55'>(spc:direct-slot-values term)</span>
+<span class='line'>104</span>                       <span id='f0s56'>(lambda (args)
+<span class='line'>105</span>                         <span id='f0s57'>(funcall constructor
+<span class='line'>106</span>                                  <span id='f0s58'>(spc:update-from-alist
+<span class='line'>107</span>                                   term
+<span class='line'>108</span>                                   <span id='f0s59'>(mapcar <span id='f0s60'>&#35;&#39;cons
+</span><span class='line'>109</span>                                           <span id='f0s61'>(spc:direct-slot-keywords term)</span>
+<span class='line'>110</span>                                           args)</span>)</span>)</span>)</span>)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c550'> (lambda (term constructor)
+   <span id='f0c549'>(let* ((&#35;:what157317 term))
+     <span id='f0c548'>(block trivia&#46;level1&#46;impl::whole
+       (progn <span id='f0c292'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c291'>(let* ((&#35;:it57274 &#35;:what157317))
+                  <span id='f0c290'>(if <span id='f0c289'>(funcall &#39;numberp &#35;:it57274)</span>
+                      <span id='f0c287'>(ccl::&#37;decls-body
+                       <span id='f0c286'>(let* ((numb &#35;:it57274))
+                         <span id='f0c285'>(return-from trivia&#46;level1&#46;impl::whole
+                           <span id='f0c284'>(let* ()
+                             <span id='f0c283'>(block trivia&#46;level1&#46;impl::whole
+                               (progn <span id='f0c279'>(let* ((&#35;:it57288 nil))
+                                        <span id='f0c278'>(return-from trivia&#46;level1&#46;impl::whole <span id='f0c277'>(funcall constructor numb)</span>)</span>)</span>
+                                      <span id='f0c282'>(let* ((&#35;:it57289 nil))
+                                        <span id='f0c281'>(return-from trivia&#46;level1&#46;impl::whole
+                                          <span id='f0c280'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c480'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c479'>(let* ((&#35;:it57275 &#35;:what157317))
+                  <span id='f0c478'>(if <span id='f0c477'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57275
+                               <span id='f0c476'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AFFF5F&#62;))</span>)</span>
+                      <span id='f0c474'>(ccl::&#37;decls-body
+                       <span id='f0c473'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c472'>(let* ()
+                           <span id='f0c471'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c470'>(let* ((&#35;:it57290 nil))
+                                      <span id='f0c469'>(return-from trivia&#46;level1&#46;impl::whole <span id='f0c468'>(funcall constructor term)</span>)</span>)</span>
+                                    <span id='f0c466'>(let* ((&#35;:it57291 nil))
+                                      <span id='f0c465'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c464'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c517'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c516'>(let* ((&#35;:it57276 &#35;:what157317))
+                  <span id='f0c515'>(if <span id='f0c514'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57276
+                               <span id='f0c512'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AF9E6F&#62;))</span>)</span>
+                      <span id='f0c511'>(ccl::&#37;decls-body
+                       <span id='f0c510'>(let* ((spc:value
+                               <span id='f0c483'>(funcall &#39;ccl::slot-id-value
+                                        &#35;:it57276
+                                        <span id='f0c482'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AF6E7F&#62;))</span>)</span>))
+                         <span id='f0c509'>(let* ((spc:var
+                                 <span id='f0c508'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it57276
+                                          <span id='f0c506'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AF3F2F&#62;))</span>)</span>))
+                           <span id='f0c505'>(return-from trivia&#46;level1&#46;impl::whole
+                             <span id='f0c504'>(let* ()
+                               <span id='f0c503'>(block trivia&#46;level1&#46;impl::whole
+                                 (progn <span id='f0c502'>(let* ((&#35;:it57292 nil))
+                                          <span id='f0c501'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c500'>(ccl::self-funcall
+                                             <span id='f0c499'>(ccl::typed-form
+                                              &#39;(or cons
+                                                   number
+                                                   spc:reference
+                                                   spc:application
+                                                   spc:record
+                                                   spc:record-lookup
+                                                   spc:array-lookup
+                                                   spc:array-allocate
+                                                   spc:from-data
+                                                   spc:array-set
+                                                   spc:bind-constraint
+                                                   spc:let-node
+                                                   spc:type-coerce
+                                                   spc:type-check)
+                                              spc:value)</span>
+                                             <span id='f0c497'>(ccl::typed-form &#39;function
+                                              <span id='f0c496'>(function <span id='f0c495'>(lambda (new-val)
+                                                          <span id='f0c494'>(funcall constructor
+                                                                   <span id='f0c493'>(funcall &#39;spc:copy-meta
+                                                                            term
+                                                                            <span id='f0c492'>(funcall &#39;spc:make-let
+                                                                                     <span id='f0c490'>&#39;:var</span>
+                                                                                     spc:var
+                                                                                     <span id='f0c491'>&#39;:val</span>
+                                                                                     new-val)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c486'>(let* ((&#35;:it57293 nil))
+                                          <span id='f0c485'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c484'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c139'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c138'>(let* ((&#35;:it57277 &#35;:what157317))
+                  <span id='f0c137'>(if <span id='f0c99'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57277
+                               <span id='f0c97'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AE836F&#62;))</span>)</span>
+                      <span id='f0c136'>(ccl::&#37;decls-body
+                       <span id='f0c135'>(let* ((spc:name
+                               <span id='f0c134'>(funcall &#39;ccl::slot-id-value
+                                        &#35;:it57277
+                                        <span id='f0c132'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AE539F&#62;))</span>)</span>))
+                         <span id='f0c131'>(let* ((spc:arguments
+                                 <span id='f0c130'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it57277
+                                          <span id='f0c129'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003AE244F&#62;))</span>)</span>))
+                           <span id='f0c127'>(return-from trivia&#46;level1&#46;impl::whole
+                             <span id='f0c126'>(let* ()
+                               <span id='f0c125'>(block trivia&#46;level1&#46;impl::whole
+                                 (progn <span id='f0c124'>(let* ((&#35;:it57294 nil))
+                                          <span id='f0c123'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c122'>(funcall &#39;normalize-bind
+                                                     <span id='f0c121'>(ccl::typed-form
+                                                      &#39;(or cons
+                                                           number
+                                                           spc:reference
+                                                           spc:application
+                                                           spc:record
+                                                           spc:record-lookup
+                                                           spc:array-lookup
+                                                           spc:array-allocate
+                                                           spc:from-data
+                                                           spc:array-set
+                                                           spc:bind-constraint
+                                                           spc:let-node
+                                                           spc:type-coerce
+                                                           spc:type-check)
+                                                      spc:name)</span>
+                                                     <span id='f0c119'>(ccl::typed-form &#39;function
+                                                      <span id='f0c118'>(function <span id='f0c117'>(lambda (func-name)
+                                                                  <span id='f0c116'>(funcall &#39;normalize-bind*
+                                                                           <span id='f0c115'>(ccl::typed-form &#39;list spc:arguments)</span>
+                                                                           <span id='f0c113'>(ccl::typed-form &#39;function
+                                                                            <span id='f0c112'>(function <span id='f0c111'>(lambda (args)
+                                                                                        <span id='f0c110'>(funcall constructor
+                                                                                                 <span id='f0c109'>(funcall &#39;spc:copy-meta
+                                                                                                          term
+                                                                                                          <span id='f0c107'>(funcall &#39;spc:make-application
+                                                                                                                   <span id='f0c104'>&#39;:function</span>
+                                                                                                                   func-name
+                                                                                                                   <span id='f0c106'>&#39;:arguments</span>
+                                                                                                                   args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c102'>(let* ((&#35;:it57295 nil))
+                                          <span id='f0c101'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c100'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c433'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c432'>(let* ((&#35;:it57278 &#35;:what157317))
+                  <span id='f0c431'>(if <span id='f0c430'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57278
+                               <span id='f0c428'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B11C4F&#62;))</span>)</span>
+                      <span id='f0c427'>(ccl::&#37;decls-body
+                       <span id='f0c426'>(let* ((spc:name
+                               <span id='f0c325'>(funcall &#39;ccl::slot-id-value
+                                        &#35;:it57278
+                                        <span id='f0c324'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B0EC7F&#62;))</span>)</span>))
+                         <span id='f0c425'>(let* ((spc:contents
+                                 <span id='f0c328'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it57278
+                                          <span id='f0c326'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B0BD2F&#62;))</span>)</span>))
+                           <span id='f0c424'>(let* ((spc:order
+                                   <span id='f0c331'>(funcall &#39;ccl::slot-id-value
+                                            &#35;:it57278
+                                            <span id='f0c330'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B08DDF&#62;))</span>)</span>))
+                             <span id='f0c423'>(return-from trivia&#46;level1&#46;impl::whole
+                               <span id='f0c422'>(let* ()
+                                 <span id='f0c421'>(block trivia&#46;level1&#46;impl::whole
+                                   (progn <span id='f0c420'>(let* ((&#35;:it57296 nil))
+                                            <span id='f0c419'>(return-from trivia&#46;level1&#46;impl::whole
+                                              <span id='f0c418'>(let* ((alist-contents <span id='f0c364'>(funcall &#39;sycamore:tree-map-alist spc:contents)</span>)
+                                                     (keys
+                                                      <span id='f0c417'>(let* ((&#35;:g57366 <span id='f0c391'>(cons nil nil)</span>)
+                                                             (&#35;:g57367 &#35;:g57366)
+                                                             (&#35;:g57369 <span id='f0c390'>(function car)</span>))
+                                                        <span id='f0c415'>(let* ((&#35;:g57370 alist-contents))
+                                                          (progn <span id='f0c410'>(tagbody <span id='f0c403'>(go &#35;:g57372)</span>
+                                                                          (&#35;:g57371 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B0528D&#62; t
+                                                                           t)
+                                                                          <span id='f0c402'>(tagbody <span id='f0c401'>(let* ((&#35;:g57368 <span id='f0c400'>(car &#35;:g57370)</span>))
+                                                                                     <span id='f0c398'>(tagbody <span id='f0c397'>(setq &#35;:g57366
+                                                                                                    <span id='f0c396'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57366
+                                                                                                                             <span id='f0c395'>(cons <span id='f0c394'>(funcall &#35;:g57369
+                                                                                                                                            &#35;:g57368)</span>
+                                                                                                                                   nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                          <span id='f0c409'>(setq &#35;:g57370
+                                                                                <span id='f0c408'>(ccl::&#37;cdr <span id='f0c407'>(ccl::typed-form &#39;list
+                                                                                            &#35;:g57370)</span>)</span>)</span>
+                                                                          (&#35;:g57372 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B0528D&#62; t
+                                                                           nil)
+                                                                          <span id='f0c405'>(if <span id='f0c404'>(not &#39;:ne &#35;:g57370)</span> (go &#35;:g57371) nil)</span>)</span>
+                                                                 <span id='f0c414'>(let* () <span id='f0c413'>(ccl::&#37;cdr &#35;:g57367)</span>)</span>))</span>)</span>)
+                                                     (values
+                                                      <span id='f0c362'>(let* ((&#35;:g57373 <span id='f0c337'>(cons nil nil)</span>)
+                                                             (&#35;:g57374 &#35;:g57373)
+                                                             (&#35;:g57376 <span id='f0c336'>(function cdr)</span>))
+                                                        <span id='f0c361'>(let* ((&#35;:g57377 alist-contents))
+                                                          (progn <span id='f0c360'>(tagbody <span id='f0c353'>(go &#35;:g57379)</span>
+                                                                          (&#35;:g57378 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B0101D&#62; t
+                                                                           t)
+                                                                          <span id='f0c352'>(tagbody <span id='f0c351'>(let* ((&#35;:g57375 <span id='f0c343'>(car &#35;:g57377)</span>))
+                                                                                     <span id='f0c350'>(tagbody <span id='f0c349'>(setq &#35;:g57373
+                                                                                                    <span id='f0c348'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57373
+                                                                                                                             <span id='f0c346'>(cons <span id='f0c345'>(funcall &#35;:g57376
+                                                                                                                                            &#35;:g57375)</span>
+                                                                                                                                   nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                          <span id='f0c357'>(setq &#35;:g57377
+                                                                                <span id='f0c356'>(ccl::&#37;cdr <span id='f0c355'>(ccl::typed-form &#39;list
+                                                                                            &#35;:g57377)</span>)</span>)</span>
+                                                                          (&#35;:g57379 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B0101D&#62; t
+                                                                           nil)
+                                                                          <span id='f0c359'>(if <span id='f0c358'>(not &#39;:ne &#35;:g57377)</span> (go &#35;:g57378) nil)</span>)</span>
+                                                                 <span id='f0c341'>(let* () <span id='f0c340'>(ccl::&#37;cdr &#35;:g57374)</span>)</span>))</span>)</span>))
+                                                <span id='f0c389'>(funcall &#39;normalize-bind*
+                                                         <span id='f0c388'>(ccl::typed-form &#39;list values)</span>
+                                                         <span id='f0c386'>(ccl::typed-form &#39;function
+                                                          <span id='f0c385'>(function <span id='f0c384'>(lambda (value-refs)
+                                                                      <span id='f0c383'>(funcall constructor
+                                                                               <span id='f0c382'>(funcall &#39;spc:copy-meta
+                                                                                        term
+                                                                                        <span id='f0c380'>(let* ()
+                                                                                          <span id='f0c379'>(funcall <span id='f0c368'>(ccl::&#37;svref <span id='f0c367'>&#39;(&#35;:load-time-eval
+                                                                                                                   (funcall &#35;&#60;Anonymous Function &#35;x302003B389DF&#62;))</span>
+                                                                                                                3)</span>
+                                                                                                   <span id='f0c371'>&#39;(&#35;:load-time-eval
+                                                                                                      (funcall &#35;&#60;Anonymous Function &#35;x302003B389DF&#62;))</span>
+                                                                                                   <span id='f0c370'>&#39;:name</span>
+                                                                                                   spc:name
+                                                                                                   <span id='f0c369'>&#39;:order</span>
+                                                                                                   spc:order
+                                                                                                   <span id='f0c365'>&#39;:contents</span>
+                                                                                                   <span id='f0c378'>(funcall &#39;sycamore:alist-tree-map
+                                                                                                            <span id='f0c377'>(funcall &#39;mapcar
+                                                                                                                     <span id='f0c376'>(function cons)</span>
+                                                                                                                     keys
+                                                                                                                     value-refs)</span>
+                                                                                                            <span id='f0c373'>(function util:hash-compare)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                          <span id='f0c334'>(let* ((&#35;:it57297 nil))
+                                            <span id='f0c333'>(return-from trivia&#46;level1&#46;impl::whole
+                                              <span id='f0c332'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c96'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c95'>(let* ((&#35;:it57279 &#35;:what157317))
+                  <span id='f0c94'>(if <span id='f0c62'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57279
+                               <span id='f0c61'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B330DF&#62;))</span>)</span>
+                      <span id='f0c93'>(ccl::&#37;decls-body
+                       <span id='f0c92'>(let* ((spc:record
+                               <span id='f0c91'>(funcall &#39;ccl::slot-id-value
+                                        &#35;:it57279
+                                        <span id='f0c90'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B3010F&#62;))</span>)</span>))
+                         <span id='f0c88'>(let* ((spc:field
+                                 <span id='f0c87'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it57279
+                                          <span id='f0c86'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B2D1BF&#62;))</span>)</span>))
+                           <span id='f0c84'>(return-from trivia&#46;level1&#46;impl::whole
+                             <span id='f0c83'>(let* ()
+                               <span id='f0c82'>(block trivia&#46;level1&#46;impl::whole
+                                 (progn <span id='f0c81'>(let* ((&#35;:it57298 nil))
+                                          <span id='f0c80'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c79'>(funcall &#39;normalize-bind
+                                                     <span id='f0c67'>(ccl::typed-form
+                                                      &#39;(or cons
+                                                           number
+                                                           spc:reference
+                                                           spc:application
+                                                           spc:record
+                                                           spc:record-lookup
+                                                           spc:array-lookup
+                                                           spc:array-allocate
+                                                           spc:from-data
+                                                           spc:array-set
+                                                           spc:bind-constraint
+                                                           spc:let-node
+                                                           spc:type-coerce
+                                                           spc:type-check)
+                                                      spc:record)</span>
+                                                     <span id='f0c78'>(ccl::typed-form &#39;function
+                                                      <span id='f0c77'>(function <span id='f0c76'>(lambda (rec-ref)
+                                                                  <span id='f0c75'>(funcall constructor
+                                                                           <span id='f0c74'>(funcall &#39;spc:copy-meta
+                                                                                    term
+                                                                                    <span id='f0c73'>(funcall &#39;spc:make-record-lookup
+                                                                                             <span id='f0c69'>&#39;:record</span>
+                                                                                             rec-ref
+                                                                                             <span id='f0c72'>&#39;:field</span>
+                                                                                             spc:field)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c65'>(let* ((&#35;:it57299 nil))
+                                          <span id='f0c64'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c63'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c245'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c244'>(let* ((&#35;:it57280 &#35;:what157317))
+                  <span id='f0c243'>(if <span id='f0c242'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57280
+                               <span id='f0c240'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B215BF&#62;))</span>)</span>
+                      <span id='f0c239'>(ccl::&#37;decls-body
+                       <span id='f0c238'>(let* ((spc:var
+                               <span id='f0c237'>(funcall &#39;ccl::slot-id-value
+                                        &#35;:it57280
+                                        <span id='f0c236'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B5E5DF&#62;))</span>)</span>))
+                         <span id='f0c234'>(let* ((spc:value
+                                 <span id='f0c233'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it57280
+                                          <span id='f0c232'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B5B68F&#62;))</span>)</span>))
+                           <span id='f0c230'>(return-from trivia&#46;level1&#46;impl::whole
+                             <span id='f0c229'>(let* ()
+                               <span id='f0c228'>(block trivia&#46;level1&#46;impl::whole
+                                 (progn <span id='f0c224'>(let* ((&#35;:it57300 nil))
+                                          <span id='f0c223'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c222'>(ccl::self-funcall
+                                             <span id='f0c221'>(ccl::typed-form
+                                              &#39;(or cons
+                                                   number
+                                                   spc:reference
+                                                   spc:application
+                                                   spc:record
+                                                   spc:record-lookup
+                                                   spc:array-lookup
+                                                   spc:array-allocate
+                                                   spc:from-data
+                                                   spc:array-set
+                                                   spc:bind-constraint
+                                                   spc:let-node
+                                                   spc:type-coerce
+                                                   spc:type-check)
+                                              spc:value)</span>
+                                             <span id='f0c219'>(ccl::typed-form &#39;function
+                                              <span id='f0c218'>(function <span id='f0c217'>(lambda (constraint)
+                                                          <span id='f0c216'>(funcall constructor
+                                                                   <span id='f0c215'>(funcall &#39;spc:copy-meta
+                                                                            term
+                                                                            <span id='f0c213'>(funcall &#39;spc:make-bind-constraint
+                                                                                     <span id='f0c211'>&#39;:var</span>
+                                                                                     spc:var
+                                                                                     <span id='f0c212'>&#39;:value</span>
+                                                                                     constraint)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c227'>(let* ((&#35;:it57301 nil))
+                                          <span id='f0c226'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c225'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c208'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c207'>(let* ((&#35;:cons57281 &#35;:what157317))
+                  <span id='f0c206'>(if <span id='f0c205'>(eq (ccl::fulltag &#35;:cons57281) 3)</span>
+                      <span id='f0c203'>(ccl::&#37;decls-body
+                       <span id='f0c202'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c201'>(let* ()
+                           <span id='f0c200'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c196'>(let* ((&#35;:it57302 nil))
+                                      <span id='f0c195'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c194'>(let* ((body
+                                                <span id='f0c191'>(let* ((&#35;:g57411 <span id='f0c190'>(cons nil nil)</span>)
+                                                       (&#35;:g57412 &#35;:g57411)
+                                                       (&#35;:g57414
+                                                        <span id='f0c165'>(function <span id='f0c164'>(lambda (ter)
+                                                                    <span id='f0c163'>(funcall &#39;normalize
+                                                                             <span id='f0c160'>(ccl::typed-form
+                                                                              &#39;(or cons
+                                                                                   number
+                                                                                   spc:reference
+                                                                                   spc:application
+                                                                                   spc:record
+                                                                                   spc:record-lookup
+                                                                                   spc:array-lookup
+                                                                                   spc:array-allocate
+                                                                                   spc:from-data
+                                                                                   spc:array-set
+                                                                                   spc:bind-constraint
+                                                                                   spc:let-node
+                                                                                   spc:type-coerce
+                                                                                   spc:type-check)
+                                                                              ter)</span>
+                                                                             <span id='f0c162'>(ccl::typed-form &#39;function
+                                                                              <span id='f0c161'>(function identity)</span>)</span>)</span>)</span>)</span>))
+                                                  <span id='f0c189'>(let* ((&#35;:g57415 term))
+                                                    (progn <span id='f0c187'>(tagbody <span id='f0c173'>(go &#35;:g57417)</span>
+                                                                    (&#35;:g57416 nil (0)
+                                                                     &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B4528D&#62; t t)
+                                                                    <span id='f0c184'>(tagbody <span id='f0c183'>(let* ((&#35;:g57413 <span id='f0c182'>(car &#35;:g57415)</span>))
+                                                                               <span id='f0c180'>(tagbody <span id='f0c179'>(setq &#35;:g57411
+                                                                                              <span id='f0c178'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57411
+                                                                                                                       <span id='f0c177'>(cons <span id='f0c176'>(funcall &#35;:g57414
+                                                                                                                                      &#35;:g57413)</span>
+                                                                                                                             nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                    <span id='f0c172'>(setq &#35;:g57415
+                                                                          <span id='f0c171'>(ccl::&#37;cdr <span id='f0c170'>(ccl::typed-form &#39;list &#35;:g57415)</span>)</span>)</span>
+                                                                    (&#35;:g57417 nil (0)
+                                                                     &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B4528D&#62; t nil)
+                                                                    <span id='f0c186'>(if <span id='f0c185'>(not &#39;:ne &#35;:g57415)</span> (go &#35;:g57416) nil)</span>)</span>
+                                                           <span id='f0c168'>(let* () <span id='f0c167'>(ccl::&#37;cdr &#35;:g57412)</span>)</span>))</span>)</span>)
+                                               (res
+                                                <span id='f0c157'>(funcall &#39;reduce
+                                                         <span id='f0c154'>(function combine-expression)</span>
+                                                         body
+                                                         <span id='f0c156'>&#39;:from-end</span>
+                                                         t
+                                                         <span id='f0c153'>&#39;:initial-value</span>
+                                                         nil)</span>))
+                                          <span id='f0c193'>(funcall constructor res)</span>)</span>)</span>)</span>
+                                    <span id='f0c199'>(let* ((&#35;:it57303 nil))
+                                      <span id='f0c198'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c197'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c59'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c58'>(let* ((&#35;:it57282 &#35;:what157317))
+                  <span id='f0c57'>(if <span id='f0c32'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57282
+                               <span id='f0c30'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B7DEDF&#62;))</span>)</span>
+                      <span id='f0c56'>(ccl::&#37;decls-body
+                       <span id='f0c55'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c54'>(let* ()
+                           <span id='f0c53'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c49'>(let* ((&#35;:it57304 nil))
+                                      <span id='f0c48'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c47'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c35'>(ccl::typed-form &#39;list <span id='f0c34'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c46'>(ccl::typed-form &#39;function
+                                                  <span id='f0c45'>(function <span id='f0c44'>(lambda (args)
+                                                              <span id='f0c43'>(funcall constructor
+                                                                       <span id='f0c42'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c40'>(funcall &#39;mapcar
+                                                                                         <span id='f0c39'>(function cons)</span>
+                                                                                         <span id='f0c37'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c52'>(let* ((&#35;:it57305 nil))
+                                      <span id='f0c51'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c50'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c547'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c546'>(let* ((&#35;:it57283 &#35;:what157317))
+                  <span id='f0c545'>(if <span id='f0c544'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57283
+                               <span id='f0c543'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B7442F&#62;))</span>)</span>
+                      <span id='f0c541'>(ccl::&#37;decls-body
+                       <span id='f0c540'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c539'>(let* ()
+                           <span id='f0c538'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c537'>(let* ((&#35;:it57306 nil))
+                                      <span id='f0c536'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c535'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c523'>(ccl::typed-form &#39;list <span id='f0c522'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c534'>(ccl::typed-form &#39;function
+                                                  <span id='f0c533'>(function <span id='f0c532'>(lambda (args)
+                                                              <span id='f0c531'>(funcall constructor
+                                                                       <span id='f0c530'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c528'>(funcall &#39;mapcar
+                                                                                         <span id='f0c525'>(function cons)</span>
+                                                                                         <span id='f0c527'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c520'>(let* ((&#35;:it57307 nil))
+                                      <span id='f0c519'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c518'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c29'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c28'>(let* ((&#35;:it57284 &#35;:what157317))
+                  <span id='f0c27'>(if <span id='f0c26'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57284
+                               <span id='f0c25'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B6A99F&#62;))</span>)</span>
+                      <span id='f0c23'>(ccl::&#37;decls-body
+                       <span id='f0c22'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c21'>(let* ()
+                           <span id='f0c20'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c19'>(let* ((&#35;:it57308 nil))
+                                      <span id='f0c18'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c17'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c16'>(ccl::typed-form &#39;list <span id='f0c15'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c13'>(ccl::typed-form &#39;function
+                                                  <span id='f0c12'>(function <span id='f0c11'>(lambda (args)
+                                                              <span id='f0c10'>(funcall constructor
+                                                                       <span id='f0c9'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c8'>(funcall &#39;mapcar
+                                                                                         <span id='f0c7'>(function cons)</span>
+                                                                                         <span id='f0c5'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c2'>(let* ((&#35;:it57309 nil))
+                                      <span id='f0c1'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c0'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c322'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c321'>(let* ((&#35;:it57285 &#35;:what157317))
+                  <span id='f0c320'>(if <span id='f0c295'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57285
+                               <span id='f0c293'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B60F0F&#62;))</span>)</span>
+                      <span id='f0c319'>(ccl::&#37;decls-body
+                       <span id='f0c318'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c317'>(let* ()
+                           <span id='f0c316'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c315'>(let* ((&#35;:it57310 nil))
+                                      <span id='f0c314'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c313'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c312'>(ccl::typed-form &#39;list <span id='f0c311'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c309'>(ccl::typed-form &#39;function
+                                                  <span id='f0c308'>(function <span id='f0c307'>(lambda (args)
+                                                              <span id='f0c306'>(funcall constructor
+                                                                       <span id='f0c305'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c303'>(funcall &#39;mapcar
+                                                                                         <span id='f0c300'>(function cons)</span>
+                                                                                         <span id='f0c302'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c298'>(let* ((&#35;:it57311 nil))
+                                      <span id='f0c297'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c296'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c463'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c462'>(let* ((&#35;:it57286 &#35;:what157317))
+                  <span id='f0c461'>(if <span id='f0c436'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57286
+                               <span id='f0c434'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B971EF&#62;))</span>)</span>
+                      <span id='f0c460'>(ccl::&#37;decls-body
+                       <span id='f0c459'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c458'>(let* ()
+                           <span id='f0c457'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c453'>(let* ((&#35;:it57312 nil))
+                                      <span id='f0c452'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c451'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c450'>(ccl::typed-form &#39;list <span id='f0c449'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c447'>(ccl::typed-form &#39;function
+                                                  <span id='f0c446'>(function <span id='f0c445'>(lambda (args)
+                                                              <span id='f0c444'>(funcall constructor
+                                                                       <span id='f0c443'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c442'>(funcall &#39;mapcar
+                                                                                         <span id='f0c438'>(function cons)</span>
+                                                                                         <span id='f0c441'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c456'>(let* ((&#35;:it57313 nil))
+                                      <span id='f0c455'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c454'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c275'>(block trivia&#46;level1&#46;impl::clause
+                <span id='f0c274'>(let* ((&#35;:it57287 &#35;:what157317))
+                  <span id='f0c273'>(if <span id='f0c248'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:it57287
+                               <span id='f0c246'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003B8D75F&#62;))</span>)</span>
+                      <span id='f0c272'>(ccl::&#37;decls-body
+                       <span id='f0c271'>(return-from trivia&#46;level1&#46;impl::whole
+                         <span id='f0c270'>(let* ()
+                           <span id='f0c269'>(block trivia&#46;level1&#46;impl::whole
+                             (progn <span id='f0c268'>(let* ((&#35;:it57314 nil))
+                                      <span id='f0c267'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c266'>(funcall &#39;normalize-bind*
+                                                 <span id='f0c265'>(ccl::typed-form &#39;list <span id='f0c264'>(funcall &#39;spc:direct-slot-values term)</span>)</span>
+                                                 <span id='f0c262'>(ccl::typed-form &#39;function
+                                                  <span id='f0c261'>(function <span id='f0c260'>(lambda (args)
+                                                              <span id='f0c259'>(funcall constructor
+                                                                       <span id='f0c258'>(funcall &#39;spc:update-from-alist
+                                                                                term
+                                                                                <span id='f0c256'>(funcall &#39;mapcar
+                                                                                         <span id='f0c254'>(function cons)</span>
+                                                                                         <span id='f0c253'>(funcall &#39;spc:direct-slot-keywords
+                                                                                                  term)</span>
+                                                                                         args)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c251'>(let* ((&#35;:it57315 nil))
+                                      <span id='f0c250'>(return-from trivia&#46;level1&#46;impl::whole
+                                        <span id='f0c249'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                      nil)</span>)</span>)</span>
+              <span id='f0c152'>(let* ((&#35;:otherwise57272 &#35;:what157317))
+                <span id='f0c151'>(return-from trivia&#46;level1&#46;impl::whole
+                  <span id='f0c150'>(let* ()
+                    <span id='f0c149'>(block trivia&#46;level1&#46;impl::whole
+                      <span id='f0c148'>(let* ((&#35;:it57316 nil))
+                        <span id='f0c147'>(return-from trivia&#46;level1&#46;impl::whole
+                          <span id='f0c146'>(values (funcall &#39;error
+                                           <span id='f0c145'>&#39;trivia&#46;level2:match-error</span>
+                                           <span id='f0c143'>&#39;:pattern</span>
+                                           <span id='f0c144'>&#39;(((number numb) (funcall constructor numb))
+                                             ((spc:reference) (funcall constructor term))
+                                             ((spc:let-node spc:value spc:var)
+                                              (normalize spc:value
+                                                         (lambda (new-val)
+                                                           (funcall constructor
+                                                                    (spc:copy-meta term
+                                                                                   (spc:make-let :var
+                                                                                                 spc:var
+                                                                                                 :val
+                                                                                                 new-val))))))
+                                             ((spc:application spc:name spc:arguments)
+                                              (normalize-bind
+                                                spc:name
+                                                (lambda (func-name)
+                                                  (normalize-bind*
+                                                    spc:arguments
+                                                    (lambda (args)
+                                                      (funcall constructor
+                                                               (spc:copy-meta term
+                                                                              (spc:make-application
+                                                                                :function
+                                                                                func-name
+                                                                                :arguments
+                                                                                args))))))))
+                                             ((spc:record spc:name spc:contents spc:order)
+                                              (let* ((alist-contents (sycamore:tree-map-alist spc:contents))
+                                                     (keys (mapcar (function car) alist-contents))
+                                                     (values (mapcar (function cdr) alist-contents)))
+                                                (normalize-bind*
+                                                  values
+                                                  (lambda (value-refs)
+                                                    (funcall constructor
+                                                             (spc:copy-meta term
+                                                                            (make-instance
+                                                                              &#39;spc:record
+                                                                              :name
+                                                                              spc:name
+                                                                              :order
+                                                                              spc:order
+                                                                              :contents
+                                                                              (sycamore:alist-tree-map
+                                                                                (mapcar (function cons) keys value-refs)
+                                                                                (function util:hash-compare)))))))))
+                                             ((spc:record-lookup spc:record spc:field)
+                                              (normalize-bind
+                                                spc:record
+                                                (lambda (rec-ref)
+                                                  (funcall constructor
+                                                           (spc:copy-meta term
+                                                                          (spc:make-record-lookup
+                                                                            :record
+                                                                            rec-ref
+                                                                            :field
+                                                                            spc:field))))))
+                                             ((spc:bind-constraint spc:var spc:value)
+                                              (normalize spc:value
+                                                         (lambda (constraint)
+                                                           (funcall constructor
+                                                                    (spc:copy-meta term
+                                                                                   (spc:make-bind-constraint
+                                                                                     :var
+                                                                                     spc:var
+                                                                                     :value
+                                                                                     constraint))))))
+                                             ((cons &#95; &#95;)
+                                              (let* ((body
+                                                      (mapcar (lambda (ter) (normalize ter (function identity))) term))
+                                                     (res (mvfoldr (function combine-expression) body nil)))
+                                                (funcall constructor res)))
+                                             ((or (spc:type-coerce)
+                                                  (spc:type-check)
+                                                  (spc:array-lookup)
+                                                  (spc:array-set)
+                                                  (spc:array-allocate)
+                                                  (spc:from-data))
+                                              (normalize-bind*
+                                                (spc:direct-slot-values term)
+                                                (lambda (args)
+                                                  (funcall constructor
+                                                           (spc:update-from-alist
+                                                             term
+                                                             (mapcar (function cons)
+                                                                     (spc:direct-slot-keywords term)
+                                                                     args)))))))</span>
+                                           <span id='f0c140'>&#39;:values</span>
+                                           <span id='f0c142'>(cons &#35;:otherwise57272 nil)</span>))</span>)</span>)</span>)</span>)</span>)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>111</span> 
+<span class='line'>112</span> &#59;&#59; replace expression with terms here&#33;&#63;
+<span class='line'>113</span> &#59;&#59; this function was taken from
+<span class='line'>114</span> &#59;&#59; https:&#47;&#47;matt&#46;might&#46;net&#47;articles&#47;a-normalization&#47;
+<span class='line'>115</span> (-&#62; normalize-bind
+<span class='line'>116</span>     (spc:expression (-&#62; (spc:expression) spc:expression)) spc:expression)
+<span id='f0s62'><span class='line'>117</span> (defun normalize-bind (expr cont)
+<span class='line'>118</span>   &#34;normalize-bind normalizes the given expression&#44; creating an unique
+<span class='line'>119</span> let binding if the result of normalization is itself not in normal form&#34;
+<span class='line'>120</span>   <span id='f0s63'>(if <span id='f0s64'>(listp expr)</span>
+<span class='line'>121</span>       <span id='f0s65'>(normalize-bind* expr cont)</span>
+<span class='line'>122</span>       <span id='f0s66'>(normalize expr
+<span class='line'>123</span>                  <span id='f0s67'>(lambda (expr)
+<span class='line'>124</span>                    <span id='f0s68'>(if <span id='f0s69'>(normalp expr)</span>
+<span class='line'>125</span>                        <span id='f0s70'>(funcall cont expr)</span>
+<span class='line'>126</span>                        <span id='f0s71'>(let ((var <span id='f0s72'>(util:symbol-to-keyword <span id='f0s73'>(gensym <span id='f0s74'>&#34;&#38;G&#34;</span>)</span>)</span>))
+<span class='line'>127</span>                          <span id='f0s75'>(combine-expression
+<span class='line'>128</span>                           <span id='f0s76'>(spc:copy-meta expr
+<span class='line'>129</span>                                          <span id='f0s77'>(spc:make-let
+<span class='line'>130</span>                                           :var var
+<span class='line'>131</span>                                           :val expr)</span>)</span>
+<span class='line'>132</span>                           <span id='f0s78'>(funcall cont <span id='f0s79'>(spc:copy-meta
+<span class='line'>133</span>                                          expr
+<span class='line'>134</span>                                          <span id='f0s80'>(spc:make-reference :name var)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t62')><span class='toggle' id='pf0t62'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(62)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t62'><code><span id='f0c845'> (lambda (expr cont)
+   <span id='f0c844'>(if <span id='f0c838'>(eq (ccl::lisptag expr) 3)</span>
+       <span id='f0c843'>(funcall &#39;normalize-bind* <span id='f0c840'>(ccl::typed-form &#39;list expr)</span> <span id='f0c842'>(ccl::typed-form &#39;function cont)</span>)</span>
+       <span id='f0c836'>(funcall &#39;normalize
+                <span id='f0c835'>(ccl::typed-form
+                 &#39;(or cons
+                      number
+                      spc:reference
+                      spc:application
+                      spc:record
+                      spc:record-lookup
+                      spc:array-lookup
+                      spc:array-allocate
+                      spc:from-data
+                      spc:array-set
+                      spc:bind-constraint
+                      spc:let-node
+                      spc:type-coerce
+                      spc:type-check)
+                 expr)</span>
+                <span id='f0c833'>(ccl::typed-form &#39;function
+                 <span id='f0c832'>(function <span id='f0c831'>(lambda (expr)
+                             <span id='f0c830'>(if <span id='f0c829'>(funcall &#39;normalp
+                                          <span id='f0c828'>(ccl::typed-form
+                                           &#39;(or cons
+                                                number
+                                                spc:reference
+                                                spc:application
+                                                spc:record
+                                                spc:record-lookup
+                                                spc:array-lookup
+                                                spc:array-allocate
+                                                spc:from-data
+                                                spc:array-set
+                                                spc:bind-constraint
+                                                spc:let-node
+                                                spc:type-coerce
+                                                spc:type-check)
+                                           expr)</span>)</span>
+                                 <span id='f0c806'>(funcall cont expr)</span>
+                                 <span id='f0c826'>(let* ((var <span id='f0c809'>(funcall &#39;util:symbol-to-keyword <span id='f0c808'>(funcall &#39;gensym <span id='f0c807'>&#39;&#34;&#38;G&#34;</span>)</span>)</span>))
+                                   <span id='f0c825'>(funcall &#39;combine-expression
+                                            <span id='f0c824'>(funcall &#39;spc:copy-meta expr <span id='f0c822'>(funcall &#39;spc:make-let <span id='f0c818'>&#39;:var</span> var <span id='f0c819'>&#39;:val</span> expr)</span>)</span>
+                                            <span id='f0c817'>(ccl::typed-form
+                                             &#39;(or null
+                                                  cons
+                                                  number
+                                                  spc:reference
+                                                  spc:application
+                                                  spc:record
+                                                  spc:record-lookup
+                                                  spc:array-lookup
+                                                  spc:array-allocate
+                                                  spc:from-data
+                                                  spc:array-set
+                                                  spc:bind-constraint
+                                                  spc:let-node
+                                                  spc:type-coerce
+                                                  spc:type-check)
+                                             <span id='f0c816'>(funcall cont
+                                                      <span id='f0c815'>(funcall &#39;spc:copy-meta
+                                                               expr
+                                                               <span id='f0c814'>(funcall &#39;spc:make-reference
+                                                                        <span id='f0c813'>&#39;:name</span>
+                                                                        <span id='f0c812'>(ccl::typed-form &#39;keyword var)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>135</span> 
+<span class='line'>136</span> (-&#62; normalize-bind* (list (-&#62; (list) spc:expression)) spc:expression)
+<span id='f0s81'><span class='line'>137</span> (defun normalize-bind* (list cont)
+<span class='line'>138</span>   &#59;&#59; can&#39;t foldr here&#44; as it turns out&#44; we need access to the recursive calls &#9785;
+<span class='line'>139</span>   <span id='f0s82'>(if <span id='f0s83'>(null list)</span>
+<span class='line'>140</span>       <span id='f0s84'>(funcall cont nil)</span>
+<span class='line'>141</span>       <span id='f0s85'>(normalize-bind
+<span class='line'>142</span>        <span id='f0s86'>(car list)</span>
+<span class='line'>143</span>        <span id='f0s87'>(lambda (ref-car)
+<span class='line'>144</span>          &#59;&#59; induction&#33;
+<span class='line'>145</span>          <span id='f0s88'>(normalize-bind* <span id='f0s89'>(cdr list)</span>
+<span class='line'>146</span>                           <span id='f0s90'>(lambda (ref-cdr)
+<span class='line'>147</span>                             <span id='f0s91'>(funcall cont <span id='f0s92'>(cons ref-car ref-cdr)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t81')><span class='toggle' id='pf0t81'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(81)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t81'><code><span id='f0c804'> (lambda (list cont)
+   <span id='f0c803'>(if <span id='f0c801'>(not list)</span>
+       <span id='f0c802'>(funcall cont nil)</span>
+       <span id='f0c800'>(funcall &#39;normalize-bind
+                <span id='f0c799'>(ccl::typed-form
+                 &#39;(or cons
+                      number
+                      spc:reference
+                      spc:application
+                      spc:record
+                      spc:record-lookup
+                      spc:array-lookup
+                      spc:array-allocate
+                      spc:from-data
+                      spc:array-set
+                      spc:bind-constraint
+                      spc:let-node
+                      spc:type-coerce
+                      spc:type-check)
+                 <span id='f0c798'>(car list)</span>)</span>
+                <span id='f0c796'>(ccl::typed-form &#39;function
+                 <span id='f0c795'>(function <span id='f0c794'>(lambda (ref-car)
+                             <span id='f0c793'>(funcall &#39;normalize-bind*
+                                      <span id='f0c792'>(ccl::typed-form &#39;list <span id='f0c791'>(cdr list)</span>)</span>
+                                      <span id='f0c789'>(ccl::typed-form &#39;function
+                                       <span id='f0c788'>(function <span id='f0c787'>(lambda (ref-cdr) <span id='f0c786'>(funcall cont <span id='f0c785'>(cons ref-car ref-cdr)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>148</span> 
+<span class='line'>149</span> (-&#62; combine-expression (t (or null spc:expression)) spc:expression)
+<span id='f0s93'><span class='line'>150</span> (defun combine-expression (expr1 expr2)
+<span class='line'>151</span>   <span id='f0s94'>(dispatch-case ((expr1 spc:expression)
+<span class='line'>152</span>                   (expr2 (or null spc:expression)))
+<span class='line'>153</span>     ((cons     cons)     <span id='f0s95'>(append expr1 expr2)</span>)
+<span class='line'>154</span>     ((spc:term spc:term) <span id='f0s96'>(list expr1 expr2)</span>)
+<span class='line'>155</span>     ((cons     spc:term) <span id='f0s97'>(append expr1 <span id='f0s98'>(list expr2)</span>)</span>)
+<span class='line'>156</span>     ((spc:term cons)     <span id='f0s99'>(cons expr1 expr2)</span>)
+<span class='line'>157</span>     ((cons     null)     expr1)
+<span class='line'>158</span>     ((spc:term null)     <span id='f0s100'>(list expr1)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t93')><span class='toggle' id='pf0t93'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(93)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t93'><code><span id='f0c768'> (lambda (expr1 expr2)
+   <span id='f0c767'>(let ((&#35;:arg0 expr1) (&#35;:arg1 expr2))
+     <span id='f0c766'>(let ((&#35;:arg057537 &#35;:arg0) (&#35;:arg157538 &#35;:arg1))
+       <span id='f0c765'>(block &#35;:block57530
+         <span id='f0c764'>(tagbody <span id='f0c756'>(let* ((&#35;:expr57539 &#35;:arg057537))
+                    <span id='f0c755'>(let* ((&#35;:g57540 &#35;:expr57539))
+                      <span id='f0c754'>(if <span id='f0c634'>(eq (ccl::fulltag &#35;:g57540) 3)</span>
+                          <span id='f0c632'>(progn nil
+                                 <span id='f0c631'>(let* ((&#35;:expr57541 &#35;:arg157538))
+                                   <span id='f0c630'>(let* ((&#35;:g57542 &#35;:expr57541))
+                                     <span id='f0c629'>(if <span id='f0c628'>(eq (ccl::fulltag &#35;:g57542) 3)</span>
+                                         <span id='f0c626'>(progn nil <span id='f0c625'>(go &#35;:tag57531)</span>)</span>
+                                         <span id='f0c624'>(if <span id='f0c621'>(let* ((&#35;:g57544 &#35;:g57542))
+                                               <span id='f0c620'>(or <span id='f0c607'>(funcall &#39;numberp &#35;:g57544)</span>
+                                                   <span id='f0c590'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c588'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BB21CF&#62;))</span>)</span>
+                                                   <span id='f0c593'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c591'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BB0BDF&#62;))</span>)</span>
+                                                   <span id='f0c602'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c601'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BAF5EF&#62;))</span>)</span>
+                                                   <span id='f0c616'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c615'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BADFFF&#62;))</span>)</span>
+                                                   <span id='f0c619'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c618'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BACA0F&#62;))</span>)</span>
+                                                   <span id='f0c610'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c608'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BAB41F&#62;))</span>)</span>
+                                                   <span id='f0c596'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c595'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BA9E2F&#62;))</span>)</span>
+                                                   <span id='f0c613'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c612'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BDE80F&#62;))</span>)</span>
+                                                   <span id='f0c584'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c583'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BDB91F&#62;))</span>)</span>
+                                                   <span id='f0c605'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c604'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BD8A7F&#62;))</span>)</span>
+                                                   <span id='f0c587'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c586'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BD5BDF&#62;))</span>)</span>
+                                                   <span id='f0c599'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57544
+                                                            <span id='f0c598'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003BD2D3F&#62;))</span>)</span>)</span>)</span>
+                                             <span id='f0c623'>(progn nil <span id='f0c622'>(go &#35;:tag57533)</span>)</span>
+                                             <span id='f0c581'>(if <span id='f0c566'>(not &#35;:g57542)</span>
+                                                 <span id='f0c568'>(progn nil <span id='f0c567'>(go &#35;:tag57535)</span>)</span>
+                                                 <span id='f0c580'>(if <span id='f0c579'>(progn &#35;:g57542 t)</span>
+                                                     <span id='f0c577'>(progn nil
+                                                            <span id='f0c576'>(values (funcall &#39;error
+                                                                             <span id='f0c571'>&#39;dispatch-case-error</span>
+                                                                             <span id='f0c575'>&#39;:expected-type</span>
+                                                                             <span id='f0c569'>&#39;(or null spc:expression)</span>
+                                                                             <span id='f0c574'>&#39;:datum</span>
+                                                                             &#35;:expr57541
+                                                                             <span id='f0c570'>&#39;:matched-types</span>
+                                                                             <span id='f0c573'>&#39;((or null spc:expression))</span>))</span>)</span>
+                                                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                          <span id='f0c753'>(if <span id='f0c752'>(let* ((&#35;:g57582 &#35;:g57540))
+                                <span id='f0c751'>(or <span id='f0c735'>(funcall &#39;numberp &#35;:g57582)</span>
+                                    <span id='f0c744'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c743'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BCC33F&#62;))</span>)</span>
+                                    <span id='f0c741'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c739'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BC949F&#62;))</span>)</span>
+                                    <span id='f0c718'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c717'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BC65FF&#62;))</span>)</span>
+                                    <span id='f0c715'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c714'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BC375F&#62;))</span>)</span>
+                                    <span id='f0c724'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c722'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BC08BF&#62;))</span>)</span>
+                                    <span id='f0c730'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c729'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BBDA1F&#62;))</span>)</span>
+                                    <span id='f0c747'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c746'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BBAB7F&#62;))</span>)</span>
+                                    <span id='f0c750'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c749'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BB7CDF&#62;))</span>)</span>
+                                    <span id='f0c727'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c726'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BB4E3F&#62;))</span>)</span>
+                                    <span id='f0c721'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c720'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BFD18F&#62;))</span>)</span>
+                                    <span id='f0c733'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c732'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BFA2EF&#62;))</span>)</span>
+                                    <span id='f0c738'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57582
+                                             <span id='f0c736'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BF744F&#62;))</span>)</span>)</span>)</span>
+                              <span id='f0c701'>(progn nil
+                                     <span id='f0c700'>(let* ((&#35;:expr57619 &#35;:arg157538))
+                                       <span id='f0c699'>(let* ((&#35;:g57620 &#35;:expr57619))
+                                         <span id='f0c698'>(if <span id='f0c697'>(let* ((&#35;:g57622 &#35;:g57620))
+                                               <span id='f0c696'>(or <span id='f0c695'>(funcall &#39;numberp &#35;:g57622)</span>
+                                                   <span id='f0c678'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c676'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C0FABF&#62;))</span>)</span>
+                                                   <span id='f0c669'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c668'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C0CC1F&#62;))</span>)</span>
+                                                   <span id='f0c687'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c686'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C09D7F&#62;))</span>)</span>
+                                                   <span id='f0c684'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c682'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C06EDF&#62;))</span>)</span>
+                                                   <span id='f0c690'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c688'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C0403F&#62;))</span>)</span>
+                                                   <span id='f0c672'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c671'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C0119F&#62;))</span>)</span>
+                                                   <span id='f0c666'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c665'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C3E21F&#62;))</span>)</span>
+                                                   <span id='f0c681'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c680'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C3B37F&#62;))</span>)</span>
+                                                   <span id='f0c663'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c661'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C384DF&#62;))</span>)</span>
+                                                   <span id='f0c675'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c673'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C3563F&#62;))</span>)</span>
+                                                   <span id='f0c660'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c659'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C3279F&#62;))</span>)</span>
+                                                   <span id='f0c693'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57622
+                                                            <span id='f0c692'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003C2F8FF&#62;))</span>)</span>)</span>)</span>
+                                             <span id='f0c657'>(progn nil <span id='f0c656'>(go &#35;:tag57532)</span>)</span>
+                                             <span id='f0c655'>(if <span id='f0c654'>(eq (ccl::fulltag &#35;:g57620) 3)</span>
+                                                 <span id='f0c636'>(progn nil <span id='f0c635'>(go &#35;:tag57534)</span>)</span>
+                                                 <span id='f0c652'>(if <span id='f0c651'>(not &#35;:g57620)</span>
+                                                     <span id='f0c638'>(progn nil <span id='f0c637'>(go &#35;:tag57536)</span>)</span>
+                                                     <span id='f0c650'>(if <span id='f0c640'>(progn &#35;:g57620 t)</span>
+                                                         <span id='f0c649'>(progn nil
+                                                                <span id='f0c648'>(values (funcall &#39;error
+                                                                                 <span id='f0c647'>&#39;dispatch-case-error</span>
+                                                                                 <span id='f0c644'>&#39;:expected-type</span>
+                                                                                 <span id='f0c646'>&#39;(or null spc:expression)</span>
+                                                                                 <span id='f0c642'>&#39;:datum</span>
+                                                                                 &#35;:expr57619
+                                                                                 <span id='f0c641'>&#39;:matched-types</span>
+                                                                                 <span id='f0c643'>&#39;((or null spc:expression))</span>))</span>)</span>
+                                                         nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                              <span id='f0c712'>(if <span id='f0c703'>(progn &#35;:g57540 t)</span>
+                                  <span id='f0c711'>(progn nil
+                                         <span id='f0c710'>(values (funcall &#39;error
+                                                          <span id='f0c704'>&#39;dispatch-case-error</span>
+                                                          <span id='f0c706'>&#39;:expected-type</span>
+                                                          <span id='f0c705'>&#39;spc:expression</span>
+                                                          <span id='f0c708'>&#39;:datum</span>
+                                                          &#35;:expr57539
+                                                          <span id='f0c709'>&#39;:matched-types</span>
+                                                          nil))</span>)</span>
+                                  nil)</span>)</span>)</span>)</span>)</span>
+                  (&#35;:tag57531 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c561'>(return-from &#35;:block57530 <span id='f0c560'>(funcall &#39;ccl::append-2 expr1 expr2)</span>)</span>
+                  (&#35;:tag57532 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c554'>(return-from &#35;:block57530 <span id='f0c553'>(list expr1 expr2)</span>)</span>
+                  (&#35;:tag57533 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c761'>(return-from &#35;:block57530 <span id='f0c760'>(funcall &#39;ccl::append-2 expr1 <span id='f0c758'>(cons expr2 nil)</span>)</span>)</span>
+                  (&#35;:tag57534 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c565'>(return-from &#35;:block57530 <span id='f0c564'>(cons expr1 expr2)</span>)</span>
+                  (&#35;:tag57535 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c763'>(return-from &#35;:block57530 expr1)</span>
+                  (&#35;:tag57536 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9929D&#62; t nil)
+                  <span id='f0c557'>(return-from &#35;:block57530 <span id='f0c556'>(cons expr1 nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

@@ -1,0 +1,58 @@
+<html><head><style type='text/css'>
+#tagsselect {  width: *; }
+</style><script type='text/javascript'>
+function tags_changed() {
+  var file_frame = top.frames.TFF701917560EE699A;
+  if (file_frame) {
+    var sel = document.getElementById('tagsselect');
+    var len = sel.length;
+    var tags = new Array();
+    for (var i = 0; i < len; i++)
+      if (sel[i].selected) tags.push(sel[i].value);
+    file_frame.colorize(tags);
+  }
+}
+
+function resize_tags() {
+  var sel = document.getElementById('tagsselect');
+  sel.style.width = sel.offsetParent.scrollWidth + 'px';
+}
+
+function init_tags () {
+  var sel = document.getElementById('tagsselect');
+  var len = sel.length;
+  for (var i = 0; i < len; i++) sel[i].selected = true;
+  sel.focus();
+  sel.onchange = tags_changed;
+
+  var fs = top.document.getElementById('tagsframeset');
+  fs.cols = Math.min(sel.offsetLeft + sel.offsetWidth, 0.3 * fs.scrollWidth) + 'px,*';
+  resize_tags();
+}
+
+function select_tags (tags) {
+  var sel = document.getElementById('tagsselect');
+  for (var i = 0; i < sel.length; i++) sel[i].selected = false;
+  var len = tags.length;
+  for (var i = 0; i < len; i++) sel[tags[i]].selected = true;
+  tags_changed();
+}
+
+</script></head><body onload='init_tags()' onresize='resize_tags()'>
+<form width='*'><select multiple size='14' width='*' id='tagsselect' onchange='tags_changed();'>
+<option value='0'>ALUCARD&#46;STACK</option>
+<option value='1'>ALUCARD&#46;RELOCATION</option>
+<option value='2'>ALUCARD&#46;FORMAT</option>
+<option value='3'>ALUCARD&#46;EVALUATE-BODY</option>
+<option value='4'>ALUCARD&#46;DEPENDENCIES</option>
+<option value='5'>ALUCARD&#46;STARTUP</option>
+<option value='6'>ALUCARD&#46;PASS</option>
+<option value='7'>ALUCARD&#46;PASS&#46;ANF</option>
+<option value='8'>ALUCARD&#46;PACKING</option>
+<option value='9'>ALUCARD</option>
+<option value='10'>ALUCARD&#46;EXPAND</option>
+<option value='11'>VAMPIR</option>
+<option value='12'>ALUCARD&#46;TYPECHECK</option>
+<option value='13'>ALUCARD&#46;STEP</option>
+</select></form>
+</body></html>

@@ -1,0 +1,481 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_closure_dependency_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;closure;dependency.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;closure&#46;dependency)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (defclass typ ()
+<span class='line'>4</span>   ((direct :initarg  :direct
+<span class='line'>5</span>            :type     closure:typ        &#59; closure:typ (list (list keyword))
+<span class='line'>6</span>            :initform <span id='f0s1'>(closure:allocate)</span>
+<span class='line'>7</span>            :accessor direct
+<span class='line'>8</span>            :documentation &#34;The direct dependency mapping&#34;)
+<span class='line'>9</span>    (reverse :initarg  :reverse
+<span class='line'>10</span>             :type     closure:typ       &#59; closure:typ (list keyword)
+<span class='line'>11</span>             :initform <span id='f0s2'>(closure:allocate)</span>
+<span class='line'>12</span>             :accessor reverse
+<span class='line'>13</span>             :documentation &#34;The reverse dependency mapping&#34;)
+<span class='line'>14</span>    (cyclic :initarg :cyclic
+<span class='line'>15</span>            :type     closure:typ        &#59; clsoure:typ (list keyword)
+<span class='line'>16</span>            :initform <span id='f0s3'>(closure:allocate)</span>
+<span class='line'>17</span>            :accessor cyclic
+<span class='line'>18</span>            :documentation &#34;Cyclic dependencies&#34;)
+<span class='line'>19</span>    (solved :initarg :solved
+<span class='line'>20</span>            :type    list                &#59; list keyword
+<span class='line'>21</span>            :initform nil
+<span class='line'>22</span>            :accessor solved
+<span class='line'>23</span>            :documentation &#34;The currently newly solved values that have
+<span class='line'>24</span>            not been cleared&#44; note this list is ordered&#46;&#34;))
+<span class='line'>25</span>   (:documentation &#34;The dependency closure that tracks dependencies&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c352'> (lambda nil <span id='f0c351'>(funcall &#39;closure:allocate)</span>)</span>
+<span id='f0c333'> (lambda nil <span id='f0c332'>(funcall &#39;closure:allocate)</span>)</span>
+<span id='f0c245'> (lambda nil <span id='f0c244'>(funcall &#39;closure:allocate)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>26</span> 
+<span id='f0s4'><span class='line'>27</span> (defmethod print-object ((obj typ) stream)
+<span class='line'>28</span>   <span id='f0s5'>(print-unreadable-object (obj stream :type t)
+<span class='line'>29</span>     <span id='f0s6'>(pprint-logical-block (stream nil)
+<span class='line'>30</span>       <span id='f0s7'>(format stream <span id='f0s8'>&#34;:DIRECT &#126;A&#126;&#95;:REVERSE &#126;A&#126;&#95;:CYCLIC &#126;A&#126;&#95;:SOLVED &#126;A&#34;</span>
+<span class='line'>31</span>               <span id='f0s9'>(direct obj)</span> <span id='f0s10'>(reverse obj)</span> <span id='f0s11'>(cyclic obj)</span> <span id='f0s12'>(solved obj)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c113'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c112'>(flet ()
+     <span id='f0c111'>(let* ((&#35;:g51169
+             <span id='f0c110'>(function <span id='f0c109'>(lambda nil
+                         <span id='f0c108'>(let* ((ccl::*logical-block-p* t))
+                           <span id='f0c107'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                                    <span id='f0c104'>(function <span id='f0c103'>(lambda (stream)
+                                                <span id='f0c102'>(let ((ccl::+p <span id='f0c63'>(or nil nil)</span>))
+                                                  <span id='f0c101'>(let ((ccl::*current-level* <span id='f0c66'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                                        (ccl::*current-length* -1))
+                                                    <span id='f0c100'>(if <span id='f0c70'>(not <span id='f0c69'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                                        <span id='f0c99'>(progn <span id='f0c98'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c96'>&#39;&#34;&#34;</span>)</span>
+                                                               <span id='f0c94'>(if <span id='f0c87'>(catch <span id='f0c71'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                                     (progn <span id='f0c83'>(progn <span id='f0c82'>(funcall &#39;format
+                                                                                            stream
+                                                                                            <span id='f0c72'>&#39;&#34;:DIRECT &#126;A&#126;&#95;:REVERSE &#126;A&#126;&#95;:CYCLIC &#126;A&#126;&#95;:SOLVED &#126;A&#34;</span>
+                                                                                            <span id='f0c81'>(funcall &#39;direct obj)</span>
+                                                                                            <span id='f0c75'>(funcall &#39;reverse obj)</span>
+                                                                                            <span id='f0c77'>(funcall &#39;cyclic obj)</span>
+                                                                                            <span id='f0c79'>(funcall &#39;solved obj)</span>)</span>
+                                                                                   nil)</span>
+                                                                            <span id='f0c86'>(funcall &#39;ccl::end-block stream <span id='f0c84'>&#39;&#34;&#34;</span>)</span>
+                                                                            nil))</span>
+                                                                   <span id='f0c93'>(progn <span id='f0c92'>(funcall &#39;ccl::end-block stream <span id='f0c90'>&#39;&#34;&#34;</span>)</span>
+                                                                          <span id='f0c89'>(throw <span id='f0c88'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                                                   nil)</span>)</span>
+                                                        nil)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c106'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c62'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g51169)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>32</span> 
+<span class='line'>33</span> (-&#62; get-solved (typ) list)
+<span id='f0s13'><span class='line'>34</span> (defun get-solved (dependency)
+<span class='line'>35</span>   <span id='f0s14'>(cl:reverse <span id='f0s15'>(solved dependency)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t13')><span class='toggle' id='pf0t13'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(13)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t13'><code><span id='f0c279'> (lambda (dependency) <span id='f0c278'>(funcall &#39;common-lisp:reverse <span id='f0c277'>(funcall &#39;solved dependency)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>36</span> 
+<span class='line'>37</span> (-&#62; allocate () typ)
+<span id='f0s16'><span class='line'>38</span> (defun allocate ()
+<span class='line'>39</span>   <span id='f0s17'>(assure typ
+<span class='line'>40</span>     <span id='f0s18'>(make-instance &#39;typ)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t16')><span class='toggle' id='pf0t16'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(16)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t16'><code><span id='f0c275'> (lambda nil
+   <span id='f0c274'>(ccl::typed-form &#39;typ
+    <span id='f0c273'>(let* ((&#35;:datum51210
+            <span id='f0c263'>(let* ()
+              <span id='f0c262'>(funcall <span id='f0c261'>(ccl::&#37;svref <span id='f0c260'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200374CE5F&#62;))</span> 3)</span>
+                       <span id='f0c259'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200374CE5F&#62;))</span>)</span>)</span>))
+      <span id='f0c272'>(if <span id='f0c270'>(funcall &#39;ccl::std-instance-class-cell-typep
+                   &#35;:datum51210
+                   <span id='f0c268'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200374987F&#62;))</span>)</span>
+          &#35;:datum51210
+          <span id='f0c267'>(ccl::typed-form &#39;typ <span id='f0c266'>(funcall &#39;serapeum::&#37;require-type &#35;:datum51210 <span id='f0c264'>&#39;typ</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>41</span> 
+<span class='line'>42</span> (-&#62; determined-by (typ keyword list) typ)
+<span id='f0s19'><span class='line'>43</span> (defun determined-by (dependency term dependency-list)
+<span class='line'>44</span>   &#34;Notes that the given term is entailed by the values in the list&#46;&#34;
+<span class='line'>45</span>   <span id='f0s20'>(let* ((current      <span id='f0s21'>(closure:lookup <span id='f0s22'>(direct dependency)</span> term)</span>)
+<span class='line'>46</span>          (new-contents <span id='f0s23'>(if current
+<span class='line'>47</span>                            <span id='f0s24'>(cons dependency-list current)</span>
+<span class='line'>48</span>                            <span id='f0s25'>(list dependency-list)</span>)</span>)
+<span class='line'>49</span>          (typ          <span id='f0s26'>(handle-cyclic dependency term dependency-list)</span>))
+<span class='line'>50</span>     <span id='f0s27'>(assure typ
+<span class='line'>51</span>       <span id='f0s28'>(util:copy-instance typ
+<span class='line'>52</span>                           :direct  <span id='f0s29'>(closure:insert <span id='f0s30'>(direct typ)</span> term new-contents)</span>
+<span class='line'>53</span>                           :reverse <span id='f0s31'>(add-reverse <span id='f0s32'>(reverse typ)</span> term dependency-list)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c331'> (lambda (dependency term dependency-list)
+   <span id='f0c330'>(let* ((current
+           <span id='f0c292'>(funcall &#39;closure:lookup
+                    <span id='f0c291'>(ccl::typed-form &#39;closure:typ <span id='f0c290'>(funcall &#39;direct dependency)</span>)</span>
+                    <span id='f0c288'>(ccl::typed-form &#39;keyword term)</span>)</span>)
+          (new-contents <span id='f0c329'>(if current <span id='f0c328'>(cons dependency-list current)</span> <span id='f0c324'>(cons dependency-list nil)</span>)</span>)
+          (typ
+           <span id='f0c286'>(funcall &#39;handle-cyclic
+                    <span id='f0c281'>(ccl::typed-form &#39;typ dependency)</span>
+                    <span id='f0c283'>(ccl::typed-form &#39;keyword term)</span>
+                    <span id='f0c285'>(ccl::typed-form &#39;list dependency-list)</span>)</span>))
+     <span id='f0c322'>(ccl::typed-form &#39;typ
+      <span id='f0c321'>(let* ((&#35;:datum51226
+              <span id='f0c320'>(funcall &#39;util:copy-instance
+                       (ccl::typed-form &#39;standard-object typ)
+                       <span id='f0c312'>&#39;:direct</span>
+                       <span id='f0c319'>(funcall &#39;closure:insert
+                                <span id='f0c318'>(ccl::typed-form &#39;closure:typ <span id='f0c317'>(funcall &#39;direct typ)</span>)</span>
+                                <span id='f0c315'>(ccl::typed-form &#39;keyword term)</span>
+                                new-contents)</span>
+                       <span id='f0c302'>&#39;:reverse</span>
+                       <span id='f0c311'>(funcall &#39;add-reverse
+                                <span id='f0c308'>(ccl::typed-form &#39;closure:typ <span id='f0c307'>(funcall &#39;reverse typ)</span>)</span>
+                                <span id='f0c305'>(ccl::typed-form &#39;keyword term)</span>
+                                <span id='f0c310'>(ccl::typed-form &#39;list dependency-list)</span>)</span>)</span>))
+        <span id='f0c301'>(if <span id='f0c300'>(funcall &#39;ccl::std-instance-class-cell-typep
+                     &#35;:datum51226
+                     <span id='f0c298'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200376845F&#62;))</span>)</span>
+            &#35;:datum51226
+            <span id='f0c297'>(ccl::typed-form &#39;typ <span id='f0c296'>(funcall &#39;serapeum::&#37;require-type &#35;:datum51226 <span id='f0c294'>&#39;typ</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>54</span> 
+<span class='line'>55</span> (-&#62; determine-each-other (typ list) typ)
+<span id='f0s33'><span class='line'>56</span> (defun determine-each-other (dependency keywords)
+<span class='line'>57</span>   &#34;Each value is considered to determine each other&#46;&#34;
+<span class='line'>58</span>   &#59;&#59; This algorithm can significantly improved
+<span class='line'>59</span>   <span id='f0s34'>(mvfold <span id='f0s35'>(lambda (dep keyword)
+<span class='line'>60</span>             &#59;&#59; O(n&#178;)&#44; a set would be nicer
+<span class='line'>61</span>             <span id='f0s36'>(let ((remove-current <span id='f0s37'>(remove-if <span id='f0s38'>(lambda (x) <span id='f0s39'>(eql x keyword)</span>)</span> keywords)</span>))
+<span class='line'>62</span>               <span id='f0s40'>(mvfold <span id='f0s41'>(lambda (dep keyword-dep)
+<span class='line'>63</span>                         <span id='f0s42'>(determined-by dep keyword <span id='f0s43'>(list keyword-dep)</span>)</span>)</span>
+<span class='line'>64</span>                       remove-current
+<span class='line'>65</span>                       dep)</span>)</span>)</span>
+<span class='line'>66</span>           keywords
+<span class='line'>67</span>           dependency)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t33')><span class='toggle' id='pf0t33'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(33)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t33'><code><span id='f0c144'> (lambda (dependency keywords)
+   <span id='f0c143'>(funcall &#39;reduce
+            <span id='f0c138'>(function <span id='f0c137'>(lambda (dep keyword)
+                        <span id='f0c136'>(let* ((remove-current
+                                <span id='f0c120'>(funcall &#39;remove-if <span id='f0c119'>(function <span id='f0c118'>(lambda (x) <span id='f0c117'>(funcall 10 x keyword)</span>)</span>)</span> keywords)</span>))
+                          <span id='f0c135'>(funcall &#39;reduce
+                                   <span id='f0c134'>(function <span id='f0c133'>(lambda (dep keyword-dep)
+                                               <span id='f0c132'>(funcall &#39;determined-by
+                                                        <span id='f0c126'>(ccl::typed-form &#39;typ dep)</span>
+                                                        <span id='f0c128'>(ccl::typed-form &#39;keyword keyword)</span>
+                                                        <span id='f0c131'>(ccl::typed-form &#39;list <span id='f0c130'>(cons keyword-dep nil)</span>)</span>)</span>)</span>)</span>
+                                   remove-current
+                                   <span id='f0c121'>&#39;:from-end</span>
+                                   nil
+                                   <span id='f0c124'>&#39;:initial-value</span>
+                                   dep)</span>)</span>)</span>)</span>
+            keywords
+            <span id='f0c139'>&#39;:from-end</span>
+            nil
+            <span id='f0c142'>&#39;:initial-value</span>
+            dependency)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>68</span> 
+<span class='line'>69</span> (-&#62; lookup (typ keyword) list)
+<span id='f0s44'><span class='line'>70</span> (defun lookup (dependency term)
+<span class='line'>71</span>   <span id='f0s45'>(assure list
+<span class='line'>72</span>     <span id='f0s46'>(closure:lookup <span id='f0s47'>(direct dependency)</span> term)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t44')><span class='toggle' id='pf0t44'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(44)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t44'><code><span id='f0c350'> (lambda (dependency term)
+   <span id='f0c349'>(ccl::typed-form &#39;list
+    <span id='f0c348'>(let* ((&#35;:datum51257
+            <span id='f0c347'>(funcall &#39;closure:lookup
+                     <span id='f0c344'>(ccl::typed-form &#39;closure:typ <span id='f0c343'>(funcall &#39;direct dependency)</span>)</span>
+                     <span id='f0c346'>(ccl::typed-form &#39;keyword term)</span>)</span>))
+      <span id='f0c341'>(if <span id='f0c336'>(eq (ccl::lisptag &#35;:datum51257) 3)</span>
+          &#35;:datum51257
+          <span id='f0c340'>(ccl::typed-form &#39;list <span id='f0c339'>(funcall &#39;serapeum::&#37;require-type &#35;:datum51257 <span id='f0c338'>&#39;list</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>73</span> 
+<span class='line'>74</span> (-&#62; solved-for (typ keyword) typ)
+<span id='f0s48'><span class='line'>75</span> (defun solved-for (dependency term)
+<span class='line'>76</span>   <span id='f0s49'>(mvfold <span id='f0s50'>(lambda (dependency deps-on-term)
+<span class='line'>77</span>             <span id='f0s51'>(let ((direct <span id='f0s52'>(remove-from <span id='f0s53'>(direct dependency)</span> deps-on-term term)</span>)
+<span class='line'>78</span>                   (cyclic <span id='f0s54'>(remove-from-if-exists <span id='f0s55'>(cyclic dependency)</span> deps-on-term term)</span>))
+<span class='line'>79</span>               <span id='f0s56'>(util:copy-instance dependency
+<span class='line'>80</span>                                   :direct direct
+<span class='line'>81</span>                                   :cyclic cyclic
+<span class='line'>82</span>                                   :solved
+<span class='line'>83</span>                                   <span id='f0s57'>(if <span id='f0s58'>(null <span id='f0s59'>(closure:lookup direct deps-on-term)</span>)</span>
+<span class='line'>84</span>                                       <span id='f0s60'>(adjoin deps-on-term <span id='f0s61'>(solved dependency)</span>)</span>
+<span class='line'>85</span>                                       <span id='f0s62'>(solved dependency)</span>)</span>)</span>)</span>)</span>
+<span class='line'>86</span>           <span id='f0s63'>(closure:lookup <span id='f0s64'>(reverse dependency)</span> term)</span>
+<span class='line'>87</span>           <span id='f0s65'>(util:copy-instance dependency
+<span class='line'>88</span>                               :reverse <span id='f0s66'>(closure:remove <span id='f0s67'>(reverse dependency)</span> term)</span>
+<span class='line'>89</span>                               :cyclic  <span id='f0s68'>(closure:remove <span id='f0s69'>(cyclic dependency)</span> term)</span>
+<span class='line'>90</span>                               :solved  <span id='f0s70'>(adjoin term <span id='f0s71'>(solved dependency)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t48')><span class='toggle' id='pf0t48'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(48)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t48'><code><span id='f0c228'> (lambda (dependency term)
+   <span id='f0c227'>(funcall &#39;reduce
+            <span id='f0c204'>(function <span id='f0c203'>(lambda (dependency deps-on-term)
+                        <span id='f0c202'>(let ((direct
+                               <span id='f0c201'>(funcall &#39;remove-from
+                                        <span id='f0c200'>(ccl::typed-form &#39;closure:typ <span id='f0c199'>(funcall &#39;direct dependency)</span>)</span>
+                                        <span id='f0c195'>(ccl::typed-form &#39;keyword deps-on-term)</span>
+                                        <span id='f0c197'>(ccl::typed-form &#39;keyword term)</span>)</span>)
+                              (cyclic
+                               <span id='f0c193'>(funcall &#39;remove-from-if-exists
+                                        <span id='f0c188'>(ccl::typed-form &#39;closure:typ <span id='f0c187'>(funcall &#39;cyclic dependency)</span>)</span>
+                                        <span id='f0c192'>(ccl::typed-form &#39;keyword deps-on-term)</span>
+                                        <span id='f0c190'>(ccl::typed-form &#39;keyword term)</span>)</span>))
+                          <span id='f0c185'>(funcall &#39;util:copy-instance
+                                   (ccl::typed-form &#39;standard-object dependency)
+                                   <span id='f0c166'>&#39;:direct</span>
+                                   direct
+                                   <span id='f0c168'>&#39;:cyclic</span>
+                                   cyclic
+                                   <span id='f0c167'>&#39;:solved</span>
+                                   <span id='f0c181'>(if <span id='f0c174'>(not <span id='f0c173'>(funcall &#39;closure:lookup
+                                                     <span id='f0c170'>(ccl::typed-form &#39;closure:typ direct)</span>
+                                                     <span id='f0c172'>(ccl::typed-form &#39;keyword deps-on-term)</span>)</span>)</span>
+                                       <span id='f0c180'>(funcall &#39;ccl::adjoin-eql deps-on-term <span id='f0c179'>(funcall &#39;solved dependency)</span>)</span>
+                                       <span id='f0c176'>(funcall &#39;solved dependency)</span>)</span>)</span>)</span>)</span>)</span>
+            <span id='f0c164'>(funcall &#39;closure:lookup
+                     <span id='f0c163'>(ccl::typed-form &#39;closure:typ <span id='f0c162'>(funcall &#39;reverse dependency)</span>)</span>
+                     <span id='f0c160'>(ccl::typed-form &#39;keyword term)</span>)</span>
+            <span id='f0c226'>&#39;:from-end</span>
+            nil
+            <span id='f0c165'>&#39;:initial-value</span>
+            <span id='f0c225'>(funcall &#39;util:copy-instance
+                     (ccl::typed-form &#39;standard-object dependency)
+                     <span id='f0c212'>&#39;:reverse</span>
+                     <span id='f0c224'>(funcall &#39;closure:remove
+                              <span id='f0c223'>(ccl::typed-form &#39;closure:typ <span id='f0c222'>(funcall &#39;reverse dependency)</span>)</span>
+                              <span id='f0c220'>(ccl::typed-form &#39;keyword term)</span>)</span>
+                     <span id='f0c214'>&#39;:cyclic</span>
+                     <span id='f0c211'>(funcall &#39;closure:remove
+                              <span id='f0c210'>(ccl::typed-form &#39;closure:typ <span id='f0c209'>(funcall &#39;cyclic dependency)</span>)</span>
+                              <span id='f0c207'>(ccl::typed-form &#39;keyword term)</span>)</span>
+                     <span id='f0c205'>&#39;:solved</span>
+                     <span id='f0c218'>(funcall &#39;ccl::adjoin-eql term <span id='f0c216'>(funcall &#39;solved dependency)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>91</span> 
+<span class='line'>92</span> (serapeum:-&#62; solved-for* (typ &#38;rest keyword) typ)
+<span id='f0s72'><span class='line'>93</span> (defun solved-for* (dependency &#38;rest keywords)
+<span class='line'>94</span>   <span id='f0s73'>(mvfold <span id='f0s74'>&#35;&#39;solved-for </span>keywords dependency)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t72')><span class='toggle' id='pf0t72'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(72)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t72'><code><span id='f0c394'> (lambda (dependency &#38;rest keywords)
+   <span id='f0c393'>(funcall &#39;reduce <span id='f0c390'>(function solved-for)</span> keywords <span id='f0c391'>&#39;:from-end</span> nil <span id='f0c388'>&#39;:initial-value</span> dependency)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>95</span> 
+<span class='line'>96</span> (-&#62; dump-solved (typ) typ)
+<span id='f0s75'><span class='line'>97</span> (defun dump-solved (dependency)
+<span class='line'>98</span>   &#34;Removes the solved values&#34;
+<span class='line'>99</span>   <span id='f0s76'>(assure typ
+<span class='line'>100</span>    <span id='f0s77'>(util:copy-instance dependency :solved nil)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t75')><span class='toggle' id='pf0t75'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(75)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t75'><code><span id='f0c410'> (lambda (dependency)
+   <span id='f0c409'>(ccl::typed-form &#39;typ
+    <span id='f0c408'>(let* ((&#35;:datum51288 <span id='f0c407'>(funcall &#39;util:copy-instance <span id='f0c405'>(ccl::typed-form &#39;standard-object dependency)</span> <span id='f0c406'>&#39;:solved</span> nil)</span>))
+      <span id='f0c403'>(if <span id='f0c402'>(funcall &#39;ccl::std-instance-class-cell-typep
+                   &#35;:datum51288
+                   <span id='f0c400'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200387953F&#62;))</span>)</span>
+          &#35;:datum51288
+          <span id='f0c398'>(ccl::typed-form &#39;typ <span id='f0c397'>(funcall &#39;serapeum::&#37;require-type &#35;:datum51288 <span id='f0c396'>&#39;typ</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>101</span> 
+<span class='line'>102</span> (-&#62; handle-cyclic (typ keyword list) typ)
+<span id='f0s78'><span class='line'>103</span> (defun handle-cyclic (dependency term depends-on)
+<span class='line'>104</span>   <span id='f0s79'>(values
+<span class='line'>105</span>    <span id='f0s80'>(util:copy-instance
+<span class='line'>106</span>     dependency
+<span class='line'>107</span>     :cyclic <span id='f0s81'>(mvfold <span id='f0s82'>(lambda (closure dep)
+<span class='line'>108</span>                       <span id='f0s83'>(if <span id='f0s84'>(member term <span id='f0s85'>(closure:lookup <span id='f0s86'>(direct dependency)</span> dep)</span>)</span>
+<span class='line'>109</span>                           <span id='f0s87'>(adjoin-onto <span id='f0s88'>(adjoin-onto closure dep term)</span> term dep)</span>
+<span class='line'>110</span>                           closure)</span>)</span>
+<span class='line'>111</span>                     depends-on
+<span class='line'>112</span>                     <span id='f0s89'>(cyclic dependency)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t78')><span class='toggle' id='pf0t78'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(78)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t78'><code><span id='f0c387'> (lambda (dependency term depends-on)
+   <span id='f0c386'>(values <span id='f0c385'>(funcall &#39;util:copy-instance
+                    <span id='f0c355'>(ccl::typed-form &#39;standard-object dependency)</span>
+                    <span id='f0c353'>&#39;:cyclic</span>
+                    <span id='f0c384'>(funcall &#39;reduce
+                             <span id='f0c378'>(function <span id='f0c377'>(lambda (closure dep)
+                                         <span id='f0c376'>(if <span id='f0c375'>(funcall &#39;ccl::memeql
+                                                      term
+                                                      <span id='f0c373'>(funcall &#39;closure:lookup
+                                                               <span id='f0c372'>(ccl::typed-form &#39;closure:typ
+                                                                <span id='f0c371'>(funcall &#39;direct dependency)</span>)</span>
+                                                               <span id='f0c369'>(ccl::typed-form &#39;keyword dep)</span>)</span>)</span>
+                                             <span id='f0c366'>(funcall &#39;adjoin-onto
+                                                      <span id='f0c362'>(ccl::typed-form &#39;closure:typ
+                                                       <span id='f0c361'>(funcall &#39;adjoin-onto
+                                                                <span id='f0c360'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                                                <span id='f0c358'>(ccl::typed-form &#39;keyword dep)</span>
+                                                                term)</span>)</span>
+                                                      <span id='f0c364'>(ccl::typed-form &#39;keyword term)</span>
+                                                      dep)</span>
+                                             closure)</span>)</span>)</span>
+                             depends-on
+                             <span id='f0c379'>&#39;:from-end</span>
+                             nil
+                             <span id='f0c382'>&#39;:initial-value</span>
+                             <span id='f0c381'>(funcall &#39;cyclic dependency)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>113</span> 
+<span class='line'>114</span> (-&#62; add-reverse (closure:typ keyword list) closure:typ)
+<span id='f0s90'><span class='line'>115</span> (defun add-reverse (closure value depends-on)
+<span class='line'>116</span>   <span id='f0s91'>(mvfold <span id='f0s92'>(lambda (closure dependency)
+<span class='line'>117</span>             <span id='f0s93'>(adjoin-onto closure dependency value)</span>)</span>
+<span class='line'>118</span>           depends-on
+<span class='line'>119</span>           closure)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t90')><span class='toggle' id='pf0t90'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(90)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t90'><code><span id='f0c158'> (lambda (closure value depends-on)
+   <span id='f0c157'>(funcall &#39;reduce
+            <span id='f0c156'>(function <span id='f0c155'>(lambda (closure dependency)
+                        <span id='f0c154'>(funcall &#39;adjoin-onto
+                                 <span id='f0c150'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                 <span id='f0c152'>(ccl::typed-form &#39;keyword dependency)</span>
+                                 value)</span>)</span>)</span>
+            depends-on
+            <span id='f0c146'>&#39;:from-end</span>
+            nil
+            <span id='f0c148'>&#39;:initial-value</span>
+            closure)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>120</span> 
+<span class='line'>121</span> (-&#62; adjoin-onto (closure:typ keyword t) closure:typ)
+<span id='f0s94'><span class='line'>122</span> (defun adjoin-onto (closure key value)
+<span class='line'>123</span>   <span id='f0s95'>(closure:insert closure key <span id='f0s96'>(adjoin value <span id='f0s97'>(closure:lookup closure key)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t94')><span class='toggle' id='pf0t94'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(94)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t94'><code><span id='f0c258'> (lambda (closure key value)
+   <span id='f0c257'>(funcall &#39;closure:insert
+            <span id='f0c247'>(ccl::typed-form &#39;closure:typ closure)</span>
+            <span id='f0c256'>(ccl::typed-form &#39;keyword key)</span>
+            <span id='f0c254'>(funcall &#39;ccl::adjoin-eql
+                     value
+                     <span id='f0c253'>(funcall &#39;closure:lookup <span id='f0c250'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c252'>(ccl::typed-form &#39;keyword key)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>124</span> 
+<span class='line'>125</span> (-&#62; remove-from (closure:typ keyword keyword) closure:typ)
+<span id='f0s98'><span class='line'>126</span> (defun remove-from (closure key member)
+<span class='line'>127</span>   <span id='f0s99'>(let ((value <span id='f0s100'>(mapcar <span id='f0s101'>(lambda (list)
+<span class='line'>128</span>                          <span id='f0s102'>(remove-if <span id='f0s103'>(alexandria:curry <span id='f0s104'>&#35;&#39;eq </span>member)</span> list)</span>)</span>
+<span class='line'>129</span>                        <span id='f0s105'>(closure:lookup closure key)</span>)</span>))
+<span class='line'>130</span>     <span id='f0s106'>(if <span id='f0s107'>(some <span id='f0s108'>&#35;&#39;null </span>value)</span>
+<span class='line'>131</span>         <span id='f0s109'>(closure:remove closure key)</span>
+<span class='line'>132</span>         <span id='f0s110'>(closure:insert closure key value)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t98')><span class='toggle' id='pf0t98'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(98)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t98'><code><span id='f0c58'> (lambda (closure key member)
+   <span id='f0c57'>(let* ((value
+           <span id='f0c37'>(let* ((&#35;:g51334 <span id='f0c1'>(cons nil nil)</span>)
+                  (&#35;:g51335 &#35;:g51334)
+                  (&#35;:g51337
+                   <span id='f0c8'>(function <span id='f0c7'>(lambda (list)
+                               <span id='f0c6'>(funcall &#39;remove-if <span id='f0c5'>(funcall &#39;alexandria:curry <span id='f0c3'>(function eq)</span> member)</span> list)</span>)</span>)</span>))
+             <span id='f0c36'>(let* ((&#35;:g51338
+                     <span id='f0c13'>(funcall &#39;closure:lookup <span id='f0c10'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c12'>(ccl::typed-form &#39;keyword key)</span>)</span>))
+               (progn <span id='f0c32'>(tagbody <span id='f0c31'>(go &#35;:g51340)</span>
+                               (&#35;:g51339 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037BFB3D&#62; t t)
+                               <span id='f0c24'>(tagbody <span id='f0c23'>(let* ((&#35;:g51336 <span id='f0c15'>(car &#35;:g51338)</span>))
+                                          <span id='f0c22'>(tagbody <span id='f0c21'>(setq &#35;:g51334
+                                                         <span id='f0c20'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g51334
+                                                                                  <span id='f0c18'>(cons <span id='f0c17'>(funcall &#35;:g51337 &#35;:g51336)</span>
+                                                                                        nil)</span>))</span>)</span>)</span>)</span>)</span>
+                               <span id='f0c30'>(setq &#35;:g51338 <span id='f0c29'>(ccl::&#37;cdr <span id='f0c28'>(ccl::typed-form &#39;list &#35;:g51338)</span>)</span>)</span>
+                               (&#35;:g51340 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037BFB3D&#62; t nil)
+                               <span id='f0c26'>(if <span id='f0c25'>(not &#39;:ne &#35;:g51338)</span> (go &#35;:g51339) nil)</span>)</span>
+                      <span id='f0c35'>(let* () <span id='f0c34'>(ccl::&#37;cdr &#35;:g51335)</span>)</span>))</span>)</span>))
+     <span id='f0c56'>(if <span id='f0c55'>(let ((&#35;:g51343 <span id='f0c49'>(function not)</span>) (&#35;:g51344 value)) <span id='f0c54'>(funcall &#39;ccl::some-xx-one 0 nil &#35;:g51343 &#35;:g51344)</span>)</span>
+         <span id='f0c42'>(funcall &#39;closure:remove <span id='f0c39'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c41'>(ccl::typed-form &#39;keyword key)</span>)</span>
+         <span id='f0c48'>(funcall &#39;closure:insert <span id='f0c44'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c46'>(ccl::typed-form &#39;keyword key)</span> value)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>133</span> 
+<span class='line'>134</span> (-&#62; remove-from-if-exists (closure:typ keyword keyword) closure:typ)
+<span id='f0s111'><span class='line'>135</span> (defun remove-from-if-exists (closure key member)
+<span class='line'>136</span>   <span id='f0s112'>(if <span id='f0s113'>(closure:lookup closure key)</span>
+<span class='line'>137</span>       <span id='f0s114'>(remove-from closure key member)</span>
+<span class='line'>138</span>       closure)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t111')><span class='toggle' id='pf0t111'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(111)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t111'><code><span id='f0c243'> (lambda (closure key member)
+   <span id='f0c242'>(if <span id='f0c240'>(funcall &#39;closure:lookup <span id='f0c237'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c239'>(ccl::typed-form &#39;keyword key)</span>)</span>
+       <span id='f0c235'>(funcall &#39;remove-from
+                <span id='f0c230'>(ccl::typed-form &#39;closure:typ closure)</span>
+                <span id='f0c232'>(ccl::typed-form &#39;keyword key)</span>
+                <span id='f0c234'>(ccl::typed-form &#39;keyword member)</span>)</span>
+       closure)</span>)</span>
+</code></div><hr/>
+</body></html>

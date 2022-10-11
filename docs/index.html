@@ -1,0 +1,54 @@
+<html><head><script type='text/javascript'>
+function show_in_target_frame (w, elt) {
+  var page_top = w.pageYOffset || w.document.documentElement.scrollTop || w.document.body.scrollTop;
+  var page_height = w.innerHeight || w.document.documentElement.clientHeight || w.document.body.clientHeight;
+  var elt_bottom = elt.offsetHeight;
+  for (var p = elt; p && p.tagName != 'BODY'; p = p.offsetParent) elt_bottom += p.offsetTop;
+  //  page height may or may not include the scroll bar, scroll a little extra just in case it does.
+  var min_top = elt_bottom - (page_height - 20);
+  if (page_top <= min_top) w.scrollTo(0, Math.ceil(min_top));
+}
+
+function ensure_target_frame (e) {
+  var link = (e ? (e.target ? e.target : e.srcElement) : false);
+  if (window.frames.length == 1) {
+    var new_frame;
+      new_frame = document.createElement('frameset');
+      new_frame.id = 'tagsframeset';
+      var tags_frame = document.createElement('frame');
+      tags_frame.src = 'index_tags.html';
+      tags_frame.name = 'tagsframe';
+      file_frame = document.createElement('frame');
+      file_frame.name = 'TFF701917560EE699A';
+      if (link) file_frame.src = link.href;
+      new_frame.appendChild(tags_frame);
+      new_frame.appendChild(file_frame);
+      // new_frame.cols = '20%,*';
+    
+    var frameset = document.getElementById('topframeset');
+    frameset.appendChild(new_frame);
+    frameset.rows = '30%,*';
+
+    if (link) show_in_target_frame(window.frames[0], link);
+  }
+  return true;
+}
+
+function send_links_to_frame (w) {
+  for (var i = 0; i < w.document.links.length; i++) {
+    var link = w.document.links[i];
+    link.target = 'TFF701917560EE699A';
+    link.onclick = ensure_target_frame;
+  }
+}
+
+function close_target_frame () {
+  if (window.frames.length > 1) {
+    var frameset = document.getElementById('topframeset');
+    frameset.removeChild(frameset.childNodes[1]);
+    frameset.rows = '*';
+  }
+  return false;
+}
+</script></head>
+<frameset id='topframeset' rows='*'><frame src='index_html.html' /></frameset></html>

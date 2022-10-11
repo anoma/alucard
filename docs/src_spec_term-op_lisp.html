@@ -1,0 +1,169 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_term-op_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;term-op.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;spec&#46;term-op)
+<span class='line'>2</span> 
+<span class='line'>3</span> 
+<span id='f0s0'><span class='line'>4</span> (defun add (&#38;rest arguments)
+<span class='line'>5</span>   <span id='f0s1'>(spc:make-application
+<span class='line'>6</span>    :function <span id='f0s2'>(spc:make-reference :name :+)</span>
+<span class='line'>7</span>    :arguments arguments)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c85'> (lambda (&#38;rest arguments)
+   <span id='f0c84'>(funcall &#39;spc:make-application
+            <span id='f0c79'>&#39;:function</span>
+            <span id='f0c83'>(funcall &#39;spc:make-reference <span id='f0c80'>&#39;:name</span> <span id='f0c82'>(ccl::typed-form &#39;(member :+) <span id='f0c81'>&#39;:+</span>)</span>)</span>
+            <span id='f0c78'>&#39;:arguments</span>
+            arguments)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>8</span> 
+<span id='f0s3'><span class='line'>9</span> (defun times (&#38;rest arguments)
+<span class='line'>10</span>   <span id='f0s4'>(spc:make-application
+<span class='line'>11</span>    :function <span id='f0s5'>(spc:make-reference :name :*)</span>
+<span class='line'>12</span>    :arguments arguments)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c60'> (lambda (&#38;rest arguments)
+   <span id='f0c59'>(funcall &#39;spc:make-application
+            <span id='f0c58'>&#39;:function</span>
+            <span id='f0c55'>(funcall &#39;spc:make-reference <span id='f0c52'>&#39;:name</span> <span id='f0c54'>(ccl::typed-form &#39;(member :*) <span id='f0c53'>&#39;:*</span>)</span>)</span>
+            <span id='f0c57'>&#39;:arguments</span>
+            arguments)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>13</span> 
+<span id='f0s6'><span class='line'>14</span> (defun &#61; (&#38;rest arguments)
+<span class='line'>15</span>   <span id='f0s7'>(spc:make-application
+<span class='line'>16</span>    :function <span id='f0s8'>(spc:make-reference :name :&#61;)</span>
+<span class='line'>17</span>    :arguments arguments)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c51'> (lambda (&#38;rest arguments)
+   <span id='f0c50'>(funcall &#39;spc:make-application
+            <span id='f0c49'>&#39;:function</span>
+            <span id='f0c47'>(funcall &#39;spc:make-reference <span id='f0c44'>&#39;:name</span> <span id='f0c46'>(ccl::typed-form &#39;(member :&#61;) <span id='f0c45'>&#39;:&#61;</span>)</span>)</span>
+            <span id='f0c48'>&#39;:arguments</span>
+            arguments)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>18</span> 
+<span id='f0s9'><span class='line'>19</span> (defun exp (&#38;rest arguments)
+<span class='line'>20</span>   <span id='f0s10'>(spc:make-application
+<span class='line'>21</span>    :function <span id='f0s11'>(spc:make-reference :name :exp)</span>
+<span class='line'>22</span>    :arguments arguments)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c76'> (lambda (&#38;rest arguments)
+   <span id='f0c75'>(funcall &#39;spc:make-application
+            <span id='f0c74'>&#39;:function</span>
+            <span id='f0c72'>(funcall &#39;spc:make-reference <span id='f0c69'>&#39;:name</span> <span id='f0c71'>(ccl::typed-form &#39;(member :exp) <span id='f0c70'>&#39;:exp</span>)</span>)</span>
+            <span id='f0c68'>&#39;:arguments</span>
+            arguments)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>23</span> 
+<span id='f0s12'><span class='line'>24</span> (defun coerce (type value)
+<span class='line'>25</span>   <span id='f0s13'>(spc:make-type-coerce
+<span class='line'>26</span>    :typ   <span id='f0s14'>(spc:to-type-reference-format type)</span>
+<span class='line'>27</span>    :value value)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c67'> (lambda (type value) <span id='f0c66'>(funcall &#39;spc:make-type-coerce <span id='f0c63'>&#39;:typ</span> <span id='f0c62'>(funcall &#39;spc:to-type-reference-format type)</span> <span id='f0c65'>&#39;:value</span> value)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>28</span> 
+<span class='line'>29</span> (-&#62; kind-of-pirmitive&#63; (spc:reference (-&#62; (spc:primitive) boolean)) boolean)
+<span id='f0s15'><span class='line'>30</span> (defun kind-of-pirmitive&#63; (ref predicate)
+<span class='line'>31</span>   <span id='f0s16'>(let* ((looked <span id='f0s17'>(storage:lookup-function <span id='f0s18'>(spc:name ref)</span>)</span>))
+<span class='line'>32</span>     <span id='f0s19'>(etypecase-of (or spc:function-type null) looked
+<span class='line'>33</span>       ((or null spc:circuit) nil)
+<span class='line'>34</span>       (spc:primitive        <span id='f0s20'>(funcall predicate looked)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c42'> (lambda (ref predicate)
+   <span id='f0c41'>(let* ((looked <span id='f0c40'>(funcall &#39;storage:lookup-function <span id='f0c39'>(ccl::typed-form &#39;keyword <span id='f0c38'>(funcall &#39;spc:name ref)</span>)</span>)</span>))
+     <span id='f0c36'>(let* ((&#35;:x53407 looked))
+       <span id='f0c35'>(let* ((&#35;:g53408 &#35;:x53407))
+         <span id='f0c34'>(if <span id='f0c33'>(let* ((&#35;:g53410 &#35;:g53408))
+               <span id='f0c32'>(or <span id='f0c28'>(not &#35;:g53410)</span>
+                   <span id='f0c31'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g53410
+                            <span id='f0c30'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003851A7F&#62;))</span>)</span>)</span>)</span>
+             <span id='f0c27'>(progn nil nil)</span>
+             <span id='f0c26'>(if <span id='f0c15'>(funcall &#39;ccl::std-instance-class-cell-typep
+                          &#35;:g53408
+                          <span id='f0c13'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200387F66F&#62;))</span>)</span>
+                 <span id='f0c12'>(progn nil <span id='f0c11'>(funcall predicate looked)</span>)</span>
+                 <span id='f0c25'>(if <span id='f0c24'>(progn &#35;:g53408 t)</span>
+                     <span id='f0c22'>(progn nil
+                            <span id='f0c21'>(values (funcall &#39;error
+                                             <span id='f0c16'>&#39;type-error</span>
+                                             <span id='f0c17'>&#39;:datum</span>
+                                             &#35;:x53407
+                                             <span id='f0c20'>&#39;:expected-type</span>
+                                             <span id='f0c19'>&#39;(or spc:function-type null)</span>))</span>)</span>
+                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>35</span> 
+<span class='line'>36</span> (-&#62; void-reference&#63; (spc:reference) boolean)
+<span id='f0s21'><span class='line'>37</span> (defun void-reference&#63; (ref)
+<span class='line'>38</span>   <span id='f0s22'>(kind-of-pirmitive&#63; ref <span id='f0s23'>(lambda (v) <span id='f0s24'>(eql :void <span id='f0s25'>(spc:name v)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t21')><span class='toggle' id='pf0t21'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(21)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t21'><code><span id='f0c9'> (lambda (ref)
+   <span id='f0c8'>(funcall &#39;kind-of-pirmitive&#63;
+            <span id='f0c1'>(ccl::typed-form &#39;spc:reference ref)</span>
+            <span id='f0c7'>(ccl::typed-form &#39;function <span id='f0c6'>(function <span id='f0c5'>(lambda (v) <span id='f0c4'>(eq &#39;:void <span id='f0c3'>(funcall &#39;spc:name v)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

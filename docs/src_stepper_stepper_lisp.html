@@ -1,0 +1,1147 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_stepper_stepper_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;stepper;stepper.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;stepper)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59;&#59; Comments on Techniques
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> &#59;&#59; The strategy we wish to implement is straight forward&#46;
+<span class='line'>8</span> 
+<span class='line'>9</span> &#59;&#59; (step (macro &#46;&#46;&#46;)) &#10230; we macroexpand the macro
+<span class='line'>10</span> &#59;&#59;
+<span class='line'>11</span> &#59;&#59; (step (special-form &#46;&#46;&#46;)) &#10230; We handle this on a case by case basis
+<span class='line'>12</span> &#59;&#59;
+<span class='line'>13</span> &#59;&#59; (step (alucard-special-macro &#46;&#46;&#46;)) &#10230; Handle the same as special-form
+<span class='line'>14</span> &#59;&#59;
+<span class='line'>15</span> &#59;&#59; (step (function &#46;&#46;&#46;)) &#10230; generates out
+<span class='line'>16</span> &#59;&#59;   (prog2 (push (function &#8230;)) (function &#44;&#64;(map car &#35;&#39;step &#8230;)) (pop))
+<span class='line'>17</span> &#59;&#59; (step number) &#10230; generates: number
+<span class='line'>18</span> &#59;&#59; (step string) &#10230; generates: string
+<span class='line'>19</span> &#59;&#59; (step symbol) &#10230; generates: symbol
+<span class='line'>20</span> 
+<span class='line'>21</span> &#59;&#59; For the list of special forms see
+<span class='line'>22</span> &#59;&#59; https:&#47;&#47;www&#46;cs&#46;cmu&#46;edu&#47;Groups&#47;AI&#47;html&#47;cltl&#47;clm&#47;node59&#46;html
+<span class='line'>23</span> 
+<span class='line'>24</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>25</span> &#59;&#59;&#59; Type Declarations
+<span class='line'>26</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>27</span> 
+<span class='line'>28</span> &#59;&#59; to actually check one should use &#96;special-operator-p&#39; instead of
+<span class='line'>29</span> &#59;&#59; (typep obj &#39;specials)&#46;
+<span id='f0s0'><span class='line'>30</span> (deftype specials ()
+<span class='line'>31</span>   &#34;The special forms of the CL language&#34;
+<span class='line'>32</span>   <span id='f0s1'>&#96;(or &#44;&#64;(mapcar
+<span class='line'>33</span>           (lambda (x) &#96;(eql &#44;x))
+<span class='line'>34</span>           &#96;(block catch eval-when flet function go if
+<span class='line'>35</span>                   labels let let* load-time-value locally
+<span class='line'>36</span>                   macrolet multiple-value-call
+<span class='line'>37</span>                   multiple-value-prog1 progn progv
+<span class='line'>38</span>                   quote return-from setq symbol-macrolet
+<span class='line'>39</span>                   tagbody the throw unwind-protect)))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c1422'> (lambda (&#35;:whole59104 &#35;:environment59105)
+   <span id='f0c1421'>(let* ((&#35;:args59106 <span id='f0c1386'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1384'>(cdr &#35;:whole59104)</span> nil 0 0)</span>))
+     <span id='f0c1420'>(cons <span id='f0c1419'>&#39;or</span>
+           <span id='f0c1418'>(let* ((&#35;:g59126 <span id='f0c1392'>(cons nil nil)</span>) (&#35;:g59127 &#35;:g59126) (&#35;:g59129 <span id='f0c1391'>(function <span id='f0c1390'>(lambda (x) <span id='f0c1389'>(list <span id='f0c1387'>&#39;eql</span> x)</span>)</span>)</span>))
+             <span id='f0c1416'>(let* ((&#35;:g59130
+                     <span id='f0c1396'>&#39;(block catch
+                        eval-when
+                        flet
+                        function
+                        go
+                        if
+                        labels
+                        let
+                        let*
+                        load-time-value
+                        locally
+                        macrolet
+                        multiple-value-call
+                        multiple-value-prog1
+                        progn
+                        progv
+                        quote
+                        return-from
+                        setq
+                        symbol-macrolet
+                        tagbody
+                        the
+                        throw
+                        unwind-protect)</span>))
+               (progn <span id='f0c1415'>(tagbody <span id='f0c1414'>(go &#35;:g59132)</span>
+                               (&#35;:g59131 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E84CED&#62; t t)
+                               <span id='f0c1413'>(tagbody <span id='f0c1412'>(let* ((&#35;:g59128 <span id='f0c1404'>(car &#35;:g59130)</span>))
+                                          <span id='f0c1411'>(tagbody <span id='f0c1410'>(setq &#35;:g59126
+                                                         <span id='f0c1409'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59126
+                                                                                  <span id='f0c1407'>(cons <span id='f0c1406'>(funcall &#35;:g59129 &#35;:g59128)</span>
+                                                                                        nil)</span>))</span>)</span>)</span>)</span>)</span>
+                               <span id='f0c1402'>(setq &#35;:g59130 <span id='f0c1401'>(ccl::&#37;cdr <span id='f0c1400'>(ccl::typed-form &#39;list &#35;:g59130)</span>)</span>)</span>
+                               (&#35;:g59132 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E84CED&#62; t nil)
+                               <span id='f0c1398'>(if <span id='f0c1397'>(not &#39;:ne &#35;:g59130)</span> (go &#35;:g59131) nil)</span>)</span>
+                      <span id='f0c1395'>(let* () <span id='f0c1394'>(ccl::&#37;cdr &#35;:g59127)</span>)</span>))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>40</span> 
+<span id='f0s2'><span class='line'>41</span> (deftype alu-specials ()
+<span class='line'>42</span>   &#34;The special forms of the Alucard language&#34;
+<span class='line'>43</span>   <span id='f0s3'>&#96;(or (eql alu:def) (eql alu:with-constraint)
+<span class='line'>44</span>        &#59;&#59; these we count as special due to the type declaration
+<span class='line'>45</span>        &#59;&#59; forcing them to be macros
+<span class='line'>46</span>        (eql alu:coerce) (eql alu:check)
+<span class='line'>47</span>        (eql alu:array))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c1354'> (lambda (&#35;:whole59142 &#35;:environment59143)
+   <span id='f0c1353'>(let* ((&#35;:args59144 <span id='f0c1352'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1349'>(cdr &#35;:whole59142)</span> nil 0 0)</span>))
+     <span id='f0c1347'>&#39;(or (eql alu:def) (eql alu:with-constraint) (eql alu:coerce) (eql alu:check) (eql alu:array))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>48</span> 
+<span id='f0s4'><span class='line'>49</span> (deftype mode ()
+<span class='line'>50</span>   <span id='f0s5'>&#96;(or (eql :stack) (eql :run))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c1342'> (lambda (&#35;:whole59160 &#35;:environment59161)
+   <span id='f0c1341'>(let* ((&#35;:args59162 <span id='f0c1340'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1339'>(cdr &#35;:whole59160)</span> nil 0 0)</span>))
+     <span id='f0c1335'>&#39;(or (eql :stack) (eql :run))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>51</span> 
+<span class='line'>52</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>53</span> &#59;&#59;&#59; Global Value Declarations
+<span class='line'>54</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>55</span> 
+<span class='line'>56</span> (defvar *mode* :stack
+<span class='line'>57</span>   &#34;Determines what mode to run in&#46;
+<span class='line'>58</span> :stack put user syntactical forms on the stack&#46;
+<span class='line'>59</span> :run   leaves the user program unperturbed&#46;&#34;)
+<span class='line'>60</span> 
+<span class='line'>61</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>62</span> &#59;&#59;&#59; Main Logic
+<span class='line'>63</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>64</span> 
+<span id='f0s6'><span class='line'>65</span> (defun step (form env)
+<span class='line'>66</span>   &#34;Runs the stepper through the code&#44; inserting stack traces if
+<span class='line'>67</span> *mode* is :stack&#34;
+<span class='line'>68</span>   <span id='f0s7'>(cond
+<span class='line'>69</span>     (<span id='f0s8'>(eql *mode* :run)</span>
+<span class='line'>70</span>      form)
+<span class='line'>71</span>     &#59;&#59; maybe we should macroexpand symbol macros&#63;
+<span class='line'>72</span>     &#59;&#59; I don&#39;t think for our purposes it matters
+<span class='line'>73</span>     (<span id='f0s9'>(or <span id='f0s10'>(atom form)</span> <span id='f0s11'>(symbolp form)</span>)</span>
+<span class='line'>74</span>      form)
+<span class='line'>75</span>     &#59;&#59; Work on our own specials&#44; we should treat these with care&#33;
+<span class='line'>76</span>     (<span id='f0s12'>(typep <span id='f0s13'>(car form)</span> <span id='f0s14'>&#39;alu-specials </span>env)</span>
+<span class='line'>77</span>      <span id='f0s15'>(run-mode form
+<span class='line'>78</span>                <span id='f0s16'>(handle-alu-special form env)</span>)</span>)
+<span class='line'>79</span>     (<span id='f0s17'>(listp <span id='f0s18'>(car form)</span>)</span>
+<span class='line'>80</span>      <span id='f0s19'>(run-mode form
+<span class='line'>81</span>                <span id='f0s20'>(handle-list-car form env)</span>)</span>)
+<span class='line'>82</span>     (<span id='f0s21'>(macro-function <span id='f0s22'>(car form)</span> env)</span>
+<span class='line'>83</span>      &#59;&#59; we thus record any function and any macro expansion that has
+<span class='line'>84</span>      &#59;&#59; been ran as well&#46; This may be helpful&#44; as we are likely going
+<span class='line'>85</span>      &#59;&#59; to interpret the stack results&#46; Thus if an error is caused in
+<span class='line'>86</span>      &#59;&#59; an expansion but not the users code&#46; it can give information
+<span class='line'>87</span>      &#59;&#59; which macro expansion screwed up (namely by comparing the
+<span class='line'>88</span>      &#59;&#59; final call to the form where it&#39;s first generated&#46;&#46;&#46; by
+<span class='line'>89</span>      &#59;&#59; checking if the car is a macro&#44; and it&#39;s the first site it
+<span class='line'>90</span>      &#59;&#59; doesn&#39;t show up&#46;)&#46;
+<span class='line'>91</span>      <span id='f0s23'>(run-mode form
+<span class='line'>92</span>                <span id='f0s24'>(step <span id='f0s25'>(macroexpand-1 form env)</span> env)</span>)</span>)
+<span class='line'>93</span>     (<span id='f0s26'>(special-operator-p <span id='f0s27'>(car form)</span>)</span>
+<span class='line'>94</span>      &#59;&#59; we will also record these&#44; we will likely filter forms like
+<span class='line'>95</span>      &#59;&#59; &#96;progn&#39; from our traces&#44; or figure out how code relates and
+<span class='line'>96</span>      &#59;&#59; use &#46;&#46;&#46; to represent the part the user wrote&#46;
+<span class='line'>97</span>      <span id='f0s28'>(run-mode form
+<span class='line'>98</span>                <span id='f0s29'>(handle-cl-special form env)</span>)</span>)
+<span class='line'>99</span>     (t
+<span class='line'>100</span>      <span id='f0s30'>(step-function form env)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c1051'> (lambda (form env)
+   <span id='f0c1050'>(if <span id='f0c994'>(eq *mode* &#39;:run)</span>
+       form
+       <span id='f0c1049'>(if <span id='f0c1048'>(or <span id='f0c1047'>(eq &#39;:ne (ccl::fulltag form) 3)</span> <span id='f0c1045'>(let* ((&#35;:g59181 form)) <span id='f0c1044'>(if &#35;:g59181 <span id='f0c1042'>(eq (ccl::fulltag &#35;:g59181) 14)</span> t)</span>)</span>)</span>
+           form
+           <span id='f0c1039'>(if <span id='f0c1038'>(funcall &#39;typep <span id='f0c1035'>(car form)</span> <span id='f0c1037'>&#39;alu-specials</span> env)</span>
+               <span id='f0c1033'>(funcall &#39;run-mode form <span id='f0c1031'>(funcall &#39;handle-alu-special form env)</span>)</span>
+               <span id='f0c1028'>(if <span id='f0c1027'>(eq (ccl::lisptag <span id='f0c1026'>(car form)</span>) 3)</span>
+                   <span id='f0c1024'>(funcall &#39;run-mode form <span id='f0c1023'>(funcall &#39;handle-list-car form env)</span>)</span>
+                   <span id='f0c1019'>(if <span id='f0c1018'>(funcall &#39;macro-function <span id='f0c1016'>(car form)</span> env)</span>
+                       <span id='f0c1002'>(funcall &#39;run-mode form <span id='f0c1000'>(ccl::self-funcall <span id='f0c999'>(funcall &#39;macroexpand-1 form env)</span> env)</span>)</span>
+                       <span id='f0c1014'>(if <span id='f0c1013'>(funcall &#39;special-operator-p <span id='f0c1012'>(car form)</span>)</span>
+                           <span id='f0c1010'>(funcall &#39;run-mode form <span id='f0c1009'>(funcall &#39;handle-cl-special form env)</span>)</span>
+                           <span id='f0c1005'>(funcall &#39;step-function form env)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>101</span> 
+<span id='f0s31'><span class='line'>102</span> (defun step-function (form env)
+<span class='line'>103</span>   &#34;Runs the stepper through a function call&#46;&#34;
+<span class='line'>104</span>   <span id='f0s32'>(run-mode form
+<span class='line'>105</span>             <span id='f0s33'>(mapcar <span id='f0s34'>(lambda (x) <span id='f0s35'>(step x env)</span>)</span> form)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c917'> (lambda (form env)
+   <span id='f0c916'>(funcall &#39;run-mode
+            form
+            <span id='f0c915'>(let* ((&#35;:g59185 <span id='f0c914'>(cons nil nil)</span>)
+                   (&#35;:g59186 &#35;:g59185)
+                   (&#35;:g59188 <span id='f0c889'>(function <span id='f0c888'>(lambda (x) <span id='f0c887'>(funcall &#39;step x env)</span>)</span>)</span>))
+              <span id='f0c913'>(let* ((&#35;:g59189 form))
+                (progn <span id='f0c908'>(tagbody <span id='f0c890'>(go &#35;:g59191)</span>
+                                (&#35;:g59190 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DCEB4D&#62; t t)
+                                <span id='f0c903'>(tagbody <span id='f0c902'>(let* ((&#35;:g59187 <span id='f0c894'>(car &#35;:g59189)</span>))
+                                           <span id='f0c901'>(tagbody <span id='f0c900'>(setq &#35;:g59185
+                                                          <span id='f0c899'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59185
+                                                                                   <span id='f0c898'>(cons <span id='f0c897'>(funcall &#35;:g59188 &#35;:g59187)</span>
+                                                                                         nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                <span id='f0c907'>(setq &#35;:g59189 <span id='f0c906'>(ccl::&#37;cdr <span id='f0c905'>(ccl::typed-form &#39;list &#35;:g59189)</span>)</span>)</span>
+                                (&#35;:g59191 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DCEB4D&#62; t nil)
+                                <span id='f0c892'>(if <span id='f0c891'>(not &#39;:ne &#35;:g59189)</span> (go &#35;:g59190) nil)</span>)</span>
+                       <span id='f0c911'>(let* () <span id='f0c910'>(ccl::&#37;cdr &#35;:g59186)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>106</span> 
+<span id='f0s36'><span class='line'>107</span> (defun step-body (body env &#38;key (handle-declaration t))
+<span class='line'>108</span>   &#34;Handles a body that may have declarations upfront&#34;
+<span class='line'>109</span>   &#59;&#59; Maybe I should mark what argument number each are for better
+<span class='line'>110</span>   &#59;&#59; tracing Further after the first non declaration&#44; we should stop
+<span class='line'>111</span>   &#59;&#59; checking for it&#33;
+<span class='line'>112</span>   <span id='f0s37'>(if handle-declaration
+<span class='line'>113</span>       <span id='f0s38'>(destructuring-bind (decs body) <span id='f0s39'>(split-declaration body)</span>
+<span class='line'>114</span>         <span id='f0s40'>(append decs
+<span class='line'>115</span>                 <span id='f0s41'>(mapcar <span id='f0s42'>(lambda (x) <span id='f0s43'>(step x env)</span>)</span> body)</span>)</span>)</span>
+<span class='line'>116</span>       <span id='f0s44'>(mapcar <span id='f0s45'>(lambda (x) <span id='f0s46'>(step x env)</span>)</span> body)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t36')><span class='toggle' id='pf0t36'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(36)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t36'><code><span id='f0c1232'> (lambda (body env &#38;key ((:handle-declaration handle-declaration) t &#35;:compiler-var))
+   <span id='f0c1231'>(if handle-declaration
+       <span id='f0c1198'>(let* ((&#35;:whole59198 <span id='f0c1144'>(funcall &#39;split-declaration body)</span>)
+              (&#35;:args59199 <span id='f0c1156'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59198 <span id='f0c1154'>&#39;(decs body)</span> 2 2)</span>)
+              (decs <span id='f0c1151'>(prog1 <span id='f0c1146'>(ccl::&#37;car &#35;:args59199)</span> <span id='f0c1150'>(setq &#35;:args59199 <span id='f0c1149'>(ccl::&#37;cdr <span id='f0c1148'>(ccl::typed-form &#39;list &#35;:args59199)</span>)</span>)</span>)</span>)
+              (body <span id='f0c1163'>(prog1 <span id='f0c1162'>(ccl::&#37;car &#35;:args59199)</span> <span id='f0c1160'>(setq &#35;:args59199 <span id='f0c1159'>(ccl::&#37;cdr <span id='f0c1158'>(ccl::typed-form &#39;list &#35;:args59199)</span>)</span>)</span>)</span>))
+         <span id='f0c1197'>(funcall &#39;ccl::append-2
+                  decs
+                  <span id='f0c1195'>(let* ((&#35;:g59200 <span id='f0c1194'>(cons nil nil)</span>)
+                         (&#35;:g59201 &#35;:g59200)
+                         (&#35;:g59203 <span id='f0c1168'>(function <span id='f0c1167'>(lambda (x) <span id='f0c1166'>(funcall &#39;step x env)</span>)</span>)</span>))
+                    <span id='f0c1192'>(let* ((&#35;:g59204 body))
+                      (progn <span id='f0c1190'>(tagbody <span id='f0c1185'>(go &#35;:g59206)</span>
+                                      (&#35;:g59205 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DE467D&#62; t t)
+                                      <span id='f0c1182'>(tagbody <span id='f0c1181'>(let* ((&#35;:g59202 <span id='f0c1173'>(car &#35;:g59204)</span>))
+                                                 <span id='f0c1180'>(tagbody <span id='f0c1179'>(setq &#35;:g59200
+                                                                <span id='f0c1178'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59200
+                                                                                         <span id='f0c1177'>(cons <span id='f0c1176'>(funcall &#35;:g59203
+                                                                                                        &#35;:g59202)</span>
+                                                                                               nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                      <span id='f0c1189'>(setq &#35;:g59204 <span id='f0c1188'>(ccl::&#37;cdr <span id='f0c1187'>(ccl::typed-form &#39;list &#35;:g59204)</span>)</span>)</span>
+                                      (&#35;:g59206 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DE467D&#62; t nil)
+                                      <span id='f0c1184'>(if <span id='f0c1183'>(not &#39;:ne &#35;:g59204)</span> (go &#35;:g59205) nil)</span>)</span>
+                             <span id='f0c1171'>(let* () <span id='f0c1170'>(ccl::&#37;cdr &#35;:g59201)</span>)</span>))</span>)</span>)</span>)</span>
+       <span id='f0c1230'>(let* ((&#35;:g59207 <span id='f0c1229'>(cons nil nil)</span>) (&#35;:g59208 &#35;:g59207) (&#35;:g59210 <span id='f0c1203'>(function <span id='f0c1202'>(lambda (x) <span id='f0c1201'>(funcall &#39;step x env)</span>)</span>)</span>))
+         <span id='f0c1228'>(let* ((&#35;:g59211 body))
+           (progn <span id='f0c1223'>(tagbody <span id='f0c1222'>(go &#35;:g59213)</span>
+                           (&#35;:g59212 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E1FD4D&#62; t t)
+                           <span id='f0c1215'>(tagbody <span id='f0c1214'>(let* ((&#35;:g59209 <span id='f0c1213'>(car &#35;:g59211)</span>))
+                                      <span id='f0c1211'>(tagbody <span id='f0c1210'>(setq &#35;:g59207
+                                                     <span id='f0c1209'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59207
+                                                                              <span id='f0c1208'>(cons <span id='f0c1207'>(funcall &#35;:g59210 &#35;:g59209)</span>
+                                                                                    nil)</span>))</span>)</span>)</span>)</span>)</span>
+                           <span id='f0c1221'>(setq &#35;:g59211 <span id='f0c1220'>(ccl::&#37;cdr <span id='f0c1219'>(ccl::typed-form &#39;list &#35;:g59211)</span>)</span>)</span>
+                           (&#35;:g59213 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E1FD4D&#62; t nil)
+                           <span id='f0c1217'>(if <span id='f0c1216'>(not &#39;:ne &#35;:g59211)</span> (go &#35;:g59212) nil)</span>)</span>
+                  <span id='f0c1227'>(let* () <span id='f0c1226'>(ccl::&#37;cdr &#35;:g59208)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>117</span> 
+<span class='line'>118</span> &#59;&#59; we make this macro to just make the generated code pretty
+<span id='f0s47'><span class='line'>119</span> (defmacro with-stack (original-form continue-form)
+<span class='line'>120</span>   <span id='f0s48'>&#96;(unwind-protect (progn (stack:push &#39;&#44;original-form)
+<span class='line'>121</span>                           &#44;continue-form)
+<span class='line'>122</span>      (stack:pop))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t47')><span class='toggle' id='pf0t47'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(47)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t47'><code><span id='f0c323'> (lambda (&#35;:whole59223 &#35;:environment59224)
+   <span id='f0c322'>(let* ((&#35;:args59225 <span id='f0c296'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c293'>(cdr &#35;:whole59223)</span> <span id='f0c291'>&#39;(original-form continue-form)</span> 2 2)</span>)
+          (original-form
+           <span id='f0c314'>(prog1 <span id='f0c313'>(ccl::&#37;car &#35;:args59225)</span> <span id='f0c311'>(setq &#35;:args59225 <span id='f0c310'>(ccl::&#37;cdr <span id='f0c309'>(ccl::typed-form &#39;list &#35;:args59225)</span>)</span>)</span>)</span>)
+          (continue-form
+           <span id='f0c321'>(prog1 <span id='f0c320'>(ccl::&#37;car &#35;:args59225)</span> <span id='f0c318'>(setq &#35;:args59225 <span id='f0c317'>(ccl::&#37;cdr <span id='f0c316'>(ccl::typed-form &#39;list &#35;:args59225)</span>)</span>)</span>)</span>))
+     <span id='f0c307'>(list* <span id='f0c297'>&#39;unwind-protect</span> <span id='f0c305'>(list <span id='f0c304'>&#39;progn</span> <span id='f0c303'>(list <span id='f0c302'>&#39;stack:push</span> <span id='f0c301'>(list <span id='f0c300'>&#39;quote</span> original-form)</span>)</span> continue-form)</span> <span id='f0c306'>&#39;((stack:pop))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>123</span> 
+<span id='f0s49'><span class='line'>124</span> (defun run-mode (original-form continue-form)
+<span class='line'>125</span>   &#34;runs the selected user mode&#46;&#34;
+<span class='line'>126</span>   <span id='f0s50'>(etypecase-of mode *mode*
+<span class='line'>127</span>     ((eql :run)   original-form)
+<span class='line'>128</span>     ((eql :stack) <span id='f0s51'>&#96;(with-stack &#44;original-form &#44;continue-form)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t49')><span class='toggle' id='pf0t49'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(49)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t49'><code><span id='f0c627'> (lambda (original-form continue-form)
+   <span id='f0c626'>(let* ((&#35;:x59235 *mode*))
+     <span id='f0c624'>(let* ((&#35;:g59236 &#35;:x59235))
+       <span id='f0c623'>(if <span id='f0c599'>(not &#39;:ne <span id='f0c598'>(if <span id='f0c596'>(eq &#35;:g59236 &#39;:run)</span> <span id='f0c597'>&#39;(:run)</span> nil)</span>)</span>
+           <span id='f0c601'>(progn nil original-form)</span>
+           <span id='f0c622'>(if <span id='f0c621'>(not &#39;:ne <span id='f0c620'>(if <span id='f0c619'>(eq &#35;:g59236 &#39;:stack)</span> <span id='f0c617'>&#39;(:stack)</span> nil)</span>)</span>
+               <span id='f0c616'>(progn nil <span id='f0c615'>(list <span id='f0c613'>&#39;with-stack</span> original-form continue-form)</span>)</span>
+               <span id='f0c611'>(if <span id='f0c603'>(progn &#35;:g59236 t)</span>
+                   <span id='f0c610'>(progn nil <span id='f0c609'>(values (funcall &#39;error <span id='f0c606'>&#39;type-error</span> <span id='f0c604'>&#39;:datum</span> &#35;:x59235 <span id='f0c605'>&#39;:expected-type</span> <span id='f0c608'>&#39;mode</span>))</span>)</span>
+                   nil)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>129</span> 
+<span class='line'>130</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>131</span> &#59;&#59;&#59; Alias Exports
+<span class='line'>132</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>133</span> 
+<span id='f0s52'><span class='line'>134</span> (defalias single &#35;&#39;step)</span>
+</code></div>
+<a href=javascript:swap('f0t52')><span class='toggle' id='pf0t52'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(52)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t52'><code><span id='f0c3'> (lambda (&#38;rest serapeum::args) <span id='f0c2'>(apply &#35;:temp59240 serapeum::args)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s53'><span class='line'>135</span> (defalias body   &#35;&#39;step-body)</span>
+</code></div>
+<a href=javascript:swap('f0t53')><span class='toggle' id='pf0t53'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(53)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t53'><code><span id='f0c657'> (lambda (&#38;rest serapeum::args) <span id='f0c656'>(apply &#35;:temp59247 serapeum::args)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>136</span> 
+<span class='line'>137</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>138</span> &#59;&#59;&#59; Special Case Handling Dispatch
+<span class='line'>139</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>140</span> 
+<span id='f0s54'><span class='line'>141</span> (defun handle-cl-special (form env)
+<span class='line'>142</span>   <span id='f0s55'>(typecase-of specials <span id='f0s56'>(car form)</span>
+<span class='line'>143</span>     ((eql let)                  <span id='f0s57'>(handle-let form env)</span>)
+<span class='line'>144</span>     ((eql let*)                 <span id='f0s58'>(handle-let form env)</span>)
+<span class='line'>145</span>     ((eql eval-when)            <span id='f0s59'>(handle-eval-when form env)</span>)
+<span class='line'>146</span>     ((eql flet)                 <span id='f0s60'>(handle-local-function form env :recursive nil)</span>)
+<span class='line'>147</span>     ((eql labels)               <span id='f0s61'>(handle-local-function form env :recursive t)</span>)
+<span class='line'>148</span>     ((eql macrolet)             <span id='f0s62'>(handle-local-function form env :recursive t :macro t)</span>)
+<span class='line'>149</span>     ((eql if)                   <span id='f0s63'>(handle-if form env)</span>)
+<span class='line'>150</span>     ((eql progn)                <span id='f0s64'>(handle-progn form env)</span>)
+<span class='line'>151</span>     ((eql progv)                <span id='f0s65'>(handle-progv form env)</span>)
+<span class='line'>152</span>     ((eql block)                <span id='f0s66'>(handle-block form env)</span>)
+<span class='line'>153</span>     ((eql catch)                <span id='f0s67'>(handle-catch form env)</span>)
+<span class='line'>154</span>     ((eql function)             <span id='f0s68'>(handle-function form env)</span>)
+<span class='line'>155</span>     ((eql go)                   <span id='f0s69'>(handle-go form env)</span>)
+<span class='line'>156</span>     ((eql quote)                <span id='f0s70'>(handle-quote form env)</span>)
+<span class='line'>157</span>     ((eql return-from)          <span id='f0s71'>(handle-return form env)</span>)
+<span class='line'>158</span>     ((eql load-time-value)      <span id='f0s72'>(handle-load-time-value form env)</span>)
+<span class='line'>159</span>     ((eql symbol-macrolet)      <span id='f0s73'>(handle-symbol-macrolet form env)</span>)
+<span class='line'>160</span>     ((eql locally)              <span id='f0s74'>(handle-locally form env)</span>)
+<span class='line'>161</span>     ((eql multiple-value-call)  <span id='f0s75'>(handle-multiple-value-call form env)</span>)
+<span class='line'>162</span>     ((eql multiple-value-prog1) <span id='f0s76'>(handle-multiple-value-prog1 form env)</span>)
+<span class='line'>163</span>     ((eql setq)                 <span id='f0s77'>(handle-setq form env)</span>)
+<span class='line'>164</span>     ((eql tagbody)              <span id='f0s78'>(handle-tagbody form env)</span>)
+<span class='line'>165</span>     ((eql the)                  <span id='f0s79'>(handle-the form env)</span>)
+<span class='line'>166</span>     ((eql throw)                <span id='f0s80'>(handle-throw form env)</span>)
+<span class='line'>167</span>     ((eql unwind-protect)       <span id='f0s81'>(handle-unwind-protect form env)</span>)
+<span class='line'>168</span>     (otherwise
+<span class='line'>169</span>      <span id='f0s82'>(error <span id='f0s83'>&#34;special &#126;A not supported yet&#34;</span> <span id='f0s84'>(car form)</span>)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t54')><span class='toggle' id='pf0t54'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(54)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t54'><code><span id='f0c594'> (lambda (form env)
+   <span id='f0c593'>(let* ((&#35;:g59260 <span id='f0c355'>(car form)</span>))
+     <span id='f0c592'>(if <span id='f0c363'>(not &#39;:ne <span id='f0c362'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c360'>&#39;(let)</span>)</span>)</span>
+         <span id='f0c359'>(progn nil <span id='f0c358'>(funcall &#39;handle-let form env)</span>)</span>
+         <span id='f0c591'>(if <span id='f0c367'>(not &#39;:ne <span id='f0c366'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c364'>&#39;(let*)</span>)</span>)</span>
+             <span id='f0c590'>(progn nil <span id='f0c589'>(funcall &#39;handle-let form env)</span>)</span>
+             <span id='f0c586'>(if <span id='f0c585'>(not &#39;:ne <span id='f0c584'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c582'>&#39;(eval-when)</span>)</span>)</span>
+                 <span id='f0c371'>(progn nil <span id='f0c370'>(funcall &#39;handle-eval-when form env)</span>)</span>
+                 <span id='f0c581'>(if <span id='f0c375'>(not &#39;:ne <span id='f0c374'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c372'>&#39;(flet)</span>)</span>)</span>
+                     <span id='f0c580'>(progn nil <span id='f0c579'>(funcall &#39;handle-local-function form env <span id='f0c578'>&#39;:recursive</span> nil)</span>)</span>
+                     <span id='f0c575'>(if <span id='f0c569'>(not &#39;:ne <span id='f0c568'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c567'>&#39;(labels)</span>)</span>)</span>
+                         <span id='f0c574'>(progn nil <span id='f0c573'>(funcall &#39;handle-local-function form env <span id='f0c571'>&#39;:recursive</span> t)</span>)</span>
+                         <span id='f0c565'>(if <span id='f0c379'>(not &#39;:ne <span id='f0c378'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c376'>&#39;(macrolet)</span>)</span>)</span>
+                             <span id='f0c564'>(progn nil <span id='f0c563'>(funcall &#39;handle-local-function form env <span id='f0c562'>&#39;:recursive</span> t <span id='f0c560'>&#39;:macro</span> t)</span>)</span>
+                             <span id='f0c558'>(if <span id='f0c557'>(not &#39;:ne <span id='f0c556'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c554'>&#39;(if)</span>)</span>)</span>
+                                 <span id='f0c553'>(progn nil <span id='f0c552'>(funcall &#39;handle-if form env)</span>)</span>
+                                 <span id='f0c549'>(if <span id='f0c544'>(not &#39;:ne <span id='f0c543'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c541'>&#39;(progn)</span>)</span>)</span>
+                                     <span id='f0c548'>(progn nil <span id='f0c547'>(funcall &#39;handle-progn form env)</span>)</span>
+                                     <span id='f0c540'>(if <span id='f0c383'>(not &#39;:ne <span id='f0c382'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c381'>&#39;(progv)</span>)</span>)</span>
+                                         <span id='f0c387'>(progn nil <span id='f0c386'>(funcall &#39;handle-progv form env)</span>)</span>
+                                         <span id='f0c539'>(if <span id='f0c538'>(not &#39;:ne <span id='f0c537'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c535'>&#39;(block)</span>)</span>)</span>
+                                             <span id='f0c391'>(progn nil <span id='f0c390'>(funcall &#39;handle-block form env)</span>)</span>
+                                             <span id='f0c534'>(if <span id='f0c533'>(not &#39;:ne <span id='f0c532'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c531'>&#39;(catch)</span>)</span>)</span>
+                                                 <span id='f0c529'>(progn nil <span id='f0c528'>(funcall &#39;handle-catch form env)</span>)</span>
+                                                 <span id='f0c525'>(if <span id='f0c399'>(not &#39;:ne <span id='f0c398'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c397'>&#39;(function)</span>)</span>)</span>
+                                                     <span id='f0c395'>(progn nil <span id='f0c394'>(funcall &#39;handle-function form env)</span>)</span>
+                                                     <span id='f0c524'>(if <span id='f0c407'>(not &#39;:ne <span id='f0c406'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c404'>&#39;(go)</span>)</span>)</span>
+                                                         <span id='f0c403'>(progn nil <span id='f0c402'>(funcall &#39;handle-go form env)</span>)</span>
+                                                         <span id='f0c523'>(if <span id='f0c415'>(not &#39;:ne <span id='f0c414'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c413'>&#39;(quote)</span>)</span>)</span>
+                                                             <span id='f0c411'>(progn nil <span id='f0c410'>(funcall &#39;handle-quote form env)</span>)</span>
+                                                             <span id='f0c522'>(if <span id='f0c517'>(not &#39;:ne
+                                                                      <span id='f0c516'>(funcall &#39;ccl::memeql &#35;:g59260 <span id='f0c515'>&#39;(return-from)</span>)</span>)</span>
+                                                                 <span id='f0c521'>(progn nil <span id='f0c520'>(funcall &#39;handle-return form env)</span>)</span>
+                                                                 <span id='f0c513'>(if <span id='f0c423'>(not &#39;:ne
+                                                                          <span id='f0c422'>(funcall &#39;ccl::memeql
+                                                                                   &#35;:g59260
+                                                                                   <span id='f0c421'>&#39;(load-time-value)</span>)</span>)</span>
+                                                                     <span id='f0c419'>(progn nil
+                                                                            <span id='f0c418'>(funcall &#39;handle-load-time-value form env)</span>)</span>
+                                                                     <span id='f0c512'>(if <span id='f0c507'>(not &#39;:ne
+                                                                              <span id='f0c506'>(funcall &#39;ccl::memeql
+                                                                                       &#35;:g59260
+                                                                                       <span id='f0c505'>&#39;(symbol-macrolet)</span>)</span>)</span>
+                                                                         <span id='f0c511'>(progn nil
+                                                                                <span id='f0c510'>(funcall &#39;handle-symbol-macrolet
+                                                                                         form
+                                                                                         env)</span>)</span>
+                                                                         <span id='f0c503'>(if <span id='f0c498'>(not &#39;:ne
+                                                                                  <span id='f0c497'>(funcall &#39;ccl::memeql
+                                                                                           &#35;:g59260
+                                                                                           <span id='f0c495'>&#39;(locally)</span>)</span>)</span>
+                                                                             <span id='f0c502'>(progn nil
+                                                                                    <span id='f0c501'>(funcall &#39;handle-locally form env)</span>)</span>
+                                                                             <span id='f0c494'>(if <span id='f0c489'>(not &#39;:ne
+                                                                                      <span id='f0c488'>(funcall &#39;ccl::memeql
+                                                                                               &#35;:g59260
+                                                                                               <span id='f0c486'>&#39;(multiple-value-call)</span>)</span>)</span>
+                                                                                 <span id='f0c493'>(progn nil
+                                                                                        <span id='f0c492'>(funcall &#39;handle-multiple-value-call
+                                                                                                 form
+                                                                                                 env)</span>)</span>
+                                                                                 <span id='f0c485'>(if <span id='f0c427'>(not &#39;:ne
+                                                                                          <span id='f0c426'>(funcall &#39;ccl::memeql
+                                                                                                   &#35;:g59260
+                                                                                                   <span id='f0c424'>&#39;(multiple-value-prog1)</span>)</span>)</span>
+                                                                                     <span id='f0c431'>(progn nil
+                                                                                            <span id='f0c430'>(funcall &#39;handle-multiple-value-prog1
+                                                                                                     form
+                                                                                                     env)</span>)</span>
+                                                                                     <span id='f0c484'>(if <span id='f0c439'>(not &#39;:ne
+                                                                                              <span id='f0c438'>(funcall &#39;ccl::memeql
+                                                                                                       &#35;:g59260
+                                                                                                       <span id='f0c437'>&#39;(setq)</span>)</span>)</span>
+                                                                                         <span id='f0c435'>(progn nil
+                                                                                                <span id='f0c434'>(funcall &#39;handle-setq
+                                                                                                         form
+                                                                                                         env)</span>)</span>
+                                                                                         <span id='f0c483'>(if <span id='f0c443'>(not &#39;:ne
+                                                                                                  <span id='f0c442'>(funcall &#39;ccl::memeql
+                                                                                                           &#35;:g59260
+                                                                                                           <span id='f0c441'>&#39;(tagbody)</span>)</span>)</span>
+                                                                                             <span id='f0c447'>(progn nil
+                                                                                                    <span id='f0c446'>(funcall &#39;handle-tagbody
+                                                                                                             form
+                                                                                                             env)</span>)</span>
+                                                                                             <span id='f0c482'>(if <span id='f0c481'>(not &#39;:ne
+                                                                                                      <span id='f0c480'>(funcall &#39;ccl::memeql
+                                                                                                               &#35;:g59260
+                                                                                                               <span id='f0c479'>&#39;(the)</span>)</span>)</span>
+                                                                                                 <span id='f0c477'>(progn nil
+                                                                                                        <span id='f0c476'>(funcall &#39;handle-the
+                                                                                                                 form
+                                                                                                                 env)</span>)</span>
+                                                                                                 <span id='f0c473'>(if <span id='f0c468'>(not &#39;:ne
+                                                                                                          <span id='f0c467'>(funcall &#39;ccl::memeql
+                                                                                                                   &#35;:g59260
+                                                                                                                   <span id='f0c466'>&#39;(throw)</span>)</span>)</span>
+                                                                                                     <span id='f0c472'>(progn nil
+                                                                                                            <span id='f0c471'>(funcall &#39;handle-throw
+                                                                                                                     form
+                                                                                                                     env)</span>)</span>
+                                                                                                     <span id='f0c464'>(if <span id='f0c451'>(not &#39;:ne
+                                                                                                              <span id='f0c450'>(funcall &#39;ccl::memeql
+                                                                                                                       &#35;:g59260
+                                                                                                                       <span id='f0c449'>&#39;(unwind-protect)</span>)</span>)</span>
+                                                                                                         <span id='f0c463'>(progn nil
+                                                                                                                <span id='f0c462'>(funcall &#39;handle-unwind-protect
+                                                                                                                         form
+                                                                                                                         env)</span>)</span>
+                                                                                                         <span id='f0c459'>(if <span id='f0c453'>(progn &#35;:g59260
+                                                                                                                    t)</span>
+                                                                                                             <span id='f0c458'>(progn nil
+                                                                                                                    <span id='f0c457'>(values (funcall &#39;error
+                                                                                                                                     <span id='f0c454'>&#39;&#34;special &#126;A not supported yet&#34;</span>
+                                                                                                                                     <span id='f0c456'>(car form)</span>))</span>)</span>
+                                                                                                             nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>170</span> 
+<span id='f0s85'><span class='line'>171</span> (defun handle-alu-special (form env)
+<span class='line'>172</span>   <span id='f0s86'>(typecase-of alu-specials <span id='f0s87'>(car form)</span>
+<span class='line'>173</span>     ((eql alu:def)             <span id='f0s88'>(handle-let form env t)</span>)
+<span class='line'>174</span>     ((eql alu:with-constraint) <span id='f0s89'>(handle-constraint form env)</span>)
+<span class='line'>175</span>     ((eql alu:coerce)          <span id='f0s90'>(handle-coerce form env)</span>)
+<span class='line'>176</span>     ((eql alu:check)           <span id='f0s91'>(handle-check form env)</span>)
+<span class='line'>177</span>     ((eql alu:array)           <span id='f0s92'>(handle-array form env)</span>)
+<span class='line'>178</span>     (otherwise <span id='f0s93'>(error <span id='f0s94'>&#34;Alucard Special &#126;A handed to handle-alu special&#34;</span>
+<span class='line'>179</span>                       form)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t85')><span class='toggle' id='pf0t85'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(85)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t85'><code><span id='f0c757'> (lambda (form env)
+   <span id='f0c756'>(let* ((&#35;:g59270 <span id='f0c755'>(car form)</span>))
+     <span id='f0c753'>(if <span id='f0c752'>(not &#39;:ne <span id='f0c751'>(funcall &#39;ccl::memeql &#35;:g59270 <span id='f0c749'>&#39;(alu:def)</span>)</span>)</span>
+         <span id='f0c705'>(progn nil <span id='f0c704'>(funcall &#39;handle-let form env t)</span>)</span>
+         <span id='f0c748'>(if <span id='f0c709'>(not &#39;:ne <span id='f0c708'>(funcall &#39;ccl::memeql &#35;:g59270 <span id='f0c707'>&#39;(alu:with-constraint)</span>)</span>)</span>
+             <span id='f0c747'>(progn nil <span id='f0c746'>(funcall &#39;handle-constraint form env)</span>)</span>
+             <span id='f0c743'>(if <span id='f0c742'>(not &#39;:ne <span id='f0c741'>(funcall &#39;ccl::memeql &#35;:g59270 <span id='f0c740'>&#39;(alu:coerce)</span>)</span>)</span>
+                 <span id='f0c713'>(progn nil <span id='f0c712'>(funcall &#39;handle-coerce form env)</span>)</span>
+                 <span id='f0c738'>(if <span id='f0c717'>(not &#39;:ne <span id='f0c716'>(funcall &#39;ccl::memeql &#35;:g59270 <span id='f0c715'>&#39;(alu:check)</span>)</span>)</span>
+                     <span id='f0c721'>(progn nil <span id='f0c720'>(funcall &#39;handle-check form env)</span>)</span>
+                     <span id='f0c737'>(if <span id='f0c736'>(not &#39;:ne <span id='f0c735'>(funcall &#39;ccl::memeql &#35;:g59270 <span id='f0c733'>&#39;(alu:array)</span>)</span>)</span>
+                         <span id='f0c732'>(progn nil <span id='f0c731'>(funcall &#39;handle-array form env)</span>)</span>
+                         <span id='f0c728'>(if <span id='f0c723'>(progn &#35;:g59270 t)</span>
+                             <span id='f0c727'>(progn nil
+                                    <span id='f0c726'>(values (funcall &#39;error <span id='f0c725'>&#39;&#34;Alucard Special &#126;A handed to handle-alu special&#34;</span> form))</span>)</span>
+                             nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>180</span> 
+<span class='line'>181</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>182</span> &#59;&#59;&#59; CL special handling
+<span class='line'>183</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>184</span> 
+<span id='f0s95'><span class='line'>185</span> (defun handle-list-car (form env)
+<span class='line'>186</span>   <span id='f0s96'>(step <span id='f0s97'>(cons <span id='f0s98'>&#39;funcall </span>form)</span>
+<span class='line'>187</span>         env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t95')><span class='toggle' id='pf0t95'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(95)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t95'><code><span id='f0c978'> (lambda (form env) <span id='f0c977'>(funcall &#39;step <span id='f0c975'>(cons <span id='f0c973'>&#39;funcall</span> form)</span> env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>188</span> 
+<span id='f0s99'><span class='line'>189</span> (defun handle-let (form env &#38;optional handle-constrain)
+<span class='line'>190</span>   &#59;&#59; we don&#39;t need to update the environment as we don&#39;t care about
+<span class='line'>191</span>   &#59;&#59; symbols as much&#46;
+<span class='line'>192</span>   <span id='f0s100'>(destructuring-bind (let args &#38;rest body) form
+<span class='line'>193</span>     <span id='f0s101'>(list* let <span id='f0s102'>(handle-binder args env handle-constrain)</span> <span id='f0s103'>(step-body body env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t99')><span class='toggle' id='pf0t99'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(99)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t99'><code><span id='f0c1141'> (lambda (form env &#38;optional handle-constrain)
+   <span id='f0c1140'>(let* ((&#35;:whole59277 form)
+          (&#35;:args59278 <span id='f0c1125'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59277 <span id='f0c1122'>&#39;(let args &#38;rest body)</span> 2 nil)</span>)
+          (let <span id='f0c1132'>(prog1 <span id='f0c1127'>(car &#35;:args59278)</span> <span id='f0c1131'>(setq &#35;:args59278 <span id='f0c1130'>(ccl::&#37;cdr <span id='f0c1129'>(ccl::typed-form &#39;list &#35;:args59278)</span>)</span>)</span>)</span>)
+          (args <span id='f0c1139'>(prog1 <span id='f0c1134'>(car &#35;:args59278)</span> <span id='f0c1138'>(setq &#35;:args59278 <span id='f0c1137'>(ccl::&#37;cdr <span id='f0c1136'>(ccl::typed-form &#39;list &#35;:args59278)</span>)</span>)</span>)</span>)
+          (&#35;:rest59279 &#35;:args59278)
+          (body &#35;:rest59279))
+     <span id='f0c1121'>(list* let <span id='f0c1116'>(funcall &#39;handle-binder args env handle-constrain)</span> <span id='f0c1120'>(funcall &#39;step-body body env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>194</span> 
+<span id='f0s104'><span class='line'>195</span> (defun handle-eval-when (form env)
+<span class='line'>196</span>   <span id='f0s105'>(destructuring-bind (eval-when declaration &#38;rest body) form
+<span class='line'>197</span>     <span id='f0s106'>(list* eval-when declaration <span id='f0s107'>(step-body body env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t104')><span class='toggle' id='pf0t104'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(104)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t104'><code><span id='f0c349'> (lambda (form env)
+   <span id='f0c348'>(let* ((&#35;:whole59283 form)
+          (&#35;:args59284 <span id='f0c327'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59283 <span id='f0c325'>&#39;(eval-when declaration &#38;rest body)</span> 2 nil)</span>)
+          (eval-when <span id='f0c341'>(prog1 <span id='f0c336'>(car &#35;:args59284)</span> <span id='f0c340'>(setq &#35;:args59284 <span id='f0c339'>(ccl::&#37;cdr <span id='f0c338'>(ccl::typed-form &#39;list &#35;:args59284)</span>)</span>)</span>)</span>)
+          (declaration <span id='f0c334'>(prog1 <span id='f0c333'>(car &#35;:args59284)</span> <span id='f0c331'>(setq &#35;:args59284 <span id='f0c330'>(ccl::&#37;cdr <span id='f0c329'>(ccl::typed-form &#39;list &#35;:args59284)</span>)</span>)</span>)</span>)
+          (&#35;:rest59285 &#35;:args59284)
+          (body &#35;:rest59285))
+     <span id='f0c347'>(list* eval-when declaration <span id='f0c344'>(funcall &#39;step-body body env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>198</span> 
+<span id='f0s108'><span class='line'>199</span> (defun handle-binder (binders env &#38;optional handle-constrain)
+<span class='line'>200</span>   <span id='f0s109'>(mapcar <span id='f0s110'>(lambda (bind-pair)
+<span class='line'>201</span>             <span id='f0s111'>(cond (<span id='f0s112'>(not <span id='f0s113'>(listp bind-pair)</span>)</span>
+<span class='line'>202</span>                    bind-pair)
+<span class='line'>203</span>                   (<span id='f0s114'>(and handle-constrain <span id='f0s115'>(eql <span id='f0s116'>(car bind-pair)</span> &#39;alu:with-constraint)</span>)</span>
+<span class='line'>204</span>                    <span id='f0s117'>(handle-constraint bind-pair env)</span>)
+<span class='line'>205</span>                   &#59;&#59; Should I mark the variable name in the stack trace&#63;
+<span class='line'>206</span>                   &#59;&#59; would make sense&#44; but I currently don&#39;t do it&#46;
+<span class='line'>207</span>                   (t
+<span class='line'>208</span>                    <span id='f0s118'>(cons <span id='f0s119'>(car bind-pair)</span>
+<span class='line'>209</span>                          <span id='f0s120'>(step-body <span id='f0s121'>(cdr bind-pair)</span> env :handle-declaration nil)</span>)</span>))</span>)</span>
+<span class='line'>210</span>           binders)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t108')><span class='toggle' id='pf0t108'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(108)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t108'><code><span id='f0c808'> (lambda (binders env &#38;optional handle-constrain)
+   <span id='f0c807'>(let* ((&#35;:g59289 <span id='f0c782'>(cons nil nil)</span>)
+          (&#35;:g59290 &#35;:g59289)
+          (&#35;:g59292
+           <span id='f0c805'>(function <span id='f0c804'>(lambda (bind-pair)
+                       <span id='f0c803'>(if <span id='f0c802'>(eq &#39;:ne (ccl::lisptag bind-pair) 3)</span>
+                           bind-pair
+                           <span id='f0c799'>(if <span id='f0c787'>(if handle-constrain <span id='f0c786'>(eq <span id='f0c785'>(car bind-pair)</span> &#39;alu:with-constraint)</span> nil)</span>
+                               <span id='f0c790'>(funcall &#39;handle-constraint bind-pair env)</span>
+                               <span id='f0c798'>(cons <span id='f0c792'>(car bind-pair)</span>
+                                     <span id='f0c797'>(funcall &#39;step-body <span id='f0c794'>(cdr bind-pair)</span> env <span id='f0c796'>&#39;:handle-declaration</span> nil)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c781'>(let* ((&#35;:g59293 binders))
+       (progn <span id='f0c779'>(tagbody <span id='f0c761'>(go &#35;:g59295)</span>
+                       (&#35;:g59294 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F02C1D&#62; t t)
+                       <span id='f0c776'>(tagbody <span id='f0c775'>(let* ((&#35;:g59291 <span id='f0c767'>(car &#35;:g59293)</span>))
+                                  <span id='f0c774'>(tagbody <span id='f0c773'>(setq &#35;:g59289
+                                                 <span id='f0c772'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59289
+                                                                          <span id='f0c770'>(cons <span id='f0c769'>(funcall &#35;:g59292 &#35;:g59291)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c765'>(setq &#35;:g59293 <span id='f0c764'>(ccl::&#37;cdr <span id='f0c763'>(ccl::typed-form &#39;list &#35;:g59293)</span>)</span>)</span>
+                       (&#35;:g59295 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F02C1D&#62; t nil)
+                       <span id='f0c778'>(if <span id='f0c777'>(not &#39;:ne &#35;:g59293)</span> (go &#35;:g59294) nil)</span>)</span>
+              <span id='f0c760'>(let* () <span id='f0c759'>(ccl::&#37;cdr &#35;:g59290)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>211</span> 
+<span id='f0s122'><span class='line'>212</span> (defun handle-generic (form env)
+<span class='line'>213</span>   <span id='f0s123'>(cons <span id='f0s124'>(car form)</span>
+<span class='line'>214</span>         <span id='f0s125'>(mapcar <span id='f0s126'>(lambda (x) <span id='f0s127'>(step x env)</span>)</span> <span id='f0s128'>(cdr form)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t122')><span class='toggle' id='pf0t122'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(122)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t122'><code><span id='f0c847'> (lambda (form env)
+   <span id='f0c846'>(cons <span id='f0c845'>(car form)</span>
+         <span id='f0c843'>(let* ((&#35;:g59302 <span id='f0c812'>(cons nil nil)</span>) (&#35;:g59303 &#35;:g59302) (&#35;:g59305 <span id='f0c817'>(function <span id='f0c816'>(lambda (x) <span id='f0c815'>(funcall &#39;step x env)</span>)</span>)</span>))
+           <span id='f0c842'>(let* ((&#35;:g59306 <span id='f0c819'>(cdr form)</span>))
+             (progn <span id='f0c838'>(tagbody <span id='f0c820'>(go &#35;:g59308)</span>
+                             (&#35;:g59307 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F4E54D&#62; t t)
+                             <span id='f0c835'>(tagbody <span id='f0c834'>(let* ((&#35;:g59304 <span id='f0c833'>(car &#35;:g59306)</span>))
+                                        <span id='f0c831'>(tagbody <span id='f0c830'>(setq &#35;:g59302
+                                                       <span id='f0c829'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59302
+                                                                                <span id='f0c828'>(cons <span id='f0c827'>(funcall &#35;:g59305 &#35;:g59304)</span>
+                                                                                      nil)</span>))</span>)</span>)</span>)</span>)</span>
+                             <span id='f0c824'>(setq &#35;:g59306 <span id='f0c823'>(ccl::&#37;cdr <span id='f0c822'>(ccl::typed-form &#39;list &#35;:g59306)</span>)</span>)</span>
+                             (&#35;:g59308 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F4E54D&#62; t nil)
+                             <span id='f0c837'>(if <span id='f0c836'>(not &#39;:ne &#35;:g59306)</span> (go &#35;:g59307) nil)</span>)</span>
+                    <span id='f0c841'>(let* () <span id='f0c840'>(ccl::&#37;cdr &#35;:g59303)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>215</span> 
+<span id='f0s129'><span class='line'>216</span> (defun handle-if (form env)
+<span class='line'>217</span>   <span id='f0s130'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t129')><span class='toggle' id='pf0t129'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(129)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t129'><code><span id='f0c972'> (lambda (form env) <span id='f0c971'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>218</span> 
+<span id='f0s131'><span class='line'>219</span> (defun handle-progn (form env)
+<span class='line'>220</span>   <span id='f0s132'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t131')><span class='toggle' id='pf0t131'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(131)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t131'><code><span id='f0c1240'> (lambda (form env) <span id='f0c1239'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>221</span> 
+<span id='f0s133'><span class='line'>222</span> (defun handle-progv (form env)
+<span class='line'>223</span>   <span id='f0s134'>(destructuring-bind (prov vars values &#38;rest body) form
+<span class='line'>224</span>     <span id='f0s135'>(list* prov vars values <span id='f0s136'>(step-body body env :handle-declaration nil)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t133')><span class='toggle' id='pf0t133'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(133)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t133'><code><span id='f0c882'> (lambda (form env)
+   <span id='f0c881'>(let* ((&#35;:whole59321 form)
+          (&#35;:args59322 <span id='f0c858'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59321 <span id='f0c857'>&#39;(prov vars values &#38;rest body)</span> 3 nil)</span>)
+          (prov <span id='f0c854'>(prog1 <span id='f0c849'>(car &#35;:args59322)</span> <span id='f0c853'>(setq &#35;:args59322 <span id='f0c852'>(ccl::&#37;cdr <span id='f0c851'>(ccl::typed-form &#39;list &#35;:args59322)</span>)</span>)</span>)</span>)
+          (vars <span id='f0c865'>(prog1 <span id='f0c864'>(car &#35;:args59322)</span> <span id='f0c862'>(setq &#35;:args59322 <span id='f0c861'>(ccl::&#37;cdr <span id='f0c860'>(ccl::typed-form &#39;list &#35;:args59322)</span>)</span>)</span>)</span>)
+          (values <span id='f0c880'>(prog1 <span id='f0c879'>(car &#35;:args59322)</span> <span id='f0c877'>(setq &#35;:args59322 <span id='f0c876'>(ccl::&#37;cdr <span id='f0c875'>(ccl::typed-form &#39;list &#35;:args59322)</span>)</span>)</span>)</span>)
+          (&#35;:rest59323 &#35;:args59322)
+          (body &#35;:rest59323))
+     <span id='f0c873'>(list* prov vars values <span id='f0c870'>(funcall &#39;step-body body env <span id='f0c867'>&#39;:handle-declaration</span> nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>225</span> 
+<span id='f0s137'><span class='line'>226</span> (defun handle-block (form env)
+<span class='line'>227</span>   <span id='f0s138'>(destructuring-bind (block name &#38;rest code) form
+<span class='line'>228</span>     <span id='f0s139'>(list* block name <span id='f0s140'>(step-body code env :handle-declaration nil)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t137')><span class='toggle' id='pf0t137'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(137)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t137'><code><span id='f0c1381'> (lambda (form env)
+   <span id='f0c1380'>(let* ((&#35;:whole59327 form)
+          (&#35;:args59328 <span id='f0c1372'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59327 <span id='f0c1369'>&#39;(block name &#38;rest code)</span> 2 nil)</span>)
+          (block <span id='f0c1379'>(prog1 <span id='f0c1378'>(car &#35;:args59328)</span> <span id='f0c1376'>(setq &#35;:args59328 <span id='f0c1375'>(ccl::&#37;cdr <span id='f0c1374'>(ccl::typed-form &#39;list &#35;:args59328)</span>)</span>)</span>)</span>)
+          (name <span id='f0c1368'>(prog1 <span id='f0c1367'>(car &#35;:args59328)</span> <span id='f0c1365'>(setq &#35;:args59328 <span id='f0c1364'>(ccl::&#37;cdr <span id='f0c1363'>(ccl::typed-form &#39;list &#35;:args59328)</span>)</span>)</span>)</span>)
+          (&#35;:rest59329 &#35;:args59328)
+          (code &#35;:rest59329))
+     <span id='f0c1361'>(list* block name <span id='f0c1358'>(funcall &#39;step-body code env <span id='f0c1355'>&#39;:handle-declaration</span> nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>229</span> 
+<span id='f0s141'><span class='line'>230</span> (defun handle-catch (form env)
+<span class='line'>231</span>   <span id='f0s142'>(destructuring-bind (catch name &#38;rest body) form
+<span class='line'>232</span>     <span id='f0s143'>(list* catch name <span id='f0s144'>(step-body body env :handle-declaration nil)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t141')><span class='toggle' id='pf0t141'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(141)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t141'><code><span id='f0c1334'> (lambda (form env)
+   <span id='f0c1333'>(let* ((&#35;:whole59333 form)
+          (&#35;:args59334 <span id='f0c1318'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59333 <span id='f0c1317'>&#39;(catch name &#38;rest body)</span> 2 nil)</span>)
+          (catch <span id='f0c1325'>(prog1 <span id='f0c1324'>(car &#35;:args59334)</span> <span id='f0c1322'>(setq &#35;:args59334 <span id='f0c1321'>(ccl::&#37;cdr <span id='f0c1320'>(ccl::typed-form &#39;list &#35;:args59334)</span>)</span>)</span>)</span>)
+          (name <span id='f0c1314'>(prog1 <span id='f0c1313'>(car &#35;:args59334)</span> <span id='f0c1311'>(setq &#35;:args59334 <span id='f0c1310'>(ccl::&#37;cdr <span id='f0c1309'>(ccl::typed-form &#39;list &#35;:args59334)</span>)</span>)</span>)</span>)
+          (&#35;:rest59335 &#35;:args59334)
+          (body &#35;:rest59335))
+     <span id='f0c1332'>(list* catch name <span id='f0c1330'>(funcall &#39;step-body body env <span id='f0c1328'>&#39;:handle-declaration</span> nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>233</span> 
+<span id='f0s145'><span class='line'>234</span> (defun handle-function (form env)
+<span class='line'>235</span>   <span id='f0s146'>(destructuring-bind (function thing) form
+<span class='line'>236</span>     <span id='f0s147'>(if <span id='f0s148'>(listp thing)</span>
+<span class='line'>237</span>         <span id='f0s149'>(list function
+<span class='line'>238</span>               &#59;&#59; sbcl has a macro which expands itslef to function&#44;
+<span class='line'>239</span>               &#59;&#59; which would cause issues
+<span class='line'>240</span>               <span id='f0s150'>(if <span id='f0s151'>(listp <span id='f0s152'>(cadr thing)</span>)</span>
+<span class='line'>241</span>                   <span id='f0s153'>(list* <span id='f0s154'>(car thing)</span> <span id='f0s155'>(cadr thing)</span>
+<span class='line'>242</span>                          <span id='f0s156'>(step-body <span id='f0s157'>(cddr thing)</span> env)</span>)</span>
+<span class='line'>243</span>                   <span id='f0s158'>(list* <span id='f0s159'>(car thing)</span> <span id='f0s160'>(cadr thing)</span> <span id='f0s161'>(caddr thing)</span>
+<span class='line'>244</span>                          <span id='f0s162'>(step-body <span id='f0s163'>(cdddr thing)</span> env)</span>)</span>)</span>)</span>
+<span class='line'>245</span>         <span id='f0s164'>(handle-generic form env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t145')><span class='toggle' id='pf0t145'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(145)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t145'><code><span id='f0c1112'> (lambda (form env)
+   <span id='f0c1111'>(let* ((&#35;:whole59339 form)
+          (&#35;:args59340 <span id='f0c1056'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59339 <span id='f0c1055'>&#39;(function thing)</span> 2 2)</span>)
+          (function <span id='f0c1110'>(prog1 <span id='f0c1105'>(ccl::&#37;car &#35;:args59340)</span> <span id='f0c1109'>(setq &#35;:args59340 <span id='f0c1108'>(ccl::&#37;cdr <span id='f0c1107'>(ccl::typed-form &#39;list &#35;:args59340)</span>)</span>)</span>)</span>)
+          (thing <span id='f0c1103'>(prog1 <span id='f0c1102'>(ccl::&#37;car &#35;:args59340)</span> <span id='f0c1100'>(setq &#35;:args59340 <span id='f0c1099'>(ccl::&#37;cdr <span id='f0c1098'>(ccl::typed-form &#39;list &#35;:args59340)</span>)</span>)</span>)</span>))
+     <span id='f0c1096'>(if <span id='f0c1058'>(eq (ccl::lisptag thing) 3)</span>
+         <span id='f0c1095'>(list function
+               <span id='f0c1094'>(if <span id='f0c1066'>(eq (ccl::lisptag <span id='f0c1065'>(car <span id='f0c1064'>(cdr thing)</span>)</span>) 3)</span>
+                   <span id='f0c1077'>(list* <span id='f0c1068'>(car thing)</span> <span id='f0c1076'>(car <span id='f0c1075'>(cdr thing)</span>)</span> <span id='f0c1073'>(funcall &#39;step-body <span id='f0c1072'>(cdr <span id='f0c1071'>(cdr thing)</span>)</span> env)</span>)</span>
+                   <span id='f0c1093'>(list* <span id='f0c1079'>(car thing)</span>
+                          <span id='f0c1082'>(car <span id='f0c1081'>(cdr thing)</span>)</span>
+                          <span id='f0c1092'>(car <span id='f0c1091'>(cdr <span id='f0c1090'>(cdr thing)</span>)</span>)</span>
+                          <span id='f0c1088'>(funcall &#39;step-body <span id='f0c1086'>(cdr <span id='f0c1085'>(cdr <span id='f0c1084'>(cdr thing)</span>)</span>)</span> env)</span>)</span>)</span>)</span>
+         <span id='f0c1061'>(funcall &#39;handle-generic form env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>246</span> 
+<span id='f0s165'><span class='line'>247</span> (defun handle-go (form env)
+<span class='line'>248</span>   (declare (ignore env))
+<span class='line'>249</span>   form)</span>
+</code></div>
+<a href=javascript:swap('f0t165')><span class='toggle' id='pf0t165'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(165)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t165'><code><span id='f0c663'> (lambda (form env) form)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>250</span> 
+<span class='line'>251</span> &#59;&#59; we ignore it&#44; this has a downside if the user then writes
+<span class='line'>252</span> &#59;&#59;
+<span class='line'>253</span> &#59;&#59; (eval &#39;(&#46;&#46;&#46;))
+<span class='line'>254</span> &#59;&#59;
+<span class='line'>255</span> &#59;&#59; they&#39;ll have to run my special function&#44; or perhaps I can give an
+<span class='line'>256</span> &#59;&#59; eval that can go over the syntax specially
+<span id='f0s166'><span class='line'>257</span> (defun handle-quote (form env)
+<span class='line'>258</span>   (declare (ignore env))
+<span class='line'>259</span>   form)</span>
+</code></div>
+<a href=javascript:swap('f0t166')><span class='toggle' id='pf0t166'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(166)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t166'><code><span id='f0c1276'> (lambda (form env) form)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>260</span> 
+<span id='f0s167'><span class='line'>261</span> (defun handle-return (form env)
+<span class='line'>262</span>   <span id='f0s168'>(destructuring-bind (return-from from &#38;optional code) form
+<span class='line'>263</span>     <span id='f0s169'>(if code
+<span class='line'>264</span>         <span id='f0s170'>(list return-from from <span id='f0s171'>(step code env)</span>)</span>
+<span class='line'>265</span>         form)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t167')><span class='toggle' id='pf0t167'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(167)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t167'><code><span id='f0c968'> (lambda (form env)
+   <span id='f0c967'>(let* ((&#35;:whole59350 form)
+          (&#35;:args59351 <span id='f0c966'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59350 <span id='f0c965'>&#39;(return-from from &#38;optional code)</span> 2 3)</span>)
+          (return-from
+           <span id='f0c943'>(prog1 <span id='f0c942'>(ccl::&#37;car &#35;:args59351)</span> <span id='f0c940'>(setq &#35;:args59351 <span id='f0c939'>(ccl::&#37;cdr <span id='f0c938'>(ccl::typed-form &#39;list &#35;:args59351)</span>)</span>)</span>)</span>)
+          (from <span id='f0c936'>(prog1 <span id='f0c935'>(ccl::&#37;car &#35;:args59351)</span> <span id='f0c933'>(setq &#35;:args59351 <span id='f0c932'>(ccl::&#37;cdr <span id='f0c931'>(ccl::typed-form &#39;list &#35;:args59351)</span>)</span>)</span>)</span>)
+          (code
+           <span id='f0c961'>(if &#35;:args59351
+               <span id='f0c960'>(prog1 <span id='f0c959'>(ccl::&#37;car &#35;:args59351)</span> <span id='f0c957'>(setq &#35;:args59351 <span id='f0c956'>(ccl::&#37;cdr <span id='f0c955'>(ccl::typed-form &#39;list &#35;:args59351)</span>)</span>)</span>)</span>
+               nil)</span>))
+     <span id='f0c952'>(if code <span id='f0c951'>(list return-from from <span id='f0c950'>(funcall &#39;step code env)</span>)</span> form)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>266</span> 
+<span id='f0s172'><span class='line'>267</span> (defun handle-load-time-value (form env)
+<span class='line'>268</span>   <span id='f0s173'>(destructuring-bind (load-time-value form &#38;optional read-only-p) form
+<span class='line'>269</span>     <span id='f0s174'>(list load-time-value <span id='f0s175'>(step form env)</span> read-only-p)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t172')><span class='toggle' id='pf0t172'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(172)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t172'><code><span id='f0c107'> (lambda (form env)
+   <span id='f0c106'>(let* ((&#35;:whole59355 form)
+          (&#35;:args59356
+           <span id='f0c76'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59355 <span id='f0c75'>&#39;(load-time-value form &#38;optional read-only-p)</span> 2 3)</span>)
+          (load-time-value
+           <span id='f0c90'>(prog1 <span id='f0c85'>(ccl::&#37;car &#35;:args59356)</span> <span id='f0c89'>(setq &#35;:args59356 <span id='f0c88'>(ccl::&#37;cdr <span id='f0c87'>(ccl::typed-form &#39;list &#35;:args59356)</span>)</span>)</span>)</span>)
+          (form <span id='f0c83'>(prog1 <span id='f0c82'>(ccl::&#37;car &#35;:args59356)</span> <span id='f0c80'>(setq &#35;:args59356 <span id='f0c79'>(ccl::&#37;cdr <span id='f0c78'>(ccl::typed-form &#39;list &#35;:args59356)</span>)</span>)</span>)</span>)
+          (read-only-p
+           <span id='f0c99'>(if &#35;:args59356
+               <span id='f0c97'>(prog1 <span id='f0c96'>(ccl::&#37;car &#35;:args59356)</span> <span id='f0c94'>(setq &#35;:args59356 <span id='f0c93'>(ccl::&#37;cdr <span id='f0c92'>(ccl::typed-form &#39;list &#35;:args59356)</span>)</span>)</span>)</span>
+               nil)</span>))
+     <span id='f0c105'>(list load-time-value <span id='f0c102'>(funcall &#39;step form env)</span> read-only-p)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>270</span> 
+<span id='f0s176'><span class='line'>271</span> (defun handle-locally (form env)
+<span class='line'>272</span>   <span id='f0s177'>(step-body form env :handle-declaration t)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t176')><span class='toggle' id='pf0t176'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(176)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t176'><code><span id='f0c1307'> (lambda (form env) <span id='f0c1306'>(funcall &#39;step-body form env <span id='f0c1305'>&#39;:handle-declaration</span> t)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>273</span> 
+<span id='f0s178'><span class='line'>274</span> (defun handle-multiple-value-call (form env)
+<span class='line'>275</span>   <span id='f0s179'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t178')><span class='toggle' id='pf0t178'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(178)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t178'><code><span id='f0c1346'> (lambda (form env) <span id='f0c1345'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>276</span> 
+<span id='f0s180'><span class='line'>277</span> (defun handle-multiple-value-prog1 (form env)
+<span class='line'>278</span>   <span id='f0s181'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t180')><span class='toggle' id='pf0t180'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(180)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t180'><code><span id='f0c667'> (lambda (form env) <span id='f0c666'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>279</span> 
+<span class='line'>280</span> &#59;&#59; we can do this one generically cause we don&#39;t touch symbols
+<span id='f0s182'><span class='line'>281</span> (defun handle-setq (form env)
+<span class='line'>282</span>   <span id='f0s183'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t182')><span class='toggle' id='pf0t182'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(182)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t182'><code><span id='f0c1236'> (lambda (form env) <span id='f0c1235'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>283</span> 
+<span class='line'>284</span> &#59;&#59; same for tagbody
+<span id='f0s184'><span class='line'>285</span> (defun handle-tagbody (form env)
+<span class='line'>286</span>   <span id='f0s185'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t184')><span class='toggle' id='pf0t184'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(184)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t184'><code><span id='f0c661'> (lambda (form env) <span id='f0c660'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>287</span> 
+<span id='f0s186'><span class='line'>288</span> (defun handle-the (form env)
+<span class='line'>289</span>   <span id='f0s187'>(destructuring-bind (the type form) form
+<span class='line'>290</span>     <span id='f0s188'>(list the type <span id='f0s189'>(step form env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t186')><span class='toggle' id='pf0t186'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(186)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t186'><code><span id='f0c701'> (lambda (form env)
+   <span id='f0c700'>(let* ((&#35;:whole59375 form)
+          (&#35;:args59376 <span id='f0c699'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59375 <span id='f0c697'>&#39;(the type form)</span> 3 3)</span>)
+          (the <span id='f0c694'>(prog1 <span id='f0c689'>(ccl::&#37;car &#35;:args59376)</span> <span id='f0c693'>(setq &#35;:args59376 <span id='f0c692'>(ccl::&#37;cdr <span id='f0c691'>(ccl::typed-form &#39;list &#35;:args59376)</span>)</span>)</span>)</span>)
+          (type <span id='f0c680'>(prog1 <span id='f0c679'>(ccl::&#37;car &#35;:args59376)</span> <span id='f0c677'>(setq &#35;:args59376 <span id='f0c676'>(ccl::&#37;cdr <span id='f0c675'>(ccl::typed-form &#39;list &#35;:args59376)</span>)</span>)</span>)</span>)
+          (form <span id='f0c687'>(prog1 <span id='f0c686'>(ccl::&#37;car &#35;:args59376)</span> <span id='f0c684'>(setq &#35;:args59376 <span id='f0c683'>(ccl::&#37;cdr <span id='f0c682'>(ccl::typed-form &#39;list &#35;:args59376)</span>)</span>)</span>)</span>))
+     <span id='f0c673'>(list the type <span id='f0c671'>(funcall &#39;step form env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>291</span> 
+<span id='f0s190'><span class='line'>292</span> (defun handle-throw (form env)
+<span class='line'>293</span>   <span id='f0s191'>(destructuring-bind (throw cond form) form
+<span class='line'>294</span>     <span id='f0s192'>(list throw cond <span id='f0s193'>(step form env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t190')><span class='toggle' id='pf0t190'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(190)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t190'><code><span id='f0c71'> (lambda (form env)
+   <span id='f0c70'>(let* ((&#35;:whole59380 form)
+          (&#35;:args59381 <span id='f0c42'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59380 <span id='f0c41'>&#39;(throw cond form)</span> 3 3)</span>)
+          (throw <span id='f0c49'>(prog1 <span id='f0c44'>(ccl::&#37;car &#35;:args59381)</span> <span id='f0c48'>(setq &#35;:args59381 <span id='f0c47'>(ccl::&#37;cdr <span id='f0c46'>(ccl::typed-form &#39;list &#35;:args59381)</span>)</span>)</span>)</span>)
+          (cond <span id='f0c62'>(prog1 <span id='f0c61'>(ccl::&#37;car &#35;:args59381)</span> <span id='f0c59'>(setq &#35;:args59381 <span id='f0c58'>(ccl::&#37;cdr <span id='f0c57'>(ccl::typed-form &#39;list &#35;:args59381)</span>)</span>)</span>)</span>)
+          (form <span id='f0c69'>(prog1 <span id='f0c68'>(ccl::&#37;car &#35;:args59381)</span> <span id='f0c66'>(setq &#35;:args59381 <span id='f0c65'>(ccl::&#37;cdr <span id='f0c64'>(ccl::typed-form &#39;list &#35;:args59381)</span>)</span>)</span>)</span>))
+     <span id='f0c55'>(list throw cond <span id='f0c53'>(funcall &#39;step form env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>295</span> 
+<span class='line'>296</span> &#59;&#59; I think we can be generic about this
+<span id='f0s194'><span class='line'>297</span> (defun handle-unwind-protect (form env)
+<span class='line'>298</span>   <span id='f0s195'>(handle-generic form env)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t194')><span class='toggle' id='pf0t194'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(194)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t194'><code><span id='f0c353'> (lambda (form env) <span id='f0c352'>(funcall &#39;handle-generic form env)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>299</span> 
+<span class='line'>300</span> &#59;&#59; we don&#39;t attempt to handle symbol macros&#44; note when we do we will
+<span class='line'>301</span> &#59;&#59; have to rewrite many special forms that use symbols
+<span id='f0s196'><span class='line'>302</span> (defun handle-symbol-macrolet (form env)
+<span class='line'>303</span>   <span id='f0s197'>(destructuring-bind (symbol-macrolet binds &#38;rest body) form
+<span class='line'>304</span>     <span id='f0s198'>(list* symbol-macrolet binds <span id='f0s199'>(step-body body env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t196')><span class='toggle' id='pf0t196'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(196)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t196'><code><span id='f0c1302'> (lambda (form env)
+   <span id='f0c1301'>(let* ((&#35;:whole59388 form)
+          (&#35;:args59389 <span id='f0c1280'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59388 <span id='f0c1277'>&#39;(symbol-macrolet binds &#38;rest body)</span> 2 nil)</span>)
+          (symbol-macrolet <span id='f0c1287'>(prog1 <span id='f0c1282'>(car &#35;:args59389)</span> <span id='f0c1286'>(setq &#35;:args59389 <span id='f0c1285'>(ccl::&#37;cdr <span id='f0c1284'>(ccl::typed-form &#39;list &#35;:args59389)</span>)</span>)</span>)</span>)
+          (binds <span id='f0c1300'>(prog1 <span id='f0c1299'>(car &#35;:args59389)</span> <span id='f0c1297'>(setq &#35;:args59389 <span id='f0c1296'>(ccl::&#37;cdr <span id='f0c1295'>(ccl::typed-form &#39;list &#35;:args59389)</span>)</span>)</span>)</span>)
+          (&#35;:rest59390 &#35;:args59389)
+          (body &#35;:rest59390))
+     <span id='f0c1293'>(list* symbol-macrolet binds <span id='f0c1290'>(funcall &#39;step-body body env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>305</span> 
+<span id='f0s200'><span class='line'>306</span> (defun handle-local-function (form env &#38;key recursive macro)
+<span class='line'>307</span>   &#34;Handles functions like flet&#44; labels&#44; and macrolet&#46;
+<span class='line'>308</span> 
+<span class='line'>309</span> :recursive   means that the binding is recursive and should be all
+<span class='line'>310</span>              considered together
+<span class='line'>311</span> :macro       means the binding form should be considered a macro&#46; We
+<span class='line'>312</span>              assume the macro is also :recursive t&#34;
+<span class='line'>313</span>   <span id='f0s201'>(destructuring-bind (func bindings &#38;rest body) form
+<span class='line'>314</span>     <span id='f0s202'>(let* ((new-env
+<span class='line'>315</span>              <span id='f0s203'>(if <span id='f0s204'>(not macro)</span>
+<span class='line'>316</span>                  <span id='f0s205'>(cltl2:augment-environment
+<span class='line'>317</span>                   env :function <span id='f0s206'>(mapcar <span id='f0s207'>(lambda (x) <span id='f0s208'>(car x)</span>)</span> bindings)</span>)</span>
+<span class='line'>318</span>                  <span id='f0s209'>(cltl2:augment-environment
+<span class='line'>319</span>                   env
+<span class='line'>320</span>                   :macro <span id='f0s210'>(mapcar <span id='f0s211'>(lambda (x)
+<span class='line'>321</span>                                    <span id='f0s212'>(destructuring-bind (name args &#38;rest def) x
+<span class='line'>322</span>                                      <span id='f0s213'>(list name
+<span class='line'>323</span>                                            <span id='f0s214'>(cl-environments&#46;cltl2:enclose-macro
+<span class='line'>324</span>                                             name args def env)</span>)</span>)</span>)</span>
+<span class='line'>325</span>                                  bindings)</span>)</span>)</span>)
+<span class='line'>326</span>            (body-env
+<span class='line'>327</span>              <span id='f0s215'>(if <span id='f0s216'>(or macro recursive)</span> new-env env)</span>))
+<span class='line'>328</span>       <span id='f0s217'>(flet (<span id='f0s218'>(handle-binding-body (func)
+<span class='line'>329</span>                <span id='f0s219'>(if macro
+<span class='line'>330</span>                    func
+<span class='line'>331</span>                    <span id='f0s220'>(destructuring-bind (name args &#38;rest body) func
+<span class='line'>332</span>                      <span id='f0s221'>(list* name args <span id='f0s222'>(step-body body body-env)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>333</span>         <span id='f0s223'>(list* func
+<span class='line'>334</span>                <span id='f0s224'>(mapcar &#35;&#39;handle-binding-body bindings)</span>
+<span class='line'>335</span>                <span id='f0s225'>(step-body body new-env)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t200')><span class='toggle' id='pf0t200'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(200)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t200'><code><span id='f0c290'> (lambda (form env &#38;key ((:recursive recursive) nil &#35;:compiler-var) ((:macro macro) nil &#35;:compiler-var))
+   <span id='f0c289'>(let* ((&#35;:whole59394 form)
+          (&#35;:args59395 <span id='f0c111'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59394 <span id='f0c108'>&#39;(func bindings &#38;rest body)</span> 2 nil)</span>)
+          (func <span id='f0c281'>(prog1 <span id='f0c280'>(car &#35;:args59395)</span> <span id='f0c278'>(setq &#35;:args59395 <span id='f0c277'>(ccl::&#37;cdr <span id='f0c276'>(ccl::typed-form &#39;list &#35;:args59395)</span>)</span>)</span>)</span>)
+          (bindings <span id='f0c288'>(prog1 <span id='f0c287'>(car &#35;:args59395)</span> <span id='f0c285'>(setq &#35;:args59395 <span id='f0c284'>(ccl::&#37;cdr <span id='f0c283'>(ccl::typed-form &#39;list &#35;:args59395)</span>)</span>)</span>)</span>)
+          (&#35;:rest59396 &#35;:args59395)
+          (body &#35;:rest59396))
+     <span id='f0c274'>(let* ((new-env
+             <span id='f0c205'>(if <span id='f0c170'>(not macro)</span>
+                 <span id='f0c204'>(funcall &#39;ccl:augment-environment
+                          env
+                          <span id='f0c203'>&#39;:function</span>
+                          <span id='f0c202'>(let* ((&#35;:g59397 <span id='f0c172'>(cons nil nil)</span>)
+                                 (&#35;:g59398 &#35;:g59397)
+                                 (&#35;:g59400 <span id='f0c201'>(function <span id='f0c200'>(lambda (x) <span id='f0c199'>(car x)</span>)</span>)</span>))
+                            <span id='f0c196'>(let* ((&#35;:g59401 bindings))
+                              (progn <span id='f0c192'>(tagbody <span id='f0c178'>(go &#35;:g59403)</span>
+                                              (&#35;:g59402 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F6480D&#62; t t)
+                                              <span id='f0c189'>(tagbody <span id='f0c188'>(let* ((&#35;:g59399 <span id='f0c180'>(car &#35;:g59401)</span>))
+                                                         <span id='f0c187'>(tagbody <span id='f0c186'>(setq &#35;:g59397
+                                                                        <span id='f0c185'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59397
+                                                                                                 <span id='f0c184'>(cons <span id='f0c183'>(funcall &#35;:g59400
+                                                                                                                &#35;:g59399)</span>
+                                                                                                       nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                              <span id='f0c177'>(setq &#35;:g59401 <span id='f0c176'>(ccl::&#37;cdr <span id='f0c175'>(ccl::typed-form &#39;list &#35;:g59401)</span>)</span>)</span>
+                                              (&#35;:g59403 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F6480D&#62; t nil)
+                                              <span id='f0c191'>(if <span id='f0c190'>(not &#39;:ne &#35;:g59401)</span> (go &#35;:g59402) nil)</span>)</span>
+                                     <span id='f0c195'>(let* () <span id='f0c194'>(ccl::&#37;cdr &#35;:g59398)</span>)</span>))</span>)</span>)</span>
+                 <span id='f0c169'>(funcall &#39;ccl:augment-environment
+                          env
+                          <span id='f0c112'>&#39;:macro</span>
+                          <span id='f0c168'>(let* ((&#35;:g59404 <span id='f0c139'>(cons nil nil)</span>)
+                                 (&#35;:g59405 &#35;:g59404)
+                                 (&#35;:g59407
+                                  <span id='f0c167'>(function <span id='f0c166'>(lambda (x)
+                                              <span id='f0c165'>(let* ((&#35;:whole59408 x)
+                                                     (&#35;:args59409
+                                                      <span id='f0c150'>(funcall &#39;ccl::prepare-to-destructure
+                                                               &#35;:whole59408
+                                                               <span id='f0c149'>&#39;(name args &#38;rest def)</span>
+                                                               2
+                                                               nil)</span>)
+                                                     (name
+                                                      <span id='f0c164'>(prog1 <span id='f0c163'>(car &#35;:args59409)</span>
+                                                             <span id='f0c161'>(setq &#35;:args59409
+                                                                   <span id='f0c160'>(ccl::&#37;cdr <span id='f0c159'>(ccl::typed-form &#39;list &#35;:args59409)</span>)</span>)</span>)</span>)
+                                                     (args
+                                                      <span id='f0c146'>(prog1 <span id='f0c145'>(car &#35;:args59409)</span>
+                                                             <span id='f0c143'>(setq &#35;:args59409
+                                                                   <span id='f0c142'>(ccl::&#37;cdr <span id='f0c141'>(ccl::typed-form &#39;list &#35;:args59409)</span>)</span>)</span>)</span>)
+                                                     (&#35;:rest59410 &#35;:args59409)
+                                                     (def &#35;:rest59410))
+                                                <span id='f0c157'>(list name
+                                                      <span id='f0c156'>(funcall &#39;cl-environments&#46;cltl2:enclose-macro
+                                                               name
+                                                               args
+                                                               def
+                                                               env)</span>)</span>)</span>)</span>)</span>))
+                            <span id='f0c138'>(let* ((&#35;:g59411 bindings))
+                              (progn <span id='f0c133'>(tagbody <span id='f0c126'>(go &#35;:g59413)</span>
+                                              (&#35;:g59412 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F9D4BD&#62; t t)
+                                              <span id='f0c125'>(tagbody <span id='f0c124'>(let* ((&#35;:g59406 <span id='f0c123'>(car &#35;:g59411)</span>))
+                                                         <span id='f0c121'>(tagbody <span id='f0c120'>(setq &#35;:g59404
+                                                                        <span id='f0c119'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59404
+                                                                                                 <span id='f0c118'>(cons <span id='f0c117'>(funcall &#35;:g59407
+                                                                                                                &#35;:g59406)</span>
+                                                                                                       nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                              <span id='f0c130'>(setq &#35;:g59411 <span id='f0c129'>(ccl::&#37;cdr <span id='f0c128'>(ccl::typed-form &#39;list &#35;:g59411)</span>)</span>)</span>
+                                              (&#35;:g59413 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F9D4BD&#62; t nil)
+                                              <span id='f0c132'>(if <span id='f0c131'>(not &#39;:ne &#35;:g59411)</span> (go &#35;:g59412) nil)</span>)</span>
+                                     <span id='f0c137'>(let* () <span id='f0c136'>(ccl::&#37;cdr &#35;:g59405)</span>)</span>))</span>)</span>)</span>)</span>)
+            (body-env <span id='f0c273'>(if <span id='f0c270'>(or macro recursive)</span> new-env env)</span>))
+       <span id='f0c267'>(flet ((&#35;:handle-binding-body <span id='f0c234'>(lambda (func)
+                                       <span id='f0c233'>(if macro
+                                           func
+                                           <span id='f0c231'>(let* ((&#35;:whole59421 func)
+                                                  (&#35;:args59422
+                                                   <span id='f0c210'>(funcall &#39;ccl::prepare-to-destructure
+                                                            &#35;:whole59421
+                                                            <span id='f0c209'>&#39;(name args &#38;rest body)</span>
+                                                            2
+                                                            nil)</span>)
+                                                  (name
+                                                   <span id='f0c223'>(prog1 <span id='f0c222'>(car &#35;:args59422)</span>
+                                                          <span id='f0c220'>(setq &#35;:args59422
+                                                                <span id='f0c219'>(ccl::&#37;cdr <span id='f0c218'>(ccl::typed-form &#39;list &#35;:args59422)</span>)</span>)</span>)</span>)
+                                                  (args
+                                                   <span id='f0c230'>(prog1 <span id='f0c229'>(car &#35;:args59422)</span>
+                                                          <span id='f0c227'>(setq &#35;:args59422
+                                                                <span id='f0c226'>(ccl::&#37;cdr <span id='f0c225'>(ccl::typed-form &#39;list &#35;:args59422)</span>)</span>)</span>)</span>)
+                                                  (&#35;:rest59423 &#35;:args59422)
+                                                  (body &#35;:rest59423))
+                                             <span id='f0c216'>(list* name args <span id='f0c214'>(funcall &#39;step-body body body-env)</span>)</span>)</span>)</span>)</span>))
+         <span id='f0c266'>(list* func
+                <span id='f0c262'>(let* ((&#35;:g59414 <span id='f0c261'>(cons nil nil)</span>) (&#35;:g59415 &#35;:g59414) (&#35;:g59417 &#35;:handle-binding-body))
+                  <span id='f0c260'>(let* ((&#35;:g59418 bindings))
+                    (progn <span id='f0c255'>(tagbody <span id='f0c254'>(go &#35;:g59420)</span>
+                                    (&#35;:g59419 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F9886D&#62; t t)
+                                    <span id='f0c247'>(tagbody <span id='f0c246'>(let* ((&#35;:g59416 <span id='f0c245'>(car &#35;:g59418)</span>))
+                                               <span id='f0c243'>(tagbody <span id='f0c242'>(setq &#35;:g59414
+                                                              <span id='f0c241'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59414
+                                                                                       <span id='f0c239'>(cons <span id='f0c238'>(funcall &#35;:g59417 &#35;:g59416)</span>
+                                                                                             nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c253'>(setq &#35;:g59418 <span id='f0c252'>(ccl::&#37;cdr <span id='f0c251'>(ccl::typed-form &#39;list &#35;:g59418)</span>)</span>)</span>
+                                    (&#35;:g59420 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003F9886D&#62; t nil)
+                                    <span id='f0c249'>(if <span id='f0c248'>(not &#39;:ne &#35;:g59418)</span> (go &#35;:g59419) nil)</span>)</span>
+                           <span id='f0c259'>(let* () <span id='f0c258'>(ccl::&#37;cdr &#35;:g59415)</span>)</span>))</span>)</span>
+                <span id='f0c265'>(funcall &#39;step-body body new-env)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>336</span> 
+<span class='line'>337</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>338</span> &#59;&#59;&#59; Alucard Special Form Handling
+<span class='line'>339</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>340</span> 
+<span id='f0s226'><span class='line'>341</span> (defun handle-constraint (form env)
+<span class='line'>342</span>   &#34;Handles an &#96;alu:with-constraint&#39; form&#34;
+<span class='line'>343</span>   <span id='f0s227'>(destructuring-bind (with-constraint bindings &#38;rest body) form
+<span class='line'>344</span>     <span id='f0s228'>(list* with-constraint bindings <span id='f0s229'>(step-body body env)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t226')><span class='toggle' id='pf0t226'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(226)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t226'><code><span id='f0c653'> (lambda (form env)
+   <span id='f0c652'>(let* ((&#35;:whole59436 form)
+          (&#35;:args59437 <span id='f0c631'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59436 <span id='f0c630'>&#39;(with-constraint bindings &#38;rest body)</span> 2 nil)</span>)
+          (with-constraint <span id='f0c645'>(prog1 <span id='f0c640'>(car &#35;:args59437)</span> <span id='f0c644'>(setq &#35;:args59437 <span id='f0c643'>(ccl::&#37;cdr <span id='f0c642'>(ccl::typed-form &#39;list &#35;:args59437)</span>)</span>)</span>)</span>)
+          (bindings <span id='f0c638'>(prog1 <span id='f0c633'>(car &#35;:args59437)</span> <span id='f0c637'>(setq &#35;:args59437 <span id='f0c636'>(ccl::&#37;cdr <span id='f0c635'>(ccl::typed-form &#39;list &#35;:args59437)</span>)</span>)</span>)</span>)
+          (&#35;:rest59438 &#35;:args59437)
+          (body &#35;:rest59438))
+     <span id='f0c651'>(list* with-constraint bindings <span id='f0c648'>(funcall &#39;step-body body env)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>345</span> 
+<span id='f0s230'><span class='line'>346</span> (defun handle-coerce (form env)
+<span class='line'>347</span>   <span id='f0s231'>(destructuring-bind (coerce value type-to) form
+<span class='line'>348</span>     <span id='f0s232'>(list coerce <span id='f0s233'>(step value env)</span> type-to)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t230')><span class='toggle' id='pf0t230'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(230)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t230'><code><span id='f0c37'> (lambda (form env)
+   <span id='f0c36'>(let* ((&#35;:whole59442 form)
+          (&#35;:args59443 <span id='f0c14'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59442 <span id='f0c13'>&#39;(coerce value type-to)</span> 3 3)</span>)
+          (coerce <span id='f0c28'>(prog1 <span id='f0c27'>(ccl::&#37;car &#35;:args59443)</span> <span id='f0c25'>(setq &#35;:args59443 <span id='f0c24'>(ccl::&#37;cdr <span id='f0c23'>(ccl::typed-form &#39;list &#35;:args59443)</span>)</span>)</span>)</span>)
+          (value <span id='f0c21'>(prog1 <span id='f0c20'>(ccl::&#37;car &#35;:args59443)</span> <span id='f0c18'>(setq &#35;:args59443 <span id='f0c17'>(ccl::&#37;cdr <span id='f0c16'>(ccl::typed-form &#39;list &#35;:args59443)</span>)</span>)</span>)</span>)
+          (type-to <span id='f0c35'>(prog1 <span id='f0c30'>(ccl::&#37;car &#35;:args59443)</span> <span id='f0c34'>(setq &#35;:args59443 <span id='f0c33'>(ccl::&#37;cdr <span id='f0c32'>(ccl::typed-form &#39;list &#35;:args59443)</span>)</span>)</span>)</span>))
+     <span id='f0c9'>(list coerce <span id='f0c8'>(funcall &#39;step value env)</span> type-to)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>349</span> 
+<span id='f0s234'><span class='line'>350</span> (defun handle-check (form env)
+<span class='line'>351</span>   <span id='f0s235'>(destructuring-bind (check value type-against) form
+<span class='line'>352</span>     <span id='f0s236'>(list check <span id='f0s237'>(step value env)</span> type-against)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t234')><span class='toggle' id='pf0t234'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(234)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t234'><code><span id='f0c1274'> (lambda (form env)
+   <span id='f0c1273'>(let* ((&#35;:whole59447 form)
+          (&#35;:args59448 <span id='f0c1245'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59447 <span id='f0c1242'>&#39;(check value type-against)</span> 3 3)</span>)
+          (check <span id='f0c1259'>(prog1 <span id='f0c1258'>(ccl::&#37;car &#35;:args59448)</span> <span id='f0c1256'>(setq &#35;:args59448 <span id='f0c1255'>(ccl::&#37;cdr <span id='f0c1254'>(ccl::typed-form &#39;list &#35;:args59448)</span>)</span>)</span>)</span>)
+          (value <span id='f0c1266'>(prog1 <span id='f0c1261'>(ccl::&#37;car &#35;:args59448)</span> <span id='f0c1265'>(setq &#35;:args59448 <span id='f0c1264'>(ccl::&#37;cdr <span id='f0c1263'>(ccl::typed-form &#39;list &#35;:args59448)</span>)</span>)</span>)</span>)
+          (type-against
+           <span id='f0c1252'>(prog1 <span id='f0c1251'>(ccl::&#37;car &#35;:args59448)</span> <span id='f0c1249'>(setq &#35;:args59448 <span id='f0c1248'>(ccl::&#37;cdr <span id='f0c1247'>(ccl::typed-form &#39;list &#35;:args59448)</span>)</span>)</span>)</span>))
+     <span id='f0c1272'>(list check <span id='f0c1270'>(funcall &#39;step value env)</span> type-against)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>353</span> 
+<span id='f0s238'><span class='line'>354</span> (defun handle-array (form env)
+<span class='line'>355</span>   (declare (ignore env))
+<span class='line'>356</span>   form)</span>
+</code></div>
+<a href=javascript:swap('f0t238')><span class='toggle' id='pf0t238'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(238)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t238'><code><span id='f0c810'> (lambda (form env) form)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>357</span> 
+<span class='line'>358</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>359</span> &#59;&#59;&#59; Checking Functions
+<span class='line'>360</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>361</span> 
+<span id='f0s239'><span class='line'>362</span> (defun split-declaration (form)
+<span class='line'>363</span>   <span id='f0s240'>(list
+<span class='line'>364</span>    <span id='f0s241'>(take-while <span id='f0s242'>&#35;&#39;declarationp </span>form)</span>
+<span class='line'>365</span>    <span id='f0s243'>(drop-while <span id='f0s244'>&#35;&#39;declarationp </span>form)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t239')><span class='toggle' id='pf0t239'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(239)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t239'><code><span id='f0c929'> (lambda (form)
+   <span id='f0c928'>(list <span id='f0c927'>(funcall &#39;take-while <span id='f0c926'>(ccl::typed-form &#39;function <span id='f0c925'>(function declarationp)</span>)</span> <span id='f0c924'>(ccl::typed-form &#39;sequence form)</span>)</span>
+         <span id='f0c922'>(funcall &#39;drop-while <span id='f0c921'>(ccl::typed-form &#39;function <span id='f0c920'>(function declarationp)</span>)</span> <span id='f0c919'>(ccl::typed-form &#39;sequence form)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>366</span> 
+<span id='f0s245'><span class='line'>367</span> (defun declarationp (form)
+<span class='line'>368</span>   &#34;determines if a form is a declaration or not&#34;
+<span class='line'>369</span>   <span id='f0s246'>(and <span id='f0s247'>(listp form)</span>
+<span class='line'>370</span>        <span id='f0s248'>(or <span id='f0s249'>(eql <span id='f0s250'>(car form)</span> &#39;declare)</span>
+<span class='line'>371</span>            &#59;&#59; probably overkill given declaims are top level
+<span class='line'>372</span>            <span id='f0s251'>(eql <span id='f0s252'>(car form)</span> &#39;declaim)</span>
+<span class='line'>373</span>            <span id='f0s253'>(eql <span id='f0s254'>(car form)</span> &#39;proclaim)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t245')><span class='toggle' id='pf0t245'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(245)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t245'><code><span id='f0c992'> (lambda (form)
+   <span id='f0c991'>(if <span id='f0c990'>(eq (ccl::lisptag form) 3)</span> <span id='f0c988'>(or <span id='f0c981'>(eq <span id='f0c980'>(car form)</span> &#39;declare)</span> <span id='f0c984'>(eq <span id='f0c983'>(car form)</span> &#39;declaim)</span> <span id='f0c987'>(eq <span id='f0c986'>(car form)</span> &#39;proclaim)</span>)</span> nil)</span>)</span>
+</code></div><hr/>
+</body></html>

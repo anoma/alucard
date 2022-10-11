@@ -1,0 +1,153 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_stack_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;stack.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;stack
+<span class='line'>4</span>   :description &#34;Testing stack semantics&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;stack)
+<span class='line'>7</span> 
+<span class='line'>8</span> &#59;&#59; I could be much more thorough in testing this&#44; but it would just
+<span class='line'>9</span> &#59;&#59; involve me mimicking calls tediously&#46;
+<span class='line'>10</span> 
+<span class='line'>11</span> (test dynamic-variable-respected
+<span class='line'>12</span>   (let ((current-stack (stack:get)))
+<span class='line'>13</span>     (stack:with-empty-stack ()
+<span class='line'>14</span>       (stack:push 3)
+<span class='line'>15</span>       (stack:push 10)
+<span class='line'>16</span>       (stack:push 20)
+<span class='line'>17</span>       (is (equalp
+<span class='line'>18</span>            (list 20 10 3)
+<span class='line'>19</span>            (stack:stack (stack:get)))
+<span class='line'>20</span>           &#34;We should be pushing on a fresh stack&#34;))
+<span class='line'>21</span>     (is (equalp (stack:get)
+<span class='line'>22</span>                 current-stack)
+<span class='line'>23</span>         &#34;Our operations should not have pushed globally&#34;)))
+<span class='line'>24</span> 
+<span class='line'>25</span> (test function-section
+<span class='line'>26</span>   (stack:with-section faz
+<span class='line'>27</span>     (stack:push &#39;(+ 1 2 3))
+<span class='line'>28</span>     (stack:push &#39;(+ b c d))
+<span class='line'>29</span>     (stack:push &#39;(+ e f g))
+<span class='line'>30</span>     (is (equalp
+<span class='line'>31</span>          (stack:stack (stack:current-section (stack:get)))
+<span class='line'>32</span>          &#39;((+ e f g)
+<span class='line'>33</span>            (+ b c d)
+<span class='line'>34</span>            (+ 1 2 3))))))
+<span class='line'>35</span> 
+<span class='line'>36</span> &#59;&#59; I&#39;m being lazy I shouldn&#39;t check the printed version&#44; but rather
+<span class='line'>37</span> &#59;&#59; make equality or a quick way to check equality of my objects
+<span class='line'>38</span> 
+<span class='line'>39</span> (defparameter *inner-output*
+<span class='line'>40</span> &#34;((:IN BAZ
+<span class='line'>41</span>   (&#47; C D)
+<span class='line'>42</span>   (* A B (&#47; C D)))
+<span class='line'>43</span>  (:IN FAZ
+<span class='line'>44</span>   (&#47; C D)
+<span class='line'>45</span>   (* A B (&#47; C D))))&#34;)
+<span class='line'>46</span> 
+<span class='line'>47</span> (defparameter *outer-output*
+<span class='line'>48</span> &#34;((:IN FAZ
+<span class='line'>49</span>   (&#47; C D)
+<span class='line'>50</span>   (* A B (&#47; C D))))&#34;)
+<span class='line'>51</span> 
+<span class='line'>52</span> (defparameter *outer-cdr*
+<span class='line'>53</span> &#34;((:IN FAZ
+<span class='line'>54</span>   (* A B (&#47; C D))))&#34;)
+<span class='line'>55</span> 
+<span class='line'>56</span> 
+<span class='line'>57</span> &#59;&#59; Being lazy about testing and using streams&#46;
+<span class='line'>58</span> (test removing-works-as-expected
+<span class='line'>59</span>   (let ((*print-pretty* t)
+<span class='line'>60</span>         (output-stream-baz        (make-string-output-stream))
+<span class='line'>61</span>         (output-stream-faz        (make-string-output-stream))
+<span class='line'>62</span>         (output-stream-manual     (make-string-output-stream))
+<span class='line'>63</span>         (output-stream-manual-cdr (make-string-output-stream)))
+<span class='line'>64</span>     (stack:with-empty-stack ()
+<span class='line'>65</span>       (stack:with-section faz
+<span class='line'>66</span>         (stack:push &#39;(* a b (&#47; c d)))
+<span class='line'>67</span>         (stack:push &#39;(&#47; c d))
+<span class='line'>68</span>         (stack:with-section baz
+<span class='line'>69</span>           (stack:push &#39;(* a b (&#47; c d)))
+<span class='line'>70</span>           (stack:push &#39;(&#47; c d))
+<span class='line'>71</span>           &#59;&#59; dump the current stack to the output stream
+<span class='line'>72</span>           (print-object (stack:get) output-stream-baz)
+<span class='line'>73</span>           &#59;&#59; we cdr 3 times to pop the baz out of it&#33;&#44; thus we should
+<span class='line'>74</span>           &#59;&#59; be the same as faz&#46; and the printing should also work
+<span class='line'>75</span>           &#59;&#59; exactly the same&#46;
+<span class='line'>76</span>           (let ((remove-baz-by-hand
+<span class='line'>77</span>                   (stack:cdr (stack:cdr
+<span class='line'>78</span>                               (stack:cdr (stack:get))))))
+<span class='line'>79</span>             (print-object remove-baz-by-hand output-stream-manual)
+<span class='line'>80</span>             &#59;&#59; this should cdr off an element off faz
+<span class='line'>81</span>             (print-object (stack:cdr remove-baz-by-hand)
+<span class='line'>82</span>                           output-stream-manual-cdr)))
+<span class='line'>83</span>         &#59;&#59; weird how the formatting changes between calls
+<span class='line'>84</span>         (print-object (stack:get) output-stream-faz)
+<span class='line'>85</span>         (let ((output-faz (get-output-stream-string output-stream-faz)))
+<span class='line'>86</span>           (is (string&#61; *inner-output*
+<span class='line'>87</span>                        (get-output-stream-string output-stream-baz))
+<span class='line'>88</span>               &#34;Scope should be respected and we should be double
+<span class='line'>89</span>               nested&#34;)
+<span class='line'>90</span>           (is (string&#61; output-faz
+<span class='line'>91</span>                        *outer-output*)
+<span class='line'>92</span>               &#34;formatting for this should be precise and nice&#44; with
+<span class='line'>93</span>               the outer section gone outside of the scope&#34;)
+<span class='line'>94</span>           (is (string&#61; (get-output-stream-string output-stream-manual)
+<span class='line'>95</span>                        output-faz)
+<span class='line'>96</span>               &#34;Removing the two elements in baz plus the baz function
+<span class='line'>97</span>               marker should be the same as leaving the section&#34;)
+<span class='line'>98</span>           (is (string&#61; (get-output-stream-string output-stream-manual-cdr)
+<span class='line'>99</span>                        *outer-cdr*)
+<span class='line'>100</span>               &#34;Cdring a nil section should lead to cdring the next
+<span class='line'>101</span>               section on the stack&#34;))))))
+</code></div>
+</body></html>

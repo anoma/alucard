@@ -1,0 +1,1011 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_alu_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;alu.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> &#59;&#59; 1&#46; &#95;Priority&#95;
+<span class='line'>2</span> &#59;&#59;   - Think of the data layout
+<span class='line'>3</span> &#59;&#59;   - The rest will follow from that
+<span class='line'>4</span> (in-package :alu)
+<span class='line'>5</span> 
+<span class='line'>6</span> &#59;&#59; Important design questions
+<span class='line'>7</span> &#59;&#59;
+<span class='line'>8</span> &#59;&#59; Should I make it backwards compatible with CL&#63; If we can do this&#44;
+<span class='line'>9</span> &#59;&#59; we can freely mix circuit functions and non circuit functions
+<span class='line'>10</span> &#59;&#59; without impunity&#46;
+<span class='line'>11</span> &#59;&#59;
+<span class='line'>12</span> &#59;&#59; This could be done by doing a haskell style solution&#44; of having the
+<span class='line'>13</span> &#59;&#59; functions made by &#96;defcircuit&#39; be a lifted type that doesn&#39;t
+<span class='line'>14</span> &#59;&#59; interact well with non circuits&#44; but can compose nicely with others
+<span class='line'>15</span> &#59;&#59; somehow&#46;
+<span class='line'>16</span> &#59;&#59;
+<span class='line'>17</span> &#59;&#59; If not&#44; then I&#39;ll need to make a shimmy (lisp &#60;logic-here&#62;) to
+<span class='line'>18</span> &#59;&#59; generate out code&#46; Seems unwise to do this&#44; but may be needed
+<span class='line'>19</span> &#59;&#59; depending how I architect this&#46;
+<span class='line'>20</span> 
+<span class='line'>21</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>22</span> &#59;&#59; High Level Macros
+<span class='line'>23</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>24</span> 
+<span id='f0s0'><span class='line'>25</span> (defmacro deftype (name-and-options generics &#38;body type-declarations)
+<span class='line'>26</span>   &#59;&#59; fields must not shuffle type-declaration for ordering of record
+<span class='line'>27</span>   &#59;&#59; creation
+<span class='line'>28</span>   <span id='f0s1'>(let* ((fields  <span id='f0s2'>(mapcar <span id='f0s3'>&#35;&#39;car </span>type-declarations)</span>)
+<span class='line'>29</span>          (name    <span id='f0s4'>(if <span id='f0s5'>(listp name-and-options)</span>
+<span class='line'>30</span>                       <span id='f0s6'>(car name-and-options)</span>
+<span class='line'>31</span>                       name-and-options)</span>)
+<span class='line'>32</span>          (options <span id='f0s7'>(if <span id='f0s8'>(listp name-and-options)</span>
+<span class='line'>33</span>                       <span id='f0s9'>(cdr name-and-options)</span>
+<span class='line'>34</span>                       nil)</span>)
+<span class='line'>35</span>          (key-name <span id='f0s10'>(util:symbol-to-keyword name)</span>))
+<span class='line'>36</span>     <span id='f0s11'>&#96;(progn
+<span class='line'>37</span>        &#59;&#59; Register the struct in the type table&#44; so we will always
+<span class='line'>38</span>        &#59;&#59; know about it&#33;
+<span class='line'>39</span>        (storage:add-type
+<span class='line'>40</span>         &#44;key-name
+<span class='line'>41</span>         &#59;&#59; make the top level type declaration
+<span class='line'>42</span>         (spc:make-type-declaration
+<span class='line'>43</span>          :name &#44;key-name
+<span class='line'>44</span>          :generics &#44;generics
+<span class='line'>45</span>          :options (util:sycamore-plist-symbol-map (list &#44;&#64;options))
+<span class='line'>46</span>          &#59;&#59; this is where the assumption about structs come in&#33;
+<span class='line'>47</span>          :decl
+<span class='line'>48</span>          (spc:make-record-declaration
+<span class='line'>49</span>           &#59;&#59; mapcan is the &#62;&#62;&#61; for lists in Haskell
+<span class='line'>50</span>           &#44;&#64;(mapcan (lambda (declaration-info)
+<span class='line'>51</span>                       &#59;&#59; we want to transform the declaration
+<span class='line'>52</span>                       &#59;&#59; into a lookup of the table&#44; and if an
+<span class='line'>53</span>                       &#59;&#59; application&#44; the following
+<span class='line'>54</span>                       &#59;&#59;
+<span class='line'>55</span>                       &#59;&#59; 1&#46; (utxo int)
+<span class='line'>56</span>                       &#59;&#59;    -&#62; (:utxo (type-reference :int))
+<span class='line'>57</span>                       &#59;&#59; 2&#46; (utxo (int 64))
+<span class='line'>58</span>                       &#59;&#59;    -&#62; (:utxo (application (type-refernece :int) 64))
+<span class='line'>59</span>                       (list (util:symbol-to-keyword (car declaration-info))
+<span class='line'>60</span>                             &#96;(spc:to-type-reference-format &#39;&#44;(cadr declaration-info))))
+<span class='line'>61</span>                     type-declarations))))
+<span class='line'>62</span> 
+<span class='line'>63</span>        &#59;&#59; Create the function that we can now call&#44; to create an instance
+<span class='line'>64</span>        (defun &#44;name (&#38;key &#44;&#64;fields)
+<span class='line'>65</span>          &#59;&#59; keep this ordering up&#44; as we rely on the correspondence
+<span class='line'>66</span>          (ensure-call-by-value
+<span class='line'>67</span>           (spc:make-record :name &#44;key-name
+<span class='line'>68</span>                            &#59;&#59; fill in the other slots
+<span class='line'>69</span>                            &#44;&#64;(mapcan (lambda (field)
+<span class='line'>70</span>                                        (list (util:symbol-to-keyword field) field))
+<span class='line'>71</span>                                      fields))))
+<span class='line'>72</span>        &#59;&#59; Make accessors
+<span class='line'>73</span>        &#44;&#64;(mapcar (lambda (field)
+<span class='line'>74</span>                    &#59;&#59; don&#39;t overwrite what already exists
+<span class='line'>75</span>                    (if (fboundp field)
+<span class='line'>76</span>                        &#39;nil
+<span class='line'>77</span>                        &#59;&#59; we use defmethod as we will end up with
+<span class='line'>78</span>                        &#59;&#59; multiple methods of the same file if
+<span class='line'>79</span>                        &#59;&#59; multiple records have the same field&#44; even
+<span class='line'>80</span>                        &#59;&#59; with the check
+<span class='line'>81</span>                        &#96;(ignore-errors
+<span class='line'>82</span>                          (defmethod &#44;field (record)
+<span class='line'>83</span>                            (ensure-call-by-value
+<span class='line'>84</span>                             (spc:make-record-lookup
+<span class='line'>85</span>                              :record record
+<span class='line'>86</span>                              :field &#44;(util:symbol-to-keyword field)))))))
+<span class='line'>87</span>                  fields)
+<span class='line'>88</span>        &#59;&#59; Return the Symbol itself&#33;
+<span class='line'>89</span>        &#39;&#44;name)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c319'> (lambda (&#35;:whole59496 &#35;:environment59497)
+   <span id='f0c318'>(let* ((&#35;:args59498
+           <span id='f0c154'>(funcall &#39;ccl::prepare-to-destructure
+                    <span id='f0c152'>(cdr &#35;:whole59496)</span>
+                    <span id='f0c153'>&#39;(name-and-options generics &#38;body type-declarations)</span>
+                    2
+                    nil)</span>)
+          (name-and-options
+           <span id='f0c161'>(prog1 <span id='f0c160'>(car &#35;:args59498)</span> <span id='f0c158'>(setq &#35;:args59498 <span id='f0c157'>(ccl::&#37;cdr <span id='f0c156'>(ccl::typed-form &#39;list &#35;:args59498)</span>)</span>)</span>)</span>)
+          (generics <span id='f0c168'>(prog1 <span id='f0c167'>(car &#35;:args59498)</span> <span id='f0c165'>(setq &#35;:args59498 <span id='f0c164'>(ccl::&#37;cdr <span id='f0c163'>(ccl::typed-form &#39;list &#35;:args59498)</span>)</span>)</span>)</span>)
+          (&#35;:rest59499 &#35;:args59498)
+          (type-declarations &#35;:rest59499))
+     <span id='f0c317'>(let* ((fields
+             <span id='f0c303'>(let* ((&#35;:g59529 <span id='f0c276'>(cons nil nil)</span>) (&#35;:g59530 &#35;:g59529) (&#35;:g59532 <span id='f0c277'>(function car)</span>))
+               <span id='f0c301'>(let* ((&#35;:g59533 type-declarations))
+                 (progn <span id='f0c300'>(tagbody <span id='f0c284'>(go &#35;:g59535)</span>
+                                 (&#35;:g59534 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004008DED&#62; t t)
+                                 <span id='f0c295'>(tagbody <span id='f0c294'>(let* ((&#35;:g59531 <span id='f0c286'>(car &#35;:g59533)</span>))
+                                            <span id='f0c293'>(tagbody <span id='f0c292'>(setq &#35;:g59529
+                                                           <span id='f0c291'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59529
+                                                                                    <span id='f0c289'>(cons <span id='f0c288'>(funcall &#35;:g59532 &#35;:g59531)</span>
+                                                                                          nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                 <span id='f0c299'>(setq &#35;:g59533 <span id='f0c298'>(ccl::&#37;cdr <span id='f0c297'>(ccl::typed-form &#39;list &#35;:g59533)</span>)</span>)</span>
+                                 (&#35;:g59535 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004008DED&#62; t nil)
+                                 <span id='f0c283'>(if <span id='f0c282'>(not &#39;:ne &#35;:g59533)</span> (go &#35;:g59534) nil)</span>)</span>
+                        <span id='f0c281'>(let* () <span id='f0c280'>(ccl::&#37;cdr &#35;:g59530)</span>)</span>))</span>)</span>)
+            (name <span id='f0c311'>(if <span id='f0c310'>(eq (ccl::lisptag name-and-options) 3)</span> <span id='f0c307'>(car name-and-options)</span> name-and-options)</span>)
+            (options <span id='f0c316'>(if <span id='f0c313'>(eq (ccl::lisptag name-and-options) 3)</span> <span id='f0c315'>(cdr name-and-options)</span> nil)</span>)
+            (key-name <span id='f0c305'>(funcall &#39;util:symbol-to-keyword name)</span>))
+       <span id='f0c275'>(list* <span id='f0c254'>&#39;progn</span>
+              <span id='f0c253'>(list <span id='f0c222'>&#39;storage:add-type</span>
+                    key-name
+                    <span id='f0c252'>(list <span id='f0c241'>&#39;spc:make-type-declaration</span>
+                          <span id='f0c223'>&#39;:name</span>
+                          key-name
+                          <span id='f0c248'>&#39;:generics</span>
+                          generics
+                          <span id='f0c251'>&#39;:options</span>
+                          <span id='f0c246'>(list <span id='f0c245'>&#39;util:sycamore-plist-symbol-map</span> <span id='f0c244'>(cons <span id='f0c243'>&#39;list</span> options)</span>)</span>
+                          <span id='f0c249'>&#39;:decl</span>
+                          <span id='f0c240'>(cons <span id='f0c224'>&#39;spc:make-record-declaration</span>
+                                <span id='f0c239'>(funcall &#39;mapcan
+                                         <span id='f0c238'>(function <span id='f0c237'>(lambda (declaration-info)
+                                                     <span id='f0c236'>(list <span id='f0c235'>(funcall &#39;util:symbol-to-keyword <span id='f0c234'>(car declaration-info)</span>)</span>
+                                                           <span id='f0c232'>(list <span id='f0c231'>&#39;spc:to-type-reference-format</span>
+                                                                 <span id='f0c230'>(list <span id='f0c226'>&#39;quote</span> <span id='f0c229'>(car <span id='f0c228'>(cdr declaration-info)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                         type-declarations)</span>)</span>)</span>)</span>
+              <span id='f0c274'>(list <span id='f0c273'>&#39;defun</span>
+                    name
+                    <span id='f0c257'>(cons <span id='f0c256'>&#39;&#38;key</span> fields)</span>
+                    <span id='f0c271'>(list <span id='f0c258'>&#39;ensure-call-by-value</span>
+                          <span id='f0c270'>(list* <span id='f0c269'>&#39;spc:make-record</span>
+                                 <span id='f0c268'>&#39;:name</span>
+                                 key-name
+                                 <span id='f0c267'>(funcall &#39;mapcan
+                                          <span id='f0c265'>(function <span id='f0c264'>(lambda (field)
+                                                      <span id='f0c263'>(list <span id='f0c262'>(funcall &#39;util:symbol-to-keyword field)</span> field)</span>)</span>)</span>
+                                          fields)</span>)</span>)</span>)</span>
+              <span id='f0c220'>(funcall &#39;ccl::append-2
+                       <span id='f0c215'>(let* ((&#35;:g59536 <span id='f0c213'>(cons nil nil)</span>)
+                              (&#35;:g59537 &#35;:g59536)
+                              (&#35;:g59539
+                               <span id='f0c188'>(function <span id='f0c187'>(lambda (field)
+                                           <span id='f0c186'>(if <span id='f0c170'>(funcall &#39;fboundp field)</span>
+                                               nil
+                                               <span id='f0c185'>(list <span id='f0c184'>&#39;ignore-errors</span>
+                                                     <span id='f0c183'>(list <span id='f0c180'>&#39;defmethod</span>
+                                                           field
+                                                           <span id='f0c181'>&#39;(record)</span>
+                                                           <span id='f0c179'>(list <span id='f0c171'>&#39;ensure-call-by-value</span>
+                                                                 <span id='f0c178'>(list <span id='f0c173'>&#39;spc:make-record-lookup</span>
+                                                                       <span id='f0c172'>&#39;:record</span>
+                                                                       <span id='f0c174'>&#39;record</span>
+                                                                       <span id='f0c177'>&#39;:field</span>
+                                                                       <span id='f0c176'>(funcall &#39;util:symbol-to-keyword field)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+                         <span id='f0c212'>(let* ((&#35;:g59540 fields))
+                           (progn <span id='f0c207'>(tagbody <span id='f0c195'>(go &#35;:g59542)</span>
+                                           (&#35;:g59541 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200403298D&#62; t t)
+                                           <span id='f0c206'>(tagbody <span id='f0c205'>(let* ((&#35;:g59538 <span id='f0c204'>(car &#35;:g59540)</span>))
+                                                      <span id='f0c202'>(tagbody <span id='f0c201'>(setq &#35;:g59536
+                                                                     <span id='f0c200'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59536
+                                                                                              <span id='f0c199'>(cons <span id='f0c198'>(funcall &#35;:g59539
+                                                                                                             &#35;:g59538)</span>
+                                                                                                    nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                           <span id='f0c194'>(setq &#35;:g59540 <span id='f0c193'>(ccl::&#37;cdr <span id='f0c192'>(ccl::typed-form &#39;list &#35;:g59540)</span>)</span>)</span>
+                                           (&#35;:g59542 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200403298D&#62; t nil)
+                                           <span id='f0c190'>(if <span id='f0c189'>(not &#39;:ne &#35;:g59540)</span> (go &#35;:g59541) nil)</span>)</span>
+                                  <span id='f0c211'>(let* () <span id='f0c210'>(ccl::&#37;cdr &#35;:g59537)</span>)</span>))</span>)</span>
+                       <span id='f0c219'>(cons <span id='f0c218'>(list <span id='f0c216'>&#39;quote</span> name)</span> nil)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>90</span> 
+<span id='f0s12'><span class='line'>91</span> (defmacro defcircuit (name arguments &#38;body body)
+<span class='line'>92</span>   <span id='f0s13'>(let* (&#59;&#59; Arguments are laid out like (public root (bytes 64))
+<span class='line'>93</span>          (just-args
+<span class='line'>94</span>            <span id='f0s14'>(remove-if-not <span id='f0s15'>(lambda (x) <span id='f0s16'>(typep <span id='f0s17'>(util:symbol-to-keyword x)</span> &#39;spc:privacy)</span>)</span>
+<span class='line'>95</span>                           arguments
+<span class='line'>96</span>                           :key <span id='f0s18'>&#35;&#39;car</span>)</span>)
+<span class='line'>97</span>          (argument-names <span id='f0s19'>(mapcar <span id='f0s20'>&#35;&#39;cadr </span>just-args)</span>)
+<span class='line'>98</span>          &#59;&#59; Gensym unique names to avoid clashes
+<span class='line'>99</span>          (gensym-argument-names <span id='f0s21'>(mapcar <span id='f0s22'>&#35;&#39;gensym-symbol </span>argument-names)</span>)
+<span class='line'>100</span>          &#59;&#59; update just-args to use the gensymed name instead of the original name
+<span class='line'>101</span>          (just-args-gensym
+<span class='line'>102</span>            <span id='f0s23'>(mapcar <span id='f0s24'>(lambda (arg gensym)
+<span class='line'>103</span>                      &#59;&#59; replace the cadr of arg
+<span class='line'>104</span>                      <span id='f0s25'>(list* <span id='f0s26'>(car arg)</span>
+<span class='line'>105</span>                             gensym
+<span class='line'>106</span>                             <span id='f0s27'>(cddr arg)</span>)</span>)</span>
+<span class='line'>107</span>                    just-args
+<span class='line'>108</span>                    gensym-argument-names)</span>)
+<span class='line'>109</span>          &#59;&#59; Outputs are laid out like (output int)
+<span class='line'>110</span>          (just-output
+<span class='line'>111</span>            <span id='f0s28'>(remove-if <span id='f0s29'>(lambda (x) <span id='f0s30'>(typep <span id='f0s31'>(util:symbol-to-keyword x)</span> &#39;spc:privacy)</span>)</span>
+<span class='line'>112</span>                       arguments
+<span class='line'>113</span>                       :key <span id='f0s32'>&#35;&#39;car</span>)</span>)
+<span class='line'>114</span>          (just-output
+<span class='line'>115</span>            <span id='f0s33'>(case <span id='f0s34'>(length just-output)</span>
+<span class='line'>116</span>              (0 nil)
+<span class='line'>117</span>              (1 <span id='f0s35'>(car just-output)</span>)
+<span class='line'>118</span>              (t <span id='f0s36'>(error <span id='f0s37'>&#34;In the arguments to defcircuit please only supply 1 output&#34;</span>)</span>))</span>)
+<span class='line'>119</span>          (key-name <span id='f0s38'>(util:symbol-to-keyword name)</span>))
+<span class='line'>120</span>     <span id='f0s39'>&#96;(progn
+<span class='line'>121</span>        &#59;&#59; make a lexical variable so we can just say it
+<span class='line'>122</span>        (serapeum:def &#44;name (spc:make-reference :name &#44;key-name))
+<span class='line'>123</span>        &#59;&#59; we call our custom definer
+<span class='line'>124</span>        &#59;&#59; defun a function to apply the function
+<span class='line'>125</span>        (defun &#44;name (&#44;&#64;argument-names)
+<span class='line'>126</span>          (ensure-call-by-value
+<span class='line'>127</span>           (spc:make-application :function (spc:make-reference :name &#44;key-name)
+<span class='line'>128</span>                                 :arguments (list &#44;&#64;argument-names))))
+<span class='line'>129</span>        (storage:add-function
+<span class='line'>130</span>         &#44;key-name
+<span class='line'>131</span>         (spc:make-circuit
+<span class='line'>132</span>          :return-type (spc:to-type-reference-format &#39;&#44;(cadr just-output))
+<span class='line'>133</span>          :name &#44;key-name
+<span class='line'>134</span>          :arguments (mapcar &#35;&#39;make-constraint-from-list &#39;&#44;just-args-gensym)
+<span class='line'>135</span>          &#59;&#59; the body is a list of terms that we combine
+<span class='line'>136</span>          :body &#39;(emit:instruction
+<span class='line'>137</span>                  (let-refs-alist
+<span class='line'>138</span>                   &#59;&#59; sad as we lose our nice naming for generated code &#9785;
+<span class='line'>139</span>                   &#44;(mapcar &#35;&#39;cons argument-names gensym-argument-names)
+<span class='line'>140</span>                   &#44;(if (cl:&#61; 1 (length body))
+<span class='line'>141</span>                        (alu&#46;stepper:single (car body) nil)
+<span class='line'>142</span>                        &#96;(list &#44;&#64;(alu&#46;stepper:body body nil)))))))
+<span class='line'>143</span>        &#39;&#44;name)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c875'> (lambda (&#35;:whole59555 &#35;:environment59556)
+   <span id='f0c874'>(let* ((&#35;:args59557 <span id='f0c646'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c645'>(cdr &#35;:whole59555)</span> <span id='f0c643'>&#39;(name arguments &#38;body body)</span> 2 nil)</span>)
+          (name <span id='f0c866'>(prog1 <span id='f0c861'>(car &#35;:args59557)</span> <span id='f0c865'>(setq &#35;:args59557 <span id='f0c864'>(ccl::&#37;cdr <span id='f0c863'>(ccl::typed-form &#39;list &#35;:args59557)</span>)</span>)</span>)</span>)
+          (arguments <span id='f0c873'>(prog1 <span id='f0c872'>(car &#35;:args59557)</span> <span id='f0c870'>(setq &#35;:args59557 <span id='f0c869'>(ccl::&#37;cdr <span id='f0c868'>(ccl::typed-form &#39;list &#35;:args59557)</span>)</span>)</span>)</span>)
+          (&#35;:rest59558 &#35;:args59557)
+          (body &#35;:rest59558))
+     <span id='f0c859'>(let* ((just-args
+             <span id='f0c828'>(funcall &#39;remove-if-not
+                      <span id='f0c826'>(function <span id='f0c825'>(lambda (x)
+                                  <span id='f0c824'>(not &#39;:ne
+                                       <span id='f0c823'>(block nil
+                                         <span id='f0c822'>(let* ((&#35;:g59597 <span id='f0c805'>(funcall &#39;util:symbol-to-keyword x)</span>)
+                                                (&#35;:g59598 <span id='f0c803'>&#39;(:private :public)</span>))
+                                           <span id='f0c821'>(tagbody <span id='f0c806'>(go &#35;:g59600)</span>
+                                                    (&#35;:g59599 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FFEBED&#62; t t)
+                                                    <span id='f0c820'>(tagbody <span id='f0c819'>(if <span id='f0c818'>(eq <span id='f0c816'>(car &#35;:g59598)</span> &#35;:g59597)</span>
+                                                                 <span id='f0c814'>(return-from nil &#35;:g59598)</span>
+                                                                 nil)</span>)</span>
+                                                    <span id='f0c810'>(setq &#35;:g59598 <span id='f0c809'>(ccl::&#37;cdr <span id='f0c808'>(ccl::typed-form &#39;list &#35;:g59598)</span>)</span>)</span>
+                                                    (&#35;:g59600 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FFEBED&#62; t nil)
+                                                    <span id='f0c812'>(if <span id='f0c811'>(not &#39;:ne &#35;:g59598)</span> (go &#35;:g59599) nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                      arguments
+                      <span id='f0c827'>&#39;:key</span>
+                      <span id='f0c802'>(function car)</span>)</span>)
+            (argument-names
+             <span id='f0c858'>(let* ((&#35;:g59601 <span id='f0c855'>(cons nil nil)</span>) (&#35;:g59602 &#35;:g59601) (&#35;:g59604 <span id='f0c856'>(function cadr)</span>))
+               <span id='f0c854'>(let* ((&#35;:g59605 just-args))
+                 (progn <span id='f0c853'>(tagbody <span id='f0c835'>(go &#35;:g59607)</span>
+                                 (&#35;:g59606 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FFB30D&#62; t t)
+                                 <span id='f0c852'>(tagbody <span id='f0c851'>(let* ((&#35;:g59603 <span id='f0c843'>(car &#35;:g59605)</span>))
+                                            <span id='f0c850'>(tagbody <span id='f0c849'>(setq &#35;:g59601
+                                                           <span id='f0c848'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59601
+                                                                                    <span id='f0c847'>(cons <span id='f0c846'>(funcall &#35;:g59604 &#35;:g59603)</span>
+                                                                                          nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                 <span id='f0c839'>(setq &#35;:g59605 <span id='f0c838'>(ccl::&#37;cdr <span id='f0c837'>(ccl::typed-form &#39;list &#35;:g59605)</span>)</span>)</span>
+                                 (&#35;:g59607 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FFB30D&#62; t nil)
+                                 <span id='f0c841'>(if <span id='f0c840'>(not &#39;:ne &#35;:g59605)</span> (go &#35;:g59606) nil)</span>)</span>
+                        <span id='f0c833'>(let* () <span id='f0c832'>(ccl::&#37;cdr &#35;:g59602)</span>)</span>))</span>)</span>)
+            (gensym-argument-names
+             <span id='f0c800'>(let* ((&#35;:g59608 <span id='f0c799'>(cons nil nil)</span>) (&#35;:g59609 &#35;:g59608) (&#35;:g59611 <span id='f0c798'>(function gensym-symbol)</span>))
+               <span id='f0c796'>(let* ((&#35;:g59612 argument-names))
+                 (progn <span id='f0c791'>(tagbody <span id='f0c788'>(go &#35;:g59614)</span>
+                                 (&#35;:g59613 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FF709D&#62; t t)
+                                 <span id='f0c787'>(tagbody <span id='f0c786'>(let* ((&#35;:g59610 <span id='f0c785'>(car &#35;:g59612)</span>))
+                                            <span id='f0c783'>(tagbody <span id='f0c782'>(setq &#35;:g59608
+                                                           <span id='f0c781'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59608
+                                                                                    <span id='f0c780'>(cons <span id='f0c779'>(funcall &#35;:g59611 &#35;:g59610)</span>
+                                                                                          nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                 <span id='f0c776'>(setq &#35;:g59612 <span id='f0c775'>(ccl::&#37;cdr <span id='f0c774'>(ccl::typed-form &#39;list &#35;:g59612)</span>)</span>)</span>
+                                 (&#35;:g59614 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FF709D&#62; t nil)
+                                 <span id='f0c790'>(if <span id='f0c789'>(not &#39;:ne &#35;:g59612)</span> (go &#35;:g59613) nil)</span>)</span>
+                        <span id='f0c794'>(let* () <span id='f0c793'>(ccl::&#37;cdr &#35;:g59609)</span>)</span>))</span>)</span>)
+            (just-args-gensym
+             <span id='f0c731'>(funcall &#39;mapcar
+                      <span id='f0c730'>(function <span id='f0c729'>(lambda (arg gensym) <span id='f0c728'>(list* <span id='f0c727'>(car arg)</span> gensym <span id='f0c724'>(cdr <span id='f0c723'>(cdr arg)</span>)</span>)</span>)</span>)</span>
+                      just-args
+                      gensym-argument-names)</span>)
+            (just-output
+             <span id='f0c772'>(funcall &#39;remove-if
+                      <span id='f0c770'>(function <span id='f0c769'>(lambda (x)
+                                  <span id='f0c768'>(not &#39;:ne
+                                       <span id='f0c767'>(block nil
+                                         <span id='f0c766'>(let* ((&#35;:g59615 <span id='f0c748'>(funcall &#39;util:symbol-to-keyword x)</span>)
+                                                (&#35;:g59616 <span id='f0c765'>&#39;(:private :public)</span>))
+                                           <span id='f0c764'>(tagbody <span id='f0c761'>(go &#35;:g59618)</span>
+                                                    (&#35;:g59617 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FF043D&#62; t t)
+                                                    <span id='f0c756'>(tagbody <span id='f0c755'>(if <span id='f0c754'>(eq <span id='f0c752'>(car &#35;:g59616)</span> &#35;:g59615)</span>
+                                                                 <span id='f0c750'>(return-from nil &#35;:g59616)</span>
+                                                                 nil)</span>)</span>
+                                                    <span id='f0c760'>(setq &#35;:g59616 <span id='f0c759'>(ccl::&#37;cdr <span id='f0c758'>(ccl::typed-form &#39;list &#35;:g59616)</span>)</span>)</span>
+                                                    (&#35;:g59618 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003FF043D&#62; t nil)
+                                                    <span id='f0c763'>(if <span id='f0c762'>(not &#39;:ne &#35;:g59616)</span> (go &#35;:g59617) nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                      arguments
+                      <span id='f0c746'>&#39;:key</span>
+                      <span id='f0c745'>(function car)</span>)</span>)
+            (just-output
+             <span id='f0c744'>(let* ((&#35;:g59619 <span id='f0c743'>(funcall 11 just-output)</span>))
+               <span id='f0c741'>(if <span id='f0c733'>(eq &#35;:g59619 0)</span>
+                   nil
+                   <span id='f0c740'>(if <span id='f0c739'>(eq &#35;:g59619 1)</span>
+                       <span id='f0c735'>(car just-output)</span>
+                       <span id='f0c737'>(values (funcall &#39;error <span id='f0c736'>&#39;&#34;In the arguments to defcircuit please only supply 1 output&#34;</span>))</span>)</span>)</span>)</span>)
+            (key-name <span id='f0c830'>(funcall &#39;util:symbol-to-keyword name)</span>))
+       <span id='f0c719'>(list <span id='f0c654'>&#39;progn</span>
+             <span id='f0c653'>(list <span id='f0c651'>&#39;serapeum:def</span> name <span id='f0c650'>(list <span id='f0c649'>&#39;spc:make-reference</span> <span id='f0c648'>&#39;:name</span> key-name)</span>)</span>
+             <span id='f0c715'>(list <span id='f0c713'>&#39;defun</span>
+                   name
+                   argument-names
+                   <span id='f0c712'>(list <span id='f0c711'>&#39;ensure-call-by-value</span>
+                         <span id='f0c710'>(list <span id='f0c705'>&#39;spc:make-application</span>
+                               <span id='f0c709'>&#39;:function</span>
+                               <span id='f0c704'>(list <span id='f0c703'>&#39;spc:make-reference</span> <span id='f0c702'>&#39;:name</span> key-name)</span>
+                               <span id='f0c700'>&#39;:arguments</span>
+                               <span id='f0c708'>(cons <span id='f0c706'>&#39;list</span> argument-names)</span>)</span>)</span>)</span>
+             <span id='f0c698'>(list <span id='f0c697'>&#39;storage:add-function</span>
+                   key-name
+                   <span id='f0c696'>(list <span id='f0c659'>&#39;spc:make-circuit</span>
+                         <span id='f0c657'>&#39;:return-type</span>
+                         <span id='f0c695'>(list <span id='f0c694'>&#39;spc:to-type-reference-format</span> <span id='f0c693'>(list <span id='f0c692'>&#39;quote</span> <span id='f0c691'>(car <span id='f0c690'>(cdr just-output)</span>)</span>)</span>)</span>
+                         <span id='f0c688'>&#39;:name</span>
+                         key-name
+                         <span id='f0c658'>&#39;:arguments</span>
+                         <span id='f0c687'>(list <span id='f0c686'>&#39;mapcar</span> <span id='f0c685'>&#39;(function make-constraint-from-list)</span> <span id='f0c684'>(list <span id='f0c683'>&#39;quote</span> just-args-gensym)</span>)</span>
+                         <span id='f0c656'>&#39;:body</span>
+                         <span id='f0c680'>(list <span id='f0c660'>&#39;quote</span>
+                               <span id='f0c679'>(list <span id='f0c661'>&#39;emit:instruction</span>
+                                     <span id='f0c678'>(list <span id='f0c662'>&#39;let-refs-alist</span>
+                                           <span id='f0c666'>(funcall &#39;mapcar <span id='f0c664'>(function cons)</span> argument-names gensym-argument-names)</span>
+                                           <span id='f0c677'>(if <span id='f0c669'>(ccl::numcmp &#39;:eq 1 <span id='f0c668'>(funcall 11 body)</span>)</span>
+                                               <span id='f0c676'>(funcall &#39;alu&#46;stepper:single <span id='f0c675'>(car body)</span> nil)</span>
+                                               <span id='f0c673'>(cons <span id='f0c672'>&#39;list</span> <span id='f0c671'>(funcall &#39;alu&#46;stepper:body body nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+             <span id='f0c718'>(list <span id='f0c717'>&#39;quote</span> name)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>144</span> 
+<span id='f0s40'><span class='line'>145</span> (defun gensym-symbol (symbol)
+<span class='line'>146</span>   &#34;gensyms with the given symbol name&#34;
+<span class='line'>147</span>   <span id='f0s41'>(gensym <span id='f0s42'>(symbol-name symbol)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t40')><span class='toggle' id='pf0t40'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(40)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t40'><code><span id='f0c1266'> (lambda (symbol) <span id='f0c1265'>(funcall &#39;gensym <span id='f0c1264'>(funcall &#39;symbol-name symbol)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>148</span> 
+<span id='f0s43'><span class='line'>149</span> (defmacro defgate (name arguments &#38;body body)
+<span class='line'>150</span>   <span id='f0s44'>&#96;(defcircuit &#44;name &#44;(mapcar (lambda (x)
+<span class='line'>151</span>                                 (if (equalp :output (util:symbol-to-keyword (car x)))
+<span class='line'>152</span>                                     x
+<span class='line'>153</span>                                     (cons &#39;private x)))
+<span class='line'>154</span>                               arguments)
+<span class='line'>155</span>      &#44;&#64;body)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t43')><span class='toggle' id='pf0t43'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(43)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t43'><code><span id='f0c1060'> (lambda (&#35;:whole59635 &#35;:environment59636)
+   <span id='f0c1059'>(let* ((&#35;:args59637 <span id='f0c1015'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1014'>(cdr &#35;:whole59635)</span> <span id='f0c1011'>&#39;(name arguments &#38;body body)</span> 2 nil)</span>)
+          (name <span id='f0c1010'>(prog1 <span id='f0c1009'>(car &#35;:args59637)</span> <span id='f0c1007'>(setq &#35;:args59637 <span id='f0c1006'>(ccl::&#37;cdr <span id='f0c1005'>(ccl::typed-form &#39;list &#35;:args59637)</span>)</span>)</span>)</span>)
+          (arguments <span id='f0c1003'>(prog1 <span id='f0c998'>(car &#35;:args59637)</span> <span id='f0c1002'>(setq &#35;:args59637 <span id='f0c1001'>(ccl::&#37;cdr <span id='f0c1000'>(ccl::typed-form &#39;list &#35;:args59637)</span>)</span>)</span>)</span>)
+          (&#35;:rest59638 &#35;:args59637)
+          (body &#35;:rest59638))
+     <span id='f0c1058'>(list* <span id='f0c1057'>&#39;defcircuit</span>
+            name
+            <span id='f0c1055'>(let* ((&#35;:g59655 <span id='f0c1041'>(cons nil nil)</span>)
+                   (&#35;:g59656 &#35;:g59655)
+                   (&#35;:g59658
+                    <span id='f0c1053'>(function <span id='f0c1052'>(lambda (x)
+                                <span id='f0c1051'>(if <span id='f0c1047'>(funcall &#39;equalp <span id='f0c1043'>&#39;:output</span> <span id='f0c1046'>(funcall &#39;util:symbol-to-keyword <span id='f0c1045'>(car x)</span>)</span>)</span>
+                                    x
+                                    <span id='f0c1050'>(cons <span id='f0c1049'>&#39;private</span> x)</span>)</span>)</span>)</span>))
+              <span id='f0c1040'>(let* ((&#35;:g59659 arguments))
+                (progn <span id='f0c1039'>(tagbody <span id='f0c1027'>(go &#35;:g59661)</span>
+                                (&#35;:g59660 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040F1AED&#62; t t)
+                                <span id='f0c1038'>(tagbody <span id='f0c1037'>(let* ((&#35;:g59657 <span id='f0c1029'>(car &#35;:g59659)</span>))
+                                           <span id='f0c1036'>(tagbody <span id='f0c1035'>(setq &#35;:g59655
+                                                          <span id='f0c1034'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59655
+                                                                                   <span id='f0c1032'>(cons <span id='f0c1031'>(funcall &#35;:g59658 &#35;:g59657)</span>
+                                                                                         nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                <span id='f0c1026'>(setq &#35;:g59659 <span id='f0c1025'>(ccl::&#37;cdr <span id='f0c1024'>(ccl::typed-form &#39;list &#35;:g59659)</span>)</span>)</span>
+                                (&#35;:g59661 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040F1AED&#62; t nil)
+                                <span id='f0c1022'>(if <span id='f0c1021'>(not &#39;:ne &#35;:g59659)</span> (go &#35;:g59660) nil)</span>)</span>
+                       <span id='f0c1020'>(let* () <span id='f0c1019'>(ccl::&#37;cdr &#35;:g59656)</span>)</span>))</span>)</span>
+            body)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>156</span> 
+<span id='f0s45'><span class='line'>157</span> (defmacro def (bind-values &#38;rest body)
+<span class='line'>158</span>   &#34;defines the values in the presence of the body&#34;
+<span class='line'>159</span>   &#59;&#59; bind the values at the CL level&#44; so we can just reference it
+<span class='line'>160</span>   <span id='f0s46'>(flet (<span id='f0s47'>(constraint&#63; (x)
+<span class='line'>161</span>            <span id='f0s48'>(equalp <span id='f0s49'>(util:symbol-to-keyword <span id='f0s50'>(car x)</span>)</span> :with-constraint)</span>)</span>)
+<span class='line'>162</span>     <span id='f0s51'>(let* ((bound-names
+<span class='line'>163</span>              &#59;&#59; list in the case of with-constraint&#44; symbol otherwise
+<span class='line'>164</span>              <span id='f0s52'>(mapcar <span id='f0s53'>(lambda (x)
+<span class='line'>165</span>                        <span id='f0s54'>(if <span id='f0s55'>(constraint&#63; x)</span> <span id='f0s56'>(cadr x)</span> <span id='f0s57'>(car x)</span>)</span>)</span>
+<span class='line'>166</span>                      bind-values)</span>)
+<span class='line'>167</span>            (gensym-names
+<span class='line'>168</span>              <span id='f0s58'>(mapcar <span id='f0s59'>(lambda (x)
+<span class='line'>169</span>                        <span id='f0s60'>(if <span id='f0s61'>(listp x)</span>
+<span class='line'>170</span>                            <span id='f0s62'>(mapcar <span id='f0s63'>&#35;&#39;gensym-symbol </span>x)</span>
+<span class='line'>171</span>                            <span id='f0s64'>(gensym-symbol x)</span>)</span>)</span>
+<span class='line'>172</span>                      bound-names)</span>))
+<span class='line'>173</span>       <span id='f0s65'>&#96;(let-refs-alist
+<span class='line'>174</span>         &#59;&#59; remove check
+<span class='line'>175</span>         &#44;(mapcan (lambda (bound gensym)
+<span class='line'>176</span>                    (if (listp bound)
+<span class='line'>177</span>                        (mapcar &#35;&#39;cons bound gensym)
+<span class='line'>178</span>                        (list (cons bound gensym))))
+<span class='line'>179</span>                  bound-names gensym-names)
+<span class='line'>180</span>         &#59;&#59; Generate out the Alucard level binding
+<span class='line'>181</span>         &#44;&#64;(mapcar (lambda (bind-pair gensym)
+<span class='line'>182</span>                     (if (constraint&#63; bind-pair)
+<span class='line'>183</span>                         &#96;(with-constraint &#44;gensym &#44;&#64;(cddr bind-pair))
+<span class='line'>184</span>                         &#96;(emit:instruction
+<span class='line'>185</span>                           (spc:make-let
+<span class='line'>186</span>                            :var (util:symbol-to-keyword &#39;&#44;gensym)
+<span class='line'>187</span>                            :val &#44;(cadr bind-pair)))))
+<span class='line'>188</span>                   bind-values
+<span class='line'>189</span>                   gensym-names)
+<span class='line'>190</span>         &#44;(if (cl:&#61; (length body) 1)
+<span class='line'>191</span>              (car body)
+<span class='line'>192</span>              (cons &#39;list body)))</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t45')><span class='toggle' id='pf0t45'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(45)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t45'><code><span id='f0c497'> (lambda (&#35;:whole59668 &#35;:environment59669)
+   <span id='f0c496'>(let* ((&#35;:args59670 <span id='f0c324'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c321'>(cdr &#35;:whole59668)</span> <span id='f0c322'>&#39;(bind-values &#38;rest body)</span> 1 nil)</span>)
+          (bind-values <span id='f0c495'>(prog1 <span id='f0c494'>(car &#35;:args59670)</span> <span id='f0c492'>(setq &#35;:args59670 <span id='f0c491'>(ccl::&#37;cdr <span id='f0c490'>(ccl::typed-form &#39;list &#35;:args59670)</span>)</span>)</span>)</span>)
+          (&#35;:rest59671 &#35;:args59670)
+          (body &#35;:rest59671))
+     <span id='f0c488'>(flet ((&#35;:constraint&#63; &#35;1&#61;<span id='f0c487'>(lambda (x)
+                                <span id='f0c486'>(funcall &#39;equalp <span id='f0c485'>(funcall &#39;util:symbol-to-keyword <span id='f0c484'>(car x)</span>)</span> <span id='f0c482'>&#39;:with-constraint</span>)</span>)</span>))
+       <span id='f0c481'>(let* ((bound-names
+               <span id='f0c480'>(let* ((&#35;:g59714 <span id='f0c444'>(cons nil nil)</span>)
+                      (&#35;:g59715 &#35;:g59714)
+                      (&#35;:g59717 <span id='f0c478'>(function <span id='f0c477'>(lambda (x) <span id='f0c476'>(if <span id='f0c472'>(funcall &#35;1&#35; x)</span> <span id='f0c475'>(car <span id='f0c474'>(cdr x)</span>)</span> <span id='f0c470'>(car x)</span>)</span>)</span>)</span>))
+                 <span id='f0c468'>(let* ((&#35;:g59718 bind-values))
+                   (progn <span id='f0c463'>(tagbody <span id='f0c451'>(go &#35;:g59720)</span>
+                                   (&#35;:g59719 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200401C5ED&#62; t t)
+                                   <span id='f0c462'>(tagbody <span id='f0c461'>(let* ((&#35;:g59716 <span id='f0c453'>(car &#35;:g59718)</span>))
+                                              <span id='f0c460'>(tagbody <span id='f0c459'>(setq &#35;:g59714
+                                                             <span id='f0c458'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59714
+                                                                                      <span id='f0c456'>(cons <span id='f0c455'>(funcall &#35;:g59717 &#35;:g59716)</span>
+                                                                                            nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                   <span id='f0c448'>(setq &#35;:g59718 <span id='f0c447'>(ccl::&#37;cdr <span id='f0c446'>(ccl::typed-form &#39;list &#35;:g59718)</span>)</span>)</span>
+                                   (&#35;:g59720 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200401C5ED&#62; t nil)
+                                   <span id='f0c450'>(if <span id='f0c449'>(not &#39;:ne &#35;:g59718)</span> (go &#35;:g59719) nil)</span>)</span>
+                          <span id='f0c466'>(let* () <span id='f0c465'>(ccl::&#37;cdr &#35;:g59715)</span>)</span>))</span>)</span>)
+              (gensym-names
+               <span id='f0c386'>(let* ((&#35;:g59721 <span id='f0c325'>(cons nil nil)</span>)
+                      (&#35;:g59722 &#35;:g59721)
+                      (&#35;:g59724
+                       <span id='f0c361'>(function <span id='f0c360'>(lambda (x)
+                                   <span id='f0c359'>(if <span id='f0c328'>(eq (ccl::lisptag x) 3)</span>
+                                       <span id='f0c356'>(let* ((&#35;:g59725 <span id='f0c354'>(cons nil nil)</span>)
+                                              (&#35;:g59726 &#35;:g59725)
+                                              (&#35;:g59728 <span id='f0c353'>(function gensym-symbol)</span>))
+                                         <span id='f0c352'>(let* ((&#35;:g59729 x))
+                                           (progn <span id='f0c351'>(tagbody <span id='f0c335'>(go &#35;:g59731)</span>
+                                                           (&#35;:g59730 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200401403D&#62;
+                                                            t t)
+                                                           <span id='f0c346'>(tagbody <span id='f0c345'>(let* ((&#35;:g59727 <span id='f0c344'>(car &#35;:g59729)</span>))
+                                                                      <span id='f0c342'>(tagbody <span id='f0c341'>(setq &#35;:g59725
+                                                                                     <span id='f0c340'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59725
+                                                                                                              <span id='f0c338'>(cons <span id='f0c337'>(funcall &#35;:g59728
+                                                                                                                             &#35;:g59727)</span>
+                                                                                                                    nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                           <span id='f0c350'>(setq &#35;:g59729 <span id='f0c349'>(ccl::&#37;cdr <span id='f0c348'>(ccl::typed-form &#39;list &#35;:g59729)</span>)</span>)</span>
+                                                           (&#35;:g59731 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200401403D&#62;
+                                                            t nil)
+                                                           <span id='f0c334'>(if <span id='f0c333'>(not &#39;:ne &#35;:g59729)</span> (go &#35;:g59730) nil)</span>)</span>
+                                                  <span id='f0c331'>(let* () <span id='f0c330'>(ccl::&#37;cdr &#35;:g59726)</span>)</span>))</span>)</span>
+                                       <span id='f0c358'>(funcall &#39;gensym-symbol x)</span>)</span>)</span>)</span>))
+                 <span id='f0c385'>(let* ((&#35;:g59732 bound-names))
+                   (progn <span id='f0c381'>(tagbody <span id='f0c367'>(go &#35;:g59734)</span>
+                                   (&#35;:g59733 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040107CD&#62; t t)
+                                   <span id='f0c380'>(tagbody <span id='f0c379'>(let* ((&#35;:g59723 <span id='f0c378'>(car &#35;:g59732)</span>))
+                                              <span id='f0c376'>(tagbody <span id='f0c375'>(setq &#35;:g59721
+                                                             <span id='f0c374'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59721
+                                                                                      <span id='f0c372'>(cons <span id='f0c371'>(funcall &#35;:g59724 &#35;:g59723)</span>
+                                                                                            nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                   <span id='f0c366'>(setq &#35;:g59732 <span id='f0c365'>(ccl::&#37;cdr <span id='f0c364'>(ccl::typed-form &#39;list &#35;:g59732)</span>)</span>)</span>
+                                   (&#35;:g59734 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040107CD&#62; t nil)
+                                   <span id='f0c369'>(if <span id='f0c368'>(not &#39;:ne &#35;:g59732)</span> (go &#35;:g59733) nil)</span>)</span>
+                          <span id='f0c384'>(let* () <span id='f0c383'>(ccl::&#37;cdr &#35;:g59722)</span>)</span>))</span>)</span>))
+         <span id='f0c443'>(list* <span id='f0c403'>&#39;let-refs-alist</span>
+                <span id='f0c402'>(funcall &#39;mapcan
+                         <span id='f0c399'>(function <span id='f0c398'>(lambda (bound gensym)
+                                     <span id='f0c397'>(if <span id='f0c392'>(eq (ccl::lisptag bound) 3)</span>
+                                         <span id='f0c390'>(funcall &#39;mapcar <span id='f0c388'>(function cons)</span> bound gensym)</span>
+                                         <span id='f0c396'>(cons <span id='f0c395'>(cons bound gensym)</span> nil)</span>)</span>)</span>)</span>
+                         bound-names
+                         gensym-names)</span>
+                <span id='f0c442'>(funcall &#39;ccl::append-2
+                         <span id='f0c441'>(funcall &#39;mapcar
+                                  <span id='f0c438'>(function <span id='f0c437'>(lambda (bind-pair gensym)
+                                              <span id='f0c436'>(if <span id='f0c429'>(funcall &#35;1&#35; bind-pair)</span>
+                                                  <span id='f0c435'>(list* <span id='f0c431'>&#39;with-constraint</span> gensym <span id='f0c434'>(cdr <span id='f0c433'>(cdr bind-pair)</span>)</span>)</span>
+                                                  <span id='f0c427'>(list <span id='f0c414'>&#39;emit:instruction</span>
+                                                        <span id='f0c426'>(list <span id='f0c417'>&#39;spc:make-let</span>
+                                                              <span id='f0c415'>&#39;:var</span>
+                                                              <span id='f0c425'>(list <span id='f0c421'>&#39;util:symbol-to-keyword</span> <span id='f0c424'>(list <span id='f0c422'>&#39;quote</span> gensym)</span>)</span>
+                                                              <span id='f0c416'>&#39;:val</span>
+                                                              <span id='f0c420'>(car <span id='f0c419'>(cdr bind-pair)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                  bind-values
+                                  gensym-names)</span>
+                         <span id='f0c413'>(cons <span id='f0c412'>(if <span id='f0c411'>(ccl::numcmp &#39;:eq <span id='f0c410'>(funcall 11 body)</span> 1)</span> <span id='f0c408'>(car body)</span> <span id='f0c406'>(cons <span id='f0c404'>&#39;list</span> body)</span>)</span> nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>193</span> 
+<span id='f0s66'><span class='line'>194</span> (defmacro entry-point (symbol)
+<span class='line'>195</span>   &#34;Sets the entry point of the circuit to the desired function&#34;
+<span class='line'>196</span>   <span id='f0s67'>&#96;(storage:set-entry-point &#44;(util:symbol-to-keyword symbol))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t66')><span class='toggle' id='pf0t66'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(66)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t66'><code><span id='f0c149'> (lambda (&#35;:whole59753 &#35;:environment59754)
+   <span id='f0c148'>(let* ((&#35;:args59755 <span id='f0c147'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c146'>(cdr &#35;:whole59753)</span> <span id='f0c143'>&#39;(symbol)</span> 1 1)</span>)
+          (symbol <span id='f0c137'>(prog1 <span id='f0c132'>(ccl::&#37;car &#35;:args59755)</span> <span id='f0c136'>(setq &#35;:args59755 <span id='f0c135'>(ccl::&#37;cdr <span id='f0c134'>(ccl::typed-form &#39;list &#35;:args59755)</span>)</span>)</span>)</span>))
+     <span id='f0c141'>(list <span id='f0c138'>&#39;storage:set-entry-point</span> <span id='f0c140'>(funcall &#39;util:symbol-to-keyword symbol)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>197</span> 
+<span id='f0s68'><span class='line'>198</span> (defmacro defprimitive-type (name)
+<span class='line'>199</span>   &#34;defines a primitive type&#34;
+<span class='line'>200</span>   <span id='f0s69'>(let ((keyword <span id='f0s70'>(util:symbol-to-keyword name)</span>))
+<span class='line'>201</span>     &#59;&#59; always set it to be safe
+<span class='line'>202</span>     <span id='f0s71'>&#96;(storage:add-type &#44;keyword (spc:make-primitive :name &#44;keyword))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t68')><span class='toggle' id='pf0t68'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(68)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t68'><code><span id='f0c87'> (lambda (&#35;:whole59765 &#35;:environment59766)
+   <span id='f0c86'>(let* ((&#35;:args59767 <span id='f0c75'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c72'>(cdr &#35;:whole59765)</span> <span id='f0c74'>&#39;(name)</span> 1 1)</span>)
+          (name <span id='f0c69'>(prog1 <span id='f0c64'>(ccl::&#37;car &#35;:args59767)</span> <span id='f0c68'>(setq &#35;:args59767 <span id='f0c67'>(ccl::&#37;cdr <span id='f0c66'>(ccl::typed-form &#39;list &#35;:args59767)</span>)</span>)</span>)</span>))
+     <span id='f0c85'>(let* ((keyword <span id='f0c77'>(funcall &#39;util:symbol-to-keyword name)</span>))
+       <span id='f0c84'>(list <span id='f0c79'>&#39;storage:add-type</span> keyword <span id='f0c83'>(list <span id='f0c81'>&#39;spc:make-primitive</span> <span id='f0c80'>&#39;:name</span> keyword)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>203</span> 
+<span id='f0s72'><span class='line'>204</span> (defmacro defprimitive (name)
+<span class='line'>205</span>   &#34;defines a primitive type&#34;
+<span class='line'>206</span>   <span id='f0s73'>(let ((keyword <span id='f0s74'>(util:symbol-to-keyword name)</span>))
+<span class='line'>207</span>     &#59;&#59; always set it to be safe
+<span class='line'>208</span>     <span id='f0s75'>&#96;(progn
+<span class='line'>209</span>        &#59;&#59; don&#39;t need to gensym arguments as there are no capture issues
+<span class='line'>210</span>        (defun &#44;name (&#38;rest arguments)
+<span class='line'>211</span>          (ensure-call-by-value
+<span class='line'>212</span>           (spc:make-application :function (spc:make-reference :name &#44;keyword)
+<span class='line'>213</span>                                 :arguments arguments)))
+<span class='line'>214</span>        (serapeum:def &#44;name (spc:make-reference :name &#44;keyword))
+<span class='line'>215</span>        (storage:add-function &#44;keyword (spc:make-primitive :name &#44;keyword)))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t72')><span class='toggle' id='pf0t72'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(72)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t72'><code><span id='f0c1262'> (lambda (&#35;:whole59777 &#35;:environment59778)
+   <span id='f0c1261'>(let* ((&#35;:args59779 <span id='f0c1253'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1250'>(cdr &#35;:whole59777)</span> <span id='f0c1248'>&#39;(name)</span> 1 1)</span>)
+          (name <span id='f0c1260'>(prog1 <span id='f0c1255'>(ccl::&#37;car &#35;:args59779)</span> <span id='f0c1259'>(setq &#35;:args59779 <span id='f0c1258'>(ccl::&#37;cdr <span id='f0c1257'>(ccl::typed-form &#39;list &#35;:args59779)</span>)</span>)</span>)</span>))
+     <span id='f0c1247'>(let* ((keyword <span id='f0c1216'>(funcall &#39;util:symbol-to-keyword name)</span>))
+       <span id='f0c1246'>(list <span id='f0c1238'>&#39;progn</span>
+             <span id='f0c1237'>(list <span id='f0c1236'>&#39;defun</span>
+                   name
+                   <span id='f0c1224'>&#39;(&#38;rest arguments)</span>
+                   <span id='f0c1234'>(list <span id='f0c1225'>&#39;ensure-call-by-value</span>
+                         <span id='f0c1233'>(list* <span id='f0c1231'>&#39;spc:make-application</span>
+                                <span id='f0c1232'>&#39;:function</span>
+                                <span id='f0c1230'>(list <span id='f0c1229'>&#39;spc:make-reference</span> <span id='f0c1228'>&#39;:name</span> keyword)</span>
+                                <span id='f0c1226'>&#39;(:arguments arguments)</span>)</span>)</span>)</span>
+             <span id='f0c1223'>(list <span id='f0c1222'>&#39;serapeum:def</span> name <span id='f0c1221'>(list <span id='f0c1220'>&#39;spc:make-reference</span> <span id='f0c1219'>&#39;:name</span> keyword)</span>)</span>
+             <span id='f0c1245'>(list <span id='f0c1239'>&#39;storage:add-function</span> keyword <span id='f0c1243'>(list <span id='f0c1240'>&#39;spc:make-primitive</span> <span id='f0c1241'>&#39;:name</span> keyword)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>216</span> 
+<span id='f0s76'><span class='line'>217</span> (defmacro coerce (value type-to)
+<span class='line'>218</span>   <span id='f0s77'>&#96;(ensure-call-by-value
+<span class='line'>219</span>     (spc:make-type-coerce
+<span class='line'>220</span>      :typ (spc:to-type-reference-format &#39;&#44;type-to)
+<span class='line'>221</span>      :value &#44;value))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t76')><span class='toggle' id='pf0t76'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(76)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t76'><code><span id='f0c565'> (lambda (&#35;:whole59789 &#35;:environment59790)
+   <span id='f0c564'>(let* ((&#35;:args59791 <span id='f0c556'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c555'>(cdr &#35;:whole59789)</span> <span id='f0c551'>&#39;(value type-to)</span> 2 2)</span>)
+          (value <span id='f0c538'>(prog1 <span id='f0c537'>(ccl::&#37;car &#35;:args59791)</span> <span id='f0c535'>(setq &#35;:args59791 <span id='f0c534'>(ccl::&#37;cdr <span id='f0c533'>(ccl::typed-form &#39;list &#35;:args59791)</span>)</span>)</span>)</span>)
+          (type-to <span id='f0c563'>(prog1 <span id='f0c558'>(ccl::&#37;car &#35;:args59791)</span> <span id='f0c562'>(setq &#35;:args59791 <span id='f0c561'>(ccl::&#37;cdr <span id='f0c560'>(ccl::typed-form &#39;list &#35;:args59791)</span>)</span>)</span>)</span>))
+     <span id='f0c550'>(list <span id='f0c539'>&#39;ensure-call-by-value</span>
+           <span id='f0c549'>(list <span id='f0c545'>&#39;spc:make-type-coerce</span> <span id='f0c548'>&#39;:typ</span> <span id='f0c544'>(list <span id='f0c543'>&#39;spc:to-type-reference-format</span> <span id='f0c542'>(list <span id='f0c541'>&#39;quote</span> type-to)</span>)</span> <span id='f0c547'>&#39;:value</span> value)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>222</span> 
+<span id='f0s78'><span class='line'>223</span> (defmacro check (value type-check)
+<span class='line'>224</span>   <span id='f0s79'>&#96;(ensure-call-by-value
+<span class='line'>225</span>     (spc:make-type-check
+<span class='line'>226</span>      :typ (spc:to-type-reference-format &#39;&#44;type-check)
+<span class='line'>227</span>      :value &#44;value))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t78')><span class='toggle' id='pf0t78'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(78)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t78'><code><span id='f0c996'> (lambda (&#35;:whole59801 &#35;:environment59802)
+   <span id='f0c995'>(let* ((&#35;:args59803 <span id='f0c994'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c991'>(cdr &#35;:whole59801)</span> <span id='f0c992'>&#39;(value type-check)</span> 2 2)</span>)
+          (value <span id='f0c969'>(prog1 <span id='f0c968'>(ccl::&#37;car &#35;:args59803)</span> <span id='f0c966'>(setq &#35;:args59803 <span id='f0c965'>(ccl::&#37;cdr <span id='f0c964'>(ccl::typed-form &#39;list &#35;:args59803)</span>)</span>)</span>)</span>)
+          (type-check
+           <span id='f0c988'>(prog1 <span id='f0c983'>(ccl::&#37;car &#35;:args59803)</span> <span id='f0c987'>(setq &#35;:args59803 <span id='f0c986'>(ccl::&#37;cdr <span id='f0c985'>(ccl::typed-form &#39;list &#35;:args59803)</span>)</span>)</span>)</span>))
+     <span id='f0c981'>(list <span id='f0c980'>&#39;ensure-call-by-value</span>
+           <span id='f0c979'>(list <span id='f0c970'>&#39;spc:make-type-check</span>
+                 <span id='f0c976'>&#39;:typ</span>
+                 <span id='f0c975'>(list <span id='f0c974'>&#39;spc:to-type-reference-format</span> <span id='f0c973'>(list <span id='f0c971'>&#39;quote</span> type-check)</span>)</span>
+                 <span id='f0c977'>&#39;:value</span>
+                 value)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>228</span> 
+<span id='f0s80'><span class='line'>229</span> (defun to-array (&#38;rest arguments)
+<span class='line'>230</span>   <span id='f0s81'>(ensure-call-by-value
+<span class='line'>231</span>    <span id='f0s82'>(spc:make-from-data :contents arguments)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t80')><span class='toggle' id='pf0t80'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(80)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t80'><code><span id='f0c62'> (lambda (&#38;rest arguments) <span id='f0c61'>(funcall &#39;ensure-call-by-value <span id='f0c60'>(funcall &#39;spc:make-from-data <span id='f0c58'>&#39;:contents</span> arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>232</span> 
+<span class='line'>233</span> &#59;&#59; eventually make the type optional
+<span id='f0s83'><span class='line'>234</span> (defmacro array (length type)
+<span class='line'>235</span>   <span id='f0s84'>&#96;(ensure-call-by-value
+<span class='line'>236</span>     (spc:make-array-allocate
+<span class='line'>237</span>      :typ  (spc:to-type-reference-format &#39;&#44;type)
+<span class='line'>238</span>      :size &#44;length))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t83')><span class='toggle' id='pf0t83'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(83)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t83'><code><span id='f0c531'> (lambda (&#35;:whole59816 &#35;:environment59817)
+   <span id='f0c530'>(let* ((&#35;:args59818 <span id='f0c529'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c525'>(cdr &#35;:whole59816)</span> <span id='f0c527'>&#39;(length type)</span> 2 2)</span>)
+          (length <span id='f0c523'>(prog1 <span id='f0c518'>(ccl::&#37;car &#35;:args59818)</span> <span id='f0c522'>(setq &#35;:args59818 <span id='f0c521'>(ccl::&#37;cdr <span id='f0c520'>(ccl::typed-form &#39;list &#35;:args59818)</span>)</span>)</span>)</span>)
+          (type <span id='f0c516'>(prog1 <span id='f0c511'>(ccl::&#37;car &#35;:args59818)</span> <span id='f0c515'>(setq &#35;:args59818 <span id='f0c514'>(ccl::&#37;cdr <span id='f0c513'>(ccl::typed-form &#39;list &#35;:args59818)</span>)</span>)</span>)</span>))
+     <span id='f0c509'>(list <span id='f0c498'>&#39;ensure-call-by-value</span>
+           <span id='f0c508'>(list <span id='f0c507'>&#39;spc:make-array-allocate</span> <span id='f0c505'>&#39;:typ</span> <span id='f0c503'>(list <span id='f0c502'>&#39;spc:to-type-reference-format</span> <span id='f0c501'>(list <span id='f0c499'>&#39;quote</span> type)</span>)</span> <span id='f0c506'>&#39;:size</span> length)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>239</span> 
+<span id='f0s85'><span class='line'>240</span> (defun get (array position)
+<span class='line'>241</span>   <span id='f0s86'>(ensure-call-by-value
+<span class='line'>242</span>    <span id='f0s87'>(spc:make-array-lookup :arr array :pos position)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t85')><span class='toggle' id='pf0t85'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(85)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t85'><code><span id='f0c1273'> (lambda (array position) <span id='f0c1272'>(funcall &#39;ensure-call-by-value <span id='f0c1271'>(funcall &#39;spc:make-array-lookup <span id='f0c1270'>&#39;:arr</span> array <span id='f0c1269'>&#39;:pos</span> position)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>243</span> 
+<span id='f0s88'><span class='line'>244</span> (defsetf get (array location) (value)
+<span class='line'>245</span>   <span id='f0s89'>&#96;(ensure-call-by-value
+<span class='line'>246</span>      (spc:make-array-set :arr &#44;array
+<span class='line'>247</span>                          :pos &#44;location
+<span class='line'>248</span>                          :value &#44;value))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t88')><span class='toggle' id='pf0t88'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(88)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t88'><code><span id='f0c1214'> (lambda (&#35;:g59835 &#35;:g59836)
+   <span id='f0c1213'>(let* ((&#35;:g59831 <span id='f0c1200'>(cdr &#35;:g59835)</span>)
+          (&#35;:g59832 nil)
+          (&#35;:g59833
+           <span id='f0c1198'>(let* ((&#35;:g59862 <span id='f0c1169'>(cons nil nil)</span>)
+                  (&#35;:g59863 &#35;:g59862)
+                  (&#35;:g59865 <span id='f0c1172'>(function <span id='f0c1171'>(lambda (ccl::v) <span id='f0c1170'>(funcall &#39;gensym)</span>)</span>)</span>))
+             <span id='f0c1197'>(let* ((&#35;:g59866 <span id='f0c1196'>&#39;(value)</span>))
+               (progn <span id='f0c1192'>(tagbody <span id='f0c1180'>(go &#35;:g59868)</span>
+                               (&#35;:g59867 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040D0D1D&#62; t t)
+                               <span id='f0c1191'>(tagbody <span id='f0c1190'>(let* ((&#35;:g59864 <span id='f0c1182'>(car &#35;:g59866)</span>))
+                                          <span id='f0c1189'>(tagbody <span id='f0c1188'>(setq &#35;:g59862
+                                                         <span id='f0c1187'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59862
+                                                                                  <span id='f0c1185'>(cons <span id='f0c1184'>(funcall &#35;:g59865 &#35;:g59864)</span>
+                                                                                        nil)</span>))</span>)</span>)</span>)</span>)</span>
+                               <span id='f0c1179'>(setq &#35;:g59866 <span id='f0c1178'>(ccl::&#37;cdr <span id='f0c1177'>(ccl::typed-form &#39;list &#35;:g59866)</span>)</span>)</span>
+                               (&#35;:g59868 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040D0D1D&#62; t nil)
+                               <span id='f0c1175'>(if <span id='f0c1174'>(not &#39;:ne &#35;:g59866)</span> (go &#35;:g59867) nil)</span>)</span>
+                      <span id='f0c1195'>(let* () <span id='f0c1194'>(ccl::&#37;cdr &#35;:g59863)</span>)</span>))</span>)</span>)
+          (&#35;:g59834 nil))
+     (progn <span id='f0c1212'>(tagbody <span id='f0c1211'>(go &#35;:g59861)</span>
+                     (&#35;:g59860 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040CE12D&#62; t t)
+                     <span id='f0c1201'>(tagbody)</span>
+                     <span id='f0c1207'>(progn (setq &#35;:g59831 <span id='f0c1206'>(cdr &#35;:g59831)</span>) (setq &#35;:g59832 <span id='f0c1204'>(cons <span id='f0c1202'>(funcall &#39;gensym)</span> &#35;:g59832)</span>))</span>
+                     (&#35;:g59861 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020040CE12D&#62; t nil)
+                     <span id='f0c1210'>(if <span id='f0c1209'>(eq (ccl::fulltag &#35;:g59831) 3)</span> (go &#35;:g59860) nil)</span>)</span>
+            <span id='f0c1168'>(setq &#35;:g59834 <span id='f0c1167'>(cons <span id='f0c1165'>(car &#35;:g59835)</span> &#35;:g59832)</span>)</span>
+            <span id='f0c1163'>(let* ((&#35;:whole59869 <span id='f0c1138'>(funcall &#39;ccl::append-2 <span id='f0c1136'>&#39;(&#35;:array &#35;:location)</span> &#35;:g59833)</span>)
+                   (&#35;:args59870 <span id='f0c1128'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59869 <span id='f0c1126'>&#39;(array location value)</span> 3 3)</span>)
+                   (array
+                    <span id='f0c1116'>(prog1 <span id='f0c1111'>(ccl::&#37;car &#35;:args59870)</span> <span id='f0c1115'>(setq &#35;:args59870 <span id='f0c1114'>(ccl::&#37;cdr <span id='f0c1113'>(ccl::typed-form &#39;list &#35;:args59870)</span>)</span>)</span>)</span>)
+                   (location
+                    <span id='f0c1123'>(prog1 <span id='f0c1118'>(ccl::&#37;car &#35;:args59870)</span> <span id='f0c1122'>(setq &#35;:args59870 <span id='f0c1121'>(ccl::&#37;cdr <span id='f0c1120'>(ccl::typed-form &#39;list &#35;:args59870)</span>)</span>)</span>)</span>)
+                   (value
+                    <span id='f0c1135'>(prog1 <span id='f0c1134'>(ccl::&#37;car &#35;:args59870)</span> <span id='f0c1132'>(setq &#35;:args59870 <span id='f0c1131'>(ccl::&#37;cdr <span id='f0c1130'>(ccl::typed-form &#39;list &#35;:args59870)</span>)</span>)</span>)</span>))
+              <span id='f0c1162'>(values &#35;:g59832
+                      <span id='f0c1158'>(cdr &#35;:g59835)</span>
+                      &#35;:g59833
+                      <span id='f0c1156'>(cons <span id='f0c1154'>(list <span id='f0c1139'>&#39;lambda</span>
+                                  <span id='f0c1153'>(list array location)</span>
+                                  <span id='f0c1150'>&#39;(declare (ignorable &#35;:array &#35;:location))</span>
+                                  <span id='f0c1149'>(list <span id='f0c1148'>&#39;ensure-call-by-value</span>
+                                        <span id='f0c1147'>(list <span id='f0c1146'>&#39;spc:make-array-set</span> <span id='f0c1145'>&#39;:arr</span> array <span id='f0c1143'>&#39;:pos</span> location <span id='f0c1141'>&#39;:value</span> value)</span>)</span>)</span>
+                            &#35;:g59832)</span>
+                      &#35;:g59834)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>249</span> 
+<span id='f0s90'><span class='line'>250</span> (defmacro with-constraint (variable-names &#38;rest body)
+<span class='line'>251</span>   <span id='f0s91'>(let ((body-list <span id='f0s92'>(gensym)</span>))
+<span class='line'>252</span>     <span id='f0s93'>&#96;(let ((&#44;body-list (list nil)))
+<span class='line'>253</span>        (emit:with-circuit-body &#44;body-list
+<span class='line'>254</span>          (let-refs &#44;variable-names
+<span class='line'>255</span>                    &#44;&#64;body))
+<span class='line'>256</span>        (emit:instruction
+<span class='line'>257</span>         (spc:make-bind-constraint
+<span class='line'>258</span>          :var (mapcar &#35;&#39;util:symbol-to-keyword &#39;&#44;variable-names)
+<span class='line'>259</span>          :value &#44;body-list))
+<span class='line'>260</span>        void)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t90')><span class='toggle' id='pf0t90'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(90)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t90'><code><span id='f0c130'> (lambda (&#35;:whole59883 &#35;:environment59884)
+   <span id='f0c129'>(let* ((&#35;:args59885 <span id='f0c128'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c126'>(cdr &#35;:whole59883)</span> <span id='f0c124'>&#39;(variable-names &#38;rest body)</span> 1 nil)</span>)
+          (variable-names <span id='f0c123'>(prog1 <span id='f0c122'>(car &#35;:args59885)</span> <span id='f0c120'>(setq &#35;:args59885 <span id='f0c119'>(ccl::&#37;cdr <span id='f0c118'>(ccl::typed-form &#39;list &#35;:args59885)</span>)</span>)</span>)</span>)
+          (&#35;:rest59886 &#35;:args59885)
+          (body &#35;:rest59886))
+     <span id='f0c116'>(let* ((body-list <span id='f0c88'>(funcall &#39;gensym)</span>))
+       <span id='f0c115'>(list* <span id='f0c109'>&#39;let</span>
+              <span id='f0c114'>(cons <span id='f0c113'>(cons body-list <span id='f0c112'>&#39;((list nil))</span>)</span> nil)</span>
+              <span id='f0c108'>(list <span id='f0c107'>&#39;emit:with-circuit-body</span> body-list <span id='f0c106'>(list* <span id='f0c103'>&#39;let-refs</span> variable-names body)</span>)</span>
+              <span id='f0c101'>(list <span id='f0c100'>&#39;emit:instruction</span>
+                    <span id='f0c99'>(list <span id='f0c89'>&#39;spc:make-bind-constraint</span>
+                          <span id='f0c91'>&#39;:var</span>
+                          <span id='f0c98'>(list <span id='f0c97'>&#39;mapcar</span> <span id='f0c96'>&#39;(function util:symbol-to-keyword)</span> <span id='f0c95'>(list <span id='f0c93'>&#39;quote</span> variable-names)</span>)</span>
+                          <span id='f0c92'>&#39;:value</span>
+                          body-list)</span>)</span>
+              <span id='f0c110'>&#39;(void)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>261</span> 
+<span class='line'>262</span> (serapeum:def void (alu&#46;spec:make-reference :name :void))
+<span class='line'>263</span> 
+<span id='f0s94'><span class='line'>264</span> (defun ensure-call-by-value (term &#38;optional (name <span id='f0s95'>&#34;G&#34;</span>))
+<span class='line'>265</span>   &#34;This ensures that the value given back is a reference&#46; This matters
+<span class='line'>266</span> as when we evaluate expression terms&#44; they are an ast value&#44; not a
+<span class='line'>267</span> reference to the AST value&#46; This makes sure that information propagates
+<span class='line'>268</span> and we are given back a reference to operate on&#46;&#34;
+<span class='line'>269</span>   <span id='f0s96'>(let* ((key <span id='f0s97'>(util:symbol-to-keyword <span id='f0s98'>(gensym name)</span>)</span>))
+<span class='line'>270</span>     <span id='f0s99'>(emit:instruction <span id='f0s100'>(spc:make-let :var key :val term)</span>)</span>
+<span class='line'>271</span>     <span id='f0s101'>(spc:make-reference :name key)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t94')><span class='toggle' id='pf0t94'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(94)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t94'><code><span id='f0c57'> (lambda (term &#38;optional (name <span id='f0c42'>&#39;&#34;G&#34;</span> &#35;:compiler-var))
+   <span id='f0c56'>(let* ((key <span id='f0c51'>(funcall &#39;util:symbol-to-keyword <span id='f0c50'>(funcall &#39;gensym name)</span>)</span>))
+     (progn <span id='f0c48'>(funcall &#39;emit:instruction <span id='f0c47'>(funcall &#39;spc:make-let <span id='f0c45'>&#39;:var</span> key <span id='f0c46'>&#39;:val</span> term)</span>)</span>
+            <span id='f0c55'>(funcall &#39;spc:make-reference <span id='f0c52'>&#39;:name</span> <span id='f0c54'>(ccl::typed-form &#39;keyword key)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>272</span> 
+<span class='line'>273</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>274</span> &#59;&#59; Helper Macros and functions
+<span class='line'>275</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>276</span> 
+<span id='f0s102'><span class='line'>277</span> (defmacro let-refs (variables &#38;rest body)
+<span class='line'>278</span>   &#34;let-refs lets the variables in the argument list be referred to in
+<span class='line'>279</span> the body at the CL level&#46; The values are simply references to the
+<span class='line'>280</span> value in the Alucard environment&#46; An example usage may
+<span class='line'>281</span> be (let-refs (a b) (+ a b))&#34;
+<span class='line'>282</span>   <span id='f0s103'>&#96;(let-refs-alist &#44;(mapcar (lambda (x) (cons x x)) variables) &#44;&#64;body)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t102')><span class='toggle' id='pf0t102'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(102)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t102'><code><span id='f0c1109'> (lambda (&#35;:whole59911 &#35;:environment59912)
+   <span id='f0c1108'>(let* ((&#35;:args59913 <span id='f0c1100'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c1099'>(cdr &#35;:whole59911)</span> <span id='f0c1097'>&#39;(variables &#38;rest body)</span> 1 nil)</span>)
+          (variables <span id='f0c1107'>(prog1 <span id='f0c1106'>(car &#35;:args59913)</span> <span id='f0c1104'>(setq &#35;:args59913 <span id='f0c1103'>(ccl::&#37;cdr <span id='f0c1102'>(ccl::typed-form &#39;list &#35;:args59913)</span>)</span>)</span>)</span>)
+          (&#35;:rest59914 &#35;:args59913)
+          (body &#35;:rest59914))
+     <span id='f0c1095'>(list* <span id='f0c1061'>&#39;let-refs-alist</span>
+            <span id='f0c1093'>(let* ((&#35;:g59931 <span id='f0c1092'>(cons nil nil)</span>) (&#35;:g59932 &#35;:g59931) (&#35;:g59934 <span id='f0c1090'>(function <span id='f0c1089'>(lambda (x) <span id='f0c1088'>(cons x x)</span>)</span>)</span>))
+              <span id='f0c1085'>(let* ((&#35;:g59935 variables))
+                (progn <span id='f0c1081'>(tagbody <span id='f0c1078'>(go &#35;:g59937)</span>
+                                (&#35;:g59936 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020041FFDAD&#62; t t)
+                                <span id='f0c1073'>(tagbody <span id='f0c1072'>(let* ((&#35;:g59933 <span id='f0c1064'>(car &#35;:g59935)</span>))
+                                           <span id='f0c1071'>(tagbody <span id='f0c1070'>(setq &#35;:g59931
+                                                          <span id='f0c1069'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59931
+                                                                                   <span id='f0c1068'>(cons <span id='f0c1067'>(funcall &#35;:g59934 &#35;:g59933)</span>
+                                                                                         nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                <span id='f0c1077'>(setq &#35;:g59935 <span id='f0c1076'>(ccl::&#37;cdr <span id='f0c1075'>(ccl::typed-form &#39;list &#35;:g59935)</span>)</span>)</span>
+                                (&#35;:g59937 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020041FFDAD&#62; t nil)
+                                <span id='f0c1080'>(if <span id='f0c1079'>(not &#39;:ne &#35;:g59935)</span> (go &#35;:g59936) nil)</span>)</span>
+                       <span id='f0c1084'>(let* () <span id='f0c1083'>(ccl::&#37;cdr &#35;:g59932)</span>)</span>))</span>)</span>
+            body)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>283</span> 
+<span id='f0s104'><span class='line'>284</span> (defmacro let-refs-alist (variables &#38;rest body)
+<span class='line'>285</span>   &#34;lets the variables in the argument list be referred to at the CL
+<span class='line'>286</span> level&#46; However the input is an alist so it is unique at the Alucard
+<span class='line'>287</span> Level&#46; An example usage may be
+<span class='line'>288</span> (let-refs-alist ((a &#46; a123123) (b &#46; b123123)) (prld:+ a b))&#34;
+<span class='line'>289</span>   <span id='f0s105'>&#96;(let &#44;(mapcar (lambda (var)
+<span class='line'>290</span>                    (list (car var)
+<span class='line'>291</span>                          &#96;(spc:make-reference
+<span class='line'>292</span>                            :name &#44;(util:symbol-to-keyword (cdr var)))))
+<span class='line'>293</span>           variables)
+<span class='line'>294</span>      &#59;&#59; Declare the values as ignoreable
+<span class='line'>295</span>      &#59;&#59; Should we keep the warning&#33;&#63;
+<span class='line'>296</span>      (declare (ignorable &#44;&#64;(mapcar &#35;&#39;car variables)))
+<span class='line'>297</span>      &#44;&#64;body)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t104')><span class='toggle' id='pf0t104'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(104)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t104'><code><span id='f0c962'> (lambda (&#35;:whole59944 &#35;:environment59945)
+   <span id='f0c961'>(let* ((&#35;:args59946 <span id='f0c953'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c952'>(cdr &#35;:whole59944)</span> <span id='f0c949'>&#39;(variables &#38;rest body)</span> 1 nil)</span>)
+          (variables <span id='f0c960'>(prog1 <span id='f0c955'>(car &#35;:args59946)</span> <span id='f0c959'>(setq &#35;:args59946 <span id='f0c958'>(ccl::&#37;cdr <span id='f0c957'>(ccl::typed-form &#39;list &#35;:args59946)</span>)</span>)</span>)</span>)
+          (&#35;:rest59947 &#35;:args59946)
+          (body &#35;:rest59947))
+     <span id='f0c948'>(list* <span id='f0c908'>&#39;let</span>
+            <span id='f0c946'>(let* ((&#35;:g59971 <span id='f0c945'>(cons nil nil)</span>)
+                   (&#35;:g59972 &#35;:g59971)
+                   (&#35;:g59974
+                    <span id='f0c943'>(function <span id='f0c942'>(lambda (var)
+                                <span id='f0c941'>(list <span id='f0c934'>(car var)</span>
+                                      <span id='f0c940'>(list <span id='f0c935'>&#39;spc:make-reference</span> <span id='f0c936'>&#39;:name</span> <span id='f0c939'>(funcall &#39;util:symbol-to-keyword <span id='f0c938'>(cdr var)</span>)</span>)</span>)</span>)</span>)</span>))
+              <span id='f0c932'>(let* ((&#35;:g59979 variables))
+                (progn <span id='f0c931'>(tagbody <span id='f0c930'>(go &#35;:g59981)</span>
+                                (&#35;:g59980 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004221C6D&#62; t t)
+                                <span id='f0c925'>(tagbody <span id='f0c924'>(let* ((&#35;:g59973 <span id='f0c916'>(car &#35;:g59979)</span>))
+                                           <span id='f0c923'>(tagbody <span id='f0c922'>(setq &#35;:g59971
+                                                          <span id='f0c921'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59971
+                                                                                   <span id='f0c920'>(cons <span id='f0c919'>(funcall &#35;:g59974 &#35;:g59973)</span>
+                                                                                         nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                <span id='f0c929'>(setq &#35;:g59979 <span id='f0c928'>(ccl::&#37;cdr <span id='f0c927'>(ccl::typed-form &#39;list &#35;:g59979)</span>)</span>)</span>
+                                (&#35;:g59981 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004221C6D&#62; t nil)
+                                <span id='f0c914'>(if <span id='f0c913'>(not &#39;:ne &#35;:g59979)</span> (go &#35;:g59980) nil)</span>)</span>
+                       <span id='f0c911'>(let* () <span id='f0c910'>(ccl::&#37;cdr &#35;:g59972)</span>)</span>))</span>)</span>
+            <span id='f0c907'>(list <span id='f0c906'>&#39;declare</span>
+                  <span id='f0c905'>(cons <span id='f0c904'>&#39;ignorable</span>
+                        <span id='f0c903'>(let* ((&#35;:g59975 <span id='f0c902'>(cons nil nil)</span>) (&#35;:g59976 &#35;:g59975) (&#35;:g59978 <span id='f0c900'>(function car)</span>))
+                          <span id='f0c899'>(let* ((&#35;:g59982 variables))
+                            (progn <span id='f0c894'>(tagbody <span id='f0c893'>(go &#35;:g59984)</span>
+                                            (&#35;:g59983 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200425DD8D&#62; t t)
+                                            <span id='f0c892'>(tagbody <span id='f0c891'>(let* ((&#35;:g59977 <span id='f0c890'>(car &#35;:g59982)</span>))
+                                                       <span id='f0c888'>(tagbody <span id='f0c887'>(setq &#35;:g59975
+                                                                      <span id='f0c886'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59975
+                                                                                               <span id='f0c884'>(cons <span id='f0c883'>(funcall &#35;:g59978
+                                                                                                              &#35;:g59977)</span>
+                                                                                                     nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                            <span id='f0c879'>(setq &#35;:g59982 <span id='f0c878'>(ccl::&#37;cdr <span id='f0c877'>(ccl::typed-form &#39;list &#35;:g59982)</span>)</span>)</span>
+                                            (&#35;:g59984 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200425DD8D&#62; t nil)
+                                            <span id='f0c881'>(if <span id='f0c880'>(not &#39;:ne &#35;:g59982)</span> (go &#35;:g59983) nil)</span>)</span>
+                                   <span id='f0c897'>(let* () <span id='f0c896'>(ccl::&#37;cdr &#35;:g59976)</span>)</span>))</span>)</span>)</span>)</span>
+            body)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>298</span> 
+<span class='line'>299</span> (-&#62; make-constraint-from-list (list) spc:constraint)
+<span id='f0s106'><span class='line'>300</span> (defun make-constraint-from-list (term)
+<span class='line'>301</span>   &#34;Takes a terms like (public root (bytes 64)) and generates out a &#96;spc:constraint&#39;&#34;
+<span class='line'>302</span>   <span id='f0s107'>(values
+<span class='line'>303</span>    <span id='f0s108'>(destructuring-bind (priv name type) term
+<span class='line'>304</span>      <span id='f0s109'>(spc:make-constraint :name    <span id='f0s110'>(util:symbol-to-keyword name)</span>
+<span class='line'>305</span>                           :privacy <span id='f0s111'>(util:symbol-to-keyword priv)</span>
+<span class='line'>306</span>                           :type    <span id='f0s112'>(spc:to-type-reference-format type)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t106')><span class='toggle' id='pf0t106'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(106)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t106'><code><span id='f0c41'> (lambda (term)
+   <span id='f0c40'>(values <span id='f0c39'>(let* ((&#35;:whole59997 term)
+                  (&#35;:args59998 <span id='f0c38'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59997 <span id='f0c35'>&#39;(priv name type)</span> 3 3)</span>)
+                  (priv
+                   <span id='f0c20'>(prog1 <span id='f0c15'>(ccl::&#37;car &#35;:args59998)</span> <span id='f0c19'>(setq &#35;:args59998 <span id='f0c18'>(ccl::&#37;cdr <span id='f0c17'>(ccl::typed-form &#39;list &#35;:args59998)</span>)</span>)</span>)</span>)
+                  (name
+                   <span id='f0c6'>(prog1 <span id='f0c1'>(ccl::&#37;car &#35;:args59998)</span> <span id='f0c5'>(setq &#35;:args59998 <span id='f0c4'>(ccl::&#37;cdr <span id='f0c3'>(ccl::typed-form &#39;list &#35;:args59998)</span>)</span>)</span>)</span>)
+                  (type
+                   <span id='f0c13'>(prog1 <span id='f0c8'>(ccl::&#37;car &#35;:args59998)</span> <span id='f0c12'>(setq &#35;:args59998 <span id='f0c11'>(ccl::&#37;cdr <span id='f0c10'>(ccl::typed-form &#39;list &#35;:args59998)</span>)</span>)</span>)</span>))
+             <span id='f0c33'>(funcall &#39;spc:make-constraint
+                      <span id='f0c21'>&#39;:name</span>
+                      <span id='f0c27'>(ccl::typed-form &#39;keyword <span id='f0c26'>(funcall &#39;util:symbol-to-keyword name)</span>)</span>
+                      <span id='f0c29'>&#39;:privacy</span>
+                      <span id='f0c24'>(ccl::typed-form &#39;(member :private :public) <span id='f0c23'>(funcall &#39;util:symbol-to-keyword priv)</span>)</span>
+                      <span id='f0c28'>&#39;:type</span>
+                      <span id='f0c32'>(ccl::typed-form &#39;(or spc:reference-type spc:application)
+                       <span id='f0c31'>(funcall &#39;spc:to-type-reference-format type)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>307</span> 
+<span class='line'>308</span> (-&#62; make-constraint-mapping-from-list (list) sycamore:tree-map)
+<span id='f0s113'><span class='line'>309</span> (defun make-constraint-mapping-from-list (argument-list)
+<span class='line'>310</span>   &#34;Takes a list of terms like (public root (bytes 64)) and generates out
+<span class='line'>311</span> a &#96;sycamore:tree-map&#39; from &#96;keyword&#39; to &#96;spc:constraint&#39;&#34;
+<span class='line'>312</span>   <span id='f0s114'>(values
+<span class='line'>313</span>    <span id='f0s115'>(sycamore:alist-tree-map
+<span class='line'>314</span>     <span id='f0s116'>(mapcar <span id='f0s117'>(lambda (triple)
+<span class='line'>315</span>               <span id='f0s118'>(destructuring-bind (priv name type) triple
+<span class='line'>316</span>                 <span id='f0s119'>(cons <span id='f0s120'>(util:symbol-to-keyword name)</span>
+<span class='line'>317</span>                       <span id='f0s121'>(spc:make-constraint :privacy <span id='f0s122'>(util:symbol-to-keyword priv)</span>
+<span class='line'>318</span>                                            :name <span id='f0s123'>(util:symbol-to-keyword name)</span>
+<span class='line'>319</span>                                            :type <span id='f0s124'>(spc:to-type-reference-format type)</span>)</span>)</span>)</span>)</span>
+<span class='line'>320</span>             argument-list)</span>
+<span class='line'>321</span>     <span id='f0s125'>&#35;&#39;util:hash-compare</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t113')><span class='toggle' id='pf0t113'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(113)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t113'><code><span id='f0c641'> (lambda (argument-list)
+   <span id='f0c640'>(values <span id='f0c639'>(funcall &#39;sycamore:alist-tree-map
+                    <span id='f0c638'>(let* ((&#35;:g60008 <span id='f0c637'>(cons nil nil)</span>)
+                           (&#35;:g60009 &#35;:g60008)
+                           (&#35;:g60011
+                            <span id='f0c612'>(function <span id='f0c611'>(lambda (triple)
+                                        <span id='f0c610'>(let* ((&#35;:whole60012 triple)
+                                               (&#35;:args60013
+                                                <span id='f0c602'>(funcall &#39;ccl::prepare-to-destructure
+                                                         &#35;:whole60012
+                                                         <span id='f0c598'>&#39;(priv name type)</span>
+                                                         3
+                                                         3)</span>)
+                                               (priv
+                                                <span id='f0c574'>(prog1 <span id='f0c569'>(ccl::&#37;car &#35;:args60013)</span>
+                                                       <span id='f0c573'>(setq &#35;:args60013
+                                                             <span id='f0c572'>(ccl::&#37;cdr <span id='f0c571'>(ccl::typed-form &#39;list &#35;:args60013)</span>)</span>)</span>)</span>)
+                                               (name
+                                                <span id='f0c609'>(prog1 <span id='f0c608'>(ccl::&#37;car &#35;:args60013)</span>
+                                                       <span id='f0c606'>(setq &#35;:args60013
+                                                             <span id='f0c605'>(ccl::&#37;cdr <span id='f0c604'>(ccl::typed-form &#39;list &#35;:args60013)</span>)</span>)</span>)</span>)
+                                               (type
+                                                <span id='f0c581'>(prog1 <span id='f0c580'>(ccl::&#37;car &#35;:args60013)</span>
+                                                       <span id='f0c578'>(setq &#35;:args60013
+                                                             <span id='f0c577'>(ccl::&#37;cdr <span id='f0c576'>(ccl::typed-form &#39;list &#35;:args60013)</span>)</span>)</span>)</span>))
+                                          <span id='f0c597'>(cons <span id='f0c583'>(funcall &#39;util:symbol-to-keyword name)</span>
+                                                <span id='f0c596'>(funcall &#39;spc:make-constraint
+                                                         <span id='f0c591'>&#39;:privacy</span>
+                                                         <span id='f0c587'>(ccl::typed-form &#39;(member :private :public)
+                                                          <span id='f0c586'>(funcall &#39;util:symbol-to-keyword priv)</span>)</span>
+                                                         <span id='f0c595'>&#39;:name</span>
+                                                         <span id='f0c590'>(ccl::typed-form &#39;keyword
+                                                          <span id='f0c589'>(funcall &#39;util:symbol-to-keyword name)</span>)</span>
+                                                         <span id='f0c584'>&#39;:type</span>
+                                                         <span id='f0c594'>(ccl::typed-form &#39;(or spc:reference-type spc:application)
+                                                          <span id='f0c593'>(funcall &#39;spc:to-type-reference-format type)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+                      <span id='f0c636'>(let* ((&#35;:g60014 argument-list))
+                        (progn <span id='f0c634'>(tagbody <span id='f0c620'>(go &#35;:g60016)</span>
+                                        (&#35;:g60015 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020042CFB0D&#62; t t)
+                                        <span id='f0c631'>(tagbody <span id='f0c630'>(let* ((&#35;:g60010 <span id='f0c629'>(car &#35;:g60014)</span>))
+                                                   <span id='f0c627'>(tagbody <span id='f0c626'>(setq &#35;:g60008
+                                                                  <span id='f0c625'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g60008
+                                                                                           <span id='f0c624'>(cons <span id='f0c623'>(funcall &#35;:g60011
+                                                                                                          &#35;:g60010)</span>
+                                                                                                 nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c619'>(setq &#35;:g60014 <span id='f0c618'>(ccl::&#37;cdr <span id='f0c617'>(ccl::typed-form &#39;list &#35;:g60014)</span>)</span>)</span>
+                                        (&#35;:g60016 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020042CFB0D&#62; t nil)
+                                        <span id='f0c633'>(if <span id='f0c632'>(not &#39;:ne &#35;:g60014)</span> (go &#35;:g60015) nil)</span>)</span>
+                               <span id='f0c615'>(let* () <span id='f0c614'>(ccl::&#37;cdr &#35;:g60009)</span>)</span>))</span>)</span>
+                    <span id='f0c566'>(function util:hash-compare)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>322</span> 
+<span class='line'>323</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>324</span> &#59;&#59; EXAMPLES
+<span class='line'>325</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+</code></div>
+</body></html>

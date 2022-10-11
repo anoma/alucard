@@ -1,0 +1,220 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_type-op_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;type-op.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;spec&#46;type-op)
+<span class='line'>2</span> 
+<span class='line'>3</span> (-&#62; kind-of-pirmitive&#63; (spc:type-reference (-&#62; (spc:primitive) boolean)) boolean)
+<span id='f0s0'><span class='line'>4</span> (defun kind-of-pirmitive&#63; (ref predicate)
+<span class='line'>5</span>   <span id='f0s1'>(let* ((name-to-lookup
+<span class='line'>6</span>            <span id='f0s2'>(etypecase-of spc:type-reference ref
+<span class='line'>7</span>              (spc:reference-type <span id='f0s3'>(spc:name ref)</span>)
+<span class='line'>8</span>              (spc:application    <span id='f0s4'>(spc:name <span id='f0s5'>(spc:func ref)</span>)</span>))</span>)
+<span class='line'>9</span>          (looked <span id='f0s6'>(storage:lookup-type name-to-lookup)</span>))
+<span class='line'>10</span>     <span id='f0s7'>(etypecase-of (or spc:type-storage null) looked
+<span class='line'>11</span>       ((or null spc:type-declaration) nil)
+<span class='line'>12</span>       (spc:primitive                  <span id='f0s8'>(funcall predicate looked)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c92'> (lambda (ref predicate)
+   <span id='f0c91'>(let* ((name-to-lookup
+           <span id='f0c60'>(let* ((&#35;:x53284 ref))
+             <span id='f0c59'>(let* ((&#35;:g53285 &#35;:x53284))
+               <span id='f0c58'>(if <span id='f0c39'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g53285
+                            <span id='f0c37'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038493EF&#62;))</span>)</span>
+                   <span id='f0c36'>(progn nil <span id='f0c35'>(funcall &#39;spc:name ref)</span>)</span>
+                   <span id='f0c57'>(if <span id='f0c42'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g53285
+                                <span id='f0c41'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003845FDF&#62;))</span>)</span>
+                       <span id='f0c46'>(progn nil <span id='f0c45'>(funcall &#39;spc:name <span id='f0c44'>(funcall &#39;spc:func ref)</span>)</span>)</span>
+                       <span id='f0c56'>(if <span id='f0c48'>(progn &#35;:g53285 t)</span>
+                           <span id='f0c55'>(progn nil
+                                  <span id='f0c54'>(values (funcall &#39;error
+                                                   <span id='f0c52'>&#39;type-error</span>
+                                                   <span id='f0c51'>&#39;:datum</span>
+                                                   &#35;:x53284
+                                                   <span id='f0c50'>&#39;:expected-type</span>
+                                                   <span id='f0c53'>&#39;spc:type-reference</span>))</span>)</span>
+                           nil)</span>)</span>)</span>)</span>)</span>)
+          (looked <span id='f0c90'>(funcall &#39;storage:lookup-type <span id='f0c89'>(ccl::typed-form &#39;keyword name-to-lookup)</span>)</span>))
+     <span id='f0c87'>(let* ((&#35;:x53292 looked))
+       <span id='f0c86'>(let* ((&#35;:g53293 &#35;:x53292))
+         <span id='f0c85'>(if <span id='f0c84'>(let* ((&#35;:g53295 &#35;:g53293))
+               <span id='f0c83'>(or <span id='f0c82'>(not &#35;:g53295)</span>
+                   <span id='f0c81'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g53295
+                            <span id='f0c80'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200387CD2F&#62;))</span>)</span>)</span>)</span>
+             <span id='f0c61'>(progn nil nil)</span>
+             <span id='f0c78'>(if <span id='f0c77'>(funcall &#39;ccl::std-instance-class-cell-typep
+                          &#35;:g53293
+                          <span id='f0c75'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038799DF&#62;))</span>)</span>
+                 <span id='f0c74'>(progn nil <span id='f0c73'>(funcall predicate looked)</span>)</span>
+                 <span id='f0c71'>(if <span id='f0c70'>(progn &#35;:g53293 t)</span>
+                     <span id='f0c68'>(progn nil
+                            <span id='f0c67'>(values (funcall &#39;error
+                                             <span id='f0c65'>&#39;type-error</span>
+                                             <span id='f0c62'>&#39;:datum</span>
+                                             &#35;:x53292
+                                             <span id='f0c63'>&#39;:expected-type</span>
+                                             <span id='f0c64'>&#39;(or spc:type-storage null)</span>))</span>)</span>
+                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>13</span> 
+<span class='line'>14</span> (-&#62; record-reference&#63; (spc:type-reference) boolean)
+<span id='f0s9'><span class='line'>15</span> (defun record-reference&#63; (ref)
+<span class='line'>16</span>   <span id='f0s10'>(let* ((name-to-lookup
+<span class='line'>17</span>            <span id='f0s11'>(etypecase-of spc:type-reference ref
+<span class='line'>18</span>              (spc:reference-type <span id='f0s12'>(spc:name ref)</span>)
+<span class='line'>19</span>              (spc:application    <span id='f0s13'>(spc:name <span id='f0s14'>(spc:func ref)</span>)</span>))</span>)
+<span class='line'>20</span>          (looked <span id='f0s15'>(storage:lookup-type name-to-lookup)</span>))
+<span class='line'>21</span>     <span id='f0s16'>(etypecase-of (or spc:type-storage null) looked
+<span class='line'>22</span>       (spc:type-declaration    t)
+<span class='line'>23</span>       ((or null spc:primitive) nil))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c155'> (lambda (ref)
+   <span id='f0c154'>(let* ((name-to-lookup
+           <span id='f0c128'>(let* ((&#35;:x53311 ref))
+             <span id='f0c127'>(let* ((&#35;:g53312 &#35;:x53311))
+               <span id='f0c126'>(if <span id='f0c104'>(funcall &#39;ccl::std-instance-class-cell-typep
+                            &#35;:g53312
+                            <span id='f0c102'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038BC38F&#62;))</span>)</span>
+                   <span id='f0c125'>(progn nil <span id='f0c124'>(funcall &#39;spc:name ref)</span>)</span>
+                   <span id='f0c122'>(if <span id='f0c107'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g53312
+                                <span id='f0c106'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038B8F7F&#62;))</span>)</span>
+                       <span id='f0c111'>(progn nil <span id='f0c110'>(funcall &#39;spc:name <span id='f0c109'>(funcall &#39;spc:func ref)</span>)</span>)</span>
+                       <span id='f0c121'>(if <span id='f0c113'>(progn &#35;:g53312 t)</span>
+                           <span id='f0c120'>(progn nil
+                                  <span id='f0c119'>(values (funcall &#39;error
+                                                   <span id='f0c118'>&#39;type-error</span>
+                                                   <span id='f0c117'>&#39;:datum</span>
+                                                   &#35;:x53311
+                                                   <span id='f0c116'>&#39;:expected-type</span>
+                                                   <span id='f0c114'>&#39;spc:type-reference</span>))</span>)</span>
+                           nil)</span>)</span>)</span>)</span>)</span>)
+          (looked <span id='f0c101'>(funcall &#39;storage:lookup-type <span id='f0c100'>(ccl::typed-form &#39;keyword name-to-lookup)</span>)</span>))
+     <span id='f0c153'>(let* ((&#35;:x53319 looked))
+       <span id='f0c152'>(let* ((&#35;:g53320 &#35;:x53319))
+         <span id='f0c151'>(if <span id='f0c131'>(funcall &#39;ccl::std-instance-class-cell-typep
+                      &#35;:g53320
+                      <span id='f0c129'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038B197F&#62;))</span>)</span>
+             <span id='f0c132'>(progn nil t)</span>
+             <span id='f0c150'>(if <span id='f0c149'>(let* ((&#35;:g53325 &#35;:g53320))
+                   <span id='f0c148'>(or <span id='f0c144'>(not &#35;:g53325)</span>
+                       <span id='f0c147'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g53325
+                                <span id='f0c146'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038AD0DF&#62;))</span>)</span>)</span>)</span>
+                 <span id='f0c133'>(progn nil nil)</span>
+                 <span id='f0c143'>(if <span id='f0c135'>(progn &#35;:g53320 t)</span>
+                     <span id='f0c142'>(progn nil
+                            <span id='f0c141'>(values (funcall &#39;error
+                                             <span id='f0c136'>&#39;type-error</span>
+                                             <span id='f0c138'>&#39;:datum</span>
+                                             &#35;:x53319
+                                             <span id='f0c140'>&#39;:expected-type</span>
+                                             <span id='f0c139'>&#39;(or spc:type-storage null)</span>))</span>)</span>
+                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>24</span> 
+<span class='line'>25</span> (-&#62; primitive&#63; (spc:type-reference) boolean)
+<span id='f0s17'><span class='line'>26</span> (defun primitive&#63; (ref)
+<span class='line'>27</span>   &#34;Checks if the &#34;
+<span class='line'>28</span>   <span id='f0s18'>(kind-of-pirmitive&#63; ref <span id='f0s19'>(constantly t)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t17')><span class='toggle' id='pf0t17'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(17)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t17'><code><span id='f0c98'> (lambda (ref)
+   <span id='f0c97'>(funcall &#39;kind-of-pirmitive&#63;
+            <span id='f0c96'>(ccl::typed-form &#39;(or spc:reference-type spc:application) ref)</span>
+            <span id='f0c94'>(ccl::typed-form &#39;function <span id='f0c93'>(funcall &#39;constantly t)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>29</span> 
+<span class='line'>30</span> (-&#62; array-reference&#63; (spc:type-reference) boolean)
+<span id='f0s20'><span class='line'>31</span> (defun array-reference&#63; (ref)
+<span class='line'>32</span>   <span id='f0s21'>(kind-of-pirmitive&#63; ref <span id='f0s22'>(lambda (v) <span id='f0s23'>(eql :array <span id='f0s24'>(spc:name v)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t20')><span class='toggle' id='pf0t20'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(20)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t20'><code><span id='f0c33'> (lambda (ref)
+   <span id='f0c32'>(funcall &#39;kind-of-pirmitive&#63;
+            <span id='f0c25'>(ccl::typed-form &#39;(or spc:reference-type spc:application) ref)</span>
+            <span id='f0c31'>(ccl::typed-form &#39;function <span id='f0c30'>(function <span id='f0c29'>(lambda (v) <span id='f0c28'>(eq &#39;:array <span id='f0c27'>(funcall &#39;spc:name v)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>33</span> 
+<span class='line'>34</span> (-&#62; void-reference&#63; (spc:type-reference) boolean)
+<span id='f0s25'><span class='line'>35</span> (defun void-reference&#63; (ref)
+<span class='line'>36</span>   <span id='f0s26'>(kind-of-pirmitive&#63; ref <span id='f0s27'>(lambda (v) <span id='f0s28'>(eql :void <span id='f0s29'>(spc:name v)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t25')><span class='toggle' id='pf0t25'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(25)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t25'><code><span id='f0c9'> (lambda (ref)
+   <span id='f0c8'>(funcall &#39;kind-of-pirmitive&#63;
+            <span id='f0c1'>(ccl::typed-form &#39;(or spc:reference-type spc:application) ref)</span>
+            <span id='f0c7'>(ccl::typed-form &#39;function <span id='f0c6'>(function <span id='f0c5'>(lambda (v) <span id='f0c4'>(eq &#39;:void <span id='f0c3'>(funcall &#39;spc:name v)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>37</span> 
+<span class='line'>38</span> (-&#62; int-reference&#63; (spc:type-reference) boolean)
+<span id='f0s30'><span class='line'>39</span> (defun int-reference&#63; (ref)
+<span class='line'>40</span>   <span id='f0s31'>(kind-of-pirmitive&#63; ref <span id='f0s32'>(lambda (v)
+<span class='line'>41</span>                             <span id='f0s33'>(or <span id='f0s34'>(eql :int  <span id='f0s35'>(spc:name v)</span>)</span>
+<span class='line'>42</span>                                 <span id='f0s36'>(eql :bool <span id='f0s37'>(spc:name v)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t30')><span class='toggle' id='pf0t30'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(30)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t30'><code><span id='f0c23'> (lambda (ref)
+   <span id='f0c22'>(funcall &#39;kind-of-pirmitive&#63;
+            <span id='f0c11'>(ccl::typed-form &#39;(or spc:reference-type spc:application) ref)</span>
+            <span id='f0c21'>(ccl::typed-form &#39;function
+             <span id='f0c20'>(function <span id='f0c19'>(lambda (v) <span id='f0c18'>(or <span id='f0c17'>(eq &#39;:int <span id='f0c16'>(funcall &#39;spc:name v)</span>)</span> <span id='f0c14'>(eq &#39;:bool <span id='f0c13'>(funcall &#39;spc:name v)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

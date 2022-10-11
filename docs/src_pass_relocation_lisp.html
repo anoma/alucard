@@ -1,0 +1,842 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_relocation_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;relocation.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;pass&#46;relocation)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; We assume the code is in ANF
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> &#59;&#59; This module will have the arduous task of taking code like
+<span class='line'>8</span> &#59;&#59; (&#60;let ref-point &#61; &#60;POINT :x 300 :y :ref2&#62;
+<span class='line'>9</span> &#59;&#59;  &#60;let fi        &#61; &#60;Nested-CORDS :PLANE :ref1 :Point :ref-point&#62;
+<span class='line'>10</span> &#59;&#59;  &#60;let faz       &#61; &#60;APP function-to-point &#46;&#46;&#46;&#62;
+<span class='line'>11</span> &#59;&#59;  &#46;&#46;&#46;)
+<span class='line'>12</span> 
+<span class='line'>13</span> &#59;&#59; and generating out the following constructs
+<span class='line'>14</span> 
+<span class='line'>15</span> &#59;&#59; (&#60;let ref-point-x &#61; 300
+<span class='line'>16</span> &#59;&#59;  &#60;let ref-point-y &#61; :ref2&#62;
+<span class='line'>17</span> &#59;&#59;  &#60;let fi-plane    &#61; :ref1&#62;
+<span class='line'>18</span> &#59;&#59;  &#60;let fi-point-x  &#61; :ref-point-x&#62;
+<span class='line'>19</span> &#59;&#59;  &#60;let fi-point-y  &#61; :ref-point-y&#62;
+<span class='line'>20</span> &#59;&#59;  &#60;multi (faz-point-x faz-point-y) &#61; &#60;APP function-to-point &#46;&#46;&#46;&#62;&#62;
+<span class='line'>21</span> &#59;&#59;  &#46;&#46;&#46;)
+<span class='line'>22</span> 
+<span class='line'>23</span> &#59;&#59; Along with constructing the following closure mapping
+<span class='line'>24</span> 
+<span class='line'>25</span> &#59;&#59; &#123;&#125; &#61; sycamore mapping&#44; ( &#46; ) &#61; alist
+<span class='line'>26</span> 
+<span class='line'>27</span> &#59;&#59; &#123; :ref-point --&#62; ((:x &#46; :ref-point-x)  (:y &#46; :ref-point-y))
+<span class='line'>28</span> &#59;&#59;   :faz       --&#62; ((:x &#46; :faz-point-x)  (:y &#46; :faz-point-y))
+<span class='line'>29</span> &#59;&#59;   :fi        --&#62; ((:plane &#46; :fi-plane) (:point &#46; ((:x &#46; fi-point-x) (:y &#46; fi-point-y))))
+<span class='line'>30</span> &#59;&#59; &#125;
+<span class='line'>31</span> 
+<span class='line'>32</span> &#59;&#59; Thus the type of this is keyword --&#62; &#35;1&#61;alist keyword (or keyword &#35;1&#35;)
+<span class='line'>33</span> 
+<span class='line'>34</span> &#59;&#59; short lived structure&#44; it&#39;s fine for it to be a struct
+<span id='f0s0'><span class='line'>35</span> (defstruct rel
+<span class='line'>36</span>   &#34;Deals with return values that need to update the closure and expanded let forms&#34;
+<span class='line'>37</span>   forms closure)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c187'> (lambda (rel) <span id='f0c186'>(ccl::struct-ref <span id='f0c184'>(funcall &#39;ccl::require-structure-type rel <span id='f0c183'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span> 1)</span>)</span>
+<span id='f0c130'> (lambda (rel) <span id='f0c129'>(ccl::struct-ref <span id='f0c128'>(funcall &#39;ccl::require-structure-type rel <span id='f0c127'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span> 2)</span>)</span>
+<span id='f0c124'> (lambda (&#35;:value56988 rel)
+   <span id='f0c123'>(ccl::struct-set <span id='f0c120'>(funcall &#39;ccl::require-structure-type rel <span id='f0c118'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span> 1 &#35;:value56988)</span>)</span>
+<span id='f0c106'> (lambda (&#35;:value56989 rel)
+   <span id='f0c105'>(ccl::struct-set <span id='f0c102'>(funcall &#39;ccl::require-structure-type rel <span id='f0c100'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span> 2 &#35;:value56989)</span>)</span>
+<span id='f0c27'> (lambda (&#38;key ((:forms &#35;:forms) nil &#35;:compiler-var) ((:closure &#35;:closure) nil &#35;:compiler-var))
+   <span id='f0c26'>(ccl::&#37;gvector 54 <span id='f0c24'>&#39;(&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;)</span> &#35;:forms &#35;:closure)</span>)</span>
+<span id='f0c14'> (lambda (rel)
+   <span id='f0c13'>(funcall &#39;ccl::copy-uvector <span id='f0c12'>(funcall &#39;ccl::require-structure-type rel <span id='f0c11'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span>)</span>)</span>
+<span id='f0c9'> (lambda (&#35;:g56987) <span id='f0c8'>(funcall &#39;ccl:structure-typep &#35;:g56987 <span id='f0c6'>&#39;&#35;&#60;class-cell for rel &#35;x302001E3529D&#62;</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>38</span> 
+<span class='line'>39</span> &#59;&#59; TODO&#46;
+<span class='line'>40</span> &#59;&#59; simplify this code with another pass&#46;
+<span class='line'>41</span> &#59;&#59;
+<span class='line'>42</span> &#59;&#59; Instead of generating out multiple lets for records&#44; do a
+<span class='line'>43</span> &#59;&#59; multi-bind&#44; have a pass that then remove the mutli-binds on a
+<span class='line'>44</span> &#59;&#59; record&#44; and remove the last records&#46;
+<span class='line'>45</span> 
+<span class='line'>46</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>47</span> &#59;&#59; Core API
+<span class='line'>48</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>49</span> 
+<span class='line'>50</span> &#59;&#59; TODO Update for Record FORMS from array lookup&#33;
+<span class='line'>51</span> (-&#62; relocate-let (ir:bind closure:typ) rel)
+<span id='f0s1'><span class='line'>52</span> (defun relocate-let (bind closure)
+<span class='line'>53</span>   &#34;relocate-let generates out let bindings which remove the original let
+<span class='line'>54</span> bound to a record&#46; This function also builds up a closure to where the
+<span class='line'>55</span> old value was relocated to&#46;&#34;
+<span class='line'>56</span>   <span id='f0s2'>(let ((no-change
+<span class='line'>57</span>           <span id='f0s3'>(make-rel :forms <span id='f0s4'>(list bind)</span> :closure closure)</span>))
+<span class='line'>58</span>     <span id='f0s5'>(with-accessors ((name ir:var) (val ir:value)) bind
+<span class='line'>59</span>       <span id='f0s6'>(etypecase-of ir:term-no-binding val
+<span class='line'>60</span>         (ir:number no-change)
+<span class='line'>61</span>         &#59;&#59; TODO Update for Record FORMS from array lookup&#33;
+<span class='line'>62</span>         (ir:array-forms no-change)
+<span class='line'>63</span>         (ir:reference
+<span class='line'>64</span>          <span id='f0s7'>(let ((checked <span id='f0s8'>(closure:lookup closure <span id='f0s9'>(ir:name val)</span>)</span>))
+<span class='line'>65</span>            <span id='f0s10'>(if checked
+<span class='line'>66</span>                <span id='f0s11'>(make-rel-from-alist name checked closure)</span>
+<span class='line'>67</span>                no-change)</span>)</span>)
+<span class='line'>68</span>         (ir:application
+<span class='line'>69</span>          <span id='f0s12'>(let* ((func-name <span id='f0s13'>(ir:name <span id='f0s14'>(ir:func val)</span>)</span>)
+<span class='line'>70</span>                 (exp       <span id='f0s15'>(expand:full-return-values func-name)</span>))
+<span class='line'>71</span>            <span id='f0s16'>(if <span id='f0s17'>(consp exp)</span>
+<span class='line'>72</span>                &#59;&#59; see doc on &#96;expand:full-return-values&#39; to see that
+<span class='line'>73</span>                &#59;&#59; the type coincides with our nested alist representation
+<span class='line'>74</span>                <span id='f0s18'>(let* ((new-closure-value <span id='f0s19'>(update-alist-values-with-preifx name exp)</span>)
+<span class='line'>75</span>                       (new-bindings      <span id='f0s20'>(util:alist-values new-closure-value)</span>))
+<span class='line'>76</span>                  <span id='f0s21'>(make-rel
+<span class='line'>77</span>                   :closure <span id='f0s22'>(closure:insert closure name new-closure-value)</span>
+<span class='line'>78</span>                   :forms   <span id='f0s23'>(list
+<span class='line'>79</span>                             &#59;&#59; application is in the source&#44; propagate it
+<span class='line'>80</span>                             <span id='f0s24'>(ir:copy-meta
+<span class='line'>81</span>                              val
+<span class='line'>82</span>                              <span id='f0s25'>(ir:make-multiple-bind :var new-bindings :val val)</span>)</span>)</span>)</span>)</span>
+<span class='line'>83</span>                &#59;&#59; If we don&#39;t get back a cons&#44; then we aren&#39;t dealing
+<span class='line'>84</span>                &#59;&#59; with a record return type or the record is not found
+<span class='line'>85</span>                no-change)</span>)</span>)
+<span class='line'>86</span>         (ir:record-lookup
+<span class='line'>87</span>          &#59;&#59; has to be a ref due to ANF&#44; gotta love ANF
+<span class='line'>88</span>          <span id='f0s26'>(let* ((lookup <span id='f0s27'>(closure:lookup closure <span id='f0s28'>(ir:name <span id='f0s29'>(ir:record val)</span>)</span>)</span>)
+<span class='line'>89</span>                 (find   <span id='f0s30'>(find <span id='f0s31'>(ir:field val)</span> lookup :key <span id='f0s32'>&#35;&#39;car</span>)</span>))
+<span class='line'>90</span>            &#59;&#59; use something better than error for error reporting
+<span class='line'>91</span>            <span id='f0s33'>(cond (<span id='f0s34'>(null lookup)</span>
+<span class='line'>92</span>                   <span id='f0s35'>(error
+<span class='line'>93</span>                    <span id='f0s36'>&#34;Trying to do a lookup on an unknown record &#126;A&#34;</span> val)</span>)
+<span class='line'>94</span>                  (<span id='f0s37'>(null find)</span>
+<span class='line'>95</span>                   <span id='f0s38'>(error <span id='f0s39'>&#34;Trying to do a lookup on a non existant field&#34;</span>)</span>)
+<span class='line'>96</span>                  &#59;&#59; format must be a record&#44; as the format is akin to
+<span class='line'>97</span>                  &#59;&#59; find &#61; (PLANE (X &#46; NEST-PLANE-X) (Y &#46; NEST-PLANE-Y))
+<span class='line'>98</span>                  (<span id='f0s40'>(listp <span id='f0s41'>(cdr find)</span>)</span>
+<span class='line'>99</span>                   <span id='f0s42'>(let* ((rel <span id='f0s43'>(make-rel-from-alist name <span id='f0s44'>(list find)</span> closure)</span>)
+<span class='line'>100</span>                          (clos <span id='f0s45'>(rel-closure rel)</span>))
+<span class='line'>101</span>                     &#59;&#59; need to cdr away the nested label that we used to generate
+<span class='line'>102</span>                     <span id='f0s46'>(make-rel
+<span class='line'>103</span>                      :forms   <span id='f0s47'>(rel-forms rel)</span>
+<span class='line'>104</span>                      :closure <span id='f0s48'>(closure:insert clos
+<span class='line'>105</span>                                               name
+<span class='line'>106</span>                                               <span id='f0s49'>(cdar <span id='f0s50'>(closure:lookup clos name)</span>)</span>)</span>)</span>)</span>)
+<span class='line'>107</span>                  &#59;&#59; must be an atom&#44; meaning that it must not be bound to a record
+<span class='line'>108</span>                  &#59;&#59; find &#61; (X &#46; PLANE-PLANE-X)
+<span class='line'>109</span>                  (t <span id='f0s51'>(make-rel
+<span class='line'>110</span>                      :forms <span id='f0s52'>(list <span id='f0s53'>(generate-bind <span id='f0s54'>(cdr find)</span> name)</span>)</span>
+<span class='line'>111</span>                      :closure closure)</span>))</span>)</span>)
+<span class='line'>112</span>         (ir:record
+<span class='line'>113</span>          <span id='f0s55'>(let* ((alist <span id='f0s56'>(ir:record-&#62;alist val)</span>)
+<span class='line'>114</span>                 &#59;&#59; we now have to recursively update the alist such that
+<span class='line'>115</span>                 &#59;&#59; all the nested terms works out&#44; and save it under the
+<span class='line'>116</span>                 &#59;&#59; original name&#46; we can do this via induction&#47;recursion&#46;
+<span class='line'>117</span>                 &#59;&#59;
+<span class='line'>118</span>                 &#59;&#59; Thus this happens when the value is a reference to
+<span class='line'>119</span>                 &#59;&#59; another record&#44; and thus we expand to another set
+<span class='line'>120</span>                 &#59;&#59; of lets&#46;
+<span class='line'>121</span>                 (recursed-on-args
+<span class='line'>122</span>                   <span id='f0s57'>(reduce <span id='f0s58'>(lambda (pair rel)
+<span class='line'>123</span>                             &#59;&#59; since the pair comes from the alist&#44; it
+<span class='line'>124</span>                             &#59;&#59; must be a normal form&#44; on the right
+<span class='line'>125</span>                             &#59;&#59; thus either:
+<span class='line'>126</span>                             &#59;&#59;
+<span class='line'>127</span>                             &#59;&#59; 1&#46; number
+<span class='line'>128</span>                             &#59;&#59; 2&#46; reference
+<span class='line'>129</span>                             &#59;&#59;
+<span class='line'>130</span>                             &#59;&#59; pair: (X &#46; &#35;&#60;REFERENCE X&#62;)
+<span class='line'>131</span>                             &#59;&#59; pair: (Y &#46; 5)
+<span class='line'>132</span>                             <span id='f0s59'>(destructuring-bind (field-name &#46; value) pair
+<span class='line'>133</span>                               <span id='f0s60'>(let* ((name    <span id='f0s61'>(append-keywords name field-name)</span>)
+<span class='line'>134</span>                                      (recurse <span id='f0s62'>(relocate-let
+<span class='line'>135</span>                                                <span id='f0s63'>(ir:copy-meta
+<span class='line'>136</span>                                                 value
+<span class='line'>137</span>                                                 <span id='f0s64'>(ir:make-bind :var name :val value)</span>)</span>
+<span class='line'>138</span>                                                <span id='f0s65'>(rel-closure rel)</span>)</span>))
+<span class='line'>139</span>                                 <span id='f0s66'>(make-rel
+<span class='line'>140</span>                                  :closure <span id='f0s67'>(rel-closure recurse)</span>
+<span class='line'>141</span>                                  :forms   <span id='f0s68'>(append <span id='f0s69'>(rel-forms recurse)</span>
+<span class='line'>142</span>                                                   <span id='f0s70'>(rel-forms rel)</span>)</span>)</span>)</span>)</span>)</span>
+<span class='line'>143</span>                           alist
+<span class='line'>144</span>                           :from-end t
+<span class='line'>145</span>                           :initial-value <span id='f0s71'>(make-rel :forms nil :closure closure)</span>)</span>)
+<span class='line'>146</span>                 (closure-mapping-for-current
+<span class='line'>147</span>                   &#59;&#59; here we need to construct the closure mapping for
+<span class='line'>148</span>                   &#59;&#59; the current name&#46; If the field itself is a nested
+<span class='line'>149</span>                   &#59;&#59; structure then we grab the names that were added
+<span class='line'>150</span>                   &#59;&#59; during the recursion&#46; Once we have all the names&#44;
+<span class='line'>151</span>                   &#59;&#59; we have the complete mapping for the current
+<span class='line'>152</span>                   &#59;&#59; record binding term&#46;
+<span class='line'>153</span>                   <span id='f0s72'>(mapcar <span id='f0s73'>(lambda (field-name)
+<span class='line'>154</span>                             <span id='f0s74'>(let* ((name      <span id='f0s75'>(append-keywords name field-name)</span>)
+<span class='line'>155</span>                                    (clos-look <span id='f0s76'>(closure:lookup <span id='f0s77'>(rel-closure
+<span class='line'>156</span>                                                                recursed-on-args)</span>
+<span class='line'>157</span>                                                               name)</span>))
+<span class='line'>158</span>                               <span id='f0s78'>(cons field-name
+<span class='line'>159</span>                                     <span id='f0s79'>(or clos-look name)</span>)</span>)</span>)</span>
+<span class='line'>160</span>                           <span id='f0s80'>(mapcar <span id='f0s81'>&#35;&#39;car </span>alist)</span>)</span>))
+<span class='line'>161</span>            <span id='f0s82'>(make-rel
+<span class='line'>162</span>             :closure <span id='f0s83'>(closure:insert <span id='f0s84'>(rel-closure recursed-on-args)</span>
+<span class='line'>163</span>                                      name
+<span class='line'>164</span>                                      closure-mapping-for-current)</span>
+<span class='line'>165</span>             :forms <span id='f0s85'>(rel-forms recursed-on-args)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t1')><span class='toggle' id='pf0t1'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(1)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t1'><code><span id='f0c554'> (lambda (bind closure)
+   <span id='f0c553'>(let* ((no-change <span id='f0c193'>(funcall &#39;make-rel <span id='f0c190'>&#39;:forms</span> <span id='f0c189'>(cons bind nil)</span> <span id='f0c192'>&#39;:closure</span> closure)</span>))
+     <span id='f0c552'>(let* ((&#35;:g57049 bind))
+       <span id='f0c550'>(let* ((&#35;:x57050 <span id='f0c549'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>))
+         <span id='f0c547'>(let* ((&#35;:g57051 &#35;:x57050))
+           <span id='f0c546'>(if <span id='f0c197'>(funcall &#39;numberp &#35;:g57051)</span>
+               <span id='f0c195'>(progn nil no-change)</span>
+               <span id='f0c545'>(if <span id='f0c211'>(let* ((&#35;:g57053 &#35;:g57051))
+                     <span id='f0c210'>(or <span id='f0c203'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                  &#35;:g57053
+                                  <span id='f0c201'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4F53F&#62;))</span>)</span>
+                         <span id='f0c209'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                  &#35;:g57053
+                                  <span id='f0c207'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4DF4F&#62;))</span>)</span>
+                         <span id='f0c206'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                  &#35;:g57053
+                                  <span id='f0c204'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4C95F&#62;))</span>)</span>
+                         <span id='f0c200'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                  &#35;:g57053
+                                  <span id='f0c198'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4B36F&#62;))</span>)</span>)</span>)</span>
+                   <span id='f0c213'>(progn nil no-change)</span>
+                   <span id='f0c544'>(if <span id='f0c523'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                &#35;:g57051
+                                <span id='f0c522'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A49A8F&#62;))</span>)</span>
+                       <span id='f0c543'>(progn nil
+                              <span id='f0c542'>(let* ((checked
+                                      <span id='f0c530'>(funcall &#39;closure:lookup
+                                               <span id='f0c525'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                               <span id='f0c529'>(ccl::typed-form &#39;keyword
+                                                <span id='f0c528'>(funcall &#39;alu&#46;spec:name <span id='f0c527'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)</span>)</span>))
+                                <span id='f0c541'>(if checked
+                                    <span id='f0c539'>(funcall &#39;make-rel-from-alist
+                                             <span id='f0c534'>(ccl::typed-form &#39;keyword <span id='f0c533'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                             <span id='f0c536'>(ccl::typed-form &#39;list checked)</span>
+                                             <span id='f0c538'>(ccl::typed-form &#39;closure:typ closure)</span>)</span>
+                                    no-change)</span>)</span>)</span>
+                       <span id='f0c520'>(if <span id='f0c260'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                    &#35;:g57051
+                                    <span id='f0c258'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4700F&#62;))</span>)</span>
+                           <span id='f0c257'>(progn nil
+                                  <span id='f0c256'>(let* ((func-name
+                                          <span id='f0c252'>(funcall &#39;alu&#46;spec:name
+                                                   <span id='f0c251'>(funcall &#39;alu&#46;spec:func <span id='f0c250'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)</span>)
+                                         (exp
+                                          <span id='f0c255'>(funcall &#39;expand:full-return-values <span id='f0c254'>(ccl::typed-form &#39;keyword func-name)</span>)</span>))
+                                    <span id='f0c248'>(if <span id='f0c215'>(eq (ccl::fulltag exp) 3)</span>
+                                        <span id='f0c246'>(let* ((new-closure-value
+                                                <span id='f0c243'>(funcall &#39;update-alist-values-with-preifx
+                                                         <span id='f0c242'>(ccl::typed-form &#39;keyword <span id='f0c241'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                                         <span id='f0c239'>(ccl::typed-form &#39;list exp)</span>)</span>)
+                                               (new-bindings <span id='f0c245'>(funcall &#39;util:alist-values new-closure-value)</span>))
+                                          <span id='f0c237'>(funcall &#39;make-rel
+                                                   <span id='f0c236'>&#39;:closure</span>
+                                                   <span id='f0c235'>(funcall &#39;closure:insert
+                                                            <span id='f0c231'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                                            <span id='f0c234'>(ccl::typed-form &#39;keyword <span id='f0c233'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                                            new-closure-value)</span>
+                                                   <span id='f0c228'>&#39;:forms</span>
+                                                   <span id='f0c227'>(cons <span id='f0c226'>(funcall &#39;alu&#46;spec:copy-meta
+                                                                  <span id='f0c217'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>
+                                                                  <span id='f0c225'>(funcall &#39;alu&#46;ir&#46;new-terms:make-multiple-bind
+                                                                           <span id='f0c221'>&#39;:var</span>
+                                                                           <span id='f0c219'>(ccl::typed-form &#39;list new-bindings)</span>
+                                                                           <span id='f0c220'>&#39;:val</span>
+                                                                           <span id='f0c224'>(ccl::typed-form
+                                                                            &#39;(or number
+                                                                                 alu&#46;spec:reference
+                                                                                 alu&#46;spec:application
+                                                                                 alu&#46;spec:record
+                                                                                 alu&#46;spec:record-lookup
+                                                                                 alu&#46;spec:array-lookup
+                                                                                 alu&#46;spec:array-allocate
+                                                                                 alu&#46;spec:from-data
+                                                                                 alu&#46;spec:array-set)
+                                                                            <span id='f0c223'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)</span>)</span>
+                                                         nil)</span>)</span>)</span>
+                                        no-change)</span>)</span>)</span>
+                           <span id='f0c519'>(if <span id='f0c345'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                        &#35;:g57051
+                                        <span id='f0c344'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A7B46F&#62;))</span>)</span>
+                               <span id='f0c342'>(progn nil
+                                      <span id='f0c341'>(let* ((lookup
+                                              <span id='f0c340'>(funcall &#39;closure:lookup
+                                                       <span id='f0c339'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                                       <span id='f0c337'>(ccl::typed-form &#39;keyword
+                                                        <span id='f0c336'>(funcall &#39;alu&#46;spec:name
+                                                                 <span id='f0c335'>(funcall &#39;alu&#46;spec:record
+                                                                          <span id='f0c334'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)</span>)</span>)</span>)
+                                             (find
+                                              <span id='f0c332'>(let ((&#35;:g57075
+                                                     <span id='f0c326'>(funcall &#39;alu&#46;spec:field <span id='f0c325'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)
+                                                    (&#35;:g57076 lookup)
+                                                    (&#35;:g57078 <span id='f0c323'>(function car)</span>))
+                                                <span id='f0c331'>(funcall &#39;ccl::find-positional-test-key
+                                                         &#35;:g57075
+                                                         &#35;:g57076
+                                                         nil
+                                                         &#35;:g57078)</span>)</span>))
+                                        <span id='f0c321'>(if <span id='f0c320'>(not lookup)</span>
+                                            <span id='f0c264'>(values (funcall &#39;error
+                                                             <span id='f0c263'>&#39;&#34;Trying to do a lookup on an unknown record &#126;A&#34;</span>
+                                                             <span id='f0c262'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>))</span>
+                                            <span id='f0c319'>(if <span id='f0c265'>(not find)</span>
+                                                <span id='f0c267'>(values (funcall &#39;error
+                                                                 <span id='f0c266'>&#39;&#34;Trying to do a lookup on a non existant field&#34;</span>))</span>
+                                                <span id='f0c318'>(if <span id='f0c317'>(eq (ccl::lisptag <span id='f0c316'>(cdr find)</span>) 3)</span>
+                                                    <span id='f0c302'>(let* ((rel
+                                                            <span id='f0c276'>(funcall &#39;make-rel-from-alist
+                                                                     <span id='f0c272'>(ccl::typed-form &#39;keyword
+                                                                      <span id='f0c271'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                                                     <span id='f0c275'>(ccl::typed-form &#39;list <span id='f0c274'>(cons find nil)</span>)</span>
+                                                                     <span id='f0c269'>(ccl::typed-form &#39;closure:typ closure)</span>)</span>)
+                                                           (clos <span id='f0c280'>(ccl::struct-ref <span id='f0c279'>(ccl::typed-form &#39;rel rel)</span> 2)</span>))
+                                                      <span id='f0c301'>(funcall &#39;make-rel
+                                                               <span id='f0c285'>&#39;:forms</span>
+                                                               <span id='f0c284'>(ccl::struct-ref <span id='f0c282'>(ccl::typed-form &#39;rel rel)</span> 1)</span>
+                                                               <span id='f0c286'>&#39;:closure</span>
+                                                               <span id='f0c300'>(funcall &#39;closure:insert
+                                                                        <span id='f0c288'>(ccl::typed-form &#39;closure:typ clos)</span>
+                                                                        <span id='f0c291'>(ccl::typed-form &#39;keyword
+                                                                         <span id='f0c290'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                                                        <span id='f0c299'>(cdr <span id='f0c298'>(car <span id='f0c297'>(funcall &#39;closure:lookup
+                                                                                           <span id='f0c293'>(ccl::typed-form &#39;closure:typ
+                                                                                            clos)</span>
+                                                                                           <span id='f0c296'>(ccl::typed-form &#39;keyword
+                                                                                            <span id='f0c295'>(funcall &#39;alu&#46;spec:var
+                                                                                                     &#35;:g57049)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                                    <span id='f0c314'>(funcall &#39;make-rel
+                                                             <span id='f0c304'>&#39;:forms</span>
+                                                             <span id='f0c312'>(cons <span id='f0c311'>(funcall &#39;generate-bind
+                                                                            <span id='f0c310'>(ccl::typed-form &#39;keyword <span id='f0c309'>(cdr find)</span>)</span>
+                                                                            <span id='f0c307'>(ccl::typed-form &#39;keyword
+                                                                             <span id='f0c306'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>)</span>
+                                                                   nil)</span>
+                                                             <span id='f0c313'>&#39;:closure</span>
+                                                             closure)</span>)</span>)</span>)</span>)</span>)</span>
+                               <span id='f0c518'>(if <span id='f0c517'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                            &#35;:g57051
+                                            <span id='f0c516'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A6C82F&#62;))</span>)</span>
+                                   <span id='f0c514'>(progn nil
+                                          <span id='f0c513'>(let* ((alist
+                                                  <span id='f0c512'>(funcall &#39;alu&#46;spec:record-&#62;alist <span id='f0c511'>(funcall &#39;alu&#46;spec:value &#35;:g57049)</span>)</span>)
+                                                 (recursed-on-args
+                                                  <span id='f0c509'>(funcall &#39;reduce
+                                                           <span id='f0c501'>(function <span id='f0c500'>(lambda (pair rel)
+                                                                       <span id='f0c499'>(let* ((&#35;:whole57082 pair)
+                                                                              (&#35;:args57083
+                                                                               <span id='f0c498'>(funcall &#39;ccl::prepare-to-destructure
+                                                                                        &#35;:whole57082
+                                                                                        <span id='f0c497'>&#39;(field-name &#46; value)</span>
+                                                                                        1
+                                                                                        nil)</span>)
+                                                                              (field-name
+                                                                               <span id='f0c494'>(prog1 <span id='f0c489'>(car &#35;:args57083)</span>
+                                                                                      <span id='f0c493'>(setq &#35;:args57083
+                                                                                            <span id='f0c492'>(ccl::&#37;cdr <span id='f0c491'>(ccl::typed-form
+                                                                                                        &#39;list
+                                                                                                        &#35;:args57083)</span>)</span>)</span>)</span>)
+                                                                              (&#35;:rest57084 &#35;:args57083)
+                                                                              (value &#35;:rest57084))
+                                                                         <span id='f0c487'>(let* ((name
+                                                                                 <span id='f0c470'>(funcall &#39;append-keywords
+                                                                                          <span id='f0c467'>(ccl::typed-form &#39;keyword
+                                                                                           <span id='f0c466'>(funcall &#39;alu&#46;spec:var
+                                                                                                    &#35;:g57049)</span>)</span>
+                                                                                          <span id='f0c469'>(ccl::typed-form &#39;keyword
+                                                                                           field-name)</span>)</span>)
+                                                                                (recurse
+                                                                                 <span id='f0c486'>(funcall &#39;relocate-let
+                                                                                          <span id='f0c480'>(ccl::typed-form
+                                                                                           &#39;alu&#46;ir&#46;new-terms:bind
+                                                                                           <span id='f0c479'>(funcall &#39;alu&#46;spec:copy-meta
+                                                                                                    value
+                                                                                                    <span id='f0c478'>(funcall &#39;alu&#46;ir&#46;new-terms:make-bind
+                                                                                                             <span id='f0c477'>&#39;:var</span>
+                                                                                                             <span id='f0c473'>(ccl::typed-form
+                                                                                                              &#39;keyword
+                                                                                                              name)</span>
+                                                                                                             <span id='f0c476'>&#39;:val</span>
+                                                                                                             <span id='f0c475'>(ccl::typed-form
+                                                                                                              &#39;(or number
+                                                                                                                   alu&#46;spec:reference
+                                                                                                                   alu&#46;spec:application
+                                                                                                                   alu&#46;spec:record
+                                                                                                                   alu&#46;spec:record-lookup
+                                                                                                                   alu&#46;spec:array-lookup
+                                                                                                                   alu&#46;spec:array-allocate
+                                                                                                                   alu&#46;spec:from-data
+                                                                                                                   alu&#46;spec:array-set
+                                                                                                                   alu&#46;spec:type-coerce
+                                                                                                                   alu&#46;spec:type-check)
+                                                                                                              value)</span>)</span>)</span>)</span>
+                                                                                          <span id='f0c485'>(ccl::typed-form &#39;closure:typ
+                                                                                           <span id='f0c484'>(ccl::struct-ref <span id='f0c483'>(ccl::typed-form
+                                                                                                             &#39;rel rel)</span>
+                                                                                                            2)</span>)</span>)</span>))
+                                                                           <span id='f0c464'>(funcall &#39;make-rel
+                                                                                    <span id='f0c463'>&#39;:closure</span>
+                                                                                    <span id='f0c461'>(ccl::struct-ref <span id='f0c459'>(ccl::typed-form
+                                                                                                      &#39;rel recurse)</span>
+                                                                                                     2)</span>
+                                                                                    <span id='f0c462'>&#39;:forms</span>
+                                                                                    <span id='f0c457'>(funcall &#39;ccl::append-2
+                                                                                             <span id='f0c452'>(ccl::struct-ref <span id='f0c450'>(ccl::typed-form
+                                                                                                               &#39;rel
+                                                                                                               recurse)</span>
+                                                                                                              1)</span>
+                                                                                             <span id='f0c456'>(ccl::struct-ref <span id='f0c455'>(ccl::typed-form
+                                                                                                               &#39;rel rel)</span>
+                                                                                                              1)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                                           alist
+                                                           <span id='f0c503'>&#39;:from-end</span>
+                                                           t
+                                                           <span id='f0c502'>&#39;:initial-value</span>
+                                                           <span id='f0c508'>(funcall &#39;make-rel <span id='f0c507'>&#39;:forms</span> nil <span id='f0c505'>&#39;:closure</span> closure)</span>)</span>)
+                                                 (closure-mapping-for-current
+                                                  <span id='f0c431'>(let* ((&#35;:g57089 <span id='f0c356'>(cons nil nil)</span>)
+                                                         (&#35;:g57090 &#35;:g57089)
+                                                         (&#35;:g57092
+                                                          <span id='f0c378'>(function <span id='f0c377'>(lambda (field-name)
+                                                                      <span id='f0c376'>(let* ((name
+                                                                              <span id='f0c362'>(funcall &#39;append-keywords
+                                                                                       <span id='f0c361'>(ccl::typed-form &#39;keyword
+                                                                                        <span id='f0c360'>(funcall &#39;alu&#46;spec:var
+                                                                                                 &#35;:g57049)</span>)</span>
+                                                                                       <span id='f0c358'>(ccl::typed-form &#39;keyword
+                                                                                        field-name)</span>)</span>)
+                                                                             (clos-look
+                                                                              <span id='f0c370'>(funcall &#39;closure:lookup
+                                                                                       <span id='f0c367'>(ccl::typed-form &#39;closure:typ
+                                                                                        <span id='f0c366'>(ccl::struct-ref <span id='f0c365'>(ccl::typed-form
+                                                                                                          &#39;rel
+                                                                                                          recursed-on-args)</span>
+                                                                                                         2)</span>)</span>
+                                                                                       <span id='f0c369'>(ccl::typed-form &#39;keyword
+                                                                                        name)</span>)</span>))
+                                                                        <span id='f0c375'>(cons field-name <span id='f0c374'>(or clos-look name)</span>)</span>)</span>)</span>)</span>))
+                                                    <span id='f0c430'>(let* ((&#35;:g57093
+                                                            <span id='f0c429'>(let* ((&#35;:g57085 <span id='f0c403'>(cons nil nil)</span>)
+                                                                   (&#35;:g57086 &#35;:g57085)
+                                                                   (&#35;:g57088 <span id='f0c402'>(function car)</span>))
+                                                              <span id='f0c427'>(let* ((&#35;:g57096 alist))
+                                                                (progn <span id='f0c422'>(tagbody <span id='f0c417'>(go &#35;:g57098)</span>
+                                                                                (&#35;:g57097 nil (0)
+                                                                                 &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003A5ED0D&#62;
+                                                                                 t t)
+                                                                                <span id='f0c416'>(tagbody <span id='f0c415'>(let* ((&#35;:g57087
+                                                                                                 <span id='f0c407'>(car &#35;:g57096)</span>))
+                                                                                           <span id='f0c414'>(tagbody <span id='f0c413'>(setq &#35;:g57085
+                                                                                                          <span id='f0c412'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57085
+                                                                                                                                   <span id='f0c410'>(cons <span id='f0c409'>(funcall &#35;:g57088
+                                                                                                                                                  &#35;:g57087)</span>
+                                                                                                                                         nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                <span id='f0c421'>(setq &#35;:g57096
+                                                                                      <span id='f0c420'>(ccl::&#37;cdr <span id='f0c419'>(ccl::typed-form &#39;list
+                                                                                                  &#35;:g57096)</span>)</span>)</span>
+                                                                                (&#35;:g57098 nil (0)
+                                                                                 &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003A5ED0D&#62;
+                                                                                 t nil)
+                                                                                <span id='f0c405'>(if <span id='f0c404'>(not &#39;:ne &#35;:g57096)</span>
+                                                                                    (go &#35;:g57097)
+                                                                                    nil)</span>)</span>
+                                                                       <span id='f0c426'>(let* () <span id='f0c425'>(ccl::&#37;cdr &#35;:g57086)</span>)</span>))</span>)</span>))
+                                                      (progn <span id='f0c398'>(tagbody <span id='f0c382'>(go &#35;:g57095)</span>
+                                                                      (&#35;:g57094 nil (0)
+                                                                       &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003A5C25D&#62; t t)
+                                                                      <span id='f0c397'>(tagbody <span id='f0c396'>(let* ((&#35;:g57091 <span id='f0c395'>(car &#35;:g57093)</span>))
+                                                                                 <span id='f0c393'>(tagbody <span id='f0c392'>(setq &#35;:g57089
+                                                                                                <span id='f0c391'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57089
+                                                                                                                         <span id='f0c389'>(cons <span id='f0c388'>(funcall &#35;:g57092
+                                                                                                                                        &#35;:g57091)</span>
+                                                                                                                               nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                      <span id='f0c386'>(setq &#35;:g57093
+                                                                            <span id='f0c385'>(ccl::&#37;cdr <span id='f0c384'>(ccl::typed-form &#39;list
+                                                                                        &#35;:g57093)</span>)</span>)</span>
+                                                                      (&#35;:g57095 nil (0)
+                                                                       &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003A5C25D&#62; t
+                                                                       nil)
+                                                                      <span id='f0c381'>(if <span id='f0c380'>(not &#39;:ne &#35;:g57093)</span> (go &#35;:g57094) nil)</span>)</span>
+                                                             <span id='f0c401'>(let* () <span id='f0c400'>(ccl::&#37;cdr &#35;:g57090)</span>)</span>))</span>)</span>))
+                                            <span id='f0c448'>(funcall &#39;make-rel
+                                                     <span id='f0c433'>&#39;:closure</span>
+                                                     <span id='f0c447'>(funcall &#39;closure:insert
+                                                              <span id='f0c446'>(ccl::typed-form &#39;closure:typ
+                                                               <span id='f0c445'>(ccl::struct-ref <span id='f0c444'>(ccl::typed-form &#39;rel recursed-on-args)</span>
+                                                                                2)</span>)</span>
+                                                              <span id='f0c440'>(ccl::typed-form &#39;keyword
+                                                               <span id='f0c439'>(funcall &#39;alu&#46;spec:var &#35;:g57049)</span>)</span>
+                                                              closure-mapping-for-current)</span>
+                                                     <span id='f0c432'>&#39;:forms</span>
+                                                     <span id='f0c437'>(ccl::struct-ref <span id='f0c436'>(ccl::typed-form &#39;rel recursed-on-args)</span> 1)</span>)</span>)</span>)</span>
+                                   <span id='f0c355'>(if <span id='f0c354'>(progn &#35;:g57051 t)</span>
+                                       <span id='f0c352'>(progn nil
+                                              <span id='f0c351'>(values (funcall &#39;error
+                                                               <span id='f0c350'>&#39;type-error</span>
+                                                               <span id='f0c349'>&#39;:datum</span>
+                                                               &#35;:x57050
+                                                               <span id='f0c348'>&#39;:expected-type</span>
+                                                               <span id='f0c346'>&#39;alu&#46;spec:term-no-binding</span>))</span>)</span>
+                                       nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>166</span> 
+<span class='line'>167</span> (-&#62; initial-closure-from-circuit (ir:circuit &#38;optional closure:typ) closure:typ)
+<span id='f0s86'><span class='line'>168</span> (defun initial-closure-from-circuit (circ &#38;optional (closure <span id='f0s87'>(closure:allocate)</span>))
+<span class='line'>169</span>   <span id='f0s88'>(let ((expanded-arguments <span id='f0s89'>(expand:full-arguments-from-circuit circ)</span>))
+<span class='line'>170</span>     <span id='f0s90'>(reduce <span id='f0s91'>(lambda (const closure)
+<span class='line'>171</span>               <span id='f0s92'>(etypecase-of expand:argument const
+<span class='line'>172</span>                 (ir:constraint closure)
+<span class='line'>173</span>                 (expand:expand  <span id='f0s93'>(closure:insert closure
+<span class='line'>174</span>                                                 <span id='f0s94'>(expand:original const)</span>
+<span class='line'>175</span>                                                 <span id='f0s95'>(argument-list-to-closure-alist
+<span class='line'>176</span>                                                  <span id='f0s96'>(expand:expanded const)</span>)</span>)</span>))</span>)</span>
+<span class='line'>177</span>             expanded-arguments
+<span class='line'>178</span>             :from-end t
+<span class='line'>179</span>             :initial-value closure)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t86')><span class='toggle' id='pf0t86'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(86)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t86'><code><span id='f0c176'> (lambda (circ &#38;optional (closure <span id='f0c131'>(funcall &#39;closure:allocate)</span> &#35;:compiler-var))
+   <span id='f0c175'>(let* ((expanded-arguments <span id='f0c174'>(funcall &#39;expand:full-arguments-from-circuit <span id='f0c173'>(ccl::typed-form &#39;alu&#46;spec:circuit circ)</span>)</span>))
+     <span id='f0c171'>(funcall &#39;reduce
+              <span id='f0c168'>(function <span id='f0c167'>(lambda (const closure)
+                          <span id='f0c166'>(let* ((&#35;:x57114 const))
+                            <span id='f0c165'>(let* ((&#35;:g57115 &#35;:x57114))
+                              <span id='f0c164'>(if <span id='f0c136'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                           &#35;:g57115
+                                           <span id='f0c134'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BEA0CF&#62;))</span>)</span>
+                                  <span id='f0c163'>(progn nil closure)</span>
+                                  <span id='f0c161'>(if <span id='f0c139'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                               &#35;:g57115
+                                               <span id='f0c138'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BE6E5F&#62;))</span>)</span>
+                                      <span id='f0c150'>(progn nil
+                                             <span id='f0c149'>(funcall &#39;closure:insert
+                                                      <span id='f0c148'>(ccl::typed-form &#39;closure:typ closure)</span>
+                                                      <span id='f0c146'>(ccl::typed-form &#39;keyword <span id='f0c145'>(funcall &#39;expand:original const)</span>)</span>
+                                                      <span id='f0c143'>(funcall &#39;argument-list-to-closure-alist
+                                                               <span id='f0c142'>(ccl::typed-form &#39;list
+                                                                <span id='f0c141'>(funcall &#39;expand:expanded const)</span>)</span>)</span>)</span>)</span>
+                                      <span id='f0c160'>(if <span id='f0c159'>(progn &#35;:g57115 t)</span>
+                                          <span id='f0c157'>(progn nil
+                                                 <span id='f0c156'>(values (funcall &#39;error
+                                                                  <span id='f0c152'>&#39;type-error</span>
+                                                                  <span id='f0c154'>&#39;:datum</span>
+                                                                  &#35;:x57114
+                                                                  <span id='f0c153'>&#39;:expected-type</span>
+                                                                  <span id='f0c155'>&#39;expand:argument</span>))</span>)</span>
+                                          nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+              expanded-arguments
+              <span id='f0c169'>&#39;:from-end</span>
+              t
+              <span id='f0c132'>&#39;:initial-value</span>
+              closure)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>180</span> 
+<span class='line'>181</span> (-&#62; maps-to (keyword closure:typ) list)
+<span id='f0s97'><span class='line'>182</span> (defun maps-to (name closure)
+<span class='line'>183</span>   <span id='f0s98'>(values
+<span class='line'>184</span>    <span id='f0s99'>(util:alist-values <span id='f0s100'>(closure:lookup closure name)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t97')><span class='toggle' id='pf0t97'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(97)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t97'><code><span id='f0c22'> (lambda (name closure)
+   <span id='f0c21'>(values <span id='f0c20'>(funcall &#39;util:alist-values
+                    <span id='f0c19'>(funcall &#39;closure:lookup <span id='f0c18'>(ccl::typed-form &#39;closure:typ closure)</span> <span id='f0c16'>(ccl::typed-form &#39;keyword name)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>185</span> 
+<span class='line'>186</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>187</span> &#59;&#59; Helper functions
+<span class='line'>188</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>189</span> 
+<span class='line'>190</span> (-&#62; argument-list-to-closure-alist (list) list)
+<span id='f0s101'><span class='line'>191</span> (defun argument-list-to-closure-alist (arglist)
+<span class='line'>192</span>   <span id='f0s102'>(mapcar <span id='f0s103'>(lambda (x)
+<span class='line'>193</span>             <span id='f0s104'>(destructuring-bind (field &#46; constraint) x
+<span class='line'>194</span>               <span id='f0s105'>(cons field
+<span class='line'>195</span>                     <span id='f0s106'>(etypecase-of expand:argument constraint
+<span class='line'>196</span>                       (ir:constraint <span id='f0s107'>(ir:name constraint)</span>)
+<span class='line'>197</span>                       (expand:expand  <span id='f0s108'>(argument-list-to-closure-alist
+<span class='line'>198</span>                                        <span id='f0s109'>(expand:expanded constraint)</span>)</span>))</span>)</span>)</span>)</span>
+<span class='line'>199</span>           arglist)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t101')><span class='toggle' id='pf0t101'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(101)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t101'><code><span id='f0c99'> (lambda (arglist)
+   <span id='f0c98'>(let* ((&#35;:g57143 <span id='f0c28'>(cons nil nil)</span>)
+          (&#35;:g57144 &#35;:g57143)
+          (&#35;:g57146
+           <span id='f0c97'>(function <span id='f0c96'>(lambda (x)
+                       <span id='f0c95'>(let* ((&#35;:whole57147 x)
+                              (&#35;:args57148
+                               <span id='f0c87'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole57147 <span id='f0c84'>&#39;(field &#46; constraint)</span> 1 nil)</span>)
+                              (field
+                               <span id='f0c94'>(prog1 <span id='f0c93'>(car &#35;:args57148)</span>
+                                      <span id='f0c91'>(setq &#35;:args57148 <span id='f0c90'>(ccl::&#37;cdr <span id='f0c89'>(ccl::typed-form &#39;list &#35;:args57148)</span>)</span>)</span>)</span>)
+                              (&#35;:rest57149 &#35;:args57148)
+                              (constraint &#35;:rest57149))
+                         <span id='f0c83'>(cons field
+                               <span id='f0c82'>(let* ((&#35;:x57150 constraint))
+                                 <span id='f0c81'>(let* ((&#35;:g57151 &#35;:x57150))
+                                   <span id='f0c80'>(if <span id='f0c76'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                &#35;:g57151
+                                                <span id='f0c74'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003C583EF&#62;))</span>)</span>
+                                       <span id='f0c79'>(progn nil <span id='f0c78'>(funcall &#39;alu&#46;spec:name constraint)</span>)</span>
+                                       <span id='f0c73'>(if <span id='f0c67'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                    &#35;:g57151
+                                                    <span id='f0c66'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003C54FDF&#62;))</span>)</span>
+                                           <span id='f0c72'>(progn nil
+                                                  <span id='f0c71'>(funcall &#39;argument-list-to-closure-alist
+                                                           <span id='f0c70'>(ccl::typed-form &#39;list
+                                                            <span id='f0c69'>(funcall &#39;expand:expanded constraint)</span>)</span>)</span>)</span>
+                                           <span id='f0c64'>(if <span id='f0c63'>(progn &#35;:g57151 t)</span>
+                                               <span id='f0c61'>(progn nil
+                                                      <span id='f0c60'>(values (funcall &#39;error
+                                                                       <span id='f0c57'>&#39;type-error</span>
+                                                                       <span id='f0c56'>&#39;:datum</span>
+                                                                       &#35;:x57150
+                                                                       <span id='f0c55'>&#39;:expected-type</span>
+                                                                       <span id='f0c59'>&#39;expand:argument</span>))</span>)</span>
+                                               nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c53'>(let* ((&#35;:g57158 arglist))
+       (progn <span id='f0c49'>(tagbody <span id='f0c46'>(go &#35;:g57160)</span>
+                       (&#35;:g57159 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003C526CD&#62; t t)
+                       <span id='f0c45'>(tagbody <span id='f0c44'>(let* ((&#35;:g57145 <span id='f0c36'>(car &#35;:g57158)</span>))
+                                  <span id='f0c43'>(tagbody <span id='f0c42'>(setq &#35;:g57143
+                                                 <span id='f0c41'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57143
+                                                                          <span id='f0c40'>(cons <span id='f0c39'>(funcall &#35;:g57146 &#35;:g57145)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c34'>(setq &#35;:g57158 <span id='f0c33'>(ccl::&#37;cdr <span id='f0c32'>(ccl::typed-form &#39;list &#35;:g57158)</span>)</span>)</span>
+                       (&#35;:g57160 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003C526CD&#62; t nil)
+                       <span id='f0c48'>(if <span id='f0c47'>(not &#39;:ne &#35;:g57158)</span> (go &#35;:g57159) nil)</span>)</span>
+              <span id='f0c52'>(let* () <span id='f0c51'>(ccl::&#37;cdr &#35;:g57144)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>200</span> 
+<span class='line'>201</span> (-&#62; make-rel-from-alist (keyword list closure:typ) rel)
+<span id='f0s110'><span class='line'>202</span> (defun make-rel-from-alist (prefix alist closure)
+<span class='line'>203</span>   &#34;Takes an alist and a prefix and generates the proper relocation
+<span class='line'>204</span> relation&#34;
+<span class='line'>205</span>   &#59;&#59; we have a reference to a record&#44; now lets expand&#33;
+<span class='line'>206</span>   <span id='f0s111'>(let ((new-closure-content <span id='f0s112'>(update-alist-values-with-preifx prefix alist)</span>))
+<span class='line'>207</span>     <span id='f0s113'>(make-rel
+<span class='line'>208</span>      :forms <span id='f0s114'>(generate-binds <span id='f0s115'>(util:alist-values alist)</span>
+<span class='line'>209</span>                             <span id='f0s116'>(util:alist-values new-closure-content)</span>)</span>
+<span class='line'>210</span>      :closure <span id='f0s117'>(closure:insert closure prefix new-closure-content)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t110')><span class='toggle' id='pf0t110'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(110)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t110'><code><span id='f0c575'> (lambda (prefix alist closure)
+   <span id='f0c574'>(let* ((new-closure-content
+           <span id='f0c559'>(funcall &#39;update-alist-values-with-preifx <span id='f0c556'>(ccl::typed-form &#39;keyword prefix)</span> <span id='f0c558'>(ccl::typed-form &#39;list alist)</span>)</span>))
+     <span id='f0c573'>(funcall &#39;make-rel
+              <span id='f0c572'>&#39;:forms</span>
+              <span id='f0c571'>(funcall &#39;generate-binds
+                       <span id='f0c570'>(funcall &#39;util:alist-values alist)</span>
+                       <span id='f0c568'>(funcall &#39;util:alist-values new-closure-content)</span>)</span>
+              <span id='f0c560'>&#39;:closure</span>
+              <span id='f0c566'>(funcall &#39;closure:insert
+                       <span id='f0c562'>(ccl::typed-form &#39;closure:typ closure)</span>
+                       <span id='f0c564'>(ccl::typed-form &#39;keyword prefix)</span>
+                       new-closure-content)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>211</span> 
+<span id='f0s118'><span class='line'>212</span> (defun generate-binds (from to)
+<span class='line'>213</span>   &#34;this function generates a bind over the two given lists
+<span class='line'>214</span> 
+<span class='line'>215</span> Example:
+<span class='line'>216</span> (generate-binds
+<span class='line'>217</span>   &#39;(:FI-PLANE :FI-POINT-X :FI-POINT-Y)
+<span class='line'>218</span>   &#39;(:HI-PLANE :HI-POINT-X :HI-POINT-Y))
+<span class='line'>219</span> 
+<span class='line'>220</span> &#61;&#61;&#62;
+<span class='line'>221</span> (&#35;&#60;LET HI-PLANE   &#61; &#35;&#60;REFERENCE FI-PLANE&#62;&#62;
+<span class='line'>222</span>  &#35;&#60;LET HI-POINT-X &#61; &#35;&#60;REFERENCE FI-POINT-X&#62;&#62;
+<span class='line'>223</span>  &#35;&#60;LET HI-POINT-Y &#61; &#35;&#60;REFERENCE FI-POINT-Y&#62;&#62;)&#34;
+<span class='line'>224</span>   <span id='f0s119'>(mapcar <span id='f0s120'>&#35;&#39;generate-bind </span>from to)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t118')><span class='toggle' id='pf0t118'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(118)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t118'><code><span id='f0c181'> (lambda (from to) <span id='f0c180'>(funcall &#39;mapcar <span id='f0c178'>(function generate-bind)</span> from to)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>225</span> 
+<span class='line'>226</span> (-&#62; generate-bind (keyword keyword) ir:bind)
+<span id='f0s121'><span class='line'>227</span> (defun generate-bind (from to)
+<span class='line'>228</span>     <span id='f0s122'>(ir:make-bind :var to :val <span id='f0s123'>(ir:make-reference :name from)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t121')><span class='toggle' id='pf0t121'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(121)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t121'><code><span id='f0c117'> (lambda (from to)
+   <span id='f0c116'>(funcall &#39;alu&#46;ir&#46;new-terms:make-bind
+            <span id='f0c112'>&#39;:var</span>
+            <span id='f0c114'>(ccl::typed-form &#39;keyword to)</span>
+            <span id='f0c115'>&#39;:val</span>
+            <span id='f0c111'>(ccl::typed-form &#39;alu&#46;spec:reference
+             <span id='f0c110'>(funcall &#39;alu&#46;spec:make-reference <span id='f0c107'>&#39;:name</span> <span id='f0c109'>(ccl::typed-form &#39;keyword from)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>229</span> 
+<span class='line'>230</span> (-&#62; update-alist-values-with-preifx (keyword list) list)
+<span id='f0s124'><span class='line'>231</span> (defun update-alist-values-with-preifx (prefix alist)
+<span class='line'>232</span>   &#34;This function clones the values from one given alist into a new prefix&#46;
+<span class='line'>233</span> 
+<span class='line'>234</span> Example:
+<span class='line'>235</span> (update-alist-values-with-preifx
+<span class='line'>236</span>  :hi
+<span class='line'>237</span>  &#39;((:plane &#46; :fi-plane) (:point &#46; ((:x &#46; :fi-point-x) (:y &#46; :fi-point-y)))))
+<span class='line'>238</span> 
+<span class='line'>239</span> &#61;&#61;&#62;
+<span class='line'>240</span> 
+<span class='line'>241</span> ((:plane &#46; :hi-plane) (:point &#46; ((:x &#46; :hi-point-x) (:y &#46; :hi-point-y))))&#34;
+<span class='line'>242</span>   <span id='f0s125'>(mapcar <span id='f0s126'>(lambda (apair)
+<span class='line'>243</span>             <span id='f0s127'>(destructuring-bind (key &#46; value) apair
+<span class='line'>244</span>               <span id='f0s128'>(let ((new-prefix <span id='f0s129'>(append-keywords prefix key)</span>))
+<span class='line'>245</span>                 <span id='f0s130'>(cons key
+<span class='line'>246</span>                       <span id='f0s131'>(if <span id='f0s132'>(listp value)</span>
+<span class='line'>247</span>                           <span id='f0s133'>(update-alist-values-with-preifx new-prefix value)</span>
+<span class='line'>248</span>                           new-prefix)</span>)</span>)</span>)</span>)</span>
+<span class='line'>249</span>           alist)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t124')><span class='toggle' id='pf0t124'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(124)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t124'><code><span id='f0c703'> (lambda (prefix alist)
+   <span id='f0c702'>(let* ((&#35;:g57194 <span id='f0c646'>(cons nil nil)</span>)
+          (&#35;:g57195 &#35;:g57194)
+          (&#35;:g57197
+           <span id='f0c677'>(function <span id='f0c676'>(lambda (apair)
+                       <span id='f0c675'>(let* ((&#35;:whole57198 apair)
+                              (&#35;:args57199 <span id='f0c650'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole57198 <span id='f0c648'>&#39;(key &#46; value)</span> 1 nil)</span>)
+                              (key
+                               <span id='f0c674'>(prog1 <span id='f0c669'>(car &#35;:args57199)</span>
+                                      <span id='f0c673'>(setq &#35;:args57199 <span id='f0c672'>(ccl::&#37;cdr <span id='f0c671'>(ccl::typed-form &#39;list &#35;:args57199)</span>)</span>)</span>)</span>)
+                              (&#35;:rest57200 &#35;:args57199)
+                              (value &#35;:rest57200))
+                         <span id='f0c667'>(let* ((new-prefix
+                                 <span id='f0c666'>(funcall &#39;append-keywords
+                                          <span id='f0c663'>(ccl::typed-form &#39;keyword prefix)</span>
+                                          <span id='f0c665'>(ccl::typed-form &#39;keyword key)</span>)</span>))
+                           <span id='f0c661'>(cons key
+                                 <span id='f0c660'>(if <span id='f0c654'>(eq (ccl::lisptag value) 3)</span>
+                                     <span id='f0c659'>(funcall &#39;update-alist-values-with-preifx
+                                              <span id='f0c656'>(ccl::typed-form &#39;keyword new-prefix)</span>
+                                              <span id='f0c658'>(ccl::typed-form &#39;list value)</span>)</span>
+                                     new-prefix)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c701'>(let* ((&#35;:g57201 alist))
+       (progn <span id='f0c697'>(tagbody <span id='f0c694'>(go &#35;:g57203)</span>
+                       (&#35;:g57202 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9E24D&#62; t t)
+                       <span id='f0c689'>(tagbody <span id='f0c688'>(let* ((&#35;:g57196 <span id='f0c687'>(car &#35;:g57201)</span>))
+                                  <span id='f0c685'>(tagbody <span id='f0c684'>(setq &#35;:g57194
+                                                 <span id='f0c683'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57194
+                                                                          <span id='f0c682'>(cons <span id='f0c681'>(funcall &#35;:g57197 &#35;:g57196)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c693'>(setq &#35;:g57201 <span id='f0c692'>(ccl::&#37;cdr <span id='f0c691'>(ccl::typed-form &#39;list &#35;:g57201)</span>)</span>)</span>
+                       (&#35;:g57203 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B9E24D&#62; t nil)
+                       <span id='f0c696'>(if <span id='f0c695'>(not &#39;:ne &#35;:g57201)</span> (go &#35;:g57202) nil)</span>)</span>
+              <span id='f0c700'>(let* () <span id='f0c699'>(ccl::&#37;cdr &#35;:g57195)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>250</span> 
+<span class='line'>251</span> (-&#62; append-keywords (keyword keyword) keyword)
+<span id='f0s134'><span class='line'>252</span> (defun append-keywords (prefix end)
+<span class='line'>253</span>   <span id='f0s135'>(values
+<span class='line'>254</span>    <span id='f0s136'>(keyword-combine prefix :- end)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t134')><span class='toggle' id='pf0t134'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(134)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t134'><code><span id='f0c5'> (lambda (prefix end) <span id='f0c4'>(values <span id='f0c3'>(funcall &#39;keyword-combine prefix <span id='f0c1'>&#39;:-</span> end)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>255</span> 
+<span id='f0s137'><span class='line'>256</span> (defun keyword-combine (&#38;rest keywords)
+<span class='line'>257</span>   <span id='f0s138'>(intern <span id='f0s139'>(apply &#35;&#39;concatenate <span id='f0s140'>&#39;string </span><span id='f0s141'>(mapcar <span id='f0s142'>&#35;&#39;symbol-name </span>keywords)</span>)</span>
+<span class='line'>258</span>           <span id='f0s143'>&#39;keyword</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t137')><span class='toggle' id='pf0t137'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(137)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t137'><code><span id='f0c644'> (lambda (&#38;rest keywords)
+   <span id='f0c643'>(if <span id='f0c610'>(funcall &#39;ccl::package-&#37;local-nicknames *package*)</span>
+       <span id='f0c608'>(ccl::&#37;decls-body
+        <span id='f0c607'>(funcall &#39;intern
+                 <span id='f0c605'>(apply &#39;concatenate
+                        <span id='f0c576'>&#39;string</span>
+                        <span id='f0c604'>(let* ((&#35;:g57219 <span id='f0c603'>(cons nil nil)</span>) (&#35;:g57220 &#35;:g57219) (&#35;:g57222 <span id='f0c578'>(function symbol-name)</span>))
+                          <span id='f0c602'>(let* ((&#35;:g57223 keywords))
+                            (progn <span id='f0c601'>(tagbody <span id='f0c596'>(go &#35;:g57225)</span>
+                                            (&#35;:g57224 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003BD57DD&#62; t t)
+                                            <span id='f0c593'>(tagbody <span id='f0c592'>(let* ((&#35;:g57221 <span id='f0c584'>(car &#35;:g57223)</span>))
+                                                       <span id='f0c591'>(tagbody <span id='f0c590'>(setq &#35;:g57219
+                                                                      <span id='f0c589'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57219
+                                                                                               <span id='f0c588'>(cons <span id='f0c587'>(funcall &#35;:g57222
+                                                                                                              &#35;:g57221)</span>
+                                                                                                     nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                            <span id='f0c600'>(setq &#35;:g57223 <span id='f0c599'>(ccl::&#37;cdr <span id='f0c598'>(ccl::typed-form &#39;list &#35;:g57223)</span>)</span>)</span>
+                                            (&#35;:g57225 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003BD57DD&#62; t nil)
+                                            <span id='f0c595'>(if <span id='f0c594'>(not &#39;:ne &#35;:g57223)</span> (go &#35;:g57224) nil)</span>)</span>
+                                   <span id='f0c581'>(let* () <span id='f0c580'>(ccl::&#37;cdr &#35;:g57220)</span>)</span>))</span>)</span>)</span>
+                 <span id='f0c606'>&#39;keyword</span>)</span>)</span>
+       <span id='f0c642'>(funcall &#39;ccl::&#37;pkg-ref-intern
+                <span id='f0c640'>(apply &#39;concatenate
+                       <span id='f0c611'>&#39;string</span>
+                       <span id='f0c639'>(let* ((&#35;:g57219 <span id='f0c638'>(cons nil nil)</span>) (&#35;:g57220 &#35;:g57219) (&#35;:g57222 <span id='f0c612'>(function symbol-name)</span>))
+                         <span id='f0c637'>(let* ((&#35;:g57226 keywords))
+                           (progn <span id='f0c632'>(tagbody <span id='f0c614'>(go &#35;:g57228)</span>
+                                           (&#35;:g57227 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003BD15CD&#62; t t)
+                                           <span id='f0c631'>(tagbody <span id='f0c630'>(let* ((&#35;:g57221 <span id='f0c622'>(car &#35;:g57226)</span>))
+                                                      <span id='f0c629'>(tagbody <span id='f0c628'>(setq &#35;:g57219
+                                                                     <span id='f0c627'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57219
+                                                                                              <span id='f0c625'>(cons <span id='f0c624'>(funcall &#35;:g57222
+                                                                                                             &#35;:g57221)</span>
+                                                                                                    nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                           <span id='f0c618'>(setq &#35;:g57226 <span id='f0c617'>(ccl::&#37;cdr <span id='f0c616'>(ccl::typed-form &#39;list &#35;:g57226)</span>)</span>)</span>
+                                           (&#35;:g57228 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003BD15CD&#62; t nil)
+                                           <span id='f0c620'>(if <span id='f0c619'>(not &#39;:ne &#35;:g57226)</span> (go &#35;:g57227) nil)</span>)</span>
+                                  <span id='f0c635'>(let* () <span id='f0c634'>(ccl::&#37;cdr &#35;:g57220)</span>)</span>))</span>)</span>)</span>
+                <span id='f0c641'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003BCC2EF&#62;))</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

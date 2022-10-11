@@ -1,0 +1,473 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_global_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;global.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;spec)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (deftype function-type ()
+<span class='line'>4</span>   &#34;The type we store in the top level function storage&#34;
+<span class='line'>5</span>   <span id='f0s1'>&#96;(or primitive circuit)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c287'> (lambda (&#35;:whole52776 &#35;:environment52777)
+   <span id='f0c286'>(let* ((&#35;:args52778 <span id='f0c285'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c282'>(cdr &#35;:whole52776)</span> nil 0 0)</span>)) <span id='f0c280'>&#39;(or primitive circuit)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>6</span> 
+<span id='f0s2'><span class='line'>7</span> (deftype type-storage ()
+<span class='line'>8</span>   &#34;The type we store in the top level type storage&#34;
+<span class='line'>9</span>   <span id='f0s3'>&#96;(or primitive type-declaration)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c295'> (lambda (&#35;:whole52794 &#35;:environment52795)
+   <span id='f0c294'>(let* ((&#35;:args52796 <span id='f0c293'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c290'>(cdr &#35;:whole52794)</span> nil 0 0)</span>))
+     <span id='f0c288'>&#39;(or primitive type-declaration)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>10</span> 
+<span class='line'>11</span> &#59;&#59; Augment primitive to have return type as well&#33;
+<span id='f0s4'><span class='line'>12</span> (defmethod return-type ((primitive primitive))
+<span class='line'>13</span>   &#59;&#59; replace with an exhaustive match&#33;
+<span class='line'>14</span>   <span id='f0s5'>(case <span id='f0s6'>(name primitive)</span>
+<span class='line'>15</span>     &#59;&#59; we know these return a field&#47;int
+<span class='line'>16</span>     ((:+ :* :- :&#47; :exp) <span id='f0s7'>(make-type-reference :name :int)</span>)
+<span class='line'>17</span>     &#59;&#59; default to int
+<span class='line'>18</span>     (t                  <span id='f0s8'>(make-type-reference :name :int)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c86'> (lambda (&#35;:next-method-context primitive)
+   <span id='f0c85'>(flet ()
+     <span id='f0c84'>(let* ((&#35;:g52820 <span id='f0c65'>(funcall &#39;name primitive)</span>))
+       <span id='f0c83'>(if <span id='f0c82'>(or <span id='f0c73'>(eq &#35;:g52820 &#39;:+)</span> <span id='f0c79'>(eq &#35;:g52820 &#39;:*)</span> <span id='f0c81'>(eq &#35;:g52820 &#39;:-)</span> <span id='f0c77'>(eq &#35;:g52820 &#39;:&#47;)</span> <span id='f0c75'>(eq &#35;:g52820 &#39;:exp)</span>)</span>
+           <span id='f0c71'>(funcall &#39;make-type-reference <span id='f0c69'>&#39;:name</span> <span id='f0c70'>&#39;:int</span>)</span>
+           <span id='f0c68'>(funcall &#39;make-type-reference <span id='f0c66'>&#39;:name</span> <span id='f0c67'>&#39;:int</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>19</span> 
+<span class='line'>20</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>21</span> &#59;&#59;                      Function Type Storage Type                            &#59;&#59;
+<span class='line'>22</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>23</span> 
+<span class='line'>24</span> (defclass circuit ()
+<span class='line'>25</span>   ((name :initarg :name
+<span class='line'>26</span>          :type    keyword
+<span class='line'>27</span>          :accessor name
+<span class='line'>28</span>          :documentation &#34;Name of the circuit&#34;)
+<span class='line'>29</span>    &#59;&#59; a list of constraints
+<span class='line'>30</span>    (arguments :initarg :arguments
+<span class='line'>31</span>               :type    list
+<span class='line'>32</span>               :accessor arguments
+<span class='line'>33</span>               :documentation &#34;Arguments for the circuit&#44; saved in a
+<span class='line'>34</span> a list of &#96;constraint&#39;&#34;)
+<span class='line'>35</span>    (return-type :initarg  :return-type
+<span class='line'>36</span>                 :type     (or type-reference null)
+<span class='line'>37</span>                 :accessor return-type
+<span class='line'>38</span>                 :documentation &#34;The return output of a given circuit&#34;)
+<span class='line'>39</span>    (body :initarg  :body
+<span class='line'>40</span>          :accessor body
+<span class='line'>41</span>          :documentation &#34;The frozen circuit literal&#34;)
+<span class='line'>42</span>    (execution-body :initarg  :exec
+<span class='line'>43</span>                    :accessor exec
+<span class='line'>44</span>                    :documentation &#34;The circuit logic&#34;)))
+<span class='line'>45</span> 
+<span id='f0s9'><span class='line'>46</span> (deftype privacy ()
+<span class='line'>47</span>   <span id='f0s10'>&#96;(or (eql :private)
+<span class='line'>48</span>        (eql :public))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c94'> (lambda (&#35;:whole52871 &#35;:environment52872)
+   <span id='f0c93'>(let* ((&#35;:args52873 <span id='f0c92'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c91'>(cdr &#35;:whole52871)</span> nil 0 0)</span>))
+     <span id='f0c87'>&#39;(or (eql :private) (eql :public))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>49</span> 
+<span class='line'>50</span> (defclass constraint ()
+<span class='line'>51</span>   ((name :initarg  :name
+<span class='line'>52</span>          :initform :name
+<span class='line'>53</span>          :type     keyword
+<span class='line'>54</span>          :accessor name
+<span class='line'>55</span>          :documentation &#34;The name of the constraint&#34;)
+<span class='line'>56</span>    (privacy :initarg  :privacy
+<span class='line'>57</span>             :initform :private
+<span class='line'>58</span>             :type     privacy
+<span class='line'>59</span>             :accessor privacy
+<span class='line'>60</span>             :documentation &#34;Is the constraint public or private&#63;&#34;)
+<span class='line'>61</span>    (type :initarg  :type
+<span class='line'>62</span>          :type     type-reference
+<span class='line'>63</span>          :accessor typ
+<span class='line'>64</span>          :documentation &#34;The type of the constraint&#34;)))
+<span class='line'>65</span> 
+<span class='line'>66</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>67</span> &#59;&#59;                         Alu Type Storage Type                              &#59;&#59;
+<span class='line'>68</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>69</span> 
+<span id='f0s11'><span class='line'>70</span> (defclass type-declaration ()
+<span class='line'>71</span>   ((name :initarg  :name
+<span class='line'>72</span>          :type     keyword
+<span class='line'>73</span>          :accessor name
+<span class='line'>74</span>          :documentation &#34;The name of the Type&#34;)
+<span class='line'>75</span>    &#59;&#59; currently unused
+<span class='line'>76</span>    (generics :initarg  :generics
+<span class='line'>77</span>              :type     list
+<span class='line'>78</span>              :accessor generics
+<span class='line'>79</span>              :documentation &#34;Any extra generic argumentation that the
+<span class='line'>80</span> type can take (primitives take an extra integer&#44; we may with to propagate)&#34;)
+<span class='line'>81</span>    (options :initarg  :options
+<span class='line'>82</span>             :initform <span id='f0s12'>(sycamore:make-tree-map <span id='f0s13'>&#35;&#39;util:hash-compare</span>)</span>
+<span class='line'>83</span>             :type     sycamore:tree-map
+<span class='line'>84</span>             :accessor options
+<span class='line'>85</span>             :documentation &#34;The Options for the declaration&#34;)
+<span class='line'>86</span>    (declaration :initarg  :decl
+<span class='line'>87</span>                 :type     type-format
+<span class='line'>88</span>                 :accessor decl
+<span class='line'>89</span>                 :documentation &#34;The data declaration&#34;))
+<span class='line'>90</span>   (:documentation &#34;Type declaration in the Alu language&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t11')><span class='toggle' id='pf0t11'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(11)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t11'><code><span id='f0c55'> (lambda nil <span id='f0c54'>(funcall &#39;sycamore:make-tree-map <span id='f0c53'>(function util:hash-compare)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>91</span> 
+<span id='f0s14'><span class='line'>92</span> (deftype type-format ()
+<span class='line'>93</span>   &#34;this is the choice of the format the type declaration can be&#34;
+<span class='line'>94</span>   <span id='f0s15'>&#96;(or record-decl sum-decl)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c63'> (lambda (&#35;:whole52965 &#35;:environment52966)
+   <span id='f0c62'>(let* ((&#35;:args52967 <span id='f0c61'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c59'>(cdr &#35;:whole52965)</span> nil 0 0)</span>)) <span id='f0c56'>&#39;(or record-decl sum-decl)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>95</span> 
+<span id='f0s16'><span class='line'>96</span> (defclass record-decl ()
+<span class='line'>97</span>   ((contents :initarg :contents
+<span class='line'>98</span>              :initform <span id='f0s17'>(sycamore:make-tree-map <span id='f0s18'>&#35;&#39;util:hash-compare</span>)</span>
+<span class='line'>99</span>              :type     sycamore:tree-map
+<span class='line'>100</span>              :accessor contents
+<span class='line'>101</span>              :documentation &#34;Holding fields that are declared along with their type&#34;)
+<span class='line'>102</span>    (order :initarg :order
+<span class='line'>103</span>           :initform nil
+<span class='line'>104</span>           :type     list
+<span class='line'>105</span>           :accessor order
+<span class='line'>106</span>           :documentation &#34;For keeping a consistent order of fields between implementations&#34;))
+<span class='line'>107</span>   (:documentation &#34;Record declaration&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t16')><span class='toggle' id='pf0t16'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(16)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t16'><code><span id='f0c298'> (lambda nil <span id='f0c297'>(funcall &#39;sycamore:make-tree-map <span id='f0c296'>(function util:hash-compare)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>108</span> 
+<span class='line'>109</span> (defclass sum-decl ()
+<span class='line'>110</span>   ()
+<span class='line'>111</span>   (:documentation &#34;Sum type declaration&#34;))
+<span class='line'>112</span> 
+<span class='line'>113</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>114</span> &#59;&#59;                   Function Type Storage Functions                          &#59;&#59;
+<span class='line'>115</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>116</span> 
+<span class='line'>117</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>118</span> &#59;&#59; Circuit Functionality
+<span class='line'>119</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>120</span> 
+<span class='line'>121</span> 
+<span id='f0s19'><span class='line'>122</span> (defmethod print-object ((obj circuit) stream)
+<span class='line'>123</span>   <span id='f0s20'>(with-accessors ((name name) (ret return-type) (bod body) (arg arguments)) obj
+<span class='line'>124</span>     <span id='f0s21'>(format stream <span id='f0s22'>&#34;Circuit &#126;A&#126;&#123; &#126;A&#126;&#94;&#126;&#125; &#61;&#126;&#37;&#126;A : &#126;A&#34;</span>
+<span class='line'>125</span>             name
+<span class='line'>126</span>             <span id='f0s23'>(mapcar <span id='f0s24'>&#35;&#39;name </span>arg)</span>
+<span class='line'>127</span>             bod
+<span class='line'>128</span>             ret)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c279'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c278'>(flet ()
+     <span id='f0c277'>(let* ((&#35;:g53046 obj))
+       <span id='f0c276'>(funcall &#39;format
+                stream
+                <span id='f0c246'>&#39;&#34;Circuit &#126;A&#126;&#123; &#126;A&#126;&#94;&#126;&#125; &#61;&#126;&#37;&#126;A : &#126;A&#34;</span>
+                <span id='f0c244'>(funcall &#39;name &#35;:g53046)</span>
+                <span id='f0c275'>(let* ((&#35;:g53047 <span id='f0c248'>(cons nil nil)</span>) (&#35;:g53048 &#35;:g53047) (&#35;:g53050 <span id='f0c247'>(function name)</span>))
+                  <span id='f0c274'>(let* ((&#35;:g53051 <span id='f0c270'>(funcall &#39;arguments &#35;:g53046)</span>))
+                    (progn <span id='f0c268'>(tagbody <span id='f0c261'>(go &#35;:g53053)</span>
+                                    (&#35;:g53052 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039240ED&#62; t t)
+                                    <span id='f0c260'>(tagbody <span id='f0c259'>(let* ((&#35;:g53049 <span id='f0c258'>(car &#35;:g53051)</span>))
+                                               <span id='f0c256'>(tagbody <span id='f0c255'>(setq &#35;:g53047
+                                                              <span id='f0c254'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g53047
+                                                                                       <span id='f0c253'>(cons <span id='f0c252'>(funcall &#35;:g53050 &#35;:g53049)</span>
+                                                                                             nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c265'>(setq &#35;:g53051 <span id='f0c264'>(ccl::&#37;cdr <span id='f0c263'>(ccl::typed-form &#39;list &#35;:g53051)</span>)</span>)</span>
+                                    (&#35;:g53053 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039240ED&#62; t nil)
+                                    <span id='f0c267'>(if <span id='f0c266'>(not &#39;:ne &#35;:g53051)</span> (go &#35;:g53052) nil)</span>)</span>
+                           <span id='f0c273'>(let* () <span id='f0c272'>(ccl::&#37;cdr &#35;:g53048)</span>)</span>))</span>)</span>
+                <span id='f0c242'>(funcall &#39;body &#35;:g53046)</span>
+                <span id='f0c240'>(funcall &#39;return-type &#35;:g53046)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>129</span> 
+<span id='f0s25'><span class='line'>130</span> (defun make-circuit (&#38;key name arguments return-type body exec)
+<span class='line'>131</span>   <span id='f0s26'>(make-instance &#39;circuit
+<span class='line'>132</span>                  :name name
+<span class='line'>133</span>                  :body body
+<span class='line'>134</span>                  :return-type return-type
+<span class='line'>135</span>                  :arguments arguments
+<span class='line'>136</span>                  :exec exec)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t25')><span class='toggle' id='pf0t25'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(25)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t25'><code><span id='f0c15'> (lambda (&#38;key ((:name name) nil &#35;:compiler-var) ((:arguments arguments) nil &#35;:compiler-var)
+          ((:return-type return-type) nil &#35;:compiler-var) ((:body body) nil &#35;:compiler-var)
+          ((:exec exec) nil &#35;:compiler-var))
+   <span id='f0c14'>(let* ()
+     <span id='f0c13'>(funcall <span id='f0c11'>(ccl::&#37;svref <span id='f0c10'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200396C73F&#62;))</span> 3)</span>
+              <span id='f0c1'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200396C73F&#62;))</span>
+              <span id='f0c4'>&#39;:name</span>
+              name
+              <span id='f0c12'>&#39;:body</span>
+              body
+              <span id='f0c5'>&#39;:return-type</span>
+              return-type
+              <span id='f0c3'>&#39;:arguments</span>
+              arguments
+              <span id='f0c0'>&#39;:exec</span>
+              exec)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>137</span> 
+<span class='line'>138</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>139</span> &#59;&#59; Constraint Functionality
+<span class='line'>140</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>141</span> 
+<span id='f0s27'><span class='line'>142</span> (defmethod print-object ((obj constraint) stream)
+<span class='line'>143</span>   <span id='f0s28'>(print-unreadable-object (obj stream :type t)
+<span class='line'>144</span>     <span id='f0s29'>(format stream <span id='f0s30'>&#34;&#126;A &#126;A &#126;A&#34;</span> <span id='f0s31'>(privacy obj)</span> <span id='f0s32'>(name obj)</span> <span id='f0s33'>(typ obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t27')><span class='toggle' id='pf0t27'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(27)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t27'><code><span id='f0c147'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c146'>(flet ()
+     <span id='f0c145'>(let* ((&#35;:g53075
+             <span id='f0c140'>(function <span id='f0c139'>(lambda nil
+                         <span id='f0c138'>(funcall &#39;format
+                                  stream
+                                  <span id='f0c133'>&#39;&#34;&#126;A &#126;A &#126;A&#34;</span>
+                                  <span id='f0c132'>(funcall &#39;privacy obj)</span>
+                                  <span id='f0c135'>(funcall &#39;name obj)</span>
+                                  <span id='f0c137'>(funcall &#39;typ obj)</span>)</span>)</span>)</span>))
+       <span id='f0c144'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g53075)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>145</span> 
+<span class='line'>146</span> (-&#62; make-constraint
+<span class='line'>147</span>     (&#38;key (:name keyword) (:privacy privacy) (:type type-reference)) constraint)
+<span id='f0s34'><span class='line'>148</span> (defun make-constraint (&#38;key (name <span id='f0s35'>(error <span id='f0s36'>&#34;please provide name&#34;</span>)</span>)
+<span class='line'>149</span>                              (privacy :private)
+<span class='line'>150</span>                              type)
+<span class='line'>151</span>   <span id='f0s37'>(values
+<span class='line'>152</span>    <span id='f0s38'>(make-instance &#39;constraint :name name :type type :privacy privacy)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t34')><span class='toggle' id='pf0t34'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(34)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t34'><code><span id='f0c238'> (lambda (&#38;key ((:name name) <span id='f0c225'>(values (funcall &#39;error <span id='f0c224'>&#39;&#34;please provide name&#34;</span>))</span> &#35;:compiler-var)
+          ((:privacy privacy) <span id='f0c223'>&#39;:private</span> &#35;:compiler-var) ((:type type) nil &#35;:compiler-var))
+   <span id='f0c237'>(values <span id='f0c236'>(let* ()
+             <span id='f0c235'>(funcall <span id='f0c229'>(ccl::&#37;svref <span id='f0c228'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020039A61CF&#62;))</span> 3)</span>
+                      <span id='f0c232'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020039A61CF&#62;))</span>
+                      <span id='f0c234'>&#39;:name</span>
+                      name
+                      <span id='f0c227'>&#39;:type</span>
+                      type
+                      <span id='f0c231'>&#39;:privacy</span>
+                      privacy)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>153</span> 
+<span class='line'>154</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>155</span> &#59;&#59;                     Type Declaration Functionalities                       &#59;&#59;
+<span class='line'>156</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>157</span> 
+<span id='f0s39'><span class='line'>158</span> (defmethod print-object ((obj type-declaration) stream)
+<span class='line'>159</span>   <span id='f0s40'>(print-unreadable-object (obj stream)
+<span class='line'>160</span>     <span id='f0s41'>(with-accessors ((decl decl) (gen generics) (opt options) (name name)) obj
+<span class='line'>161</span>       <span id='f0s42'>(let ((plist <span id='f0s43'>(util:sycamore-symbol-map-plist opt)</span>))
+<span class='line'>162</span>         &#59;&#59; should abstract this bit out eventually but w&#47;e
+<span class='line'>163</span>         <span id='f0s44'>(if plist
+<span class='line'>164</span>             <span id='f0s45'>(format stream <span id='f0s46'>&#34;TYPE (&#126;A &#126;A) &#126;&#123;&#126;A &#126;&#125;&#61; &#126;A&#34;</span> name plist gen decl)</span>
+<span class='line'>165</span>             <span id='f0s47'>(format stream <span id='f0s48'>&#34;TYPE &#126;A &#126;&#123;&#126;A &#126;&#125;&#61; &#126;A&#34;</span> name gen decl)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t39')><span class='toggle' id='pf0t39'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(39)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t39'><code><span id='f0c129'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c128'>(flet ()
+     <span id='f0c127'>(let* ((&#35;:g53106
+             <span id='f0c122'>(function <span id='f0c121'>(lambda nil
+                         <span id='f0c120'>(let* ((&#35;:g53107 obj))
+                           <span id='f0c119'>(let* ((plist <span id='f0c118'>(funcall &#39;util:sycamore-symbol-map-plist <span id='f0c117'>(funcall &#39;options &#35;:g53107)</span>)</span>))
+                             <span id='f0c115'>(if plist
+                                 <span id='f0c113'>(funcall &#39;format
+                                          stream
+                                          <span id='f0c112'>&#39;&#34;TYPE (&#126;A &#126;A) &#126;&#123;&#126;A &#126;&#125;&#61; &#126;A&#34;</span>
+                                          <span id='f0c107'>(funcall &#39;name &#35;:g53107)</span>
+                                          plist
+                                          <span id='f0c111'>(funcall &#39;generics &#35;:g53107)</span>
+                                          <span id='f0c109'>(funcall &#39;decl &#35;:g53107)</span>)</span>
+                                 <span id='f0c103'>(funcall &#39;format
+                                          stream
+                                          <span id='f0c95'>&#39;&#34;TYPE &#126;A &#126;&#123;&#126;A &#126;&#125;&#61; &#126;A&#34;</span>
+                                          <span id='f0c97'>(funcall &#39;name &#35;:g53107)</span>
+                                          <span id='f0c102'>(funcall &#39;generics &#35;:g53107)</span>
+                                          <span id='f0c100'>(funcall &#39;decl &#35;:g53107)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c126'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream nil nil &#35;:g53106)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>166</span> 
+<span id='f0s49'><span class='line'>167</span> (defun make-type-declaration (&#38;key
+<span class='line'>168</span>                                 (name <span id='f0s50'>(error <span id='f0s51'>&#34;please provide name&#34;</span>)</span>)
+<span class='line'>169</span>                                 (options <span id='f0s52'>(sycamore:make-tree-map <span id='f0s53'>&#35;&#39;util:hash-compare</span>)</span>)
+<span class='line'>170</span>                                 generics
+<span class='line'>171</span>                                 (decl <span id='f0s54'>(error <span id='f0s55'>&#34;please provide declaration&#34;</span>)</span>))
+<span class='line'>172</span>   <span id='f0s56'>(make-instance &#39;type-declaration
+<span class='line'>173</span>                  :decl decl :options options :generics generics :name name)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t49')><span class='toggle' id='pf0t49'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(49)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t49'><code><span id='f0c222'> (lambda (&#38;key ((:name name) <span id='f0c221'>(values (funcall &#39;error <span id='f0c220'>&#39;&#34;please provide name&#34;</span>))</span> &#35;:compiler-var)
+          ((:options options) <span id='f0c206'>(funcall &#39;sycamore:make-tree-map <span id='f0c205'>(function util:hash-compare)</span>)</span> &#35;:compiler-var)
+          ((:generics generics) nil &#35;:compiler-var)
+          ((:decl decl) <span id='f0c204'>(values (funcall &#39;error <span id='f0c203'>&#39;&#34;please provide declaration&#34;</span>))</span> &#35;:compiler-var))
+   <span id='f0c219'>(let* ()
+     <span id='f0c218'>(funcall <span id='f0c216'>(ccl::&#37;svref <span id='f0c215'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200375738F&#62;))</span> 3)</span>
+              <span id='f0c209'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200375738F&#62;))</span>
+              <span id='f0c217'>&#39;:decl</span>
+              decl
+              <span id='f0c214'>&#39;:options</span>
+              options
+              <span id='f0c207'>&#39;:generics</span>
+              generics
+              <span id='f0c212'>&#39;:name</span>
+              name)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>174</span> 
+<span class='line'>175</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>176</span> &#59;&#59; Record Declaration Functionality
+<span class='line'>177</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>178</span> 
+<span id='f0s57'><span class='line'>179</span> (defmethod print-object ((obj record-decl) stream)
+<span class='line'>180</span>   <span id='f0s58'>(print-unreadable-object (obj stream :type t)
+<span class='line'>181</span>     <span id='f0s59'>(with-accessors ((cont contents)) obj
+<span class='line'>182</span>       <span id='f0s60'>(format stream <span id='f0s61'>&#34;&#126;&#123;:&#126;A &#126;A&#126;&#94; &#126;&#125;&#34;</span> <span id='f0s62'>(util:sycamore-symbol-map-plist cont)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t57')><span class='toggle' id='pf0t57'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(57)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t57'><code><span id='f0c202'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c201'>(flet ()
+     <span id='f0c200'>(let* ((&#35;:g53132
+             <span id='f0c199'>(function <span id='f0c198'>(lambda nil
+                         <span id='f0c197'>(let* ((&#35;:g53133 obj))
+                           <span id='f0c196'>(funcall &#39;format
+                                    stream
+                                    <span id='f0c191'>&#39;&#34;&#126;&#123;:&#126;A &#126;A&#126;&#94; &#126;&#125;&#34;</span>
+                                    <span id='f0c195'>(funcall &#39;util:sycamore-symbol-map-plist <span id='f0c194'>(funcall &#39;contents &#35;:g53133)</span>)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c190'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g53132)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>183</span> 
+<span id='f0s63'><span class='line'>184</span> (defun make-record-declaration (&#38;rest arguments &#38;key &#38;allow-other-keys)
+<span class='line'>185</span>   <span id='f0s64'>(make-instance &#39;record-decl
+<span class='line'>186</span>                  :contents <span id='f0s65'>(util:sycamore-plist-symbol-map arguments)</span>
+<span class='line'>187</span>                  :order    <span id='f0s66'>(mapcar <span id='f0s67'>&#35;&#39;car </span><span id='f0s68'>(alexandria:plist-alist arguments)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t63')><span class='toggle' id='pf0t63'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(63)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t63'><code><span id='f0c186'> (lambda (&#38;rest arguments &#38;allow-other-keys)
+   <span id='f0c185'>(let* ()
+     <span id='f0c184'>(funcall <span id='f0c150'>(ccl::&#37;svref <span id='f0c149'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037945EF&#62;))</span> 3)</span>
+              <span id='f0c182'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037945EF&#62;))</span>
+              <span id='f0c183'>&#39;:contents</span>
+              <span id='f0c181'>(funcall &#39;util:sycamore-plist-symbol-map arguments)</span>
+              <span id='f0c148'>&#39;:order</span>
+              <span id='f0c179'>(let* ((&#35;:g53143 <span id='f0c151'>(cons nil nil)</span>) (&#35;:g53144 &#35;:g53143) (&#35;:g53146 <span id='f0c152'>(function car)</span>))
+                <span id='f0c178'>(let* ((&#35;:g53151 <span id='f0c158'>(funcall &#39;alexandria:plist-alist arguments)</span>))
+                  (progn <span id='f0c177'>(tagbody <span id='f0c172'>(go &#35;:g53153)</span>
+                                  (&#35;:g53152 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200379277D&#62; t t)
+                                  <span id='f0c171'>(tagbody <span id='f0c170'>(let* ((&#35;:g53145 <span id='f0c169'>(car &#35;:g53151)</span>))
+                                             <span id='f0c167'>(tagbody <span id='f0c166'>(setq &#35;:g53143
+                                                            <span id='f0c165'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g53143
+                                                                                     <span id='f0c164'>(cons <span id='f0c163'>(funcall &#35;:g53146 &#35;:g53145)</span>
+                                                                                           nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                  <span id='f0c176'>(setq &#35;:g53151 <span id='f0c175'>(ccl::&#37;cdr <span id='f0c174'>(ccl::typed-form &#39;list &#35;:g53151)</span>)</span>)</span>
+                                  (&#35;:g53153 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200379277D&#62; t nil)
+                                  <span id='f0c160'>(if <span id='f0c159'>(not &#39;:ne &#35;:g53151)</span> (go &#35;:g53152) nil)</span>)</span>
+                         <span id='f0c156'>(let* () <span id='f0c155'>(ccl::&#37;cdr &#35;:g53144)</span>)</span>))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>188</span> 
+<span id='f0s69'><span class='line'>189</span> (defun record-declaration-&#62;alist (record)
+<span class='line'>190</span>   <span id='f0s70'>(mapcar <span id='f0s71'>(lambda (field)
+<span class='line'>191</span>             <span id='f0s72'>(cons field <span id='f0s73'>(sycamore:tree-map-find <span id='f0s74'>(contents record)</span> field nil)</span>)</span>)</span>
+<span class='line'>192</span>           <span id='f0s75'>(order record)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t69')><span class='toggle' id='pf0t69'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(69)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t69'><code><span id='f0c52'> (lambda (record)
+   <span id='f0c51'>(let* ((&#35;:g53157 <span id='f0c16'>(cons nil nil)</span>)
+          (&#35;:g53158 &#35;:g53157)
+          (&#35;:g53160
+           <span id='f0c50'>(function <span id='f0c49'>(lambda (field)
+                       <span id='f0c48'>(cons field <span id='f0c47'>(funcall &#39;sycamore:tree-map-find <span id='f0c45'>(funcall &#39;contents record)</span> field nil)</span>)</span>)</span>)</span>))
+     <span id='f0c42'>(let* ((&#35;:g53161 <span id='f0c19'>(funcall &#39;order record)</span>))
+       (progn <span id='f0c41'>(tagbody <span id='f0c27'>(go &#35;:g53163)</span>
+                       (&#35;:g53162 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037AA0DD&#62; t t)
+                       <span id='f0c38'>(tagbody <span id='f0c37'>(let* ((&#35;:g53159 <span id='f0c29'>(car &#35;:g53161)</span>))
+                                  <span id='f0c36'>(tagbody <span id='f0c35'>(setq &#35;:g53157
+                                                 <span id='f0c34'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g53157
+                                                                          <span id='f0c33'>(cons <span id='f0c32'>(funcall &#35;:g53160 &#35;:g53159)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c26'>(setq &#35;:g53161 <span id='f0c25'>(ccl::&#37;cdr <span id='f0c24'>(ccl::typed-form &#39;list &#35;:g53161)</span>)</span>)</span>
+                       (&#35;:g53163 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037AA0DD&#62; t nil)
+                       <span id='f0c40'>(if <span id='f0c39'>(not &#39;:ne &#35;:g53161)</span> (go &#35;:g53162) nil)</span>)</span>
+              <span id='f0c22'>(let* () <span id='f0c21'>(ccl::&#37;cdr &#35;:g53158)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>193</span> 
+<span class='line'>194</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>195</span> &#59;&#59;                         Function Storage Func                              &#59;&#59;
+<span class='line'>196</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+</code></div>
+</body></html>

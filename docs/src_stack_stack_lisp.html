@@ -1,0 +1,495 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_stack_stack_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;stack;stack.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;stack)
+<span class='line'>2</span> 
+<span class='line'>3</span> (defclass stack ()
+<span class='line'>4</span>   ((current-section
+<span class='line'>5</span>     :initarg  :current-section
+<span class='line'>6</span>     :accessor current-section
+<span class='line'>7</span>     :type     (or null section)
+<span class='line'>8</span>     :initform nil
+<span class='line'>9</span>     :documentation &#34;the current section to push into if there even is one&#34;)
+<span class='line'>10</span>    (stack :initarg  :stack
+<span class='line'>11</span>           :initform nil
+<span class='line'>12</span>           :accessor stack
+<span class='line'>13</span>           :type     list
+<span class='line'>14</span>           :documentation &#34;The Current calls &#34;)))
+<span class='line'>15</span> 
+<span class='line'>16</span> (defclass section ()
+<span class='line'>17</span>   ((name :initarg :name
+<span class='line'>18</span>          :initform :section
+<span class='line'>19</span>          :accessor name
+<span class='line'>20</span>          :type symbol
+<span class='line'>21</span>          :documentation &#34;The name of the current section&#34;)
+<span class='line'>22</span>    (stack :initarg :stack
+<span class='line'>23</span>           :initform nil
+<span class='line'>24</span>           :accessor stack
+<span class='line'>25</span>           :type list)))
+<span class='line'>26</span> 
+<span id='f0s0'><span class='line'>27</span> (defmethod print-object ((obj stack) stream)
+<span class='line'>28</span>   <span id='f0s1'>(pprint-logical-block (stream nil :prefix <span id='f0s2'>&#34;(&#34;</span> :suffix &#34;)&#34;)
+<span class='line'>29</span>     <span id='f0s3'>(when <span id='f0s4'>(current-section obj)</span>
+<span class='line'>30</span>       <span id='f0s5'>(format stream <span id='f0s6'>&#34;&#126;A&#34;</span> <span id='f0s7'>(current-section obj)</span>)</span>
+<span class='line'>31</span>       <span id='f0s8'>(when <span id='f0s9'>(stack obj)</span>
+<span class='line'>32</span>         <span id='f0s10'>(format stream <span id='f0s11'>&#34;&#126;:&#64;&#95;&#34;</span>)</span>)</span>)</span>
+<span class='line'>33</span>     <span id='f0s12'>(format stream <span id='f0s13'>&#34;&#126;&#123;&#126;A&#126;&#94;&#126;:&#64;&#95;&#126;&#125;&#34;</span> <span id='f0s14'>(stack obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c270'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c269'>(flet ()
+     <span id='f0c268'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c267'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c264'>(function <span id='f0c263'>(lambda (stream)
+                            <span id='f0c262'>(let ((ccl::+p <span id='f0c186'>(or <span id='f0c185'>&#39;&#34;(&#34;</span>)</span>))
+                              <span id='f0c261'>(let ((ccl::*current-level* <span id='f0c260'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c258'>(if <span id='f0c191'>(not <span id='f0c190'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c257'>(progn <span id='f0c256'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c254'>&#39;&#34;)&#34;</span>)</span>
+                                           <span id='f0c252'>(if <span id='f0c245'>(catch <span id='f0c192'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c241'>(progn <span id='f0c235'>(if <span id='f0c234'>(funcall &#39;current-section obj)</span>
+                                                                   <span id='f0c232'>(progn <span id='f0c231'>(let ((stream stream)
+                                                                                (ccl::object
+                                                                                 <span id='f0c200'>(funcall &#39;current-section obj)</span>))
+                                                                            <span id='f0c230'>(if <span id='f0c218'>(or <span id='f0c217'>(not stream)</span>
+                                                                                    <span id='f0c216'>(let* ((&#35;:g50709 stream)
+                                                                                           (&#35;:g50710
+                                                                                            <span id='f0c215'>(ccl::typecode &#35;:g50709)</span>))
+                                                                                      <span id='f0c213'>(if <span id='f0c204'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50710 166)</span>
+                                                                                          <span id='f0c212'>(ccl::&#37;i&#60;&#62; &#39;:eq
+                                                                                           <span id='f0c211'>(ccl::typed-form
+                                                                                            &#39;(unsigned-byte 8)
+                                                                                            <span id='f0c210'>(ccl::&#37;ilogand2 255
+                                                                                                            <span id='f0c209'>(ccl::typed-form
+                                                                                                             &#39;fixnum
+                                                                                                             <span id='f0c208'>(ccl::&#37;iasr 8
+                                                                                                                         <span id='f0c207'>(ccl::typed-form
+                                                                                                                          &#39;fixnum
+                                                                                                                          <span id='f0c206'>(ccl::&#37;svref &#35;:g50709
+                                                                                                                                       4)</span>)</span>)</span>)</span>)</span>)</span>
+                                                                                           201)</span>
+                                                                                          <span id='f0c202'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50710
+                                                                                           201)</span>)</span>)</span>)</span>
+                                                                                <span id='f0c229'>(funcall &#39;ccl::format-to-string
+                                                                                         stream
+                                                                                         <span id='f0c226'>&#39;&#34;&#126;A&#34;</span>
+                                                                                         ccl::object)</span>
+                                                                                <span id='f0c225'>(progn <span id='f0c224'>(funcall &#39;princ
+                                                                                                ccl::object
+                                                                                                <span id='f0c223'>(if <span id='f0c222'>(ccl:neq &#39;:ne
+                                                                                                             stream
+                                                                                                             t)</span>
+                                                                                                    stream
+                                                                                                    nil)</span>)</span>
+                                                                                       nil)</span>)</span>)</span>
+                                                                          <span id='f0c198'>(if <span id='f0c197'>(funcall &#39;stack obj)</span>
+                                                                              <span id='f0c195'>(funcall &#39;format stream <span id='f0c194'>&#39;&#34;&#126;:&#64;&#95;&#34;</span>)</span>
+                                                                              nil)</span>)</span>
+                                                                   nil)</span>
+                                                               <span id='f0c240'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c239'>&#39;&#34;&#126;&#123;&#126;A&#126;&#94;&#126;:&#64;&#95;&#126;&#125;&#34;</span>
+                                                                        <span id='f0c237'>(funcall &#39;stack obj)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c244'>(funcall &#39;ccl::end-block stream <span id='f0c243'>&#39;&#34;)&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c251'>(progn <span id='f0c248'>(funcall &#39;ccl::end-block stream <span id='f0c246'>&#39;&#34;)&#34;</span>)</span>
+                                                      <span id='f0c250'>(throw <span id='f0c249'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c266'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>34</span> 
+<span id='f0s15'><span class='line'>35</span> (defmethod print-object ((obj section) stream)
+<span class='line'>36</span>   <span id='f0s16'>(pprint-logical-block (stream nil :prefix <span id='f0s17'>&#34;(&#34;</span> :suffix &#34;)&#34;)
+<span class='line'>37</span>     <span id='f0s18'>(format stream <span id='f0s19'>&#34;:IN &#126;A&#34;</span> <span id='f0s20'>(name obj)</span>)</span>
+<span class='line'>38</span>     <span id='f0s21'>(format stream <span id='f0s22'>&#34;&#126;&#123;&#126;:&#64;&#95;&#126;A&#126;&#94;&#126;&#125;&#34;</span> <span id='f0s23'>(stack obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c150'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c149'>(flet ()
+     <span id='f0c148'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c147'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c144'>(function <span id='f0c143'>(lambda (stream)
+                            <span id='f0c142'>(let ((ccl::+p <span id='f0c141'>(or <span id='f0c140'>&#39;&#34;(&#34;</span>)</span>))
+                              <span id='f0c139'>(let ((ccl::*current-level* <span id='f0c137'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c135'>(if <span id='f0c134'>(not <span id='f0c133'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c130'>(progn <span id='f0c129'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c128'>&#39;&#34;)&#34;</span>)</span>
+                                           <span id='f0c125'>(if <span id='f0c118'>(catch <span id='f0c103'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c114'>(progn <span id='f0c108'>(funcall &#39;format stream <span id='f0c105'>&#39;&#34;:IN &#126;A&#34;</span> <span id='f0c107'>(funcall &#39;name obj)</span>)</span>
+                                                               <span id='f0c113'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c111'>&#39;&#34;&#126;&#123;&#126;:&#64;&#95;&#126;A&#126;&#94;&#126;&#125;&#34;</span>
+                                                                        <span id='f0c110'>(funcall &#39;stack obj)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c117'>(funcall &#39;ccl::end-block stream <span id='f0c116'>&#39;&#34;)&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c124'>(progn <span id='f0c123'>(funcall &#39;ccl::end-block stream <span id='f0c121'>&#39;&#34;)&#34;</span>)</span>
+                                                      <span id='f0c120'>(throw <span id='f0c119'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c146'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>39</span> 
+<span class='line'>40</span> (defparameter *stack* (ref:ref (make-instance &#39;stack))
+<span class='line'>41</span>   &#34;Global stack that operands will be pushed to&#34;)
+<span class='line'>42</span> 
+<span class='line'>43</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>44</span> &#59;&#59; Mutable interface toe the functional data structure
+<span class='line'>45</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>46</span> 
+<span id='f0s24'><span class='line'>47</span> (defun push (x &#38;optional (stack *stack*))
+<span class='line'>48</span>   <span id='f0s25'>(setf (ref:&#33; stack)
+<span class='line'>49</span>         <span id='f0s26'>(cons x <span id='f0s27'>(ref:&#33; stack)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c280'> (lambda (x &#38;optional (stack *stack* &#35;:compiler-var))
+   <span id='f0c279'>(let* ((&#35;:g50753 stack))
+     <span id='f0c278'>(funcall &#39;&#35;:&#124;(setf &#33;)&#124; <span id='f0c276'>(funcall &#39;cons x <span id='f0c274'>(ccl::typed-form &#39;stack <span id='f0c273'>(funcall &#39;ref:&#33; stack)</span>)</span>)</span> &#35;:g50753)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>50</span> 
+<span class='line'>51</span> (-&#62; push-section (symbol &#38;optional ref:ref) stack)
+<span id='f0s28'><span class='line'>52</span> (defun push-section (name &#38;optional (stack *stack*))
+<span class='line'>53</span>   <span id='f0s29'>(setf (ref:&#33; stack)
+<span class='line'>54</span>         <span id='f0s30'>(new-section name <span id='f0s31'>(ref:&#33; stack)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t28')><span class='toggle' id='pf0t28'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(28)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t28'><code><span id='f0c161'> (lambda (name &#38;optional (stack *stack* &#35;:compiler-var))
+   <span id='f0c160'>(let* ((&#35;:g50769 stack))
+     <span id='f0c159'>(funcall &#39;&#35;:&#124;(setf &#33;)&#124;
+              <span id='f0c158'>(funcall &#39;new-section <span id='f0c157'>(ccl::typed-form &#39;symbol name)</span> <span id='f0c155'>(ccl::typed-form &#39;stack <span id='f0c154'>(funcall &#39;ref:&#33; stack)</span>)</span>)</span>
+              &#35;:g50769)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>55</span> 
+<span id='f0s32'><span class='line'>56</span> (defun pop (&#38;optional (stack *stack*))
+<span class='line'>57</span>   <span id='f0s33'>(setf (ref:&#33; stack)
+<span class='line'>58</span>         <span id='f0s34'>(cdr <span id='f0s35'>(ref:&#33; stack)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t32')><span class='toggle' id='pf0t32'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(32)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t32'><code><span id='f0c36'> (lambda (&#38;optional (stack *stack* &#35;:compiler-var))
+   <span id='f0c34'>(let* ((&#35;:g50773 stack))
+     <span id='f0c33'>(funcall &#39;&#35;:&#124;(setf &#33;)&#124; <span id='f0c31'>(funcall &#39;cdr <span id='f0c30'>(ccl::typed-form &#39;stack <span id='f0c29'>(funcall &#39;ref:&#33; stack)</span>)</span>)</span> &#35;:g50773)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>59</span> 
+<span class='line'>60</span> (-&#62; pop-section (&#38;optional ref:ref) stack)
+<span id='f0s36'><span class='line'>61</span> (defun pop-section (&#38;optional (stack *stack*))
+<span class='line'>62</span>   <span id='f0s37'>(setf (ref:&#33; stack)
+<span class='line'>63</span>         <span id='f0s38'>(cdr-current-section <span id='f0s39'>(ref:&#33; stack)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t36')><span class='toggle' id='pf0t36'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(36)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t36'><code><span id='f0c184'> (lambda (&#38;optional (stack *stack* &#35;:compiler-var))
+   <span id='f0c182'>(let* ((&#35;:g50783 stack))
+     <span id='f0c181'>(funcall &#39;&#35;:&#124;(setf &#33;)&#124; <span id='f0c180'>(funcall &#39;cdr-current-section <span id='f0c179'>(ccl::typed-form &#39;stack <span id='f0c178'>(funcall &#39;ref:&#33; stack)</span>)</span>)</span> &#35;:g50783)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>64</span> 
+<span id='f0s40'><span class='line'>65</span> (defun get (&#38;optional (stack *stack*))
+<span class='line'>66</span>   <span id='f0s41'>(ref:&#33; stack)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t40')><span class='toggle' id='pf0t40'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(40)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t40'><code><span id='f0c291'> (lambda (&#38;optional (stack *stack* &#35;:compiler-var)) <span id='f0c290'>(funcall &#39;ref:&#33; stack)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>67</span> 
+<span id='f0s42'><span class='line'>68</span> (defun new ()
+<span class='line'>69</span>   <span id='f0s43'>(ref:ref <span id='f0s44'>(make-instance &#39;stack)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t42')><span class='toggle' id='pf0t42'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(42)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t42'><code><span id='f0c287'> (lambda nil
+   <span id='f0c286'>(funcall &#39;ref:ref
+            <span id='f0c285'>(let* ()
+              <span id='f0c284'>(funcall <span id='f0c282'>(ccl::&#37;svref <span id='f0c281'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200355AC5F&#62;))</span> 3)</span>
+                       <span id='f0c283'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200355AC5F&#62;))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>70</span> 
+<span id='f0s45'><span class='line'>71</span> (defmacro with-empty-stack (() &#38;rest body)
+<span class='line'>72</span>   <span id='f0s46'>&#96;(let ((*stack* (new)))
+<span class='line'>73</span>      &#44;&#64;body)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t45')><span class='toggle' id='pf0t45'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(45)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t45'><code><span id='f0c424'> (lambda (&#35;:whole50797 &#35;:environment50798)
+   <span id='f0c423'>(let* ((&#35;:args50799 <span id='f0c422'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c420'>(common-lisp:cdr &#35;:whole50797)</span> <span id='f0c421'>&#39;(nil &#38;rest body)</span> 1 nil)</span>)
+          (&#35;:req50800 <span id='f0c409'>(prog1 <span id='f0c404'>(car &#35;:args50799)</span> <span id='f0c408'>(setq &#35;:args50799 <span id='f0c407'>(ccl::&#37;cdr <span id='f0c406'>(ccl::typed-form &#39;list &#35;:args50799)</span>)</span>)</span>)</span>)
+          (&#35;:whole50801 &#35;:req50800)
+          (&#35;:args50802 <span id='f0c417'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole50801 nil 0 0)</span>)
+          (&#35;:rest50803 &#35;:args50799)
+          (body &#35;:rest50803))
+     <span id='f0c413'>(list* <span id='f0c412'>&#39;let</span> <span id='f0c411'>&#39;((*stack* (new)))</span> body)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>74</span> 
+<span id='f0s47'><span class='line'>75</span> (defmacro with-section (name &#38;rest body)
+<span class='line'>76</span>   <span id='f0s48'>&#96;(unwind-protect (progn (push-section &#39;&#44;name)
+<span class='line'>77</span>                           &#44;&#64;body)
+<span class='line'>78</span>      (pop-section))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t47')><span class='toggle' id='pf0t47'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(47)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t47'><code><span id='f0c387'> (lambda (&#35;:whole50813 &#35;:environment50814)
+   <span id='f0c386'>(let* ((&#35;:args50815 <span id='f0c374'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c373'>(common-lisp:cdr &#35;:whole50813)</span> <span id='f0c370'>&#39;(name &#38;rest body)</span> 1 nil)</span>)
+          (name <span id='f0c369'>(prog1 <span id='f0c368'>(car &#35;:args50815)</span> <span id='f0c366'>(setq &#35;:args50815 <span id='f0c365'>(ccl::&#37;cdr <span id='f0c364'>(ccl::typed-form &#39;list &#35;:args50815)</span>)</span>)</span>)</span>)
+          (&#35;:rest50816 &#35;:args50815)
+          (body &#35;:rest50816))
+     <span id='f0c385'>(list* <span id='f0c384'>&#39;unwind-protect</span> <span id='f0c383'>(list* <span id='f0c382'>&#39;progn</span> <span id='f0c380'>(list <span id='f0c376'>&#39;push-section</span> <span id='f0c379'>(list <span id='f0c378'>&#39;quote</span> name)</span>)</span> body)</span> <span id='f0c375'>&#39;((pop-section))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>79</span> 
+<span class='line'>80</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>81</span> &#59;&#59; Pure functions on stacks
+<span class='line'>82</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>83</span> 
+<span class='line'>84</span> (-&#62; emptyp (stack) boolean)
+<span id='f0s49'><span class='line'>85</span> (defun emptyp (stack)
+<span class='line'>86</span>   <span id='f0s50'>(with-accessors ((stack stack) (current current-section)) stack
+<span class='line'>87</span>     <span id='f0s51'>(and <span id='f0s52'>(null stack)</span>
+<span class='line'>88</span>          <span id='f0s53'>(null current)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t49')><span class='toggle' id='pf0t49'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(49)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t49'><code><span id='f0c300'> (lambda (stack)
+   <span id='f0c299'>(let* ((&#35;:g50832 stack)) <span id='f0c298'>(if <span id='f0c297'>(not <span id='f0c296'>(funcall &#39;stack &#35;:g50832)</span>)</span> <span id='f0c294'>(not <span id='f0c293'>(funcall &#39;current-section &#35;:g50832)</span>)</span> nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>89</span> 
+<span class='line'>90</span> (-&#62; new-section (symbol stack) stack)
+<span id='f0s54'><span class='line'>91</span> (defun new-section (name stack)
+<span class='line'>92</span>   <span id='f0s55'>(with-accessors ((stack stack) (current current-section)) stack
+<span class='line'>93</span>     <span id='f0s56'>(let ((new-stack
+<span class='line'>94</span>             <span id='f0s57'>(if current
+<span class='line'>95</span>                 <span id='f0s58'>(cl:cons current stack)</span>
+<span class='line'>96</span>                 stack)</span>))
+<span class='line'>97</span>       <span id='f0s59'>(make-instance &#39;stack :stack           new-stack
+<span class='line'>98</span>                             :current-section <span id='f0s60'>(make-instance &#39;section :name name)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t54')><span class='toggle' id='pf0t54'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(54)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t54'><code><span id='f0c27'> (lambda (name stack)
+   <span id='f0c26'>(let* ((&#35;:g50842 stack))
+     <span id='f0c25'>(let* ((new-stack
+             <span id='f0c24'>(if <span id='f0c21'>(funcall &#39;current-section &#35;:g50842)</span>
+                 <span id='f0c19'>(common-lisp:cons <span id='f0c16'>(funcall &#39;current-section &#35;:g50842)</span> <span id='f0c18'>(funcall &#39;stack &#35;:g50842)</span>)</span>
+                 <span id='f0c23'>(funcall &#39;stack &#35;:g50842)</span>)</span>))
+       <span id='f0c14'>(let* ()
+         <span id='f0c13'>(funcall <span id='f0c11'>(ccl::&#37;svref <span id='f0c10'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035A3BAF&#62;))</span> 3)</span>
+                  <span id='f0c12'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035A3BAF&#62;))</span>
+                  <span id='f0c7'>&#39;:stack</span>
+                  new-stack
+                  <span id='f0c8'>&#39;:current-section</span>
+                  <span id='f0c6'>(let* ()
+                    <span id='f0c5'>(funcall <span id='f0c3'>(ccl::&#37;svref <span id='f0c2'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035A084F&#62;))</span> 3)</span>
+                             <span id='f0c0'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035A084F&#62;))</span>
+                             <span id='f0c4'>&#39;:name</span>
+                             name)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>99</span> 
+<span class='line'>100</span> (-&#62; cons (t stack) stack)
+<span id='f0s61'><span class='line'>101</span> (defun cons (x stack)
+<span class='line'>102</span>   <span id='f0s62'>(with-accessors ((stack stack) (current current-section)) stack
+<span class='line'>103</span>     <span id='f0s63'>(if current
+<span class='line'>104</span>         <span id='f0s64'>(make-instance &#39;stack :stack           stack
+<span class='line'>105</span>                               :current-section <span id='f0s65'>(cons-section x current)</span>)</span>
+<span class='line'>106</span>         <span id='f0s66'>(make-instance &#39;stack :stack           <span id='f0s67'>(cl:cons x stack)</span>
+<span class='line'>107</span>                               :current-section current)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t61')><span class='toggle' id='pf0t61'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(61)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t61'><code><span id='f0c332'> (lambda (x stack)
+   <span id='f0c331'>(let* ((&#35;:g50860 stack))
+     <span id='f0c330'>(if <span id='f0c302'>(funcall &#39;current-section &#35;:g50860)</span>
+         <span id='f0c316'>(let* ()
+           <span id='f0c315'>(funcall <span id='f0c312'>(ccl::&#37;svref <span id='f0c311'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035FB6AF&#62;))</span> 3)</span>
+                    <span id='f0c303'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035FB6AF&#62;))</span>
+                    <span id='f0c314'>&#39;:stack</span>
+                    <span id='f0c310'>(funcall &#39;stack &#35;:g50860)</span>
+                    <span id='f0c313'>&#39;:current-section</span>
+                    <span id='f0c308'>(funcall &#39;cons-section x <span id='f0c306'>(ccl::typed-form &#39;section <span id='f0c305'>(funcall &#39;current-section &#35;:g50860)</span>)</span>)</span>)</span>)</span>
+         <span id='f0c329'>(let* ()
+           <span id='f0c328'>(funcall <span id='f0c318'>(ccl::&#37;svref <span id='f0c317'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035F743F&#62;))</span> 3)</span>
+                    <span id='f0c325'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020035F743F&#62;))</span>
+                    <span id='f0c326'>&#39;:stack</span>
+                    <span id='f0c322'>(common-lisp:cons x <span id='f0c320'>(funcall &#39;stack &#35;:g50860)</span>)</span>
+                    <span id='f0c327'>&#39;:current-section</span>
+                    <span id='f0c324'>(funcall &#39;current-section &#35;:g50860)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>108</span> (-&#62; cdr (stack) stack)
+<span id='f0s68'><span class='line'>109</span> (defun cdr (stack)
+<span class='line'>110</span>   <span id='f0s69'>(with-accessors ((stack stack) (current current-section)) stack
+<span class='line'>111</span>     <span id='f0s70'>(cond (<span id='f0s71'>(and current <span id='f0s72'>(not <span id='f0s73'>(null <span id='f0s74'>(stack current)</span>)</span>)</span>)</span>
+<span class='line'>112</span>            <span id='f0s75'>(make-instance &#39;stack :stack stack
+<span class='line'>113</span>                                  :current-section <span id='f0s76'>(cdr-section current)</span>)</span>)
+<span class='line'>114</span>           (current
+<span class='line'>115</span>            <span id='f0s77'>(make-instance &#39;stack :stack stack
+<span class='line'>116</span>                                  :current-section nil)</span>)
+<span class='line'>117</span>           (<span id='f0s78'>(typep <span id='f0s79'>(car stack)</span> &#39;section)</span>
+<span class='line'>118</span>            <span id='f0s80'>(cdr <span id='f0s81'>(make-instance &#39;stack :stack <span id='f0s82'>(cl:cdr stack)</span>
+<span class='line'>119</span>                                       :current-section <span id='f0s83'>(car stack)</span>)</span>)</span>)
+<span class='line'>120</span>           (t
+<span class='line'>121</span>            <span id='f0s84'>(make-instance &#39;stack :stack <span id='f0s85'>(cl:cdr stack)</span>
+<span class='line'>122</span>                                  :current-section nil)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t68')><span class='toggle' id='pf0t68'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(68)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t68'><code><span id='f0c102'> (lambda (stack)
+   <span id='f0c101'>(let* ((&#35;:g50878 stack))
+     <span id='f0c100'>(if <span id='f0c99'>(if <span id='f0c94'>(funcall &#39;current-section &#35;:g50878)</span> <span id='f0c98'>(not &#39;:ne <span id='f0c97'>(funcall &#39;stack <span id='f0c96'>(funcall &#39;current-section &#35;:g50878)</span>)</span>)</span> nil)</span>
+         <span id='f0c92'>(let* ()
+           <span id='f0c91'>(funcall <span id='f0c90'>(ccl::&#37;svref <span id='f0c89'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200360B79F&#62;))</span> 3)</span>
+                    <span id='f0c84'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200360B79F&#62;))</span>
+                    <span id='f0c80'>&#39;:stack</span>
+                    <span id='f0c82'>(funcall &#39;stack &#35;:g50878)</span>
+                    <span id='f0c83'>&#39;:current-section</span>
+                    <span id='f0c88'>(funcall &#39;cdr-section <span id='f0c87'>(ccl::typed-form &#39;section <span id='f0c86'>(funcall &#39;current-section &#35;:g50878)</span>)</span>)</span>)</span>)</span>
+         <span id='f0c79'>(if <span id='f0c38'>(funcall &#39;current-section &#35;:g50878)</span>
+             <span id='f0c47'>(let* ()
+               <span id='f0c46'>(funcall <span id='f0c45'>(ccl::&#37;svref <span id='f0c44'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036073BF&#62;))</span> 3)</span>
+                        <span id='f0c40'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036073BF&#62;))</span>
+                        <span id='f0c43'>&#39;:stack</span>
+                        <span id='f0c42'>(funcall &#39;stack &#35;:g50878)</span>
+                        <span id='f0c39'>&#39;:current-section</span>
+                        nil)</span>)</span>
+             <span id='f0c78'>(if <span id='f0c77'>(funcall &#39;ccl::std-instance-class-cell-typep
+                          <span id='f0c75'>(car <span id='f0c74'>(funcall &#39;stack &#35;:g50878)</span>)</span>
+                          <span id='f0c76'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036033CF&#62;))</span>)</span>
+                 <span id='f0c62'>(ccl::self-funcall
+                  <span id='f0c61'>(ccl::typed-form &#39;stack
+                   <span id='f0c60'>(let* ()
+                     <span id='f0c59'>(funcall <span id='f0c58'>(ccl::&#37;svref <span id='f0c57'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200360009F&#62;))</span> 3)</span>
+                              <span id='f0c49'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200360009F&#62;))</span>
+                              <span id='f0c48'>&#39;:stack</span>
+                              <span id='f0c52'>(common-lisp:cdr <span id='f0c51'>(funcall &#39;stack &#35;:g50878)</span>)</span>
+                              <span id='f0c56'>&#39;:current-section</span>
+                              <span id='f0c55'>(car <span id='f0c54'>(funcall &#39;stack &#35;:g50878)</span>)</span>)</span>)</span>)</span>)</span>
+                 <span id='f0c72'>(let* ()
+                   <span id='f0c71'>(funcall <span id='f0c65'>(ccl::&#37;svref <span id='f0c64'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200363BEAF&#62;))</span> 3)</span>
+                            <span id='f0c69'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200363BEAF&#62;))</span>
+                            <span id='f0c63'>&#39;:stack</span>
+                            <span id='f0c68'>(common-lisp:cdr <span id='f0c67'>(funcall &#39;stack &#35;:g50878)</span>)</span>
+                            <span id='f0c70'>&#39;:current-section</span>
+                            nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>123</span> 
+<span class='line'>124</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>125</span> &#59;&#59; Functions on Sections
+<span class='line'>126</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>127</span> 
+<span class='line'>128</span> (-&#62; cons-section (t section) section)
+<span id='f0s86'><span class='line'>129</span> (defun cons-section (x section)
+<span class='line'>130</span>   <span id='f0s87'>(with-accessors ((name name) (stack stack)) section
+<span class='line'>131</span>     <span id='f0s88'>(make-instance &#39;section :stack <span id='f0s89'>(cl:cons x stack)</span> :name name)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t86')><span class='toggle' id='pf0t86'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(86)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t86'><code><span id='f0c402'> (lambda (x section)
+   <span id='f0c401'>(let* ((&#35;:g50907 section))
+     <span id='f0c400'>(let* ()
+       <span id='f0c399'>(funcall <span id='f0c398'>(ccl::&#37;svref <span id='f0c397'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367761F&#62;))</span> 3)</span>
+                <span id='f0c394'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367761F&#62;))</span>
+                <span id='f0c388'>&#39;:stack</span>
+                <span id='f0c392'>(common-lisp:cons x <span id='f0c391'>(funcall &#39;stack &#35;:g50907)</span>)</span>
+                <span id='f0c393'>&#39;:name</span>
+                <span id='f0c396'>(funcall &#39;name &#35;:g50907)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>132</span> 
+<span class='line'>133</span> (-&#62; cdr-section (section) section)
+<span id='f0s90'><span class='line'>134</span> (defun cdr-section (section)
+<span class='line'>135</span>   <span id='f0s91'>(with-accessors ((name name) (stack stack)) section
+<span class='line'>136</span>     <span id='f0s92'>(make-instance &#39;section :stack <span id='f0s93'>(cl:cdr stack)</span> :name name)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t90')><span class='toggle' id='pf0t90'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(90)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t90'><code><span id='f0c175'> (lambda (section)
+   <span id='f0c174'>(let* ((&#35;:g50921 section))
+     <span id='f0c173'>(let* ()
+       <span id='f0c172'>(funcall <span id='f0c170'>(ccl::&#37;svref <span id='f0c169'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200369C9CF&#62;))</span> 3)</span>
+                <span id='f0c171'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200369C9CF&#62;))</span>
+                <span id='f0c163'>&#39;:stack</span>
+                <span id='f0c168'>(common-lisp:cdr <span id='f0c167'>(funcall &#39;stack &#35;:g50921)</span>)</span>
+                <span id='f0c162'>&#39;:name</span>
+                <span id='f0c165'>(funcall &#39;name &#35;:g50921)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>137</span> 
+<span class='line'>138</span> 
+<span class='line'>139</span> (-&#62; cdr-current-section (stack) stack)
+<span id='f0s94'><span class='line'>140</span> (defun cdr-current-section (stack)
+<span class='line'>141</span>   <span id='f0s95'>(with-accessors ((stack stack)) stack
+<span class='line'>142</span>     <span id='f0s96'>(if <span id='f0s97'>(typep <span id='f0s98'>(car stack)</span> &#39;section)</span>
+<span class='line'>143</span>         <span id='f0s99'>(make-instance &#39;stack :stack           <span id='f0s100'>(cl:cdr stack)</span>
+<span class='line'>144</span>                               :current-section <span id='f0s101'>(car stack)</span>)</span>
+<span class='line'>145</span>         <span id='f0s102'>(make-instance &#39;stack :stack           stack
+<span class='line'>146</span>                               :current-section nil)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t94')><span class='toggle' id='pf0t94'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(94)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t94'><code><span id='f0c362'> (lambda (stack)
+   <span id='f0c361'>(let* ((&#35;:g50935 stack))
+     <span id='f0c360'>(if <span id='f0c350'>(funcall &#39;ccl::std-instance-class-cell-typep
+                  <span id='f0c349'>(car <span id='f0c348'>(funcall &#39;stack &#35;:g50935)</span>)</span>
+                  <span id='f0c346'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003681DBF&#62;))</span>)</span>
+         <span id='f0c345'>(let* ()
+           <span id='f0c344'>(funcall <span id='f0c335'>(ccl::&#37;svref <span id='f0c334'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036BEC6F&#62;))</span> 3)</span>
+                    <span id='f0c343'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036BEC6F&#62;))</span>
+                    <span id='f0c333'>&#39;:stack</span>
+                    <span id='f0c338'>(common-lisp:cdr <span id='f0c337'>(funcall &#39;stack &#35;:g50935)</span>)</span>
+                    <span id='f0c339'>&#39;:current-section</span>
+                    <span id='f0c342'>(car <span id='f0c341'>(funcall &#39;stack &#35;:g50935)</span>)</span>)</span>)</span>
+         <span id='f0c359'>(let* ()
+           <span id='f0c358'>(funcall <span id='f0c353'>(ccl::&#37;svref <span id='f0c352'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036BAC7F&#62;))</span> 3)</span>
+                    <span id='f0c351'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036BAC7F&#62;))</span>
+                    <span id='f0c356'>&#39;:stack</span>
+                    <span id='f0c355'>(funcall &#39;stack &#35;:g50935)</span>
+                    <span id='f0c357'>&#39;:current-section</span>
+                    nil)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

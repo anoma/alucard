@@ -1,0 +1,141 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_anf_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;anf.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> 
+<span class='line'>4</span> (def-suite alucard&#46;pass&#46;anf
+<span class='line'>5</span>     :description &#34;Tests the alucard package&#34;)
+<span class='line'>6</span> 
+<span class='line'>7</span> (in-suite alucard&#46;pass&#46;anf)
+<span class='line'>8</span> 
+<span class='line'>9</span> (test anf-linearizes-application
+<span class='line'>10</span>   (let ((normalized
+<span class='line'>11</span>           (anf:normalize-expression
+<span class='line'>12</span>            (ir:make-application
+<span class='line'>13</span>             :function (ir:make-reference :name :hi)
+<span class='line'>14</span>             :arguments
+<span class='line'>15</span>             (list (ir:make-application
+<span class='line'>16</span>                    :function (ir:make-reference :name :fun2)
+<span class='line'>17</span>                    :arguments (list (ir:make-reference :name :hi)
+<span class='line'>18</span>                                     (ir:make-application
+<span class='line'>19</span>                                      :function (ir:make-reference :name :fun3)
+<span class='line'>20</span>                                      :arguments
+<span class='line'>21</span>                                      (list (ir:make-reference :name :hi)))))
+<span class='line'>22</span>                   (ir:make-reference :name :bob))))))
+<span class='line'>23</span>     &#59;&#59; We sadly lack object equality for clos classes&#44; so thus we test it this way
+<span class='line'>24</span>     (is (&#61; 3 (length normalized))
+<span class='line'>25</span>         &#34;normalization makes a let term over application&#44; at this point 3 times&#33;&#34;)
+<span class='line'>26</span>     (is (typep (car (last normalized)) &#39;ir:application)
+<span class='line'>27</span>         &#34;After the double let we should have the function application&#34;)
+<span class='line'>28</span>     (is (eq (ir:name (cadr (ir:arguments (car (last normalized)))))
+<span class='line'>29</span>             :bob)
+<span class='line'>30</span>         &#34;bob is a straight line argument so it should be unchanged by the transform&#34;)))
+<span class='line'>31</span> 
+<span class='line'>32</span> (test anf-linearizes-records
+<span class='line'>33</span>   (let* ((normalized
+<span class='line'>34</span>            (anf:normalize-expression
+<span class='line'>35</span>             (ir:make-application
+<span class='line'>36</span>              :function (ir:make-reference :name :hi)
+<span class='line'>37</span>              :arguments
+<span class='line'>38</span>              (list (ir:make-application
+<span class='line'>39</span>                     :function (ir:make-reference :name :fun2)
+<span class='line'>40</span>                     :arguments
+<span class='line'>41</span>                     (list &#35;1&#61;(ir:make-application
+<span class='line'>42</span>                               :function (ir:make-reference :name :fun3)
+<span class='line'>43</span>                               :arguments
+<span class='line'>44</span>                               (list (ir:make-reference :name :hi)))
+<span class='line'>45</span>                           (ir:make-record-lookup
+<span class='line'>46</span>                            :record (ir:make-record :name :utxo
+<span class='line'>47</span>                                                     :owner 3
+<span class='line'>48</span>                                                     :amount 5
+<span class='line'>49</span>                                                     :nonce &#35;1&#35;)
+<span class='line'>50</span>                            :field  :nonce)))
+<span class='line'>51</span>                    (ir:make-reference :name :bob)))))
+<span class='line'>52</span>          (record (ir:value (caddr normalized)))
+<span class='line'>53</span>          (lookup (ir:value (cadddr normalized))))
+<span class='line'>54</span>     &#59;&#59; We sadly lack object equality for clos classes&#44; so thus we test it this way
+<span class='line'>55</span>     &#59;&#59; I really should make equality objects
+<span class='line'>56</span>     (is (typep (ir:lookup-record record :nonce) &#39;ir:reference)
+<span class='line'>57</span>         &#34;ANF should have made an application inside the record become a reference&#34;)
+<span class='line'>58</span>     (is (eq (ir:field lookup) :nonce)
+<span class='line'>59</span>         &#34;The field that is looked up should not change&#34;)
+<span class='line'>60</span>     (is (typep (ir:record lookup) &#39;ir:reference)
+<span class='line'>61</span>         &#34;the record lookup is now over a reference instead of the record directly&#34;)))
+<span class='line'>62</span> 
+<span class='line'>63</span> (test anf-constraint
+<span class='line'>64</span>   (let* ((normalized (anf:normalize-expression
+<span class='line'>65</span>                       (ir:make-bind-constraint
+<span class='line'>66</span>                        :var (list :a :b :c)
+<span class='line'>67</span>                        :value
+<span class='line'>68</span>                        (list
+<span class='line'>69</span>                         (ir:make-application
+<span class='line'>70</span>                          :function (ir:make-reference :name :&#61;)
+<span class='line'>71</span>                          :arguments
+<span class='line'>72</span>                          (list (ir:make-application
+<span class='line'>73</span>                                 :function (ir:make-reference :name :fun2)
+<span class='line'>74</span>                                 :arguments
+<span class='line'>75</span>                                 (list &#35;1&#61;(ir:make-application
+<span class='line'>76</span>                                           :function (ir:make-reference :name :fun3)
+<span class='line'>77</span>                                           :arguments
+<span class='line'>78</span>                                           (list (ir:make-reference :name :hi)))
+<span class='line'>79</span>                                       (ir:make-record-lookup
+<span class='line'>80</span>                                        :record (ir:make-record :name :utxo
+<span class='line'>81</span>                                                                 :owner 3
+<span class='line'>82</span>                                                                 :amount 5
+<span class='line'>83</span>                                                                 :nonce &#35;1&#35;)
+<span class='line'>84</span>                                        :field  :nonce)))
+<span class='line'>85</span>                                (ir:make-reference :name :bob))))))))
+<span class='line'>86</span>     (is (typep normalized &#39;ir:bind-constraint)
+<span class='line'>87</span>         &#34;constraint should hold the terms inside of it&#34;)
+<span class='line'>88</span>     (is (&#61; 6 (length (ir:value normalized)))
+<span class='line'>89</span>         &#34;The body should have ANF successfully run&#34;)))
+</code></div>
+</body></html>

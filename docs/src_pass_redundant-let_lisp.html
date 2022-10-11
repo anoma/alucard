@@ -1,0 +1,486 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_redundant-let_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;redundant-let.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;pass&#46;redundant)
+<span class='line'>2</span> 
+<span class='line'>3</span> (-&#62; find-redundant-let (ir:fully-expanded-list &#38;optional closure:typ) closure:typ)
+<span id='f0s0'><span class='line'>4</span> (defun find-redundant-lets (xs &#38;optional (map <span id='f0s1'>(closure:allocate)</span>))
+<span class='line'>5</span>   <span id='f0s2'>(mvfold <span id='f0s3'>(lambda (map x)
+<span class='line'>6</span>             <span id='f0s4'>(etypecase-of ir:fully-expanded-term x
+<span class='line'>7</span>               ((or ir:standalone-ret ir:multiple-bind)
+<span class='line'>8</span>                map)
+<span class='line'>9</span>               (ir:bind
+<span class='line'>10</span>                <span id='f0s5'>(etypecase-of ir:base <span id='f0s6'>(ir:value x)</span>
+<span class='line'>11</span>                  (ir:application map)
+<span class='line'>12</span>                  (number         <span id='f0s7'>(closure:insert map <span id='f0s8'>(ir:var x)</span> <span id='f0s9'>(ir:value x)</span>)</span>)
+<span class='line'>13</span>                  (ir:reference   <span id='f0s10'>(let* ((value <span id='f0s11'>(ir:value x)</span>)
+<span class='line'>14</span>                                         (find <span id='f0s12'>(closure:lookup map <span id='f0s13'>(ir:name value)</span>)</span>))
+<span class='line'>15</span>                                    <span id='f0s14'>(closure:insert map <span id='f0s15'>(ir:var x)</span> <span id='f0s16'>(or find value)</span>)</span>)</span>))</span>)
+<span class='line'>16</span>               (ir:bind-constraint
+<span class='line'>17</span>                <span id='f0s17'>(find-redundant-lets <span id='f0s18'>(ir:value x)</span> map)</span>))</span>)</span>
+<span class='line'>18</span>           xs map)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c188'> (lambda (xs &#38;optional (map <span id='f0c88'>(funcall &#39;closure:allocate)</span> &#35;:compiler-var))
+   <span id='f0c187'>(funcall &#39;reduce
+            <span id='f0c185'>(function <span id='f0c184'>(lambda (map x)
+                        <span id='f0c183'>(let* ((&#35;:x57870 x))
+                          <span id='f0c182'>(let* ((&#35;:g57871 &#35;:x57870))
+                            <span id='f0c181'>(if <span id='f0c99'>(let* ((&#35;:g57873 &#35;:g57871))
+                                  <span id='f0c98'>(or <span id='f0c97'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                               &#35;:g57873
+                                               <span id='f0c95'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003DC257F&#62;))</span>)</span>
+                                      <span id='f0c94'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                               &#35;:g57873
+                                               <span id='f0c92'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003DFF6CF&#62;))</span>)</span>)</span>)</span>
+                                <span id='f0c180'>(progn nil map)</span>
+                                <span id='f0c178'>(if <span id='f0c121'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                             &#35;:g57871
+                                             <span id='f0c120'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003DFC35F&#62;))</span>)</span>
+                                    <span id='f0c177'>(progn nil
+                                           <span id='f0c176'>(let* ((&#35;:x57883 <span id='f0c123'>(funcall &#39;alu&#46;spec:value x)</span>))
+                                             <span id='f0c175'>(let* ((&#35;:g57884 &#35;:x57883))
+                                               <span id='f0c174'>(if <span id='f0c126'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                            &#35;:g57884
+                                                            <span id='f0c124'>&#39;(&#35;:load-time-eval
+                                                               (funcall &#35;&#60;Anonymous Function &#35;x302003DF70EF&#62;))</span>)</span>
+                                                   <span id='f0c128'>(progn nil map)</span>
+                                                   <span id='f0c173'>(if <span id='f0c130'>(funcall &#39;numberp &#35;:g57884)</span>
+                                                       <span id='f0c172'>(progn nil
+                                                              <span id='f0c171'>(funcall &#39;closure:insert
+                                                                       <span id='f0c170'>(ccl::typed-form &#39;closure:typ map)</span>
+                                                                       <span id='f0c166'>(ccl::typed-form &#39;keyword
+                                                                        <span id='f0c165'>(funcall &#39;alu&#46;spec:var x)</span>)</span>
+                                                                       <span id='f0c168'>(funcall &#39;alu&#46;spec:value x)</span>)</span>)</span>
+                                                       <span id='f0c163'>(if <span id='f0c162'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                    &#35;:g57884
+                                                                    <span id='f0c161'>&#39;(&#35;:load-time-eval
+                                                                       (funcall &#35;&#60;Anonymous Function &#35;x302003DF2D3F&#62;))</span>)</span>
+                                                           <span id='f0c149'>(progn nil
+                                                                  <span id='f0c148'>(let* ((value <span id='f0c132'>(funcall &#39;alu&#46;spec:value x)</span>)
+                                                                         (find
+                                                                          <span id='f0c138'>(funcall &#39;closure:lookup
+                                                                                   <span id='f0c134'>(ccl::typed-form &#39;closure:typ map)</span>
+                                                                                   <span id='f0c137'>(ccl::typed-form &#39;keyword
+                                                                                    <span id='f0c136'>(funcall &#39;alu&#46;spec:name value)</span>)</span>)</span>))
+                                                                    <span id='f0c147'>(funcall &#39;closure:insert
+                                                                             <span id='f0c146'>(ccl::typed-form &#39;closure:typ map)</span>
+                                                                             <span id='f0c144'>(ccl::typed-form &#39;keyword
+                                                                              <span id='f0c143'>(funcall &#39;alu&#46;spec:var x)</span>)</span>
+                                                                             <span id='f0c141'>(or find value)</span>)</span>)</span>)</span>
+                                                           <span id='f0c159'>(if <span id='f0c158'>(progn &#35;:g57884 t)</span>
+                                                               <span id='f0c156'>(progn nil
+                                                                      <span id='f0c155'>(values (funcall &#39;error
+                                                                                       <span id='f0c150'>&#39;type-error</span>
+                                                                                       <span id='f0c151'>&#39;:datum</span>
+                                                                                       &#35;:x57883
+                                                                                       <span id='f0c152'>&#39;:expected-type</span>
+                                                                                       <span id='f0c154'>&#39;alu&#46;spec:base</span>))</span>)</span>
+                                                               nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c118'>(if <span id='f0c117'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                 &#35;:g57871
+                                                 <span id='f0c116'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003DED48F&#62;))</span>)</span>
+                                        <span id='f0c104'>(progn nil <span id='f0c103'>(funcall &#39;find-redundant-lets <span id='f0c102'>(funcall &#39;alu&#46;spec:value x)</span> map)</span>)</span>
+                                        <span id='f0c114'>(if <span id='f0c113'>(progn &#35;:g57871 t)</span>
+                                            <span id='f0c111'>(progn nil
+                                                   <span id='f0c110'>(values (funcall &#39;error
+                                                                    <span id='f0c107'>&#39;type-error</span>
+                                                                    <span id='f0c108'>&#39;:datum</span>
+                                                                    &#35;:x57870
+                                                                    <span id='f0c106'>&#39;:expected-type</span>
+                                                                    <span id='f0c109'>&#39;alu&#46;ir&#46;spec:fully-expanded-term</span>))</span>)</span>
+                                            nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+            xs
+            <span id='f0c90'>&#39;:from-end</span>
+            nil
+            <span id='f0c89'>&#39;:initial-value</span>
+            map)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>19</span> 
+<span class='line'>20</span> (-&#62; replace-references (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
+<span id='f0s19'><span class='line'>21</span> (defun replace-references (xs map)
+<span class='line'>22</span>   <span id='f0s20'>(mapcar <span id='f0s21'>(lambda (x)
+<span class='line'>23</span>             <span id='f0s22'>(etypecase-of ir:fully-expanded-term x
+<span class='line'>24</span>               (ir:standalone-ret
+<span class='line'>25</span>                <span id='f0s23'>(let* ((vars <span id='f0s24'>(ir:var x)</span>)
+<span class='line'>26</span>                       (updated-rets
+<span class='line'>27</span>                         <span id='f0s25'>(mapcar <span id='f0s26'>(lambda (y)
+<span class='line'>28</span>                                   <span id='f0s27'>(let ((find <span id='f0s28'>(closure:lookup map y)</span>))
+<span class='line'>29</span>                                     <span id='f0s29'>(if find
+<span class='line'>30</span>                                         <span id='f0s30'>(etypecase-of ir:base <span id='f0s31'>(closure:lookup map y)</span>
+<span class='line'>31</span>                                           (ir:application y)
+<span class='line'>32</span>                                           (ir:reference <span id='f0s32'>(ir:name <span id='f0s33'>(closure:lookup map y)</span>)</span>)
+<span class='line'>33</span>                                           (number <span id='f0s34'>(closure:lookup map y)</span>))</span>)</span>)</span>)</span>
+<span class='line'>34</span>                                 vars)</span>))
+<span class='line'>35</span>                  <span id='f0s35'>(ir:make-standalone-ret
+<span class='line'>36</span>                   :var updated-rets)</span>)</span>)
+<span class='line'>37</span>               (ir:bind
+<span class='line'>38</span>                <span id='f0s36'>(etypecase-of ir:base <span id='f0s37'>(ir:value x)</span>
+<span class='line'>39</span>                  (ir:application
+<span class='line'>40</span>                   <span id='f0s38'>(let* ((value <span id='f0s39'>(ir:value x)</span>)
+<span class='line'>41</span>                          (updated-refs
+<span class='line'>42</span>                            <span id='f0s40'>(mapcar <span id='f0s41'>(lambda (y)
+<span class='line'>43</span>                                      <span id='f0s42'>(etypecase-of ir:base y
+<span class='line'>44</span>                                        (ir:reference
+<span class='line'>45</span>                                         <span id='f0s43'>(or <span id='f0s44'>(closure:lookup map <span id='f0s45'>(ir:name y)</span>)</span> y)</span>)
+<span class='line'>46</span>                                        (number y)
+<span class='line'>47</span>                                        (ir:application y))</span>)</span>
+<span class='line'>48</span>                                     <span id='f0s46'>(ir:arguments value)</span>)</span>))
+<span class='line'>49</span>                     <span id='f0s47'>(util:copy-instance
+<span class='line'>50</span>                      x :value <span id='f0s48'>(util:copy-instance value
+<span class='line'>51</span>                                                   :arguments updated-refs)</span>)</span>)</span>)
+<span class='line'>52</span>                  (ir:reference x)
+<span class='line'>53</span>                  (number x))</span>)
+<span class='line'>54</span>               (ir:bind-constraint
+<span class='line'>55</span>                <span id='f0s49'>(util:copy-instance x
+<span class='line'>56</span>                                    :value <span id='f0s50'>(replace-references <span id='f0s51'>(ir:value x)</span> map)</span>)</span>)
+<span class='line'>57</span>               (ir:multiple-bind x))</span>)</span>
+<span class='line'>58</span>           xs)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c455'> (lambda (xs map)
+   <span id='f0c454'>(let* ((&#35;:g57906 <span id='f0c453'>(cons nil nil)</span>)
+          (&#35;:g57907 &#35;:g57906)
+          (&#35;:g57909
+           <span id='f0c427'>(function <span id='f0c426'>(lambda (x)
+                       <span id='f0c425'>(let* ((&#35;:x57910 x))
+                         <span id='f0c424'>(let* ((&#35;:g57911 &#35;:x57910))
+                           <span id='f0c423'>(if <span id='f0c191'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                        &#35;:g57911
+                                        <span id='f0c189'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003E413BF&#62;))</span>)</span>
+                               <span id='f0c278'>(progn nil
+                                      <span id='f0c277'>(let* ((vars <span id='f0c273'>(funcall &#39;alu&#46;spec:var x)</span>)
+                                             (updated-rets
+                                              <span id='f0c271'>(let* ((&#35;:g57915 <span id='f0c245'>(cons nil nil)</span>)
+                                                     (&#35;:g57916 &#35;:g57915)
+                                                     (&#35;:g57918
+                                                      <span id='f0c244'>(function <span id='f0c243'>(lambda (y)
+                                                                  <span id='f0c242'>(let* ((find
+                                                                          <span id='f0c196'>(funcall &#39;closure:lookup
+                                                                                   <span id='f0c195'>(ccl::typed-form &#39;closure:typ map)</span>
+                                                                                   <span id='f0c193'>(ccl::typed-form &#39;keyword y)</span>)</span>))
+                                                                    <span id='f0c241'>(if find
+                                                                        <span id='f0c240'>(let* ((&#35;:x57919
+                                                                                <span id='f0c239'>(funcall &#39;closure:lookup
+                                                                                         <span id='f0c236'>(ccl::typed-form &#39;closure:typ
+                                                                                          map)</span>
+                                                                                         <span id='f0c238'>(ccl::typed-form &#39;keyword y)</span>)</span>))
+                                                                          <span id='f0c234'>(let* ((&#35;:g57920 &#35;:x57919))
+                                                                            <span id='f0c233'>(if <span id='f0c200'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                         &#35;:g57920
+                                                                                         <span id='f0c198'>&#39;(&#35;:load-time-eval
+                                                                                            (funcall &#35;&#60;Anonymous Function &#35;x302003E7A27F&#62;))</span>)</span>
+                                                                                <span id='f0c232'>(progn nil y)</span>
+                                                                                <span id='f0c230'>(if <span id='f0c203'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                             &#35;:g57920
+                                                                                             <span id='f0c201'>&#39;(&#35;:load-time-eval
+                                                                                                (funcall &#35;&#60;Anonymous Function &#35;x302003E7700F&#62;))</span>)</span>
+                                                                                    <span id='f0c210'>(progn nil
+                                                                                           <span id='f0c209'>(funcall &#39;alu&#46;spec:name
+                                                                                                    <span id='f0c208'>(funcall &#39;closure:lookup
+                                                                                                             <span id='f0c205'>(ccl::typed-form
+                                                                                                              &#39;closure:typ
+                                                                                                              map)</span>
+                                                                                                             <span id='f0c207'>(ccl::typed-form
+                                                                                                              &#39;keyword
+                                                                                                              y)</span>)</span>)</span>)</span>
+                                                                                    <span id='f0c229'>(if <span id='f0c222'>(funcall &#39;numberp &#35;:g57920)</span>
+                                                                                        <span id='f0c228'>(progn nil
+                                                                                               <span id='f0c227'>(funcall &#39;closure:lookup
+                                                                                                        <span id='f0c226'>(ccl::typed-form
+                                                                                                         &#39;closure:typ
+                                                                                                         map)</span>
+                                                                                                        <span id='f0c224'>(ccl::typed-form
+                                                                                                         &#39;keyword y)</span>)</span>)</span>
+                                                                                        <span id='f0c220'>(if <span id='f0c219'>(progn &#35;:g57920 t)</span>
+                                                                                            <span id='f0c217'>(progn nil
+                                                                                                   <span id='f0c216'>(values (funcall &#39;error
+                                                                                                                    <span id='f0c213'>&#39;type-error</span>
+                                                                                                                    <span id='f0c215'>&#39;:datum</span>
+                                                                                                                    &#35;:x57919
+                                                                                                                    <span id='f0c212'>&#39;:expected-type</span>
+                                                                                                                    <span id='f0c211'>&#39;alu&#46;spec:base</span>))</span>)</span>
+                                                                                            nil)</span>)</span>)</span>)</span>)</span>)</span>
+                                                                        nil)</span>)</span>)</span>)</span>))
+                                                <span id='f0c270'>(let* ((&#35;:g57927 vars))
+                                                  (progn <span id='f0c266'>(tagbody <span id='f0c248'>(go &#35;:g57929)</span>
+                                                                  (&#35;:g57928 nil (0)
+                                                                   &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E7405D&#62; t t)
+                                                                  <span id='f0c259'>(tagbody <span id='f0c258'>(let* ((&#35;:g57917 <span id='f0c257'>(car &#35;:g57927)</span>))
+                                                                             <span id='f0c255'>(tagbody <span id='f0c254'>(setq &#35;:g57915
+                                                                                            <span id='f0c253'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57915
+                                                                                                                     <span id='f0c251'>(cons <span id='f0c250'>(funcall &#35;:g57918
+                                                                                                                                    &#35;:g57917)</span>
+                                                                                                                           nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                  <span id='f0c263'>(setq &#35;:g57927
+                                                                        <span id='f0c262'>(ccl::&#37;cdr <span id='f0c261'>(ccl::typed-form &#39;list &#35;:g57927)</span>)</span>)</span>
+                                                                  (&#35;:g57929 nil (0)
+                                                                   &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E7405D&#62; t nil)
+                                                                  <span id='f0c265'>(if <span id='f0c264'>(not &#39;:ne &#35;:g57927)</span> (go &#35;:g57928) nil)</span>)</span>
+                                                         <span id='f0c269'>(let* () <span id='f0c268'>(ccl::&#37;cdr &#35;:g57916)</span>)</span>))</span>)</span>))
+                                        <span id='f0c276'>(funcall &#39;alu&#46;ir&#46;new-terms:make-standalone-ret <span id='f0c274'>&#39;:var</span> updated-rets)</span>)</span>)</span>
+                               <span id='f0c422'>(if <span id='f0c421'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                            &#35;:g57911
+                                            <span id='f0c419'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003E6E3CF&#62;))</span>)</span>
+                                   <span id='f0c418'>(progn nil
+                                          <span id='f0c417'>(let* ((&#35;:x57933 <span id='f0c416'>(funcall &#39;alu&#46;spec:value x)</span>))
+                                            <span id='f0c414'>(let* ((&#35;:g57934 &#35;:x57933))
+                                              <span id='f0c413'>(if <span id='f0c412'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                           &#35;:g57934
+                                                           <span id='f0c410'>&#39;(&#35;:load-time-eval
+                                                              (funcall &#35;&#60;Anonymous Function &#35;x302003E6947F&#62;))</span>)</span>
+                                                  <span id='f0c388'>(progn nil
+                                                         <span id='f0c387'>(let* ((value <span id='f0c311'>(funcall &#39;alu&#46;spec:value x)</span>)
+                                                                (updated-refs
+                                                                 <span id='f0c386'>(let* ((&#35;:g57938 <span id='f0c360'>(cons nil nil)</span>)
+                                                                        (&#35;:g57939 &#35;:g57938)
+                                                                        (&#35;:g57941
+                                                                         <span id='f0c358'>(function <span id='f0c357'>(lambda (y)
+                                                                                     <span id='f0c356'>(let* ((&#35;:x57942 y))
+                                                                                       <span id='f0c355'>(let* ((&#35;:g57943 &#35;:x57942))
+                                                                                         <span id='f0c354'>(if <span id='f0c323'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                      &#35;:g57943
+                                                                                                      <span id='f0c321'>&#39;(&#35;:load-time-eval
+                                                                                                         (funcall &#35;&#60;Anonymous Function &#35;x302003E6323F&#62;))</span>)</span>
+                                                                                             <span id='f0c353'>(progn nil
+                                                                                                    <span id='f0c352'>(or <span id='f0c351'>(funcall &#39;closure:lookup
+                                                                                                                 <span id='f0c350'>(ccl::typed-form
+                                                                                                                  &#39;closure:typ
+                                                                                                                  map)</span>
+                                                                                                                 <span id='f0c348'>(ccl::typed-form
+                                                                                                                  &#39;keyword
+                                                                                                                  <span id='f0c347'>(funcall &#39;alu&#46;spec:name
+                                                                                                                           y)</span>)</span>)</span>
+                                                                                                        y)</span>)</span>
+                                                                                             <span id='f0c344'>(if <span id='f0c343'>(funcall &#39;numberp
+                                                                                                          &#35;:g57943)</span>
+                                                                                                 <span id='f0c325'>(progn nil y)</span>
+                                                                                                 <span id='f0c341'>(if <span id='f0c328'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                              &#35;:g57943
+                                                                                                              <span id='f0c326'>&#39;(&#35;:load-time-eval
+                                                                                                                 (funcall &#35;&#60;Anonymous Function &#35;x302003E9F10F&#62;))</span>)</span>
+                                                                                                     <span id='f0c340'>(progn nil y)</span>
+                                                                                                     <span id='f0c338'>(if <span id='f0c330'>(progn &#35;:g57943
+                                                                                                                t)</span>
+                                                                                                         <span id='f0c337'>(progn nil
+                                                                                                                <span id='f0c336'>(values (funcall &#39;error
+                                                                                                                                 <span id='f0c334'>&#39;type-error</span>
+                                                                                                                                 <span id='f0c332'>&#39;:datum</span>
+                                                                                                                                 &#35;:x57942
+                                                                                                                                 <span id='f0c331'>&#39;:expected-type</span>
+                                                                                                                                 <span id='f0c333'>&#39;alu&#46;spec:base</span>))</span>)</span>
+                                                                                                         nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+                                                                   <span id='f0c385'>(let* ((&#35;:g57950
+                                                                           <span id='f0c384'>(funcall &#39;alu&#46;spec:arguments value)</span>))
+                                                                     (progn <span id='f0c382'>(tagbody <span id='f0c375'>(go &#35;:g57952)</span>
+                                                                                     (&#35;:g57951 nil (0)
+                                                                                      &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E9D31D&#62;
+                                                                                      t t)
+                                                                                     <span id='f0c374'>(tagbody <span id='f0c373'>(let* ((&#35;:g57940
+                                                                                                      <span id='f0c372'>(car &#35;:g57950)</span>))
+                                                                                                <span id='f0c370'>(tagbody <span id='f0c369'>(setq &#35;:g57938
+                                                                                                               <span id='f0c368'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57938
+                                                                                                                                        <span id='f0c366'>(cons <span id='f0c365'>(funcall &#35;:g57941
+                                                                                                                                                       &#35;:g57940)</span>
+                                                                                                                                              nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                     <span id='f0c381'>(setq &#35;:g57950
+                                                                                           <span id='f0c380'>(ccl::&#37;cdr <span id='f0c379'>(ccl::typed-form
+                                                                                                       &#39;list &#35;:g57950)</span>)</span>)</span>
+                                                                                     (&#35;:g57952 nil (0)
+                                                                                      &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E9D31D&#62;
+                                                                                      t nil)
+                                                                                     <span id='f0c377'>(if <span id='f0c376'>(not &#39;:ne &#35;:g57950)</span>
+                                                                                         (go &#35;:g57951)
+                                                                                         nil)</span>)</span>
+                                                                            <span id='f0c363'>(let* () <span id='f0c362'>(ccl::&#37;cdr &#35;:g57939)</span>)</span>))</span>)</span>))
+                                                           <span id='f0c320'>(funcall &#39;util:copy-instance
+                                                                    <span id='f0c313'>(ccl::typed-form &#39;standard-object x)</span>
+                                                                    <span id='f0c314'>&#39;:value</span>
+                                                                    <span id='f0c319'>(funcall &#39;util:copy-instance
+                                                                             <span id='f0c317'>(ccl::typed-form &#39;standard-object value)</span>
+                                                                             <span id='f0c315'>&#39;:arguments</span>
+                                                                             updated-refs)</span>)</span>)</span>)</span>
+                                                  <span id='f0c409'>(if <span id='f0c393'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                               &#35;:g57934
+                                                               <span id='f0c391'>&#39;(&#35;:load-time-eval
+                                                                  (funcall &#35;&#60;Anonymous Function &#35;x302003E96D1F&#62;))</span>)</span>
+                                                      <span id='f0c390'>(progn nil x)</span>
+                                                      <span id='f0c408'>(if <span id='f0c397'>(funcall &#39;numberp &#35;:g57934)</span>
+                                                          <span id='f0c395'>(progn nil x)</span>
+                                                          <span id='f0c407'>(if <span id='f0c406'>(progn &#35;:g57934 t)</span>
+                                                              <span id='f0c404'>(progn nil
+                                                                     <span id='f0c403'>(values (funcall &#39;error
+                                                                                      <span id='f0c401'>&#39;type-error</span>
+                                                                                      <span id='f0c398'>&#39;:datum</span>
+                                                                                      &#35;:x57933
+                                                                                      <span id='f0c400'>&#39;:expected-type</span>
+                                                                                      <span id='f0c399'>&#39;alu&#46;spec:base</span>))</span>)</span>
+                                                              nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                   <span id='f0c309'>(if <span id='f0c297'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                &#35;:g57911
+                                                <span id='f0c295'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003E9289F&#62;))</span>)</span>
+                                       <span id='f0c308'>(progn nil
+                                              <span id='f0c307'>(funcall &#39;util:copy-instance
+                                                       <span id='f0c306'>(ccl::typed-form &#39;standard-object x)</span>
+                                                       <span id='f0c304'>&#39;:value</span>
+                                                       <span id='f0c303'>(funcall &#39;replace-references
+                                                                <span id='f0c300'>(ccl::typed-form
+                                                                 &#39;(satisfies alu&#46;ir&#46;spec:fully-expanded-list)
+                                                                 <span id='f0c299'>(funcall &#39;alu&#46;spec:value x)</span>)</span>
+                                                                <span id='f0c302'>(ccl::typed-form &#39;closure:typ map)</span>)</span>)</span>)</span>
+                                       <span id='f0c294'>(if <span id='f0c291'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                    &#35;:g57911
+                                                    <span id='f0c290'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003E8E88F&#62;))</span>)</span>
+                                           <span id='f0c293'>(progn nil x)</span>
+                                           <span id='f0c288'>(if <span id='f0c280'>(progn &#35;:g57911 t)</span>
+                                               <span id='f0c287'>(progn nil
+                                                      <span id='f0c286'>(values (funcall &#39;error
+                                                                       <span id='f0c283'>&#39;type-error</span>
+                                                                       <span id='f0c281'>&#39;:datum</span>
+                                                                       &#35;:x57910
+                                                                       <span id='f0c284'>&#39;:expected-type</span>
+                                                                       <span id='f0c282'>&#39;alu&#46;ir&#46;spec:fully-expanded-term</span>))</span>)</span>
+                                               nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c451'>(let* ((&#35;:g57962 xs))
+       (progn <span id='f0c446'>(tagbody <span id='f0c428'>(go &#35;:g57964)</span>
+                       (&#35;:g57963 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E8C9BD&#62; t t)
+                       <span id='f0c445'>(tagbody <span id='f0c444'>(let* ((&#35;:g57908 <span id='f0c436'>(car &#35;:g57962)</span>))
+                                  <span id='f0c443'>(tagbody <span id='f0c442'>(setq &#35;:g57906
+                                                 <span id='f0c441'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g57906
+                                                                          <span id='f0c440'>(cons <span id='f0c439'>(funcall &#35;:g57909 &#35;:g57908)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c434'>(setq &#35;:g57962 <span id='f0c433'>(ccl::&#37;cdr <span id='f0c432'>(ccl::typed-form &#39;list &#35;:g57962)</span>)</span>)</span>
+                       (&#35;:g57964 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E8C9BD&#62; t nil)
+                       <span id='f0c430'>(if <span id='f0c429'>(not &#39;:ne &#35;:g57962)</span> (go &#35;:g57963) nil)</span>)</span>
+              <span id='f0c449'>(let* () <span id='f0c448'>(ccl::&#37;cdr &#35;:g57907)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>59</span> 
+<span class='line'>60</span> 
+<span class='line'>61</span> (-&#62; remove-redundant-lets (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
+<span id='f0s52'><span class='line'>62</span> (defun remove-redundant-lets (xs map)
+<span class='line'>63</span>   <span id='f0s53'>(filter-map <span id='f0s54'>(lambda (x)
+<span class='line'>64</span>                 <span id='f0s55'>(etypecase-of ir:fully-expanded-term x
+<span class='line'>65</span>                   ((or ir:standalone-ret ir:multiple-bind)
+<span class='line'>66</span>                    x)
+<span class='line'>67</span>                   (ir:bind
+<span class='line'>68</span>                    <span id='f0s56'>(if <span id='f0s57'>(closure:lookup map <span id='f0s58'>(ir:var x)</span>)</span> nil x)</span>)
+<span class='line'>69</span>                   (ir:bind-constraint
+<span class='line'>70</span>                    <span id='f0s59'>(util:copy-instance
+<span class='line'>71</span>                     x :value <span id='f0s60'>(remove-redundant-lets <span id='f0s61'>(ir:value x)</span> map)</span>)</span>))</span>)</span>
+<span class='line'>72</span>               xs)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t52')><span class='toggle' id='pf0t52'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(52)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t52'><code><span id='f0c87'> (lambda (xs map)
+   <span id='f0c86'>(let* ((&#35;:f57984
+           <span id='f0c54'>(funcall &#39;alexandria:ensure-function
+                    <span id='f0c53'>(function <span id='f0c52'>(lambda (x)
+                                <span id='f0c51'>(let* ((&#35;:x57986 x))
+                                  <span id='f0c50'>(let* ((&#35;:g57987 &#35;:x57986))
+                                    <span id='f0c49'>(if <span id='f0c7'>(let* ((&#35;:g57989 &#35;:g57987))
+                                          <span id='f0c6'>(or <span id='f0c5'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                       &#35;:g57989
+                                                       <span id='f0c3'>&#39;(&#35;:load-time-eval
+                                                          (funcall &#35;&#60;Anonymous Function &#35;x302003D1177F&#62;))</span>)</span>
+                                              <span id='f0c2'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                       &#35;:g57989
+                                                       <span id='f0c0'>&#39;(&#35;:load-time-eval
+                                                          (funcall &#35;&#60;Anonymous Function &#35;x302003D0E8DF&#62;))</span>)</span>)</span>)</span>
+                                        <span id='f0c9'>(progn nil x)</span>
+                                        <span id='f0c48'>(if <span id='f0c47'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                     &#35;:g57987
+                                                     <span id='f0c46'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003D0B56F&#62;))</span>)</span>
+                                            <span id='f0c44'>(progn nil
+                                                   <span id='f0c43'>(if <span id='f0c42'>(not <span id='f0c41'>(funcall &#39;closure:lookup
+                                                                     <span id='f0c40'>(ccl::typed-form &#39;closure:typ map)</span>
+                                                                     <span id='f0c38'>(ccl::typed-form &#39;keyword
+                                                                      <span id='f0c37'>(funcall &#39;alu&#46;spec:var x)</span>)</span>)</span>)</span>
+                                                       x
+                                                       nil)</span>)</span>
+                                            <span id='f0c34'>(if <span id='f0c12'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                         &#35;:g57987
+                                                         <span id='f0c11'>&#39;(&#35;:load-time-eval
+                                                            (funcall &#35;&#60;Anonymous Function &#35;x302003D0773F&#62;))</span>)</span>
+                                                <span id='f0c23'>(progn nil
+                                                       <span id='f0c22'>(funcall &#39;util:copy-instance
+                                                                <span id='f0c21'>(ccl::typed-form &#39;standard-object x)</span>
+                                                                <span id='f0c19'>&#39;:value</span>
+                                                                <span id='f0c18'>(funcall &#39;remove-redundant-lets
+                                                                         <span id='f0c15'>(ccl::typed-form
+                                                                          &#39;(satisfies alu&#46;ir&#46;spec:fully-expanded-list)
+                                                                          <span id='f0c14'>(funcall &#39;alu&#46;spec:value x)</span>)</span>
+                                                                         <span id='f0c17'>(ccl::typed-form &#39;closure:typ map)</span>)</span>)</span>)</span>
+                                                <span id='f0c33'>(if <span id='f0c25'>(progn &#35;:g57987 t)</span>
+                                                    <span id='f0c32'>(progn nil
+                                                           <span id='f0c31'>(values (funcall &#39;error
+                                                                            <span id='f0c29'>&#39;type-error</span>
+                                                                            <span id='f0c27'>&#39;:datum</span>
+                                                                            &#35;:x57986
+                                                                            <span id='f0c28'>&#39;:expected-type</span>
+                                                                            <span id='f0c30'>&#39;alu&#46;ir&#46;spec:fully-expanded-term</span>))</span>)</span>
+                                                    nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c85'>(block nil
+       <span id='f0c84'>(let ((&#35;:g57983 nil) (&#35;:loop-list-58002 xs))
+         <span id='f0c82'>(let* ((&#35;:result57985 nil))
+           <span id='f0c81'>(let* ((&#35;:loop-list-head-58003 <span id='f0c55'>(cons nil nil)</span>) (&#35;:loop-list-tail-58004 &#35;:loop-list-head-58003))
+             <span id='f0c79'>(tagbody (ansi-loop::next-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003D0353D&#62; t t)
+                      <span id='f0c77'>(if <span id='f0c76'>(endp &#35;:loop-list-58002)</span> (go ansi-loop::end-loop) nil)</span>
+                      <span id='f0c58'>(setq &#35;:g57983 <span id='f0c57'>(ccl::&#37;car &#35;:loop-list-58002)</span>)</span>
+                      <span id='f0c74'>(setq &#35;:loop-list-58002 <span id='f0c73'>(ccl::&#37;cdr &#35;:loop-list-58002)</span>)</span>
+                      <span id='f0c64'>(setq &#35;:result57985 <span id='f0c63'>(funcall &#35;:f57984 &#35;:g57983)</span>)</span>
+                      <span id='f0c71'>(if &#35;:result57985
+                          <span id='f0c70'>(rplacd &#35;:loop-list-tail-58004 <span id='f0c69'>(setq &#35;:loop-list-tail-58004 <span id='f0c68'>(cons &#35;:result57985 nil)</span>)</span>)</span>
+                          nil)</span>
+                      <span id='f0c78'>(go ansi-loop::next-loop)</span>
+                      (ansi-loop::end-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003D0353D&#62; t nil)
+                      <span id='f0c61'>(return-from nil <span id='f0c60'>(cdr &#35;:loop-list-head-58003)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

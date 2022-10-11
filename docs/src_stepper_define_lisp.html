@@ -1,0 +1,78 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_stepper_define_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;stepper;define.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package &#35;:alu&#46;stepper&#46;define)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (defmacro defun (name lambda-list &#38;rest body &#38;environment env)
+<span class='line'>4</span>   <span id='f0s1'>(destructuring-bind (decs body) <span id='f0s2'>(step:split-declaration body)</span>
+<span class='line'>5</span>     <span id='f0s3'>&#96;(cl:defun &#44;name &#44;lambda-list
+<span class='line'>6</span>        &#44;&#64;decs
+<span class='line'>7</span>        (stack:with-section &#44;name
+<span class='line'>8</span>          &#44;&#64;(step:body body env)))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c55'> (lambda (&#35;:whole59470 &#35;:environment59471)
+   <span id='f0c54'>(let* ((env &#35;:environment59471)
+          (&#35;:args59472 <span id='f0c18'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c17'>(cdr &#35;:whole59470)</span> <span id='f0c15'>&#39;(name lambda-list &#38;rest body)</span> 2 nil)</span>)
+          (name <span id='f0c6'>(prog1 <span id='f0c1'>(car &#35;:args59472)</span> <span id='f0c5'>(setq &#35;:args59472 <span id='f0c4'>(ccl::&#37;cdr <span id='f0c3'>(ccl::typed-form &#39;list &#35;:args59472)</span>)</span>)</span>)</span>)
+          (lambda-list <span id='f0c13'>(prog1 <span id='f0c8'>(car &#35;:args59472)</span> <span id='f0c12'>(setq &#35;:args59472 <span id='f0c11'>(ccl::&#37;cdr <span id='f0c10'>(ccl::typed-form &#39;list &#35;:args59472)</span>)</span>)</span>)</span>)
+          (&#35;:rest59473 &#35;:args59472)
+          (body &#35;:rest59473))
+     <span id='f0c53'>(let* ((&#35;:whole59482 <span id='f0c20'>(funcall &#39;step:split-declaration body)</span>)
+            (&#35;:args59483 <span id='f0c52'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole59482 <span id='f0c50'>&#39;(decs body)</span> 2 2)</span>)
+            (decs <span id='f0c27'>(prog1 <span id='f0c26'>(ccl::&#37;car &#35;:args59483)</span> <span id='f0c24'>(setq &#35;:args59483 <span id='f0c23'>(ccl::&#37;cdr <span id='f0c22'>(ccl::typed-form &#39;list &#35;:args59483)</span>)</span>)</span>)</span>)
+            (body <span id='f0c47'>(prog1 <span id='f0c46'>(ccl::&#37;car &#35;:args59483)</span> <span id='f0c44'>(setq &#35;:args59483 <span id='f0c43'>(ccl::&#37;cdr <span id='f0c42'>(ccl::typed-form &#39;list &#35;:args59483)</span>)</span>)</span>)</span>))
+       <span id='f0c40'>(list* <span id='f0c38'>&#39;common-lisp:defun</span>
+              name
+              lambda-list
+              <span id='f0c36'>(funcall &#39;ccl::append-2 decs <span id='f0c34'>(cons <span id='f0c33'>(list* <span id='f0c32'>&#39;stack:with-section</span> name <span id='f0c31'>(funcall &#39;step:body body env)</span>)</span> nil)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

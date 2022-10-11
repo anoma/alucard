@@ -1,0 +1,85 @@
+Source file,Expressions Total,Expressions Entered,% Expressions Entered,Unreached Branches,Code Forms Total,Code Forms Covered,% Code Forms Covered,Functions Total,Functions Fully Covered,% Functions Fully Covered,Functions Partly Covered,% Functions Partly Covered,Functions Not Entered,% Functions Not Enteredalu/
+home:Documents;Work;Repo;alu;alu;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;alu;prelude.lisp.newest,29,4, 13.8%,4, 13.8%,0,164,40, 24.4%,13,4, 30.8%,0,  0.0%,9, 69.2%
+app/
+home:Documents;Work;Repo;alu;app;main.lisp.newest,33,0,  0.0%,0,  0.0%,0,72,0,  0.0%,6,0,  0.0%,0,  0.0%,6,100.0%
+src/
+home:Documents;Work;Repo;alu;src;alu.lisp.newest,126,107, 84.9%,103, 81.7%,2,1274,1109, 87.0%,36,30, 83.3%,1,  2.8%,5, 13.9%
+home:Documents;Work;Repo;alu;src;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+src/closure/
+home:Documents;Work;Repo;alu;src;closure;closure.lisp.newest,40,31, 77.5%,28, 70.0%,2,110,84, 76.4%,11,7, 63.6%,2, 18.2%,2, 18.2%
+home:Documents;Work;Repo;alu;src;closure;dependency.lisp.newest,115,104, 90.4%,80, 69.6%,7,411,349, 84.9%,26,13, 50.0%,11, 42.3%,2,  7.7%
+home:Documents;Work;Repo;alu;src;closure;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+src/intermediate/
+home:Documents;Work;Repo;alu;src;intermediate;new-terms.lisp.newest,34,9, 26.5%,6, 17.6%,5,89,31, 34.8%,9,0,  0.0%,3, 33.3%,6, 66.7%
+home:Documents;Work;Repo;alu;src;intermediate;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;intermediate;primitive-global.lisp.newest,7,2, 28.6%,2, 28.6%,0,38,14, 36.8%,3,1, 33.3%,0,  0.0%,2, 66.7%
+home:Documents;Work;Repo;alu;src;intermediate;spec.lisp.newest,44,37, 84.1%,21, 47.7%,4,234,191, 81.6%,18,8, 44.4%,7, 38.9%,3, 16.7%
+src/log/
+home:Documents;Work;Repo;alu;src;log;log.lisp.newest,21,10, 47.6%,7, 33.3%,3,87,49, 56.3%,4,1, 25.0%,1, 25.0%,2, 50.0%
+home:Documents;Work;Repo;alu;src;log;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+src/pass/
+home:Documents;Work;Repo;alu;src;pass;anf.lisp.newest,101,99, 98.0%,95, 94.1%,21,846,746, 88.2%,22,20, 90.9%,2,  9.1%,0,  0.0%
+home:Documents;Work;Repo;alu;src;pass;array.lisp.newest,73,60, 82.2%,50, 68.5%,6,256,208, 81.2%,10,5, 50.0%,3, 30.0%,2, 20.0%
+home:Documents;Work;Repo;alu;src;pass;dependencies.lisp.newest,36,34, 94.4%,25, 69.4%,10,157,104, 66.2%,6,2, 33.3%,4, 66.7%,0,  0.0%
+home:Documents;Work;Repo;alu;src;pass;evaluate-body.lisp.newest,15,14, 93.3%,11, 73.3%,1,32,30, 93.7%,3,2, 66.7%,1, 33.3%,0,  0.0%
+home:Documents;Work;Repo;alu;src;pass;expand.lisp.newest,118,101, 85.6%,65, 55.1%,12,543,404, 74.4%,21,8, 38.1%,9, 42.9%,4, 19.0%
+home:Documents;Work;Repo;alu;src;pass;extract.lisp.newest,126,112, 88.9%,95, 75.4%,10,427,351, 82.2%,14,9, 64.3%,5, 35.7%,0,  0.0%
+home:Documents;Work;Repo;alu;src;pass;pack.lisp.newest,99,84, 84.8%,78, 78.8%,2,270,235, 87.0%,14,10, 71.4%,2, 14.3%,2, 14.3%
+home:Documents;Work;Repo;alu;src;pass;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;pass;pass.lisp.newest,286,283, 99.0%,222, 77.6%,19,1450,1283, 88.5%,41,18, 43.9%,22, 53.7%,1,  2.4%
+home:Documents;Work;Repo;alu;src;pass;pipeline.lisp.newest,55,29, 52.7%,27, 49.1%,1,236,94, 39.8%,14,7, 50.0%,1,  7.1%,6, 42.9%
+home:Documents;Work;Repo;alu;src;pass;redundant-let.lisp.newest,62,61, 98.4%,37, 59.7%,8,456,369, 80.9%,8,0,  0.0%,8,100.0%,0,  0.0%
+home:Documents;Work;Repo;alu;src;pass;relocation.lisp.newest,144,140, 97.2%,116, 80.6%,7,704,599, 85.1%,22,10, 45.5%,6, 27.3%,6, 27.3%
+src/reference/
+home:Documents;Work;Repo;alu;src;reference;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;reference;ref.lisp.newest,7,7,100.0%,6, 85.7%,0,41,19, 46.3%,8,4, 50.0%,0,  0.0%,4, 50.0%
+src/spec/
+home:Documents;Work;Repo;alu;src;spec;data-traversal.lisp.newest,53,49, 92.5%,46, 86.8%,1,239,233, 97.5%,12,10, 83.3%,1,  8.3%,1,  8.3%
+home:Documents;Work;Repo;alu;src;spec;emit.lisp.newest,6,6,100.0%,6,100.0%,0,40,40,100.0%,2,2,100.0%,0,  0.0%,0,  0.0%
+home:Documents;Work;Repo;alu;src;spec;global.lisp.newest,76,33, 43.4%,31, 40.8%,5,299,174, 58.2%,20,9, 45.0%,2, 10.0%,9, 45.0%
+home:Documents;Work;Repo;alu;src;spec;meta.lisp.newest,6,6,100.0%,6,100.0%,0,13,13,100.0%,3,3,100.0%,0,  0.0%,0,  0.0%
+home:Documents;Work;Repo;alu;src;spec;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;spec;storage.lisp.newest,32,17, 53.1%,14, 43.7%,2,65,35, 53.8%,9,5, 55.6%,1, 11.1%,3, 33.3%
+home:Documents;Work;Repo;alu;src;spec;term-op.lisp.newest,26,26,100.0%,23, 88.5%,1,86,76, 88.4%,8,7, 87.5%,1, 12.5%,0,  0.0%
+home:Documents;Work;Repo;alu;src;spec;term.lisp.newest,169,79, 46.7%,71, 42.0%,7,634,333, 52.5%,56,24, 42.9%,5,  8.9%,27, 48.2%
+home:Documents;Work;Repo;alu;src;spec;type-op.lisp.newest,38,20, 52.6%,12, 31.6%,4,156,59, 37.8%,9,2, 22.2%,3, 33.3%,4, 44.4%
+home:Documents;Work;Repo;alu;src;spec;type.lisp.newest,34,33, 97.1%,30, 88.2%,2,134,122, 91.0%,9,7, 77.8%,2, 22.2%,0,  0.0%
+src/stack/
+home:Documents;Work;Repo;alu;src;stack;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;stack;stack.lisp.newest,103,102, 99.0%,96, 93.2%,4,425,401, 94.4%,19,15, 78.9%,4, 21.1%,0,  0.0%
+src/stepper/
+home:Documents;Work;Repo;alu;src;stepper;define.lisp.newest,4,4,100.0%,4,100.0%,0,56,56,100.0%,1,1,100.0%,0,  0.0%,0,  0.0%
+home:Documents;Work;Repo;alu;src;stepper;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;stepper;stepper.lisp.newest,255,220, 86.3%,204, 80.0%,12,1423,1211, 85.1%,52,37, 71.2%,6, 11.5%,9, 17.3%
+src/typechecker/
+home:Documents;Work;Repo;alu;src;typechecker;intro.lisp.newest,12,5, 41.7%,3, 25.0%,1,108,94, 87.0%,4,1, 25.0%,2, 50.0%,1, 25.0%
+home:Documents;Work;Repo;alu;src;typechecker;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;typechecker;size.lisp.newest,55,46, 83.6%,26, 47.3%,12,245,176, 71.8%,7,1, 14.3%,6, 85.7%,0,  0.0%
+home:Documents;Work;Repo;alu;src;typechecker;typecheck.lisp.newest,371,311, 83.8%,246, 66.3%,75,2274,1674, 73.6%,33,18, 54.5%,15, 45.5%,0,  0.0%
+home:Documents;Work;Repo;alu;src;typechecker;types.lisp.newest,38,36, 94.7%,29, 76.3%,7,383,180, 47.0%,38,12, 31.6%,6, 15.8%,20, 52.6%
+home:Documents;Work;Repo;alu;src;typechecker;unifier.lisp.newest,135,104, 77.0%,75, 55.6%,32,929,555, 59.7%,13,6, 46.2%,6, 46.2%,1,  7.7%
+src/util/
+home:Documents;Work;Repo;alu;src;util;bit.lisp.newest,59,0,  0.0%,0,  0.0%,0,159,0,  0.0%,11,0,  0.0%,0,  0.0%,11,100.0%
+home:Documents;Work;Repo;alu;src;util;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;util;utils.lisp.newest,66,39, 59.1%,36, 54.5%,1,126,85, 67.5%,11,5, 45.5%,1,  9.1%,5, 45.5%
+src/vampir/
+home:Documents;Work;Repo;alu;src;vampir;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;src;vampir;spec.lisp.newest,44,42, 95.5%,37, 84.1%,1,197,186, 94.4%,20,17, 85.0%,2, 10.0%,1,  5.0%
+home:Documents;Work;Repo;alu;src;vampir;vampir.lisp.newest,87,71, 81.6%,53, 60.9%,14,505,325, 64.4%,19,2, 10.5%,13, 68.4%,4, 21.1%
+test/
+home:Documents;Work;Repo;alu;test;alu.lisp.newest,3,0,  0.0%,0,  0.0%,0,4,0,  0.0%,1,0,  0.0%,0,  0.0%,1,100.0%
+home:Documents;Work;Repo;alu;test;anf.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;dependencies.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;evaluate-body.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;expand.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;global-examples.lisp.newest,52,11, 21.2%,10, 19.2%,2,620,99, 16.0%,48,6, 12.5%,1,  2.1%,41, 85.4%
+home:Documents;Work;Repo;alu;test;package.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;packing.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;pass.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;relocation.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;spec.lisp.newest,3,0,  0.0%,0,  0.0%,0,4,0,  0.0%,1,0,  0.0%,0,  0.0%,1,100.0%
+home:Documents;Work;Repo;alu;test;stack.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;step.lisp.newest,38,30, 78.9%,28, 73.7%,5,1299,1224, 94.2%,18,15, 83.3%,2, 11.1%,1,  5.6%
+home:Documents;Work;Repo;alu;test;typecheck.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%
+home:Documents;Work;Repo;alu;test;vampir.lisp.newest,0,0,   --%,0,   --%,0,0,0,   --%,0,0,   --%,0,   --%,0,   --%

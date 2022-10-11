@@ -1,0 +1,266 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_package_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;package.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>2</span> &#59;&#59; Package To make the pipeline available to the packages found here &#59;
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> 
+<span class='line'>5</span> (defpackage &#35;:alu&#46;pipeline&#46;pipeline
+<span class='line'>6</span>   (:documentation &#34;Provides The Alucard Pipeline signature to functions
+<span class='line'>7</span>  in this package file&#46; This will be filled in by alu&#46;pipeline&#34;)
+<span class='line'>8</span>   (:export
+<span class='line'>9</span>    :dump-entry-point
+<span class='line'>10</span>    :dump-entry-point-to-file
+<span class='line'>11</span>    :pipeline
+<span class='line'>12</span>    :print-vampir
+<span class='line'>13</span>    &#59;&#59; Intermediate steps
+<span class='line'>14</span>    :to-typecheck
+<span class='line'>15</span>    :to-expand-away-records
+<span class='line'>16</span>    :to-primitive-circuit
+<span class='line'>17</span>    :to-vampir
+<span class='line'>18</span>    :type-check-expression))
+<span class='line'>19</span> 
+<span class='line'>20</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>21</span> &#59;&#59; Packages Regarding Expanding Away and Relocating Record Types
+<span class='line'>22</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>23</span> 
+<span class='line'>24</span> (defpackage &#35;:alu&#46;pass&#46;expanded
+<span class='line'>25</span>   (:documentation &#34;Provides argument expansion functionality&#46;
+<span class='line'>26</span> Including circuit declaration expansion&#44; and function type
+<span class='line'>27</span> expansion&#46;&#34;)
+<span class='line'>28</span>   (:local-nicknames (:util    :alu&#46;utils)
+<span class='line'>29</span>                     (:ir      :alu&#46;ir)
+<span class='line'>30</span>                     (:storage :alu&#46;storage))
+<span class='line'>31</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>32</span>   (:export
+<span class='line'>33</span>    &#59;&#59; Type API
+<span class='line'>34</span>    :argument
+<span class='line'>35</span>    :argument-list
+<span class='line'>36</span>    :expand :original :expanded
+<span class='line'>37</span>    :make-expanded
+<span class='line'>38</span>    &#59;&#59; Core API
+<span class='line'>39</span>    :full-arguments-from-storage
+<span class='line'>40</span>    :full-arguments-from-circuit
+<span class='line'>41</span>    :full-return-values
+<span class='line'>42</span>    :full-type-reference*
+<span class='line'>43</span>    :argument-names))
+<span class='line'>44</span> 
+<span class='line'>45</span> (defpackage &#35;:alu&#46;pass&#46;relocation
+<span class='line'>46</span>   (:documentation &#34;Provides mapping and functionality required to
+<span class='line'>47</span> safely relocate record instances and generate out code which lacks records&#34;)
+<span class='line'>48</span>   (:local-nicknames (:util    :alu&#46;utils)
+<span class='line'>49</span>                     (:ir      :alu&#46;ir)
+<span class='line'>50</span>                     (:storage :alu&#46;storage)
+<span class='line'>51</span>                     (:expand  :alu&#46;pass&#46;expanded)
+<span class='line'>52</span>                     (:closure :alu&#46;closure))
+<span class='line'>53</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>54</span>   (:export
+<span class='line'>55</span>    &#59;&#59; Type API
+<span class='line'>56</span>    :rel
+<span class='line'>57</span>    :rel-closure
+<span class='line'>58</span>    :rel-forms
+<span class='line'>59</span>    :rel-p
+<span class='line'>60</span>    :make-rel
+<span class='line'>61</span>    &#59;&#59; Core API
+<span class='line'>62</span>    :relocate-let
+<span class='line'>63</span>    :initial-closure-from-circuit
+<span class='line'>64</span>    :maps-to))
+<span class='line'>65</span> 
+<span class='line'>66</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>67</span> &#59;&#59; Packages Regarding Passes
+<span class='line'>68</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>69</span> 
+<span class='line'>70</span> (defpackage &#35;:alu&#46;pass&#46;evaluate-body
+<span class='line'>71</span>   (:documentation &#34;Provides initial evaluation of the circuit body&#44; modifying the
+<span class='line'>72</span> circuits execution body and tracking caching&#34;)
+<span class='line'>73</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>74</span>   (:local-nicknames (:util :alu&#46;utils)
+<span class='line'>75</span>                     (:ir   :alu&#46;ir)
+<span class='line'>76</span>                     (:emit :alu&#46;spec&#46;emit))
+<span class='line'>77</span>   (:export :evaluate-circuit-body :evaluate-and-cache-body))
+<span class='line'>78</span> 
+<span class='line'>79</span> (defpackage &#35;:alu&#46;pass&#46;anf
+<span class='line'>80</span>   (:documentation &#34;Provides an ANF pass for the alucard term&#34;)
+<span class='line'>81</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>82</span>   (:local-nicknames (:util :alu&#46;utils)
+<span class='line'>83</span>                     (:spc  :alu&#46;spec))
+<span class='line'>84</span>   (:export :normalize-expression))
+<span class='line'>85</span> 
+<span class='line'>86</span> (defpackage &#35;:alu&#46;pass&#46;redundant
+<span class='line'>87</span>   (:documentation &#34;Provides redundant let removal for alucard&#34;)
+<span class='line'>88</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>89</span>   (:local-nicknames (&#35;:util    &#35;:alu&#46;utils)
+<span class='line'>90</span>                     (&#35;:ir      &#35;:alu&#46;ir)
+<span class='line'>91</span>                     (&#35;:spc     &#35;:alu&#46;vampir&#46;spec)
+<span class='line'>92</span>                     (&#35;:storage &#35;:alu&#46;storage)
+<span class='line'>93</span>                     (:closure  :alu&#46;closure))
+<span class='line'>94</span>   (:export
+<span class='line'>95</span>    :remove-redundant-lets
+<span class='line'>96</span>    :replace-references
+<span class='line'>97</span>    :find-redundant-lets))
+<span class='line'>98</span> 
+<span class='line'>99</span> (defpackage &#35;:alu&#46;pass&#46;extract
+<span class='line'>100</span>   (:documentation &#34;Provides Extraction capabilities to vamp-ir&#34;)
+<span class='line'>101</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>102</span>   (:local-nicknames (&#35;:util    &#35;:alu&#46;utils)
+<span class='line'>103</span>                     (&#35;:ir      &#35;:alu&#46;ir)
+<span class='line'>104</span>                     (&#35;:spc     &#35;:alu&#46;vampir&#46;spec)
+<span class='line'>105</span>                     (&#35;:storage &#35;:alu&#46;storage))
+<span class='line'>106</span>   (:export :circuit-to-alias))
+<span class='line'>107</span> 
+<span class='line'>108</span> (defpackage &#35;:alu&#46;pass
+<span class='line'>109</span>   (:documentation &#34;Provides simplification passes to the Alucard Language&#34;)
+<span class='line'>110</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>111</span>   (:local-nicknames (:util      :alu&#46;utils)
+<span class='line'>112</span>                     (:ir        :alu&#46;ir)
+<span class='line'>113</span>                     (:eval      :alu&#46;pass&#46;evaluate-body)
+<span class='line'>114</span>                     (:anf       :alu&#46;pass&#46;anf)
+<span class='line'>115</span>                     (:expand    :alu&#46;pass&#46;expanded)
+<span class='line'>116</span>                     (:relocate  :alu&#46;pass&#46;relocation)
+<span class='line'>117</span>                     (:term-op   :alu&#46;spec&#46;term-op)
+<span class='line'>118</span>                     (:storage   :alu&#46;storage)
+<span class='line'>119</span>                     (:closure   :alu&#46;closure)
+<span class='line'>120</span>                     (:redundant :alu&#46;pass&#46;redundant)
+<span class='line'>121</span>                     (:extract   :alu&#46;pass&#46;extract)
+<span class='line'>122</span>                     (:vampir    :alu&#46;vampir))
+<span class='line'>123</span>   (:export
+<span class='line'>124</span>    :linearize
+<span class='line'>125</span>    :linearize-body
+<span class='line'>126</span>    :filter-redundant-lets
+<span class='line'>127</span>    :expand-away-records
+<span class='line'>128</span>    :remove-void-bindings
+<span class='line'>129</span>    :primitive-circuit
+<span class='line'>130</span>    :rename-primitive-circuit
+<span class='line'>131</span>    :remove-type-information
+<span class='line'>132</span>    &#59;&#59; Extraction
+<span class='line'>133</span>    :circuit-to-alias))
+<span class='line'>134</span> 
+<span class='line'>135</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>136</span> &#59;&#59; Packages Regarding Extra Information Tracking
+<span class='line'>137</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>138</span> 
+<span class='line'>139</span> (defpackage &#35;:alu&#46;pass&#46;dependencies
+<span class='line'>140</span>   (:documentation &#34;Provides an API for dependency tracking&#34;)
+<span class='line'>141</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>142</span>   (:local-nicknames (:util    :alu&#46;utils)
+<span class='line'>143</span>                     (:ir      :alu&#46;ir)
+<span class='line'>144</span>                     (:pass    :alu&#46;pass)
+<span class='line'>145</span>                     (:storage :alu&#46;storage))
+<span class='line'>146</span>   (:export
+<span class='line'>147</span>    :track-circuit-deps
+<span class='line'>148</span>    :track-circuit-deps*))
+<span class='line'>149</span> 
+<span class='line'>150</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>151</span> &#59;&#59; Packages Regarding Packing Infrastructure
+<span class='line'>152</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>153</span> 
+<span class='line'>154</span> (defpackage &#35;:alu&#46;pass&#46;pack
+<span class='line'>155</span>   (:documentation &#34;Provides expansion logic for packing uniform and non uniform
+<span class='line'>156</span> structures&#34;)
+<span class='line'>157</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>158</span>   (:shadow &#35;:array &#35;:op &#35;:+)
+<span class='line'>159</span>   (:local-nicknames (:util       :alu&#46;utils)
+<span class='line'>160</span>                     (:ir         :alu&#46;ir)
+<span class='line'>161</span>                     (:pass       :alu&#46;pass)
+<span class='line'>162</span>                     (:storage    :alu&#46;storage)
+<span class='line'>163</span>                     (:check&#46;type :alu&#46;typechecker&#46;types)
+<span class='line'>164</span>                     (:check      :alu&#46;typechecker)
+<span class='line'>165</span>                     (:type-op    :alu&#46;spec&#46;type-op)
+<span class='line'>166</span>                     (:term-op    :alu&#46;spec&#46;term-op)
+<span class='line'>167</span>                     (:closure    :alu&#46;closure)
+<span class='line'>168</span>                     (:pipeline   :alu&#46;pipeline&#46;pipeline))
+<span class='line'>169</span>   (:export :op :array
+<span class='line'>170</span>            :lookup-at :array-lookup-final-ref
+<span class='line'>171</span>            :final-ref-from-op))
+<span class='line'>172</span> 
+<span class='line'>173</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>174</span> &#59;&#59; Packages Regarding Arrays
+<span class='line'>175</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>176</span> (defpackage &#35;:alu&#46;pass&#46;array
+<span class='line'>177</span>   (:documentation &#34;Provides expansion logic for arrays&#34;)
+<span class='line'>178</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>179</span>   (:local-nicknames (:util    :alu&#46;utils)
+<span class='line'>180</span>                     (:ir      :alu&#46;ir)
+<span class='line'>181</span>                     (:pack    :alu&#46;pass&#46;pack)
+<span class='line'>182</span>                     (:closure :alu&#46;closure)
+<span class='line'>183</span>                     (:storage :alu&#46;storage)
+<span class='line'>184</span>                     (:check   :alu&#46;typechecker))
+<span class='line'>185</span>   (:export :handle-terms :handle-term))
+<span class='line'>186</span> 
+<span class='line'>187</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>188</span> &#59;&#59; Packages Regarding the Pipeline
+<span class='line'>189</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>190</span> 
+<span class='line'>191</span> (defpackage &#35;:alu&#46;pipeline
+<span class='line'>192</span>   (:documentation &#34;Provides The Alucard Pipeline down to ANF&#34;)
+<span class='line'>193</span>   (:use &#35;:common-lisp &#35;:serapeum &#35;:alu&#46;pipeline&#46;pipeline)
+<span class='line'>194</span>   (:local-nicknames (:util    :alu&#46;utils)
+<span class='line'>195</span>                     (:ir      :alu&#46;ir)
+<span class='line'>196</span>                     (:pass    :alu&#46;pass)
+<span class='line'>197</span>                     (:vampir  :alu&#46;vampir)
+<span class='line'>198</span>                     (:dep     :alu&#46;pass&#46;dependencies)
+<span class='line'>199</span>                     (:storage :alu&#46;storage)
+<span class='line'>200</span>                     (:array   :alu&#46;pass&#46;array)
+<span class='line'>201</span>                     (:check   :alu&#46;typechecker)
+<span class='line'>202</span>                     (:log     :alu&#46;log))
+<span class='line'>203</span>   (:export
+<span class='line'>204</span>    :dump-entry-point
+<span class='line'>205</span>    :dump-entry-point-to-file
+<span class='line'>206</span>    :pipeline
+<span class='line'>207</span>    :print-vampir
+<span class='line'>208</span>    &#59;&#59; Intermediate steps
+<span class='line'>209</span>    :to-typecheck
+<span class='line'>210</span>    :to-expand-arrays
+<span class='line'>211</span>    :to-expand-away-records
+<span class='line'>212</span>    :to-primitive-circuit
+<span class='line'>213</span>    :to-vampir
+<span class='line'>214</span>    :type-check-expression))
+</code></div>
+</body></html>

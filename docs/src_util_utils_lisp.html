@@ -1,0 +1,225 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_util_utils_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;util;utils.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;utils)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (defun symbol-to-keyword (symbol)
+<span class='line'>4</span>   <span id='f0s1'>(intern <span id='f0s2'>(symbol-name symbol)</span> :keyword)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c51'> (lambda (symbol)
+   <span id='f0c50'>(if <span id='f0c45'>(funcall &#39;ccl::package-&#37;local-nicknames *package*)</span>
+       <span id='f0c43'>(ccl::&#37;decls-body <span id='f0c42'>(funcall &#39;intern <span id='f0c40'>(funcall &#39;symbol-name symbol)</span> <span id='f0c41'>&#39;:keyword</span>)</span>)</span>
+       <span id='f0c49'>(funcall &#39;ccl::&#37;pkg-ref-intern
+                <span id='f0c48'>(funcall &#39;symbol-name symbol)</span>
+                <span id='f0c46'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020034D62DF&#62;))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>5</span> 
+<span id='f0s3'><span class='line'>6</span> (defun hash-compare (x y)
+<span class='line'>7</span>   &#34;hash compare compare twos symbols&#34;
+<span class='line'>8</span>   <span id='f0s4'>(let ((hash-x <span id='f0s5'>(sxhash x)</span>)
+<span class='line'>9</span>         (hash-y <span id='f0s6'>(sxhash y)</span>))
+<span class='line'>10</span>     <span id='f0s7'>(cond  (<span id='f0s8'>(&#60; hash-x hash-y)</span> -1)
+<span class='line'>11</span>            (<span id='f0s9'>(&#62; hash-x hash-y)</span>  1)
+<span class='line'>12</span>            (t                  0))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c125'> (lambda (x y)
+   <span id='f0c124'>(let ((hash-x <span id='f0c123'>(funcall &#39;sxhash x)</span>) (hash-y <span id='f0c121'>(funcall &#39;sxhash y)</span>))
+     <span id='f0c119'>(if <span id='f0c118'>(ccl::numcmp &#39;:lt hash-x hash-y)</span> -1 <span id='f0c114'>(if <span id='f0c111'>(ccl::numcmp &#39;:gt hash-x hash-y)</span> 1 0)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>13</span> 
+<span id='f0s10'><span class='line'>14</span> (defun sycamore-plist-symbol-map (plist)
+<span class='line'>15</span>   <span id='f0s11'>(sycamore:alist-tree-map <span id='f0s12'>(alexandria:plist-alist plist)</span> <span id='f0s13'>&#35;&#39;hash-compare</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c108'> (lambda (plist) <span id='f0c107'>(funcall &#39;sycamore:alist-tree-map <span id='f0c106'>(funcall &#39;alexandria:plist-alist plist)</span> <span id='f0c104'>(function hash-compare)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>16</span> 
+<span id='f0s14'><span class='line'>17</span> (defun sycamore-symbol-map-plist (tree-map)
+<span class='line'>18</span>   <span id='f0s15'>(alexandria:alist-plist <span id='f0s16'>(sycamore:tree-map-alist tree-map)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c103'> (lambda (tree-map) <span id='f0c102'>(funcall &#39;alexandria:alist-plist <span id='f0c101'>(funcall &#39;sycamore:tree-map-alist tree-map)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>19</span> 
+<span class='line'>20</span> &#59;&#59; from
+<span class='line'>21</span> &#59;&#59; https:&#47;&#47;stackoverflow&#46;com&#47;questions&#47;11067899&#47;is-there-a-generic-method-for-cloning-clos-objects
+<span class='line'>22</span> 
+<span class='line'>23</span> &#59;&#59; Don&#39;t need it to be an object on non standard-classes for this
+<span class='line'>24</span> &#59;&#59; project&#44; if so&#44; we can promote it to the old form of being a
+<span class='line'>25</span> &#59;&#59; defgeneric&#46;
+<span class='line'>26</span> 
+<span class='line'>27</span> (-&#62; copy-instance (standard-object &#38;rest t &#38;key &#38;allow-other-keys) standard-object)
+<span id='f0s17'><span class='line'>28</span> (defun copy-instance (object &#38;rest initargs &#38;key &#38;allow-other-keys)
+<span class='line'>29</span>   &#34;Makes and returns a shallow copy of OBJECT&#46;
+<span class='line'>30</span> 
+<span class='line'>31</span>   An uninitialized object of the same class as OBJECT is allocated by
+<span class='line'>32</span>   calling ALLOCATE-INSTANCE&#46;  For all slots returned by
+<span class='line'>33</span>   CLASS-SLOTS&#44; the returned object has the
+<span class='line'>34</span>   same slot values and slot-unbound status as OBJECT&#46;
+<span class='line'>35</span> 
+<span class='line'>36</span>   REINITIALIZE-INSTANCE is called to update the copy with INITARGS&#46;&#34;
+<span class='line'>37</span>   <span id='f0s18'>(let* ((class <span id='f0s19'>(class-of object)</span>)
+<span class='line'>38</span>          (copy <span id='f0s20'>(allocate-instance class)</span>))
+<span class='line'>39</span>     <span id='f0s21'>(dolist (slot <span id='f0s22'>(c2mop:class-slots class)</span>)
+<span class='line'>40</span>       &#59;&#59; moved the mapcar into a let&#44; as allocation wise&#44; CCL
+<span class='line'>41</span>       &#59;&#59; preformed better this way&#46;
+<span class='line'>42</span>       <span id='f0s23'>(let ((slot-name <span id='f0s24'>(c2mop:slot-definition-name slot)</span>))
+<span class='line'>43</span>         <span id='f0s25'>(when <span id='f0s26'>(slot-boundp object slot-name)</span>
+<span class='line'>44</span>           <span id='f0s27'>(setf (slot-value copy slot-name)
+<span class='line'>45</span>                 <span id='f0s28'>(slot-value object slot-name)</span>)</span>)</span>)</span>)</span>
+<span class='line'>46</span>     <span id='f0s29'>(values
+<span class='line'>47</span>      <span id='f0s30'>(apply &#35;&#39;reinitialize-instance copy initargs)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t17')><span class='toggle' id='pf0t17'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(17)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t17'><code><span id='f0c38'> (lambda (object &#38;rest initargs &#38;allow-other-keys)
+   <span id='f0c37'>(let* ((class <span id='f0c5'>(funcall &#39;class-of object)</span>) (copy <span id='f0c7'>(funcall &#39;allocate-instance class)</span>))
+     (progn <span id='f0c36'>(let* ((&#35;:g50516 <span id='f0c9'>(funcall &#39;ccl:class-slots class)</span>))
+              <span id='f0c35'>(tagbody <span id='f0c10'>(go &#35;:g50518)</span>
+                       (&#35;:g50517 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034F86DD&#62; t t)
+                       <span id='f0c34'>(tagbody <span id='f0c33'>(let* ((slot <span id='f0c32'>(car &#35;:g50516)</span>))
+                                  <span id='f0c30'>(tagbody <span id='f0c29'>(let* ((slot-name <span id='f0c18'>(funcall &#39;ccl:slot-definition-name slot)</span>))
+                                             <span id='f0c28'>(if <span id='f0c21'>(funcall &#39;slot-boundp object slot-name)</span>
+                                                 <span id='f0c27'>(funcall &#39;ccl::set-slot-value
+                                                          copy
+                                                          slot-name
+                                                          <span id='f0c25'>(funcall &#39;slot-value object slot-name)</span>)</span>
+                                                 nil)</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c14'>(setq &#35;:g50516 <span id='f0c13'>(ccl::&#37;cdr <span id='f0c12'>(ccl::typed-form &#39;list &#35;:g50516)</span>)</span>)</span>
+                       (&#35;:g50518 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034F86DD&#62; t nil)
+                       <span id='f0c16'>(if <span id='f0c15'>(not &#39;:ne &#35;:g50516)</span> (go &#35;:g50517) nil)</span>)</span>)</span>
+            <span id='f0c3'>(values <span id='f0c2'>(apply &#39;reinitialize-instance copy initargs)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>48</span> 
+<span class='line'>49</span> &#59;&#59; I should use this for object equality&#44; namely the slot values trick
+<span class='line'>50</span> 
+<span class='line'>51</span> &#59;&#59; Please abstract out this logic&#46; Too much of the same pattern&#33;&#33;&#33;
+<span class='line'>52</span> 
+<span id='f0s31'><span class='line'>53</span> (defun alist-values (alist)
+<span class='line'>54</span>   &#34;Takes a potentially nested alist and returns the values
+<span class='line'>55</span> 
+<span class='line'>56</span> (alist-values &#39;((:plane &#46; :fi-plane) (:point &#46; ((:x &#46; fi-point-x) (:y &#46; fi-point-y)))))
+<span class='line'>57</span> 
+<span class='line'>58</span> &#61;&#61;&#62;
+<span class='line'>59</span> 
+<span class='line'>60</span> (:FI-PLANE FI-POINT-X FI-POINT-Y)&#34;
+<span class='line'>61</span>   <span id='f0s32'>(mapcan <span id='f0s33'>(lambda (apair)
+<span class='line'>62</span>             <span id='f0s34'>(if <span id='f0s35'>(not <span id='f0s36'>(listp <span id='f0s37'>(cdr apair)</span>)</span>)</span>
+<span class='line'>63</span>                 <span id='f0s38'>(list <span id='f0s39'>(cdr apair)</span>)</span>
+<span class='line'>64</span>                 <span id='f0s40'>(alist-values <span id='f0s41'>(cdr apair)</span>)</span>)</span>)</span>
+<span class='line'>65</span>           alist)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c66'> (lambda (alist)
+   <span id='f0c65'>(funcall &#39;mapcan
+            <span id='f0c63'>(function <span id='f0c62'>(lambda (apair)
+                        <span id='f0c61'>(if <span id='f0c54'>(eq &#39;:ne (ccl::lisptag <span id='f0c53'>(cdr apair)</span>) 3)</span>
+                            <span id='f0c60'>(cons <span id='f0c59'>(cdr apair)</span> nil)</span>
+                            <span id='f0c57'>(funcall &#39;alist-values <span id='f0c56'>(cdr apair)</span>)</span>)</span>)</span>)</span>
+            alist)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>66</span> 
+<span id='f0s42'><span class='line'>67</span> (defun nested-alist-keys (alist)
+<span class='line'>68</span>   &#34;Takes a potentially nested alist and returns all the keys
+<span class='line'>69</span> 
+<span class='line'>70</span> (nested-alist-keys &#39;((:plane &#46; :fi-plane) (:point &#46; ((:x &#46; fi-point-x) (:y &#46; fi-point-y)))))
+<span class='line'>71</span> 
+<span class='line'>72</span> &#61;&#61;&#62;
+<span class='line'>73</span> 
+<span class='line'>74</span> (:PLANE :POINT :X :Y)&#34;
+<span class='line'>75</span>   <span id='f0s43'>(mapcan <span id='f0s44'>(lambda (apair)
+<span class='line'>76</span>             <span id='f0s45'>(if <span id='f0s46'>(not <span id='f0s47'>(listp <span id='f0s48'>(cdr apair)</span>)</span>)</span>
+<span class='line'>77</span>                 <span id='f0s49'>(list <span id='f0s50'>(car apair)</span>)</span>
+<span class='line'>78</span>                 <span id='f0s51'>(cons <span id='f0s52'>(car apair)</span> <span id='f0s53'>(nested-alist-keys <span id='f0s54'>(cdr apair)</span>)</span>)</span>)</span>)</span>
+<span class='line'>79</span>           alist)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t42')><span class='toggle' id='pf0t42'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(42)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t42'><code><span id='f0c84'> (lambda (alist)
+   <span id='f0c83'>(funcall &#39;mapcan
+            <span id='f0c82'>(function <span id='f0c81'>(lambda (apair)
+                        <span id='f0c80'>(if <span id='f0c73'>(eq &#39;:ne (ccl::lisptag <span id='f0c72'>(cdr apair)</span>) 3)</span>
+                            <span id='f0c70'>(cons <span id='f0c69'>(car apair)</span> nil)</span>
+                            <span id='f0c79'>(cons <span id='f0c75'>(car apair)</span> <span id='f0c78'>(funcall &#39;nested-alist-keys <span id='f0c77'>(cdr apair)</span>)</span>)</span>)</span>)</span>)</span>
+            alist)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>80</span> 
+<span id='f0s55'><span class='line'>81</span> (defun leaf-alist-keys (alist)
+<span class='line'>82</span>   &#34;Takes a nested alist and gives back all the keys on the leaves
+<span class='line'>83</span> 
+<span class='line'>84</span> (leaf-alist-keys &#39;((:plane &#46; :fi-plane) (:point &#46; ((:x &#46; fi-point-x) (:y &#46; fi-point-y)))))
+<span class='line'>85</span> 
+<span class='line'>86</span> &#61;&#61;&#62;
+<span class='line'>87</span> 
+<span class='line'>88</span> (:PLANE :X :Y)&#34;
+<span class='line'>89</span>   <span id='f0s56'>(mapcan <span id='f0s57'>(lambda (apair)
+<span class='line'>90</span>             <span id='f0s58'>(if <span id='f0s59'>(not <span id='f0s60'>(listp <span id='f0s61'>(cdr apair)</span>)</span>)</span>
+<span class='line'>91</span>                 <span id='f0s62'>(list <span id='f0s63'>(car apair)</span>)</span>
+<span class='line'>92</span>                 <span id='f0s64'>(leaf-alist-keys <span id='f0s65'>(cdr apair)</span>)</span>)</span>)</span>
+<span class='line'>93</span>           alist)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t55')><span class='toggle' id='pf0t55'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(55)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t55'><code><span id='f0c99'> (lambda (alist)
+   <span id='f0c98'>(funcall &#39;mapcan
+            <span id='f0c97'>(function <span id='f0c96'>(lambda (apair)
+                        <span id='f0c95'>(if <span id='f0c91'>(eq &#39;:ne (ccl::lisptag <span id='f0c90'>(cdr apair)</span>) 3)</span>
+                            <span id='f0c94'>(cons <span id='f0c93'>(car apair)</span> nil)</span>
+                            <span id='f0c88'>(funcall &#39;leaf-alist-keys <span id='f0c87'>(cdr apair)</span>)</span>)</span>)</span>)</span>
+            alist)</span>)</span>
+</code></div><hr/>
+</body></html>

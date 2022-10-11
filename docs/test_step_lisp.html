@@ -1,0 +1,1541 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_step_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;step.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;step
+<span class='line'>4</span>   :description &#34;Testing the stepper&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;step)
+<span class='line'>7</span> 
+<span class='line'>8</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>9</span> &#59;&#59;&#59; Definitions
+<span class='line'>10</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>11</span> 
+<span id='f0s0'><span class='line'>12</span> (step&#46;def:defun base ()
+<span class='line'>13</span>   (car (list (stack:get))))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c1161'> (lambda nil
+   <span id='f0c1160'>(unwind-protect
+       <span id='f0c1158'>(progn <span id='f0c1139'>(funcall &#39;stack::push-section <span id='f0c1138'>(ccl::typed-form &#39;(member base) <span id='f0c1137'>&#39;base</span>)</span>)</span>
+              <span id='f0c1157'>(unwind-protect
+                  <span id='f0c1156'>(progn <span id='f0c1155'>(funcall &#39;stack:push <span id='f0c1154'>&#39;(car (list (stack:get)))</span>)</span>
+                         <span id='f0c1153'>(car <span id='f0c1152'>(unwind-protect
+                                  <span id='f0c1151'>(progn <span id='f0c1143'>(funcall &#39;stack:push <span id='f0c1142'>&#39;(list (stack:get))</span>)</span>
+                                         <span id='f0c1150'>(cons <span id='f0c1149'>(unwind-protect
+                                                   <span id='f0c1147'>(progn <span id='f0c1145'>(funcall &#39;stack:push <span id='f0c1144'>&#39;(stack:get)</span>)</span> <span id='f0c1146'>(funcall &#39;stack:get)</span>)</span>
+                                                 <span id='f0c1148'>(funcall &#39;stack:pop)</span>)</span>
+                                               nil)</span>)</span>
+                                <span id='f0c1141'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                <span id='f0c1140'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1159'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>14</span> 
+<span id='f0s1'><span class='line'>15</span> (step&#46;def:defun calling-base ()
+<span class='line'>16</span>   (if (listp (stack:stack (base)))
+<span class='line'>17</span>       (base)))</span>
+</code></div>
+<a href=javascript:swap('f0t1')><span class='toggle' id='pf0t1'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(1)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t1'><code><span id='f0c911'> (lambda nil
+   <span id='f0c910'>(unwind-protect
+       <span id='f0c908'>(progn <span id='f0c907'>(funcall &#39;stack::push-section <span id='f0c906'>(ccl::typed-form &#39;(member calling-base) <span id='f0c905'>&#39;calling-base</span>)</span>)</span>
+              <span id='f0c904'>(unwind-protect
+                  <span id='f0c902'>(progn <span id='f0c901'>(funcall &#39;stack:push <span id='f0c900'>&#39;(if (listp (stack:stack (base))) (base))</span>)</span>
+                         <span id='f0c899'>(if <span id='f0c898'>(unwind-protect
+                                 <span id='f0c896'>(progn <span id='f0c882'>(funcall &#39;stack:push <span id='f0c881'>&#39;(listp (stack:stack (base)))</span>)</span>
+                                        <span id='f0c895'>(eq (ccl::lisptag <span id='f0c894'>(unwind-protect
+                                                              <span id='f0c893'>(progn <span id='f0c892'>(funcall &#39;stack:push <span id='f0c891'>&#39;(stack:stack (base))</span>)</span>
+                                                                     <span id='f0c890'>(funcall &#39;stack:stack
+                                                                              <span id='f0c889'>(unwind-protect
+                                                                                  <span id='f0c888'>(progn <span id='f0c887'>(funcall &#39;stack:push <span id='f0c886'>&#39;(base)</span>)</span>
+                                                                                         <span id='f0c885'>(funcall &#39;base)</span>)</span>
+                                                                                <span id='f0c884'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                            <span id='f0c883'>(funcall &#39;stack:pop)</span>)</span>)
+                                            3)</span>)</span>
+                               <span id='f0c897'>(funcall &#39;stack:pop)</span>)</span>
+                             <span id='f0c880'>(unwind-protect <span id='f0c878'>(progn <span id='f0c876'>(funcall &#39;stack:push <span id='f0c875'>&#39;(base)</span>)</span> <span id='f0c877'>(funcall &#39;base)</span>)</span> <span id='f0c879'>(funcall &#39;stack:pop)</span>)</span>
+                             nil)</span>)</span>
+                <span id='f0c903'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c909'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>18</span> 
+<span id='f0s2'><span class='line'>19</span> (defmacro expansion-test (x)
+<span class='line'>20</span>   <span id='f0s3'>&#96;(progn &#44;x)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c74'> (lambda (&#35;:whole62594 &#35;:environment62595)
+   <span id='f0c73'>(let* ((&#35;:args62596 <span id='f0c65'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c63'>(cdr &#35;:whole62594)</span> <span id='f0c61'>&#39;(x)</span> 1 1)</span>)
+          (x <span id='f0c72'>(prog1 <span id='f0c67'>(ccl::&#37;car &#35;:args62596)</span> <span id='f0c71'>(setq &#35;:args62596 <span id='f0c70'>(ccl::&#37;cdr <span id='f0c69'>(ccl::typed-form &#39;list &#35;:args62596)</span>)</span>)</span>)</span>))
+     <span id='f0c59'>(list <span id='f0c58'>&#39;progn</span> x)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>21</span> 
+<span id='f0s4'><span class='line'>22</span> (step&#46;def:defun expansion-call ()
+<span class='line'>23</span>   (expansion-test (stack:get)))</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c934'> (lambda nil
+   <span id='f0c933'>(unwind-protect
+       <span id='f0c932'>(progn <span id='f0c931'>(funcall &#39;stack::push-section <span id='f0c930'>(ccl::typed-form &#39;(member expansion-call) <span id='f0c929'>&#39;expansion-call</span>)</span>)</span>
+              <span id='f0c928'>(unwind-protect
+                  <span id='f0c927'>(progn <span id='f0c926'>(funcall &#39;stack:push <span id='f0c925'>&#39;(expansion-test (stack:get))</span>)</span>
+                         <span id='f0c924'>(unwind-protect
+                             <span id='f0c923'>(progn <span id='f0c922'>(funcall &#39;stack:push <span id='f0c921'>&#39;(progn (stack:get))</span>)</span>
+                                    <span id='f0c920'>(unwind-protect
+                                        <span id='f0c919'>(progn <span id='f0c918'>(funcall &#39;stack:push <span id='f0c917'>&#39;(stack:get)</span>)</span> <span id='f0c916'>(funcall &#39;stack:get)</span>)</span>
+                                      <span id='f0c915'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                           <span id='f0c914'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                <span id='f0c913'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c912'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>24</span> 
+<span id='f0s5'><span class='line'>25</span> (step&#46;def:defun local-expansion-test (x)
+<span class='line'>26</span>   (flet ((expansion-test (x) (list x (stack:get))))
+<span class='line'>27</span>     (expansion-test x)))</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c1237'> (lambda (x)
+   <span id='f0c1236'>(unwind-protect
+       <span id='f0c1234'>(progn <span id='f0c1233'>(funcall &#39;stack::push-section <span id='f0c1232'>(ccl::typed-form &#39;(member local-expansion-test) <span id='f0c1231'>&#39;local-expansion-test</span>)</span>)</span>
+              <span id='f0c1230'>(unwind-protect
+                  <span id='f0c1229'>(progn <span id='f0c1228'>(funcall &#39;stack:push <span id='f0c1227'>&#39;(flet ((expansion-test (x) (list x (stack:get)))) (expansion-test x))</span>)</span>
+                         <span id='f0c1226'>(flet ((&#35;:expansion-test &#35;1&#61;<span id='f0c1225'>(lambda (x)
+                                                       <span id='f0c1224'>(unwind-protect
+                                                           <span id='f0c1223'>(progn <span id='f0c1222'>(funcall &#39;stack:push <span id='f0c1221'>&#39;(list x (stack:get))</span>)</span>
+                                                                  <span id='f0c1220'>(list x
+                                                                        <span id='f0c1219'>(unwind-protect
+                                                                            <span id='f0c1218'>(progn <span id='f0c1217'>(funcall &#39;stack:push <span id='f0c1216'>&#39;(stack:get)</span>)</span>
+                                                                                   <span id='f0c1215'>(funcall &#39;stack:get)</span>)</span>
+                                                                          <span id='f0c1214'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                         <span id='f0c1212'>(funcall &#39;stack:pop)</span>)</span>)</span>))
+                           <span id='f0c1211'>(unwind-protect
+                               <span id='f0c1210'>(progn <span id='f0c1207'>(funcall &#39;stack:push <span id='f0c1206'>&#39;(expansion-test x)</span>)</span> <span id='f0c1209'>(funcall &#35;1&#35; x)</span>)</span>
+                             <span id='f0c1205'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                <span id='f0c1204'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1235'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>28</span> 
+<span id='f0s6'><span class='line'>29</span> (step&#46;def:defun local-expansion-test-labels (x)
+<span class='line'>30</span>   (labels ((expansion-test (x) (list x (stack:get)))
+<span class='line'>31</span>            (faz (x) (expansion-test x)))
+<span class='line'>32</span>     (faz x)))</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c1203'> (lambda (x)
+   <span id='f0c1202'>(unwind-protect
+       <span id='f0c1201'>(progn <span id='f0c1200'>(funcall &#39;stack::push-section
+                       <span id='f0c1199'>(ccl::typed-form &#39;(member local-expansion-test-labels) <span id='f0c1198'>&#39;local-expansion-test-labels</span>)</span>)</span>
+              <span id='f0c1197'>(unwind-protect
+                  <span id='f0c1195'>(progn <span id='f0c1164'>(funcall &#39;stack:push
+                                  <span id='f0c1163'>&#39;(labels ((expansion-test (x) (list x (stack:get))) (faz (x) (expansion-test x)))
+                                     (faz x))</span>)</span>
+                         <span id='f0c1194'>(labels ((&#35;:expansion-test &#35;1&#61;<span id='f0c1178'>(lambda (x)
+                                                         <span id='f0c1177'>(unwind-protect
+                                                             <span id='f0c1175'>(progn <span id='f0c1174'>(funcall &#39;stack:push <span id='f0c1173'>&#39;(list x (stack:get))</span>)</span>
+                                                                    <span id='f0c1172'>(list x
+                                                                          <span id='f0c1170'>(unwind-protect
+                                                                              <span id='f0c1168'>(progn <span id='f0c1167'>(funcall &#39;stack:push <span id='f0c1166'>&#39;(stack:get)</span>)</span>
+                                                                                     <span id='f0c1165'>(funcall &#39;stack:get)</span>)</span>
+                                                                            <span id='f0c1169'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                           <span id='f0c1176'>(funcall &#39;stack:pop)</span>)</span>)</span>)
+                                  (&#35;:faz &#35;2&#61;<span id='f0c1186'>(lambda (x)
+                                              <span id='f0c1185'>(unwind-protect
+                                                  <span id='f0c1184'>(progn <span id='f0c1183'>(funcall &#39;stack:push <span id='f0c1182'>&#39;(expansion-test x)</span>)</span> <span id='f0c1181'>(funcall &#35;1&#35; x)</span>)</span>
+                                                <span id='f0c1179'>(funcall &#39;stack:pop)</span>)</span>)</span>))
+                           <span id='f0c1193'>(unwind-protect
+                               <span id='f0c1192'>(progn <span id='f0c1189'>(funcall &#39;stack:push <span id='f0c1188'>&#39;(faz x)</span>)</span> <span id='f0c1191'>(funcall &#35;2&#35; x)</span>)</span>
+                             <span id='f0c1187'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                <span id='f0c1196'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1162'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>33</span> 
+<span id='f0s7'><span class='line'>34</span> (step&#46;def:defun lets-explore (x)
+<span class='line'>35</span>   (funcall (lambda (x) (+ x 5)) x))</span>
+</code></div>
+<a href=javascript:swap('f0t7')><span class='toggle' id='pf0t7'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(7)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t7'><code><span id='f0c1298'> (lambda (x)
+   <span id='f0c1297'>(unwind-protect
+       <span id='f0c1295'>(progn <span id='f0c1294'>(funcall &#39;stack::push-section <span id='f0c1293'>(ccl::typed-form &#39;(member lets-explore) <span id='f0c1292'>&#39;lets-explore</span>)</span>)</span>
+              <span id='f0c1291'>(unwind-protect
+                  <span id='f0c1289'>(progn <span id='f0c1288'>(funcall &#39;stack:push <span id='f0c1287'>&#39;(funcall (lambda (x) (+ x 5)) x)</span>)</span>
+                         <span id='f0c1286'>(funcall <span id='f0c1285'>(unwind-protect
+                                      <span id='f0c1284'>(progn <span id='f0c1283'>(funcall &#39;stack:push <span id='f0c1282'>&#39;(lambda (x) (+ x 5))</span>)</span>
+                                             <span id='f0c1281'>(unwind-protect
+                                                 <span id='f0c1279'>(progn <span id='f0c1278'>(funcall &#39;stack:push <span id='f0c1277'>&#39;(function (lambda (x) (+ x 5)))</span>)</span>
+                                                        <span id='f0c1276'>(function <span id='f0c1275'>(lambda (x)
+                                                                    <span id='f0c1274'>(unwind-protect
+                                                                        <span id='f0c1272'>(progn <span id='f0c1269'>(funcall &#39;stack:push <span id='f0c1268'>&#39;(+ x 5)</span>)</span>
+                                                                               <span id='f0c1271'>(ccl::add2 5 x)</span>)</span>
+                                                                      <span id='f0c1273'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>)</span>
+                                               <span id='f0c1280'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                    <span id='f0c1267'>(funcall &#39;stack:pop)</span>)</span>
+                                  x)</span>)</span>
+                <span id='f0c1290'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1296'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>36</span> 
+<span id='f0s8'><span class='line'>37</span> (step&#46;def:defun macro-let-test ()
+<span class='line'>38</span>   (macrolet ((lets-explore (x) &#96;(progn &#44;x)))
+<span class='line'>39</span>     (lets-explore (stack:get))))</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c1265'> (lambda nil
+   <span id='f0c1264'>(unwind-protect
+       <span id='f0c1262'>(progn <span id='f0c1240'>(funcall &#39;stack::push-section <span id='f0c1239'>(ccl::typed-form &#39;(member macro-let-test) <span id='f0c1238'>&#39;macro-let-test</span>)</span>)</span>
+              <span id='f0c1261'>(unwind-protect
+                  <span id='f0c1259'>(progn <span id='f0c1258'>(funcall &#39;stack:push
+                                  <span id='f0c1257'>&#39;(macrolet ((lets-explore (x) (list* &#39;progn (list x)))) (lets-explore (stack:get)))</span>)</span>
+                         <span id='f0c1256'>(unwind-protect
+                             <span id='f0c1255'>(progn <span id='f0c1254'>(funcall &#39;stack:push <span id='f0c1253'>&#39;(lets-explore (stack:get))</span>)</span>
+                                    <span id='f0c1252'>(unwind-protect
+                                        <span id='f0c1251'>(progn <span id='f0c1244'>(funcall &#39;stack:push <span id='f0c1243'>&#39;(progn (stack:get))</span>)</span>
+                                               <span id='f0c1250'>(unwind-protect
+                                                   <span id='f0c1248'>(progn <span id='f0c1247'>(funcall &#39;stack:push <span id='f0c1246'>&#39;(stack:get)</span>)</span> <span id='f0c1245'>(funcall &#39;stack:get)</span>)</span>
+                                                 <span id='f0c1249'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                      <span id='f0c1242'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                           <span id='f0c1241'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                <span id='f0c1260'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1263'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>40</span> 
+<span class='line'>41</span> &#59;&#59; just checking all these run fine&#44; with no issues
+<span id='f0s9'><span class='line'>42</span> (step&#46;def:defun alu-primitives (x y)
+<span class='line'>43</span>   (declare (ignore y))
+<span class='line'>44</span> 
+<span class='line'>45</span>   (prld:def ((prld:with-constraint (b2 b3)
+<span class='line'>46</span>                (prld:&#61; x (prld:+ b2 b3))))
+<span class='line'>47</span>     (prld:with-constraint (b2 b3)
+<span class='line'>48</span>       (prld:&#61; x (prld:+ b2 b3)))
+<span class='line'>49</span> 
+<span class='line'>50</span>     <span id='f0s10'>(alu:array 512 (int 1))</span>
+<span class='line'>51</span> 
+<span class='line'>52</span>     (def ((bit-array (aluser::reshape x 512 :type (int 1))))
+<span class='line'>53</span>       (prld:get bit-array x))
+<span class='line'>54</span> 
+<span class='line'>55</span>     (prld:&#61; (prld:+ (prld:exp x 3)
+<span class='line'>56</span>                     (prld:* 3 (prld:exp x 2))
+<span class='line'>57</span>                     (prld:* 2 x)
+<span class='line'>58</span>                     4)
+<span class='line'>59</span>             0)
+<span class='line'>60</span> 
+<span class='line'>61</span>     (prld:def ((bar (prld:to-array 36)))
+<span class='line'>62</span>       (prld:+ (prld:check 5 (int 32))
+<span class='line'>63</span>               (prld:get bar 0)))
+<span class='line'>64</span> 
+<span class='line'>65</span>     (def ((with-constraint (y z)
+<span class='line'>66</span>           (prld:&#61; x (prld:+ (prld:* y 10) z))))
+<span class='line'>67</span>       z)))</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c874'> (lambda (x y)
+   <span id='f0c873'>(unwind-protect
+       <span id='f0c872'>(progn <span id='f0c871'>(funcall &#39;stack::push-section <span id='f0c870'>(ccl::typed-form &#39;(member alu-primitives) <span id='f0c869'>&#39;alu-primitives</span>)</span>)</span>
+              <span id='f0c868'>(unwind-protect
+                  <span id='f0c867'>(progn <span id='f0c866'>(funcall &#39;stack:push
+                                  <span id='f0c865'>&#39;(def ((with-constraint (b2 b3) (prld:&#61; x (prld:+ b2 b3))))
+                                        (with-constraint (b2 b3) (prld:&#61; x (prld:+ b2 b3)))
+                                        (alu:array 512 (int 1))
+                                        (def ((bit-array (aluser::reshape x 512 :type (int 1)))) (alu:get bit-array x))
+                                        (prld:&#61; (prld:+ (prld:exp x 3) (prld:* 3 (prld:exp x 2)) (prld:* 2 x) 4) 0)
+                                        (def ((bar (to-array 36))) (prld:+ (check 5 (int 32)) (alu:get bar 0)))
+                                        (def ((with-constraint (y z) (prld:&#61; x (prld:+ (prld:* y 10) z)))) z))</span>)</span>
+                         <span id='f0c864'>(let ((b2
+                                <span id='f0c863'>(funcall &#39;alu&#46;spec:make-reference
+                                         <span id='f0c860'>&#39;:name</span>
+                                         <span id='f0c862'>(ccl::typed-form &#39;(member :b262645) <span id='f0c861'>&#39;:b262645</span>)</span>)</span>)
+                               (b3
+                                <span id='f0c791'>(funcall &#39;alu&#46;spec:make-reference
+                                         <span id='f0c788'>&#39;:name</span>
+                                         <span id='f0c790'>(ccl::typed-form &#39;(member :b362646) <span id='f0c789'>&#39;:b362646</span>)</span>)</span>))
+                           (progn <span id='f0c859'>(let* ((&#35;:g62647 <span id='f0c792'>(cons nil nil)</span>))
+                                    (progn <span id='f0c824'>(progn <span id='f0c818'>(let* ((emit::*circuit-body* &#35;:g62647))
+                                                    <span id='f0c816'>(let ((&#35;:b262645
+                                                           <span id='f0c815'>(funcall &#39;alu&#46;spec:make-reference
+                                                                    <span id='f0c812'>&#39;:name</span>
+                                                                    <span id='f0c814'>(ccl::typed-form &#39;(member :b262645) <span id='f0c813'>&#39;:b262645</span>)</span>)</span>)
+                                                          (&#35;:b362646
+                                                           <span id='f0c796'>(funcall &#39;alu&#46;spec:make-reference
+                                                                    <span id='f0c793'>&#39;:name</span>
+                                                                    <span id='f0c795'>(ccl::typed-form &#39;(member :b362646) <span id='f0c794'>&#39;:b362646</span>)</span>)</span>))
+                                                      <span id='f0c811'>(unwind-protect
+                                                          <span id='f0c809'>(progn <span id='f0c798'>(funcall &#39;stack:push <span id='f0c797'>&#39;(prld:&#61; x (prld:+ b2 b3))</span>)</span>
+                                                                 <span id='f0c808'>(funcall &#39;prld:&#61;
+                                                                          x
+                                                                          <span id='f0c806'>(unwind-protect
+                                                                              <span id='f0c805'>(progn <span id='f0c801'>(funcall &#39;stack:push
+                                                                                              <span id='f0c800'>&#39;(prld:+ b2 b3)</span>)</span>
+                                                                                     <span id='f0c804'>(funcall &#39;prld:+ b2 b3)</span>)</span>
+                                                                            <span id='f0c799'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                        <span id='f0c810'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                  <span id='f0c823'>(setq &#35;:g62647 <span id='f0c822'>(funcall &#39;remove-if <span id='f0c820'>(function not)</span> &#35;:g62647)</span>)</span>
+                                                  &#35;:g62647)</span>
+                                           <span id='f0c857'>(funcall &#39;emit:instruction
+                                                    <span id='f0c856'>(funcall &#39;alu&#46;spec:make-bind-constraint
+                                                             <span id='f0c854'>&#39;:var</span>
+                                                             <span id='f0c852'>(let* ((&#35;:g62648 <span id='f0c827'>(cons nil nil)</span>)
+                                                                    (&#35;:g62649 &#35;:g62648)
+                                                                    (&#35;:g62651 <span id='f0c826'>(function util:symbol-to-keyword)</span>))
+                                                               <span id='f0c851'>(let* ((&#35;:g62652 <span id='f0c850'>&#39;(&#35;:b262645 &#35;:b362646)</span>))
+                                                                 (progn <span id='f0c849'>(tagbody <span id='f0c835'>(go &#35;:g62654)</span>
+                                                                                 (&#35;:g62653 nil (0)
+                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302002848AED&#62;
+                                                                                  t t)
+                                                                                 <span id='f0c848'>(tagbody <span id='f0c847'>(let* ((&#35;:g62650
+                                                                                                  <span id='f0c846'>(car &#35;:g62652)</span>))
+                                                                                            <span id='f0c844'>(tagbody <span id='f0c843'>(setq &#35;:g62648
+                                                                                                           <span id='f0c842'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g62648
+                                                                                                                                    <span id='f0c840'>(cons <span id='f0c839'>(funcall &#35;:g62651
+                                                                                                                                                   &#35;:g62650)</span>
+                                                                                                                                          nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                 <span id='f0c834'>(setq &#35;:g62652
+                                                                                       <span id='f0c833'>(ccl::&#37;cdr <span id='f0c832'>(ccl::typed-form &#39;list
+                                                                                                   &#35;:g62652)</span>)</span>)</span>
+                                                                                 (&#35;:g62654 nil (0)
+                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302002848AED&#62;
+                                                                                  t nil)
+                                                                                 <span id='f0c837'>(if <span id='f0c836'>(not &#39;:ne &#35;:g62652)</span>
+                                                                                     (go &#35;:g62653)
+                                                                                     nil)</span>)</span>
+                                                                        <span id='f0c830'>(let* () <span id='f0c829'>(ccl::&#37;cdr &#35;:g62649)</span>)</span>))</span>)</span>
+                                                             <span id='f0c855'>&#39;:value</span>
+                                                             &#35;:g62647)</span>)</span>
+                                           alu::*storage-for-deflex-var-void*))</span>
+                                  <span id='f0c787'>(list <span id='f0c549'>(unwind-protect
+                                            <span id='f0c548'>(progn <span id='f0c479'>(funcall &#39;stack:push
+                                                            <span id='f0c478'>&#39;(with-constraint (b2 b3) (prld:&#61; x (prld:+ b2 b3)))</span>)</span>
+                                                   <span id='f0c547'>(let* ((&#35;:g62655 <span id='f0c546'>(cons nil nil)</span>))
+                                                     (progn <span id='f0c512'>(progn <span id='f0c511'>(let* ((emit::*circuit-body* &#35;:g62655))
+                                                                     <span id='f0c509'>(let ((b2
+                                                                            <span id='f0c489'>(funcall &#39;alu&#46;spec:make-reference
+                                                                                     <span id='f0c488'>&#39;:name</span>
+                                                                                     <span id='f0c487'>(ccl::typed-form &#39;(member :b2)
+                                                                                      <span id='f0c486'>&#39;:b2</span>)</span>)</span>)
+                                                                           (b3
+                                                                            <span id='f0c508'>(funcall &#39;alu&#46;spec:make-reference
+                                                                                     <span id='f0c507'>&#39;:name</span>
+                                                                                     <span id='f0c506'>(ccl::typed-form &#39;(member :b3)
+                                                                                      <span id='f0c505'>&#39;:b3</span>)</span>)</span>))
+                                                                       <span id='f0c504'>(unwind-protect
+                                                                           <span id='f0c503'>(progn <span id='f0c502'>(funcall &#39;stack:push
+                                                                                           <span id='f0c501'>&#39;(prld:&#61; x (prld:+ b2 b3))</span>)</span>
+                                                                                  <span id='f0c500'>(funcall &#39;prld:&#61;
+                                                                                           x
+                                                                                           <span id='f0c498'>(unwind-protect
+                                                                                               <span id='f0c496'>(progn <span id='f0c492'>(funcall &#39;stack:push
+                                                                                                               <span id='f0c491'>&#39;(prld:+ b2
+                                                                                                                        b3)</span>)</span>
+                                                                                                      <span id='f0c495'>(funcall &#39;prld:+
+                                                                                                               b2
+                                                                                                               b3)</span>)</span>
+                                                                                             <span id='f0c497'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                         <span id='f0c490'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                   <span id='f0c484'>(setq &#35;:g62655
+                                                                         <span id='f0c483'>(funcall &#39;remove-if <span id='f0c482'>(function not)</span> &#35;:g62655)</span>)</span>
+                                                                   &#35;:g62655)</span>
+                                                            <span id='f0c545'>(funcall &#39;emit:instruction
+                                                                     <span id='f0c544'>(funcall &#39;alu&#46;spec:make-bind-constraint
+                                                                              <span id='f0c542'>&#39;:var</span>
+                                                                              <span id='f0c541'>(let* ((&#35;:g62656 <span id='f0c540'>(cons nil nil)</span>)
+                                                                                     (&#35;:g62657 &#35;:g62656)
+                                                                                     (&#35;:g62659
+                                                                                      <span id='f0c538'>(function util:symbol-to-keyword)</span>))
+                                                                                <span id='f0c537'>(let* ((&#35;:g62660 <span id='f0c533'>&#39;(b2 b3)</span>))
+                                                                                  (progn <span id='f0c532'>(tagbody <span id='f0c531'>(go &#35;:g62662)</span>
+                                                                                                  (&#35;:g62661 nil (0)
+                                                                                                   &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200284085D&#62;
+                                                                                                   t t)
+                                                                                                  <span id='f0c526'>(tagbody <span id='f0c525'>(let* ((&#35;:g62658
+                                                                                                                   <span id='f0c524'>(car &#35;:g62660)</span>))
+                                                                                                             <span id='f0c522'>(tagbody <span id='f0c521'>(setq &#35;:g62656
+                                                                                                                            <span id='f0c520'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g62656
+                                                                                                                                                     <span id='f0c519'>(cons <span id='f0c518'>(funcall &#35;:g62659
+                                                                                                                                                                    &#35;:g62658)</span>
+                                                                                                                                                           nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                                  <span id='f0c530'>(setq &#35;:g62660
+                                                                                                        <span id='f0c529'>(ccl::&#37;cdr <span id='f0c528'>(ccl::typed-form
+                                                                                                                    &#39;list
+                                                                                                                    &#35;:g62660)</span>)</span>)</span>
+                                                                                                  (&#35;:g62662 nil (0)
+                                                                                                   &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200284085D&#62;
+                                                                                                   t nil)
+                                                                                                  <span id='f0c515'>(if <span id='f0c514'>(not &#39;:ne
+                                                                                                           &#35;:g62660)</span>
+                                                                                                      (go &#35;:g62661)
+                                                                                                      nil)</span>)</span>
+                                                                                         <span id='f0c536'>(let* ()
+                                                                                           <span id='f0c535'>(ccl::&#37;cdr &#35;:g62657)</span>)</span>))</span>)</span>
+                                                                              <span id='f0c543'>&#39;:value</span>
+                                                                              &#35;:g62655)</span>)</span>
+                                                            alu::*storage-for-deflex-var-void*))</span>)</span>
+                                          <span id='f0c477'>(funcall &#39;stack:pop)</span>)</span>
+                                        <span id='f0c786'>(unwind-protect
+                                            <span id='f0c784'>(progn <span id='f0c783'>(funcall &#39;stack:push <span id='f0c782'>&#39;(alu:array 512 (int 1))</span>)</span>
+                                                   <span id='f0c781'>(funcall &#39;alu::ensure-call-by-value
+                                                            <span id='f0c780'>(funcall &#39;alu&#46;spec:make-array-allocate
+                                                                     <span id='f0c776'>&#39;:typ</span>
+                                                                     <span id='f0c779'>(funcall &#39;alu&#46;spec:to-type-reference-format
+                                                                              <span id='f0c778'>&#39;(int 1)</span>)</span>
+                                                                     <span id='f0c777'>&#39;:size</span>
+                                                                     512)</span>)</span>)</span>
+                                          <span id='f0c785'>(funcall &#39;stack:pop)</span>)</span>
+                                        <span id='f0c635'>(unwind-protect
+                                            <span id='f0c633'>(progn <span id='f0c632'>(funcall &#39;stack:push
+                                                            <span id='f0c631'>&#39;(def ((bit-array (aluser::reshape x 512 :type (int 1))))
+                                                                  (alu:get bit-array x))</span>)</span>
+                                                   <span id='f0c630'>(let* ((bit-array
+                                                           <span id='f0c621'>(funcall &#39;alu&#46;spec:make-reference
+                                                                    <span id='f0c618'>&#39;:name</span>
+                                                                    <span id='f0c620'>(ccl::typed-form &#39;(member :bit-array62663)
+                                                                     <span id='f0c619'>&#39;:bit-array62663</span>)</span>)</span>))
+                                                     (progn <span id='f0c617'>(funcall &#39;emit:instruction
+                                                                     <span id='f0c616'>(funcall &#39;alu&#46;spec:make-let
+                                                                              <span id='f0c614'>&#39;:var</span>
+                                                                              <span id='f0c596'>(funcall &#39;util:symbol-to-keyword
+                                                                                       <span id='f0c595'>&#39;&#35;:bit-array62663</span>)</span>
+                                                                              <span id='f0c615'>&#39;:val</span>
+                                                                              <span id='f0c613'>(unwind-protect
+                                                                                  <span id='f0c612'>(progn <span id='f0c599'>(funcall &#39;stack:push
+                                                                                                  <span id='f0c598'>&#39;(aluser::reshape x
+                                                                                                                    512
+                                                                                                                    :type
+                                                                                                                    (int
+                                                                                                                     1))</span>)</span>
+                                                                                         <span id='f0c611'>(unwind-protect
+                                                                                             <span id='f0c610'>(progn <span id='f0c602'>(funcall &#39;stack:push
+                                                                                                             <span id='f0c601'>&#39;(alu:coerce x
+                                                                                                                          (alu:array 512
+                                                                                                                                     (int
+                                                                                                                                      1)))</span>)</span>
+                                                                                                    <span id='f0c609'>(funcall &#39;alu::ensure-call-by-value
+                                                                                                             <span id='f0c608'>(funcall &#39;alu&#46;spec:make-type-coerce
+                                                                                                                      <span id='f0c605'>&#39;:typ</span>
+                                                                                                                      <span id='f0c604'>(funcall &#39;alu&#46;spec:to-type-reference-format
+                                                                                                                               <span id='f0c603'>&#39;(alu:array 512
+                                                                                                                                           (int
+                                                                                                                                            1))</span>)</span>
+                                                                                                                      <span id='f0c607'>&#39;:value</span>
+                                                                                                                      x)</span>)</span>)</span>
+                                                                                           <span id='f0c600'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                <span id='f0c597'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                            <span id='f0c629'>(unwind-protect
+                                                                <span id='f0c627'>(progn <span id='f0c623'>(funcall &#39;stack:push <span id='f0c622'>&#39;(alu:get bit-array x)</span>)</span>
+                                                                       <span id='f0c626'>(funcall &#39;alu:get bit-array x)</span>)</span>
+                                                              <span id='f0c628'>(funcall &#39;stack:pop)</span>)</span>))</span>)</span>
+                                          <span id='f0c634'>(funcall &#39;stack:pop)</span>)</span>
+                                        <span id='f0c594'>(unwind-protect
+                                            <span id='f0c592'>(progn <span id='f0c591'>(funcall &#39;stack:push
+                                                            <span id='f0c590'>&#39;(prld:&#61; (prld:+ (prld:exp x 3)
+                                                                             (prld:* 3 (prld:exp x 2))
+                                                                             (prld:* 2 x)
+                                                                             4)
+                                                                     0)</span>)</span>
+                                                   <span id='f0c589'>(funcall &#39;prld:&#61;
+                                                            <span id='f0c588'>(unwind-protect
+                                                                <span id='f0c586'>(progn <span id='f0c552'>(funcall &#39;stack:push
+                                                                                <span id='f0c551'>&#39;(prld:+ (prld:exp x 3)
+                                                                                         (prld:* 3 (prld:exp x 2))
+                                                                                         (prld:* 2 x)
+                                                                                         4)</span>)</span>
+                                                                       <span id='f0c585'>(funcall &#39;prld:+
+                                                                                <span id='f0c561'>(unwind-protect
+                                                                                    <span id='f0c560'>(progn <span id='f0c559'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c558'>&#39;(prld:exp x 3)</span>)</span>
+                                                                                           <span id='f0c557'>(funcall &#39;prld:exp x 3)</span>)</span>
+                                                                                  <span id='f0c554'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                <span id='f0c584'>(unwind-protect
+                                                                                    <span id='f0c583'>(progn <span id='f0c572'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c571'>&#39;(prld:* 3
+                                                                                                             (prld:exp x
+                                                                                                                       2))</span>)</span>
+                                                                                           <span id='f0c582'>(funcall &#39;prld:*
+                                                                                                    3
+                                                                                                    <span id='f0c581'>(unwind-protect
+                                                                                                        <span id='f0c580'>(progn <span id='f0c576'>(funcall &#39;stack:push
+                                                                                                                        <span id='f0c575'>&#39;(prld:exp x
+                                                                                                                                   2)</span>)</span>
+                                                                                                               <span id='f0c579'>(funcall &#39;prld:exp
+                                                                                                                        x
+                                                                                                                        2)</span>)</span>
+                                                                                                      <span id='f0c574'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                  <span id='f0c570'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                <span id='f0c569'>(unwind-protect
+                                                                                    <span id='f0c567'>(progn <span id='f0c563'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c562'>&#39;(prld:* 2 x)</span>)</span>
+                                                                                           <span id='f0c566'>(funcall &#39;prld:* 2 x)</span>)</span>
+                                                                                  <span id='f0c568'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                4)</span>)</span>
+                                                              <span id='f0c587'>(funcall &#39;stack:pop)</span>)</span>
+                                                            0)</span>)</span>
+                                          <span id='f0c593'>(funcall &#39;stack:pop)</span>)</span>
+                                        <span id='f0c684'>(unwind-protect
+                                            <span id='f0c682'>(progn <span id='f0c637'>(funcall &#39;stack:push
+                                                            <span id='f0c636'>&#39;(def ((bar (to-array 36)))
+                                                                  (prld:+ (check 5 (int 32)) (alu:get bar 0)))</span>)</span>
+                                                   <span id='f0c681'>(let* ((bar
+                                                           <span id='f0c667'>(funcall &#39;alu&#46;spec:make-reference
+                                                                    <span id='f0c664'>&#39;:name</span>
+                                                                    <span id='f0c666'>(ccl::typed-form &#39;(member :bar62664) <span id='f0c665'>&#39;:bar62664</span>)</span>)</span>))
+                                                     (progn <span id='f0c680'>(funcall &#39;emit:instruction
+                                                                     <span id='f0c679'>(funcall &#39;alu&#46;spec:make-let
+                                                                              <span id='f0c678'>&#39;:var</span>
+                                                                              <span id='f0c670'>(funcall &#39;util:symbol-to-keyword
+                                                                                       <span id='f0c669'>&#39;&#35;:bar62664</span>)</span>
+                                                                              <span id='f0c668'>&#39;:val</span>
+                                                                              <span id='f0c677'>(unwind-protect
+                                                                                  <span id='f0c675'>(progn <span id='f0c674'>(funcall &#39;stack:push
+                                                                                                  <span id='f0c673'>&#39;(to-array 36)</span>)</span>
+                                                                                         <span id='f0c672'>(funcall &#39;to-array 36)</span>)</span>
+                                                                                <span id='f0c676'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                            <span id='f0c663'>(unwind-protect
+                                                                <span id='f0c662'>(progn <span id='f0c661'>(funcall &#39;stack:push
+                                                                                <span id='f0c660'>&#39;(prld:+ (check 5 (int 32))
+                                                                                         (alu:get bar 0))</span>)</span>
+                                                                       <span id='f0c659'>(funcall &#39;prld:+
+                                                                                <span id='f0c650'>(unwind-protect
+                                                                                    <span id='f0c648'>(progn <span id='f0c647'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c646'>&#39;(check 5 (int 32))</span>)</span>
+                                                                                           <span id='f0c645'>(funcall &#39;alu::ensure-call-by-value
+                                                                                                    <span id='f0c644'>(funcall &#39;alu&#46;spec:make-type-check
+                                                                                                             <span id='f0c639'>&#39;:typ</span>
+                                                                                                             <span id='f0c643'>(funcall &#39;alu&#46;spec:to-type-reference-format
+                                                                                                                      <span id='f0c642'>&#39;(int
+                                                                                                                        32)</span>)</span>
+                                                                                                             <span id='f0c640'>&#39;:value</span>
+                                                                                                             5)</span>)</span>)</span>
+                                                                                  <span id='f0c649'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                <span id='f0c658'>(unwind-protect
+                                                                                    <span id='f0c657'>(progn <span id='f0c656'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c655'>&#39;(alu:get bar 0)</span>)</span>
+                                                                                           <span id='f0c654'>(funcall &#39;alu:get bar 0)</span>)</span>
+                                                                                  <span id='f0c651'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                              <span id='f0c638'>(funcall &#39;stack:pop)</span>)</span>))</span>)</span>
+                                          <span id='f0c683'>(funcall &#39;stack:pop)</span>)</span>
+                                        <span id='f0c774'>(unwind-protect
+                                            <span id='f0c773'>(progn <span id='f0c772'>(funcall &#39;stack:push
+                                                            <span id='f0c771'>&#39;(def ((with-constraint
+                                                                     (y z)
+                                                                     (prld:&#61; x (prld:+ (prld:* y 10) z))))
+                                                                  z)</span>)</span>
+                                                   <span id='f0c770'>(let ((y
+                                                          <span id='f0c693'>(funcall &#39;alu&#46;spec:make-reference
+                                                                   <span id='f0c690'>&#39;:name</span>
+                                                                   <span id='f0c692'>(ccl::typed-form &#39;(member :y62665) <span id='f0c691'>&#39;:y62665</span>)</span>)</span>)
+                                                         (z
+                                                          <span id='f0c689'>(funcall &#39;alu&#46;spec:make-reference
+                                                                   <span id='f0c686'>&#39;:name</span>
+                                                                   <span id='f0c688'>(ccl::typed-form &#39;(member :z62666) <span id='f0c687'>&#39;:z62666</span>)</span>)</span>))
+                                                     (progn <span id='f0c769'>(let* ((&#35;:g62667 <span id='f0c696'>(cons nil nil)</span>))
+                                                              (progn <span id='f0c735'>(progn <span id='f0c734'>(let* ((emit::*circuit-body* &#35;:g62667))
+                                                                              <span id='f0c732'>(let ((&#35;:y62665
+                                                                                     <span id='f0c731'>(funcall &#39;alu&#46;spec:make-reference
+                                                                                              <span id='f0c730'>&#39;:name</span>
+                                                                                              <span id='f0c729'>(ccl::typed-form
+                                                                                               &#39;(member :y62665)
+                                                                                               <span id='f0c728'>&#39;:y62665</span>)</span>)</span>)
+                                                                                    (&#35;:z62666
+                                                                                     <span id='f0c705'>(funcall &#39;alu&#46;spec:make-reference
+                                                                                              <span id='f0c702'>&#39;:name</span>
+                                                                                              <span id='f0c704'>(ccl::typed-form
+                                                                                               &#39;(member :z62666)
+                                                                                               <span id='f0c703'>&#39;:z62666</span>)</span>)</span>))
+                                                                                <span id='f0c727'>(unwind-protect
+                                                                                    <span id='f0c726'>(progn <span id='f0c708'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c707'>&#39;(prld:&#61; x
+                                                                                                             (prld:+ (prld:* y
+                                                                                                                             10)
+                                                                                                                     z))</span>)</span>
+                                                                                           <span id='f0c725'>(funcall &#39;prld:&#61;
+                                                                                                    x
+                                                                                                    <span id='f0c724'>(unwind-protect
+                                                                                                        <span id='f0c722'>(progn <span id='f0c711'>(funcall &#39;stack:push
+                                                                                                                        <span id='f0c710'>&#39;(prld:+ (prld:* y
+                                                                                                                                         10)
+                                                                                                                                 z)</span>)</span>
+                                                                                                               <span id='f0c721'>(funcall &#39;prld:+
+                                                                                                                        <span id='f0c719'>(unwind-protect
+                                                                                                                            <span id='f0c718'>(progn <span id='f0c717'>(funcall &#39;stack:push
+                                                                                                                                            <span id='f0c716'>&#39;(prld:* y
+                                                                                                                                                     10)</span>)</span>
+                                                                                                                                   <span id='f0c715'>(funcall &#39;prld:*
+                                                                                                                                            y
+                                                                                                                                            10)</span>)</span>
+                                                                                                                          <span id='f0c712'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                        z)</span>)</span>
+                                                                                                      <span id='f0c723'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                  <span id='f0c706'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                            <span id='f0c700'>(setq &#35;:g62667
+                                                                                  <span id='f0c699'>(funcall &#39;remove-if
+                                                                                           <span id='f0c697'>(function not)</span>
+                                                                                           &#35;:g62667)</span>)</span>
+                                                                            &#35;:g62667)</span>
+                                                                     <span id='f0c768'>(funcall &#39;emit:instruction
+                                                                              <span id='f0c767'>(funcall &#39;alu&#46;spec:make-bind-constraint
+                                                                                       <span id='f0c765'>&#39;:var</span>
+                                                                                       <span id='f0c763'>(let* ((&#35;:g62668 <span id='f0c737'>(cons nil nil)</span>)
+                                                                                              (&#35;:g62669 &#35;:g62668)
+                                                                                              (&#35;:g62671
+                                                                                               <span id='f0c736'>(function util:symbol-to-keyword)</span>))
+                                                                                         <span id='f0c762'>(let* ((&#35;:g62672
+                                                                                                 <span id='f0c739'>&#39;(&#35;:y62665 &#35;:z62666)</span>))
+                                                                                           (progn <span id='f0c761'>(tagbody <span id='f0c754'>(go &#35;:g62674)</span>
+                                                                                                           (&#35;:g62673 nil
+                                                                                                            (0)
+                                                                                                            &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200286BC2D&#62;
+                                                                                                            t t)
+                                                                                                           <span id='f0c753'>(tagbody <span id='f0c752'>(let* ((&#35;:g62670
+                                                                                                                            <span id='f0c751'>(car &#35;:g62672)</span>))
+                                                                                                                      <span id='f0c749'>(tagbody <span id='f0c748'>(setq &#35;:g62668
+                                                                                                                                     <span id='f0c747'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g62668
+                                                                                                                                                              <span id='f0c746'>(cons <span id='f0c745'>(funcall &#35;:g62671
+                                                                                                                                                                             &#35;:g62670)</span>
+                                                                                                                                                                    nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                                           <span id='f0c760'>(setq &#35;:g62672
+                                                                                                                 <span id='f0c759'>(ccl::&#37;cdr <span id='f0c758'>(ccl::typed-form
+                                                                                                                             &#39;list
+                                                                                                                             &#35;:g62672)</span>)</span>)</span>
+                                                                                                           (&#35;:g62674 nil
+                                                                                                            (0)
+                                                                                                            &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200275C48D&#62;
+                                                                                                            t nil)
+                                                                                                           <span id='f0c756'>(if <span id='f0c755'>(not &#39;:ne
+                                                                                                                    &#35;:g62672)</span>
+                                                                                                               (go &#35;:g62673)
+                                                                                                               nil)</span>)</span>
+                                                                                                  <span id='f0c742'>(let* ()
+                                                                                                    <span id='f0c741'>(ccl::&#37;cdr &#35;:g62669)</span>)</span>))</span>)</span>
+                                                                                       <span id='f0c766'>&#39;:value</span>
+                                                                                       &#35;:g62667)</span>)</span>
+                                                                     alu::*storage-for-deflex-var-void*))</span>
+                                                            z))</span>)</span>
+                                          <span id='f0c685'>(funcall &#39;stack:pop)</span>)</span>)</span>))</span>)</span>
+                <span id='f0c476'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c475'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>68</span> 
+<span class='line'>69</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>70</span> &#59;&#59; Doing Examples from the wiki
+<span class='line'>71</span> &#59;&#59; to see if our code walks properly
+<span class='line'>72</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>73</span> 
+<span id='f0s11'><span class='line'>74</span> (step&#46;def:defun prince-of-clarity (w)
+<span class='line'>75</span>   <span id='f0s12'>&#34;Take a cons of two lists and make a list of conses&#46;
+<span class='line'>76</span>    Think of this function as being like a zipper&#46;&#34;</span>
+<span class='line'>77</span>   (do ((y (car w) (cdr y))
+<span class='line'>78</span>        (z (cdr w) (cdr z))
+<span class='line'>79</span>        (x &#39;() (cons (cons (car y) (car z)) x)))
+<span class='line'>80</span>       ((null y) x)
+<span class='line'>81</span>     (when (null z)
+<span class='line'>82</span>       (cerror <span id='f0s13'>&#34;Will self-pair extraneous items&#34;</span>
+<span class='line'>83</span>               <span id='f0s14'>&#34;Mismatch - gleep&#33;  &#126;S&#34;</span> y)
+<span class='line'>84</span>       (setq z y))))</span>
+</code></div>
+<a href=javascript:swap('f0t11')><span class='toggle' id='pf0t11'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(11)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t11'><code><span id='f0c1136'> (lambda (w)
+   <span id='f0c1135'>(unwind-protect
+       <span id='f0c1133'>(progn <span id='f0c1132'>(funcall &#39;stack::push-section <span id='f0c1131'>(ccl::typed-form &#39;(member prince-of-clarity) <span id='f0c1130'>&#39;prince-of-clarity</span>)</span>)</span>
+              <span id='f0c935'>&#39;&#34;Take a cons of two lists and make a list of conses&#46;
+    Think of this function as being like a zipper&#46;&#34;</span>
+              <span id='f0c1129'>(unwind-protect
+                  <span id='f0c1128'>(progn <span id='f0c1127'>(funcall &#39;stack:push
+                                  <span id='f0c1126'>&#39;(do ((y (car w) (cdr y))
+                                        (z (cdr w) (cdr z))
+                                        (x &#39;nil (cons (cons (car y) (car z)) x)))
+                                       ((null y) x)
+                                     (when (null z)
+                                       (cerror &#34;Will self-pair extraneous items&#34; &#34;Mismatch - gleep&#33;  &#126;S&#34; y)
+                                       (setq z y)))</span>)</span>
+                         <span id='f0c1125'>(unwind-protect
+                             <span id='f0c1123'>(progn <span id='f0c938'>(funcall &#39;stack:push
+                                             <span id='f0c937'>&#39;(block nil
+                                                (let ((y (car w)) (z (cdr w)) (x &#39;nil))
+                                                  (tagbody (go &#35;:g62679)
+                                                   &#35;:g62678 (tagbody (when (null z)
+                                                                       (cerror &#34;Will self-pair extraneous items&#34;
+                                                                               &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                               y)
+                                                                       (setq z y)))
+                                                           (psetq y (cdr y) z (cdr z) x (cons (cons (car y) (car z)) x))
+                                                   &#35;:g62679 (unless (null y) (go &#35;:g62678)))
+                                                  x))</span>)</span>
+                                    <span id='f0c1122'>(unwind-protect
+                                        <span id='f0c1120'>(progn <span id='f0c940'>(funcall &#39;stack:push
+                                                        <span id='f0c939'>&#39;(let ((y (car w)) (z (cdr w)) (x &#39;nil))
+                                                           (tagbody (go &#35;:g62679)
+                                                            &#35;:g62678 (tagbody (when (null z)
+                                                                                (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                        &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                        y)
+                                                                                (setq z y)))
+                                                                    (psetq y (cdr y)
+                                                                           z (cdr z)
+                                                                           x (cons (cons (car y) (car z)) x))
+                                                            &#35;:g62679 (unless (null y) (go &#35;:g62678)))
+                                                           x)</span>)</span>
+                                               <span id='f0c1119'>(let ((y
+                                                      <span id='f0c1105'>(unwind-protect
+                                                          <span id='f0c1103'>(progn <span id='f0c1102'>(funcall &#39;stack:push <span id='f0c1101'>&#39;(car w)</span>)</span> <span id='f0c1100'>(car w)</span>)</span>
+                                                        <span id='f0c1104'>(funcall &#39;stack:pop)</span>)</span>)
+                                                     (z
+                                                      <span id='f0c1118'>(unwind-protect
+                                                          <span id='f0c1116'>(progn <span id='f0c1115'>(funcall &#39;stack:push <span id='f0c1114'>&#39;(cdr w)</span>)</span> <span id='f0c1113'>(cdr w)</span>)</span>
+                                                        <span id='f0c1117'>(funcall &#39;stack:pop)</span>)</span>)
+                                                     (x
+                                                      <span id='f0c1110'>(unwind-protect
+                                                          <span id='f0c1109'>(progn <span id='f0c1108'>(funcall &#39;stack:push <span id='f0c1107'>&#39;&#39;nil</span>)</span> nil)</span>
+                                                        <span id='f0c1106'>(funcall &#39;stack:pop)</span>)</span>))
+                                                 (progn <span id='f0c1098'>(unwind-protect
+                                                            <span id='f0c1097'>(progn <span id='f0c943'>(funcall &#39;stack:push
+                                                                            <span id='f0c942'>&#39;(tagbody (go &#35;:g62679)
+                                                                              &#35;:g62678 (tagbody (when (null z)
+                                                                                                  (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                          &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                          y)
+                                                                                                  (setq z y)))
+                                                                                      (psetq y (cdr y)
+                                                                                             z (cdr z)
+                                                                                             x
+                                                                                             (cons (cons (car y)
+                                                                                                         (car z))
+                                                                                                   x))
+                                                                              &#35;:g62679 (unless (null y) (go &#35;:g62678)))</span>)</span>
+                                                                   <span id='f0c1096'>(tagbody <span id='f0c1061'>(unwind-protect
+                                                                                <span id='f0c1060'>(progn <span id='f0c1058'>(funcall &#39;stack:push
+                                                                                                <span id='f0c1057'>&#39;(go &#35;:g62679)</span>)</span>
+                                                                                       <span id='f0c1059'>(go &#35;:g62679)</span>)</span>
+                                                                              <span id='f0c1056'>(funcall &#39;stack:pop)</span>)</span>
+                                                                            (&#35;:g62678 nil (0)
+                                                                             &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200296CCCD&#62;
+                                                                             t t)
+                                                                            <span id='f0c1055'>(unwind-protect
+                                                                                <span id='f0c1054'>(progn <span id='f0c1012'>(funcall &#39;stack:push
+                                                                                                <span id='f0c1011'>&#39;(tagbody (when (null z)
+                                                                                                            (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                    &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                    y)
+                                                                                                            (setq z
+                                                                                                                  y)))</span>)</span>
+                                                                                       <span id='f0c1053'>(tagbody <span id='f0c1052'>(unwind-protect
+                                                                                                    <span id='f0c1051'>(progn <span id='f0c1050'>(funcall &#39;stack:push
+                                                                                                                    <span id='f0c1049'>&#39;(when (null z)
+                                                                                                                       (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                               &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                               y)
+                                                                                                                       (setq z
+                                                                                                                             y))</span>)</span>
+                                                                                                           <span id='f0c1048'>(unwind-protect
+                                                                                                               <span id='f0c1047'>(progn <span id='f0c1046'>(funcall &#39;stack:push
+                                                                                                                               <span id='f0c1045'>&#39;(if (null z)
+                                                                                                                                    (progn (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                                                   &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                                                   y)
+                                                                                                                                           (setq z
+                                                                                                                                                 y)))</span>)</span>
+                                                                                                                      <span id='f0c1044'>(if <span id='f0c1043'>(unwind-protect
+                                                                                                                              <span id='f0c1042'>(progn <span id='f0c1041'>(funcall &#39;stack:push
+                                                                                                                                              <span id='f0c1040'>&#39;(null z)</span>)</span>
+                                                                                                                                     <span id='f0c1039'>(not z)</span>)</span>
+                                                                                                                            <span id='f0c1038'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                          <span id='f0c1037'>(unwind-protect
+                                                                                                                              <span id='f0c1036'>(progn <span id='f0c1035'>(funcall &#39;stack:push
+                                                                                                                                              <span id='f0c1034'>&#39;(progn (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                                                              &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                                                              y)
+                                                                                                                                                      (setq z
+                                                                                                                                                            y))</span>)</span>
+                                                                                                                                     <span id='f0c1033'>(progn <span id='f0c1032'>(unwind-protect
+                                                                                                                                                <span id='f0c1030'>(progn <span id='f0c1029'>(funcall &#39;stack:push
+                                                                                                                                                                <span id='f0c1028'>&#39;(cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                                                                         &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                                                                         y)</span>)</span>
+                                                                                                                                                       <span id='f0c1027'>(values (funcall &#39;cerror
+                                                                                                                                                                        <span id='f0c1026'>(ccl::typed-form
+                                                                                                                                                                         &#39;(member &#34;Will self-pair extraneous items&#34;)
+                                                                                                                                                                         <span id='f0c1025'>&#39;&#34;Will self-pair extraneous items&#34;</span>)</span>
+                                                                                                                                                                        <span id='f0c1023'>&#39;&#34;Mismatch - gleep&#33;  &#126;S&#34;</span>
+                                                                                                                                                                        y))</span>)</span>
+                                                                                                                                              <span id='f0c1031'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                            <span id='f0c1022'>(unwind-protect
+                                                                                                                                                <span id='f0c1020'>(progn <span id='f0c1019'>(funcall &#39;stack:push
+                                                                                                                                                                <span id='f0c1018'>&#39;(setq z
+                                                                                                                                                                       y)</span>)</span>
+                                                                                                                                                       <span id='f0c1017'>(setq z
+                                                                                                                                                             y)</span>)</span>
+                                                                                                                                              <span id='f0c1021'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                                            <span id='f0c1015'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                          nil)</span>)</span>
+                                                                                                             <span id='f0c1014'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                  <span id='f0c1013'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                              <span id='f0c1010'>(funcall &#39;stack:pop)</span>)</span>
+                                                                            <span id='f0c1009'>(unwind-protect
+                                                                                <span id='f0c1007'>(progn <span id='f0c945'>(funcall &#39;stack:push
+                                                                                                <span id='f0c944'>&#39;(psetq y (cdr y)
+                                                                                                        z (cdr z)
+                                                                                                        x
+                                                                                                        (cons (cons (car y)
+                                                                                                                    (car z))
+                                                                                                              x))</span>)</span>
+                                                                                       <span id='f0c1006'>(unwind-protect
+                                                                                           <span id='f0c1004'>(progn <span id='f0c947'>(funcall &#39;stack:push
+                                                                                                           <span id='f0c946'>&#39;(progn (let* ((&#35;:g62680
+                                                                                                                           (cdr y))
+                                                                                                                          (&#35;:g62681
+                                                                                                                           (cdr z)))
+                                                                                                                     (setq x
+                                                                                                                           (cons (cons (car y)
+                                                                                                                                       (car z))
+                                                                                                                                 x)
+                                                                                                                           y
+                                                                                                                           &#35;:g62680
+                                                                                                                           z
+                                                                                                                           &#35;:g62681))
+                                                                                                                   nil)</span>)</span>
+                                                                                                  <span id='f0c1003'>(progn <span id='f0c1002'>(unwind-protect
+                                                                                                             <span id='f0c1000'>(progn <span id='f0c949'>(funcall &#39;stack:push
+                                                                                                                             <span id='f0c948'>&#39;(let* ((&#35;:g62680
+                                                                                                                                      (cdr y))
+                                                                                                                                     (&#35;:g62681
+                                                                                                                                      (cdr z)))
+                                                                                                                                (setq x
+                                                                                                                                      (cons (cons (car y)
+                                                                                                                                                  (car z))
+                                                                                                                                            x)
+                                                                                                                                      y
+                                                                                                                                      &#35;:g62680
+                                                                                                                                      z
+                                                                                                                                      &#35;:g62681))</span>)</span>
+                                                                                                                    <span id='f0c999'>(let* ((&#35;:g62680
+                                                                                                                            <span id='f0c963'>(unwind-protect
+                                                                                                                                <span id='f0c961'>(progn <span id='f0c958'>(funcall &#39;stack:push
+                                                                                                                                                <span id='f0c957'>&#39;(cdr y)</span>)</span>
+                                                                                                                                       <span id='f0c960'>(cdr y)</span>)</span>
+                                                                                                                              <span id='f0c962'>(funcall &#39;stack:pop)</span>)</span>)
+                                                                                                                           (&#35;:g62681
+                                                                                                                            <span id='f0c956'>(unwind-protect
+                                                                                                                                <span id='f0c954'>(progn <span id='f0c953'>(funcall &#39;stack:push
+                                                                                                                                                <span id='f0c952'>&#39;(cdr z)</span>)</span>
+                                                                                                                                       <span id='f0c951'>(cdr z)</span>)</span>
+                                                                                                                              <span id='f0c955'>(funcall &#39;stack:pop)</span>)</span>))
+                                                                                                                      <span id='f0c998'>(unwind-protect
+                                                                                                                          <span id='f0c996'>(progn <span id='f0c995'>(funcall &#39;stack:push
+                                                                                                                                          <span id='f0c994'>&#39;(setq x
+                                                                                                                                                 (cons (cons (car y)
+                                                                                                                                                             (car z))
+                                                                                                                                                       x)
+                                                                                                                                                 y
+                                                                                                                                                 &#35;:g62680
+                                                                                                                                                 z
+                                                                                                                                                 &#35;:g62681)</span>)</span>
+                                                                                                                                 <span id='f0c993'>(progn (setq x
+                                                                                                                                              <span id='f0c990'>(unwind-protect
+                                                                                                                                                  <span id='f0c988'>(progn <span id='f0c965'>(funcall &#39;stack:push
+                                                                                                                                                                  <span id='f0c964'>&#39;(cons (cons (car y)
+                                                                                                                                                                               (car z))
+                                                                                                                                                                         x)</span>)</span>
+                                                                                                                                                         <span id='f0c987'>(cons <span id='f0c985'>(unwind-protect
+                                                                                                                                                                   <span id='f0c984'>(progn <span id='f0c968'>(funcall &#39;stack:push
+                                                                                                                                                                                   <span id='f0c967'>&#39;(cons (car y)
+                                                                                                                                                                                          (car z))</span>)</span>
+                                                                                                                                                                          <span id='f0c983'>(cons <span id='f0c975'>(unwind-protect
+                                                                                                                                                                                    <span id='f0c973'>(progn <span id='f0c970'>(funcall &#39;stack:push
+                                                                                                                                                                                                    <span id='f0c969'>&#39;(car y)</span>)</span>
+                                                                                                                                                                                           <span id='f0c972'>(car y)</span>)</span>
+                                                                                                                                                                                  <span id='f0c974'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                                                                <span id='f0c982'>(unwind-protect
+                                                                                                                                                                                    <span id='f0c981'>(progn <span id='f0c978'>(funcall &#39;stack:push
+                                                                                                                                                                                                    <span id='f0c977'>&#39;(car z)</span>)</span>
+                                                                                                                                                                                           <span id='f0c980'>(car z)</span>)</span>
+                                                                                                                                                                                  <span id='f0c976'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                                                                                 <span id='f0c966'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                                               x)</span>)</span>
+                                                                                                                                                <span id='f0c989'>(funcall &#39;stack:pop)</span>)</span>)
+                                                                                                                                        (setq y
+                                                                                                                                              &#35;:g62680)
+                                                                                                                                        (setq z
+                                                                                                                                              &#35;:g62681))</span>)</span>
+                                                                                                                        <span id='f0c997'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                           <span id='f0c1001'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                         nil)</span>)</span>
+                                                                                         <span id='f0c1005'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                              <span id='f0c1008'>(funcall &#39;stack:pop)</span>)</span>
+                                                                            (&#35;:g62679 nil (0)
+                                                                             &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200296CCCD&#62;
+                                                                             t nil)
+                                                                            <span id='f0c1095'>(unwind-protect
+                                                                                <span id='f0c1094'>(progn <span id='f0c1064'>(funcall &#39;stack:push
+                                                                                                <span id='f0c1063'>&#39;(unless (null y)
+                                                                                                   (go &#35;:g62678))</span>)</span>
+                                                                                       <span id='f0c1093'>(unwind-protect
+                                                                                           <span id='f0c1091'>(progn <span id='f0c1066'>(funcall &#39;stack:push
+                                                                                                           <span id='f0c1065'>&#39;(if (not (null y))
+                                                                                                                (progn (go &#35;:g62678)))</span>)</span>
+                                                                                                  <span id='f0c1090'>(if <span id='f0c1089'>(unwind-protect
+                                                                                                          <span id='f0c1088'>(progn <span id='f0c1080'>(funcall &#39;stack:push
+                                                                                                                          <span id='f0c1079'>&#39;(not (null y))</span>)</span>
+                                                                                                                 <span id='f0c1087'>(not <span id='f0c1086'>(unwind-protect
+                                                                                                                          <span id='f0c1085'>(progn <span id='f0c1084'>(funcall &#39;stack:push
+                                                                                                                                          <span id='f0c1083'>&#39;(null y)</span>)</span>
+                                                                                                                                 <span id='f0c1082'>(not y)</span>)</span>
+                                                                                                                        <span id='f0c1081'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                        <span id='f0c1078'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                      <span id='f0c1077'>(unwind-protect
+                                                                                                          <span id='f0c1075'>(progn <span id='f0c1068'>(funcall &#39;stack:push
+                                                                                                                          <span id='f0c1067'>&#39;(progn (go &#35;:g62678))</span>)</span>
+                                                                                                                 <span id='f0c1074'>(unwind-protect
+                                                                                                                     <span id='f0c1072'>(progn <span id='f0c1070'>(funcall &#39;stack:push
+                                                                                                                                     <span id='f0c1069'>&#39;(go &#35;:g62678)</span>)</span>
+                                                                                                                            <span id='f0c1071'>(go &#35;:g62678)</span>)</span>
+                                                                                                                   <span id='f0c1073'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                        <span id='f0c1076'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                      nil)</span>)</span>
+                                                                                         <span id='f0c1092'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                              <span id='f0c1062'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                          <span id='f0c941'>(funcall &#39;stack:pop)</span>)</span>
+                                                        x))</span>)</span>
+                                      <span id='f0c1121'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                           <span id='f0c1124'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                <span id='f0c936'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c1134'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>85</span> 
+<span id='f0s15'><span class='line'>86</span> (step&#46;def:defun king-of-confusion (w)
+<span class='line'>87</span>   <span id='f0s16'>&#34;Take a cons of two lists and make a list of conses&#46;
+<span class='line'>88</span>     Think of this function as being like a zipper&#46;&#34;</span>
+<span class='line'>89</span>   (prog (x y z)                         &#59;Initialize x&#44; y&#44; z to NIL
+<span class='line'>90</span>      (setq y (car w) z (cdr w))
+<span class='line'>91</span>    loop
+<span class='line'>92</span>      (cond ((null y) (return x))
+<span class='line'>93</span>            ((null z) <span id='f0s17'>(go err)</span>))
+<span class='line'>94</span>    rejoin
+<span class='line'>95</span>      (setq x (cons (cons (car y) (car z)) x))
+<span class='line'>96</span>      (setq y (cdr y) z (cdr z))
+<span class='line'>97</span>      <span id='f0s18'>(go loop)</span>
+<span class='line'>98</span>    err
+<span class='line'>99</span>      (cerror <span id='f0s19'>&#34;Will self-pair extraneous items&#34;</span>
+<span class='line'>100</span>              <span id='f0s20'>&#34;Mismatch - gleep&#33;  &#126;S&#34;</span> y)
+<span class='line'>101</span>      (setq z y)
+<span class='line'>102</span>      <span id='f0s21'>(go rejoin)</span>))</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c474'> (lambda (w)
+   <span id='f0c473'>(unwind-protect
+       <span id='f0c471'>(progn <span id='f0c469'>(funcall &#39;stack::push-section <span id='f0c468'>(ccl::typed-form &#39;(member king-of-confusion) <span id='f0c467'>&#39;king-of-confusion</span>)</span>)</span>
+              <span id='f0c470'>&#39;&#34;Take a cons of two lists and make a list of conses&#46;
+     Think of this function as being like a zipper&#46;&#34;</span>
+              <span id='f0c466'>(unwind-protect
+                  <span id='f0c465'>(progn <span id='f0c464'>(funcall &#39;stack:push
+                                  <span id='f0c463'>&#39;(prog (x y z)
+                                         (setq y (car w) z (cdr w))
+                                    loop (cond ((null y) (return x)) ((null z) (go err)))
+                                    rejoin (setq x (cons (cons (car y) (car z)) x))
+                                         (setq y (cdr y) z (cdr z))
+                                         (go loop)
+                                    err  (cerror &#34;Will self-pair extraneous items&#34; &#34;Mismatch - gleep&#33;  &#126;S&#34; y)
+                                         (setq z y)
+                                         (go rejoin))</span>)</span>
+                         <span id='f0c462'>(unwind-protect
+                             <span id='f0c460'>(progn <span id='f0c459'>(funcall &#39;stack:push
+                                             <span id='f0c458'>&#39;(block nil
+                                                (let (x y z)
+                                                  (tagbody (setq y (car w) z (cdr w))
+                                                   loop    (cond ((null y) (return x)) ((null z) (go err)))
+                                                   rejoin  (setq x (cons (cons (car y) (car z)) x))
+                                                           (setq y (cdr y) z (cdr z))
+                                                           (go loop)
+                                                   err     (cerror &#34;Will self-pair extraneous items&#34;
+                                                                   &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                   y)
+                                                           (setq z y)
+                                                           (go rejoin))))</span>)</span>
+                                    <span id='f0c457'>(block nil
+                                      <span id='f0c456'>(unwind-protect
+                                          <span id='f0c455'>(progn <span id='f0c278'>(funcall &#39;stack:push
+                                                          <span id='f0c277'>&#39;(let (x y z)
+                                                             (tagbody (setq y (car w) z (cdr w))
+                                                              loop    (cond ((null y) (return x)) ((null z) (go err)))
+                                                              rejoin  (setq x (cons (cons (car y) (car z)) x))
+                                                                      (setq y (cdr y) z (cdr z))
+                                                                      (go loop)
+                                                              err     (cerror &#34;Will self-pair extraneous items&#34;
+                                                                              &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                              y)
+                                                                      (setq z y)
+                                                                      (go rejoin)))</span>)</span>
+                                                 <span id='f0c454'>(let ((x nil) (y nil) (z nil))
+                                                   <span id='f0c453'>(unwind-protect
+                                                       <span id='f0c451'>(progn <span id='f0c450'>(funcall &#39;stack:push
+                                                                       <span id='f0c449'>&#39;(tagbody (setq y (car w) z (cdr w))
+                                                                         loop    (cond ((null y) (return x))
+                                                                                       ((null z) (go err)))
+                                                                         rejoin  (setq x
+                                                                                       (cons (cons (car y) (car z)) x))
+                                                                                 (setq y (cdr y) z (cdr z))
+                                                                                 (go loop)
+                                                                         err     (cerror &#34;Will self-pair extraneous items&#34;
+                                                                                         &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                         y)
+                                                                                 (setq z y)
+                                                                                 (go rejoin))</span>)</span>
+                                                              <span id='f0c448'>(tagbody <span id='f0c380'>(unwind-protect
+                                                                           <span id='f0c378'>(progn <span id='f0c377'>(funcall &#39;stack:push
+                                                                                           <span id='f0c376'>&#39;(setq y (car w) z (cdr w))</span>)</span>
+                                                                                  <span id='f0c375'>(progn (setq y
+                                                                                               <span id='f0c367'>(unwind-protect
+                                                                                                   <span id='f0c365'>(progn <span id='f0c362'>(funcall &#39;stack:push
+                                                                                                                   <span id='f0c361'>&#39;(car w)</span>)</span>
+                                                                                                          <span id='f0c364'>(car w)</span>)</span>
+                                                                                                 <span id='f0c366'>(funcall &#39;stack:pop)</span>)</span>)
+                                                                                         (setq z
+                                                                                               <span id='f0c374'>(unwind-protect
+                                                                                                   <span id='f0c373'>(progn <span id='f0c370'>(funcall &#39;stack:push
+                                                                                                                   <span id='f0c369'>&#39;(cdr w)</span>)</span>
+                                                                                                          <span id='f0c372'>(cdr w)</span>)</span>
+                                                                                                 <span id='f0c368'>(funcall &#39;stack:pop)</span>)</span>))</span>)</span>
+                                                                         <span id='f0c379'>(funcall &#39;stack:pop)</span>)</span>
+                                                                       (loop nil (0)
+                                                                                 &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020029788BD&#62;
+                                                                                 t t)
+                                                                                     <span id='f0c447'>(unwind-protect
+                                                                                         <span id='f0c445'>(progn <span id='f0c444'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c443'>&#39;(cond ((null y)
+                                                                                                                 (return x))
+                                                                                                                ((null z)
+                                                                                                                 (go err)))</span>)</span>
+                                                                                                <span id='f0c442'>(unwind-protect
+                                                                                                    <span id='f0c441'>(progn <span id='f0c383'>(funcall &#39;stack:push
+                                                                                                                    <span id='f0c382'>&#39;(if (null y)
+                                                                                                                         (progn (return x))
+                                                                                                                         (cond ((null z)
+                                                                                                                                (go err))))</span>)</span>
+                                                                                                           <span id='f0c440'>(if <span id='f0c389'>(unwind-protect
+                                                                                                                   <span id='f0c387'>(progn <span id='f0c386'>(funcall &#39;stack:push
+                                                                                                                                   <span id='f0c385'>&#39;(null y)</span>)</span>
+                                                                                                                          <span id='f0c384'>(not y)</span>)</span>
+                                                                                                                 <span id='f0c388'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                               <span id='f0c439'>(unwind-protect
+                                                                                                                   <span id='f0c438'>(progn <span id='f0c425'>(funcall &#39;stack:push
+                                                                                                                                   <span id='f0c424'>&#39;(progn (return x))</span>)</span>
+                                                                                                                          <span id='f0c437'>(unwind-protect
+                                                                                                                              <span id='f0c436'>(progn <span id='f0c435'>(funcall &#39;stack:push
+                                                                                                                                              <span id='f0c434'>&#39;(return x)</span>)</span>
+                                                                                                                                     <span id='f0c433'>(unwind-protect
+                                                                                                                                         <span id='f0c432'>(progn <span id='f0c429'>(funcall &#39;stack:push
+                                                                                                                                                         <span id='f0c428'>&#39;(return-from nil
+                                                                                                                                                            x)</span>)</span>
+                                                                                                                                                <span id='f0c431'>(return-from nil
+                                                                                                                                                  x)</span>)</span>
+                                                                                                                                       <span id='f0c427'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                                            <span id='f0c426'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                                 <span id='f0c423'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                               <span id='f0c422'>(unwind-protect
+                                                                                                                   <span id='f0c421'>(progn <span id='f0c392'>(funcall &#39;stack:push
+                                                                                                                                   <span id='f0c391'>&#39;(cond ((null z)
+                                                                                                                                           (go err)))</span>)</span>
+                                                                                                                          <span id='f0c420'>(unwind-protect
+                                                                                                                              <span id='f0c419'>(progn <span id='f0c418'>(funcall &#39;stack:push
+                                                                                                                                              <span id='f0c417'>&#39;(if (null z)
+                                                                                                                                                   (progn (go err))
+                                                                                                                                                   (cond))</span>)</span>
+                                                                                                                                     <span id='f0c416'>(if <span id='f0c399'>(unwind-protect
+                                                                                                                                             <span id='f0c397'>(progn <span id='f0c396'>(funcall &#39;stack:push
+                                                                                                                                                             <span id='f0c395'>&#39;(null z)</span>)</span>
+                                                                                                                                                    <span id='f0c394'>(not z)</span>)</span>
+                                                                                                                                           <span id='f0c398'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                         <span id='f0c410'>(unwind-protect
+                                                                                                                                             <span id='f0c408'>(progn <span id='f0c401'>(funcall &#39;stack:push
+                                                                                                                                                             <span id='f0c400'>&#39;(progn (go err))</span>)</span>
+                                                                                                                                                    <span id='f0c407'>(unwind-protect
+                                                                                                                                                        <span id='f0c405'>(progn <span id='f0c404'>(funcall &#39;stack:push
+                                                                                                                                                                        <span id='f0c403'>&#39;(go err)</span>)</span>
+                                                                                                                                                               <span id='f0c402'>(go err)</span>)</span>
+                                                                                                                                                      <span id='f0c406'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                                                           <span id='f0c409'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                         <span id='f0c415'>(unwind-protect
+                                                                                                                                             <span id='f0c414'>(progn <span id='f0c413'>(funcall &#39;stack:push
+                                                                                                                                                             <span id='f0c412'>&#39;(cond)</span>)</span>
+                                                                                                                                                    nil)</span>
+                                                                                                                                           <span id='f0c411'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                                            <span id='f0c393'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                                                 <span id='f0c390'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                  <span id='f0c381'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                                       <span id='f0c446'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     (rejoin nil (0)
+                                                                                      &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020029788BD&#62;
+                                                                                      t t)
+                                                                                     <span id='f0c330'>(unwind-protect
+                                                                                         <span id='f0c329'>(progn <span id='f0c328'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c327'>&#39;(setq x
+                                                                                                                (cons (cons (car y)
+                                                                                                                            (car z))
+                                                                                                                      x))</span>)</span>
+                                                                                                <span id='f0c326'>(setq x
+                                                                                                      <span id='f0c325'>(unwind-protect
+                                                                                                          <span id='f0c323'>(progn <span id='f0c300'>(funcall &#39;stack:push
+                                                                                                                          <span id='f0c299'>&#39;(cons (cons (car y)
+                                                                                                                                       (car z))
+                                                                                                                                 x)</span>)</span>
+                                                                                                                 <span id='f0c322'>(cons <span id='f0c320'>(unwind-protect
+                                                                                                                           <span id='f0c319'>(progn <span id='f0c303'>(funcall &#39;stack:push
+                                                                                                                                           <span id='f0c302'>&#39;(cons (car y)
+                                                                                                                                                  (car z))</span>)</span>
+                                                                                                                                  <span id='f0c318'>(cons <span id='f0c317'>(unwind-protect
+                                                                                                                                            <span id='f0c316'>(progn <span id='f0c313'>(funcall &#39;stack:push
+                                                                                                                                                            <span id='f0c312'>&#39;(car y)</span>)</span>
+                                                                                                                                                   <span id='f0c315'>(car y)</span>)</span>
+                                                                                                                                          <span id='f0c311'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                                        <span id='f0c310'>(unwind-protect
+                                                                                                                                            <span id='f0c309'>(progn <span id='f0c306'>(funcall &#39;stack:push
+                                                                                                                                                            <span id='f0c305'>&#39;(car z)</span>)</span>
+                                                                                                                                                   <span id='f0c308'>(car z)</span>)</span>
+                                                                                                                                          <span id='f0c304'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                                         <span id='f0c301'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                                                       x)</span>)</span>
+                                                                                                        <span id='f0c324'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                       <span id='f0c298'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     <span id='f0c360'>(unwind-protect
+                                                                                         <span id='f0c358'>(progn <span id='f0c357'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c356'>&#39;(setq y
+                                                                                                                (cdr y)
+                                                                                                                z
+                                                                                                                (cdr z))</span>)</span>
+                                                                                                <span id='f0c355'>(progn (setq y
+                                                                                                             <span id='f0c354'>(unwind-protect
+                                                                                                                 <span id='f0c353'>(progn <span id='f0c350'>(funcall &#39;stack:push
+                                                                                                                                 <span id='f0c349'>&#39;(cdr y)</span>)</span>
+                                                                                                                        <span id='f0c352'>(cdr y)</span>)</span>
+                                                                                                               <span id='f0c348'>(funcall &#39;stack:pop)</span>)</span>)
+                                                                                                       (setq z
+                                                                                                             <span id='f0c347'>(unwind-protect
+                                                                                                                 <span id='f0c345'>(progn <span id='f0c342'>(funcall &#39;stack:push
+                                                                                                                                 <span id='f0c341'>&#39;(cdr z)</span>)</span>
+                                                                                                                        <span id='f0c344'>(cdr z)</span>)</span>
+                                                                                                               <span id='f0c346'>(funcall &#39;stack:pop)</span>)</span>))</span>)</span>
+                                                                                       <span id='f0c359'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     <span id='f0c297'>(unwind-protect
+                                                                                         <span id='f0c296'>(progn <span id='f0c295'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c294'>&#39;(go loop)</span>)</span>
+                                                                                                <span id='f0c293'>(go loop)</span>)</span>
+                                                                                       <span id='f0c292'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     (err nil (0)
+                                                                                      &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020029788BD&#62;
+                                                                                      t nil)
+                                                                                     <span id='f0c340'>(unwind-protect
+                                                                                         <span id='f0c339'>(progn <span id='f0c338'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c337'>&#39;(cerror &#34;Will self-pair extraneous items&#34;
+                                                                                                                  &#34;Mismatch - gleep&#33;  &#126;S&#34;
+                                                                                                                  y)</span>)</span>
+                                                                                                <span id='f0c336'>(values (funcall &#39;cerror
+                                                                                                                 <span id='f0c335'>(ccl::typed-form
+                                                                                                                  &#39;(member &#34;Will self-pair extraneous items&#34;)
+                                                                                                                  <span id='f0c334'>&#39;&#34;Will self-pair extraneous items&#34;</span>)</span>
+                                                                                                                 <span id='f0c332'>&#39;&#34;Mismatch - gleep&#33;  &#126;S&#34;</span>
+                                                                                                                 y))</span>)</span>
+                                                                                       <span id='f0c331'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     <span id='f0c285'>(unwind-protect
+                                                                                         <span id='f0c284'>(progn <span id='f0c283'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c282'>&#39;(setq z y)</span>)</span>
+                                                                                                <span id='f0c281'>(setq z y)</span>)</span>
+                                                                                       <span id='f0c279'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                     <span id='f0c291'>(unwind-protect
+                                                                                         <span id='f0c290'>(progn <span id='f0c289'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c288'>&#39;(go rejoin)</span>)</span>
+                                                                                                <span id='f0c287'>(go rejoin)</span>)</span>
+                                                                                       <span id='f0c286'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                         <span id='f0c452'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                            <span id='f0c276'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                               <span id='f0c461'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                    <span id='f0c275'>(funcall &#39;stack:pop)</span>)</span>)</span>
+         <span id='f0c472'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>103</span> 
+<span id='f0s22'><span class='line'>104</span> (step&#46;def:defun throwing-test ()
+<span class='line'>105</span>   (catch <span id='f0s23'>&#39;foo
+</span><span class='line'>106</span>     (format t <span id='f0s24'>&#34;The inner catch returns &#126;s&#46;&#126;&#37;&#34;</span>
+<span class='line'>107</span>             (catch <span id='f0s25'>&#39;foo
+</span><span class='line'>108</span>               (unwind-protect (throw <span id='f0s26'>&#39;foo </span>:first-throw)
+<span class='line'>109</span>                 (throw <span id='f0s27'>&#39;foo </span>:second-throw))))
+<span class='line'>110</span>     (the keyword :outer-catch)))</span>
+</code></div>
+<a href=javascript:swap('f0t22')><span class='toggle' id='pf0t22'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(22)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t22'><code><span id='f0c56'> (lambda nil
+   <span id='f0c55'>(unwind-protect
+       <span id='f0c53'>(progn <span id='f0c52'>(funcall &#39;stack::push-section <span id='f0c51'>(ccl::typed-form &#39;(member throwing-test) <span id='f0c50'>&#39;throwing-test</span>)</span>)</span>
+              <span id='f0c49'>(unwind-protect
+                  <span id='f0c47'>(progn <span id='f0c46'>(funcall &#39;stack:push
+                                  <span id='f0c45'>&#39;(catch &#39;foo
+                                     (format t
+                                             &#34;The inner catch returns &#126;s&#46;&#126;&#37;&#34;
+                                             (catch &#39;foo
+                                               (unwind-protect (throw &#39;foo :first-throw) (throw &#39;foo :second-throw))))
+                                     (the keyword :outer-catch))</span>)</span>
+                         <span id='f0c44'>(catch <span id='f0c43'>&#39;foo</span>
+                           (progn <span id='f0c35'>(unwind-protect
+                                      <span id='f0c34'>(progn <span id='f0c33'>(funcall &#39;stack:push
+                                                      <span id='f0c32'>&#39;(format t
+                                                               &#34;The inner catch returns &#126;s&#46;&#126;&#37;&#34;
+                                                               (catch &#39;foo
+                                                                 (unwind-protect
+                                                                     (throw &#39;foo :first-throw)
+                                                                   (throw &#39;foo :second-throw))))</span>)</span>
+                                             <span id='f0c31'>(funcall &#39;format
+                                                      t
+                                                      <span id='f0c30'>&#39;&#34;The inner catch returns &#126;s&#46;&#126;&#37;&#34;</span>
+                                                      <span id='f0c29'>(unwind-protect
+                                                          <span id='f0c27'>(progn <span id='f0c26'>(funcall &#39;stack:push
+                                                                          <span id='f0c25'>&#39;(catch &#39;foo
+                                                                             (unwind-protect
+                                                                                 (throw &#39;foo :first-throw)
+                                                                               (throw &#39;foo :second-throw)))</span>)</span>
+                                                                 <span id='f0c24'>(catch <span id='f0c23'>&#39;foo</span>
+                                                                   <span id='f0c22'>(unwind-protect
+                                                                       <span id='f0c21'>(progn <span id='f0c3'>(funcall &#39;stack:push
+                                                                                       <span id='f0c2'>&#39;(unwind-protect
+                                                                                            (throw &#39;foo :first-throw)
+                                                                                          (throw &#39;foo :second-throw))</span>)</span>
+                                                                              <span id='f0c20'>(unwind-protect
+                                                                                  <span id='f0c11'>(unwind-protect
+                                                                                      <span id='f0c10'>(progn <span id='f0c9'>(funcall &#39;stack:push
+                                                                                                      <span id='f0c8'>&#39;(throw &#39;foo
+                                                                                                         :first-throw)</span>)</span>
+                                                                                             <span id='f0c7'>(throw <span id='f0c6'>&#39;foo</span> <span id='f0c5'>&#39;:first-throw</span>)</span>)</span>
+                                                                                    <span id='f0c4'>(funcall &#39;stack:pop)</span>)</span>
+                                                                                <span id='f0c19'>(unwind-protect
+                                                                                    <span id='f0c18'>(progn <span id='f0c14'>(funcall &#39;stack:push
+                                                                                                    <span id='f0c13'>&#39;(throw &#39;foo
+                                                                                                       :second-throw)</span>)</span>
+                                                                                           <span id='f0c17'>(throw <span id='f0c15'>&#39;foo</span> <span id='f0c16'>&#39;:second-throw</span>)</span>)</span>
+                                                                                  <span id='f0c12'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                     <span id='f0c1'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                        <span id='f0c28'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                    <span id='f0c0'>(funcall &#39;stack:pop)</span>)</span>
+                                  <span id='f0c42'>(unwind-protect
+                                      <span id='f0c41'>(progn <span id='f0c40'>(funcall &#39;stack:push <span id='f0c39'>&#39;(the keyword :outer-catch)</span>)</span>
+                                             <span id='f0c38'>(ccl::typed-form &#39;(member :outer-catch) <span id='f0c37'>&#39;:outer-catch</span>)</span>)</span>
+                                    <span id='f0c36'>(funcall &#39;stack:pop)</span>)</span>))</span>)</span>
+                <span id='f0c48'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c54'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>111</span> 
+<span id='f0s28'><span class='line'>112</span> (step&#46;def:defun rest-test ()
+<span class='line'>113</span>   (list
+<span class='line'>114</span>    (&#61; ((lambda (x) x) 3) 3)
+<span class='line'>115</span>    (equalp (multiple-value-call &#35;&#39;list 1 <span id='f0s29'>&#39;&#47; </span>(values 2 3) <span id='f0s30'>&#39;&#47; </span>(values) <span id='f0s31'>&#39;&#47; </span>(floor 2&#46;5))
+<span class='line'>116</span>            <span id='f0s32'>&#39;(1 &#47; 2 3 &#47; &#47; 2 0&#46;5)</span>)
+<span class='line'>117</span>    (let* ((temp <span id='f0s33'>&#39;(1 2 3)</span>))
+<span class='line'>118</span>      (equalp 1
+<span class='line'>119</span>              (multiple-value-prog1
+<span class='line'>120</span>                  (values-list temp)
+<span class='line'>121</span>                (setq temp nil)
+<span class='line'>122</span>                (values-list temp))))
+<span class='line'>123</span>    (equalp <span id='f0s34'>&#39;(3 4)</span>
+<span class='line'>124</span>            (let ((x 3))
+<span class='line'>125</span>              (progv <span id='f0s35'>&#39;(x)</span> <span id='f0s36'>&#39;(4)</span>
+<span class='line'>126</span>                (list x (symbol-value <span id='f0s37'>&#39;x</span>)))))))</span>
+</code></div>
+<a href=javascript:swap('f0t28')><span class='toggle' id='pf0t28'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(28)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t28'><code><span id='f0c274'> (lambda nil
+   <span id='f0c273'>(unwind-protect
+       <span id='f0c271'>(progn <span id='f0c77'>(funcall &#39;stack::push-section <span id='f0c76'>(ccl::typed-form &#39;(member rest-test) <span id='f0c75'>&#39;rest-test</span>)</span>)</span>
+              <span id='f0c270'>(unwind-protect
+                  <span id='f0c268'>(progn <span id='f0c267'>(funcall &#39;stack:push
+                                  <span id='f0c266'>&#39;(list (&#61; ((lambda (x) x) 3) 3)
+                                         (equalp (multiple-value-call
+                                                   (function list)
+                                                   1
+                                                   &#39;&#47;
+                                                   (values 2 3)
+                                                   &#39;&#47;
+                                                   (values)
+                                                   &#39;&#47;
+                                                   (floor 2&#46;5))
+                                                 &#39;(1 &#47; 2 3 &#47; &#47; 2 0&#46;5))
+                                         (let* ((temp &#39;(1 2 3)))
+                                           (equalp 1
+                                                   (multiple-value-prog1
+                                                     (values-list temp)
+                                                     (setq temp nil)
+                                                     (values-list temp))))
+                                         (equalp &#39;(3 4) (let ((x 3)) (progv &#39;(x) &#39;(4) (list x (symbol-value &#39;x))))))</span>)</span>
+                         <span id='f0c265'>(list <span id='f0c199'>(unwind-protect
+                                   <span id='f0c198'>(progn <span id='f0c197'>(funcall &#39;stack:push <span id='f0c196'>&#39;(&#61; ((lambda (x) x) 3) 3)</span>)</span>
+                                          <span id='f0c195'>(ccl::numcmp &#39;:eq
+                                           <span id='f0c194'>(unwind-protect
+                                               <span id='f0c192'>(progn <span id='f0c191'>(funcall &#39;stack:push <span id='f0c190'>&#39;((lambda (x) x) 3)</span>)</span>
+                                                      <span id='f0c189'>(unwind-protect
+                                                          <span id='f0c187'>(progn <span id='f0c171'>(funcall &#39;stack:push <span id='f0c170'>&#39;(funcall (lambda (x) x) 3)</span>)</span>
+                                                                 <span id='f0c186'>(funcall <span id='f0c184'>(unwind-protect
+                                                                              <span id='f0c182'>(progn <span id='f0c173'>(funcall &#39;stack:push
+                                                                                              <span id='f0c172'>&#39;(lambda (x) x)</span>)</span>
+                                                                                     <span id='f0c181'>(unwind-protect
+                                                                                         <span id='f0c179'>(progn <span id='f0c178'>(funcall &#39;stack:push
+                                                                                                         <span id='f0c177'>&#39;(function (lambda (x)
+                                                                                                                      x))</span>)</span>
+                                                                                                <span id='f0c176'>(function <span id='f0c175'>(lambda (x)
+                                                                                                            x)</span>)</span>)</span>
+                                                                                       <span id='f0c180'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                                                            <span id='f0c183'>(funcall &#39;stack:pop)</span>)</span>
+                                                                          3)</span>)</span>
+                                                        <span id='f0c188'>(funcall &#39;stack:pop)</span>)</span>)</span>
+                                             <span id='f0c193'>(funcall &#39;stack:pop)</span>)</span>
+                                           3)</span>)</span>
+                                 <span id='f0c169'>(funcall &#39;stack:pop)</span>)</span>
+                               <span id='f0c264'>(unwind-protect
+                                   <span id='f0c262'>(progn <span id='f0c201'>(funcall &#39;stack:push
+                                                   <span id='f0c200'>&#39;(equalp (multiple-value-call
+                                                              (function list)
+                                                              1
+                                                              &#39;&#47;
+                                                              (values 2 3)
+                                                              &#39;&#47;
+                                                              (values)
+                                                              &#39;&#47;
+                                                              (floor 2&#46;5))
+                                                            &#39;(1 &#47; 2 3 &#47; &#47; 2 0&#46;5))</span>)</span>
+                                          <span id='f0c261'>(funcall &#39;equalp
+                                                   <span id='f0c254'>(unwind-protect
+                                                       <span id='f0c253'>(progn <span id='f0c252'>(funcall &#39;stack:push
+                                                                       <span id='f0c251'>&#39;(multiple-value-call
+                                                                          (function list)
+                                                                          1
+                                                                          &#39;&#47;
+                                                                          (values 2 3)
+                                                                          &#39;&#47;
+                                                                          (values)
+                                                                          &#39;&#47;
+                                                                          (floor 2&#46;5))</span>)</span>
+                                                              <span id='f0c250'>(multiple-value-call
+                                                                <span id='f0c216'>(unwind-protect
+                                                                    <span id='f0c215'>(progn <span id='f0c213'>(funcall &#39;stack:push <span id='f0c212'>&#39;(function list)</span>)</span>
+                                                                           <span id='f0c214'>(function list)</span>)</span>
+                                                                  <span id='f0c211'>(funcall &#39;stack:pop)</span>)</span>
+                                                                1
+                                                                <span id='f0c249'>(unwind-protect
+                                                                    <span id='f0c247'>(progn <span id='f0c245'>(funcall &#39;stack:push <span id='f0c244'>&#39;&#39;&#47;</span>)</span> <span id='f0c246'>&#39;&#47;</span>)</span>
+                                                                  <span id='f0c248'>(funcall &#39;stack:pop)</span>)</span>
+                                                                <span id='f0c210'>(unwind-protect
+                                                                    <span id='f0c209'>(progn <span id='f0c205'>(funcall &#39;stack:push <span id='f0c204'>&#39;(values 2 3)</span>)</span>
+                                                                           <span id='f0c208'>(values 2 3)</span>)</span>
+                                                                  <span id='f0c203'>(funcall &#39;stack:pop)</span>)</span>
+                                                                <span id='f0c242'>(unwind-protect
+                                                                    <span id='f0c241'>(progn <span id='f0c240'>(funcall &#39;stack:push <span id='f0c239'>&#39;&#39;&#47;</span>)</span> <span id='f0c238'>&#39;&#47;</span>)</span>
+                                                                  <span id='f0c237'>(funcall &#39;stack:pop)</span>)</span>
+                                                                <span id='f0c236'>(unwind-protect
+                                                                    <span id='f0c235'>(progn <span id='f0c234'>(funcall &#39;stack:push <span id='f0c233'>&#39;(values)</span>)</span> <span id='f0c232'>(values)</span>)</span>
+                                                                  <span id='f0c231'>(funcall &#39;stack:pop)</span>)</span>
+                                                                <span id='f0c230'>(unwind-protect
+                                                                    <span id='f0c228'>(progn <span id='f0c226'>(funcall &#39;stack:push <span id='f0c225'>&#39;&#39;&#47;</span>)</span> <span id='f0c227'>&#39;&#47;</span>)</span>
+                                                                  <span id='f0c229'>(funcall &#39;stack:pop)</span>)</span>
+                                                                <span id='f0c224'>(unwind-protect
+                                                                    <span id='f0c223'>(progn <span id='f0c222'>(funcall &#39;stack:push <span id='f0c221'>&#39;(floor 2&#46;5)</span>)</span>
+                                                                           <span id='f0c220'>(values 2 <span id='f0c218'>&#39;0&#46;5</span>)</span>)</span>
+                                                                  <span id='f0c217'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                     <span id='f0c202'>(funcall &#39;stack:pop)</span>)</span>
+                                                   <span id='f0c260'>(unwind-protect
+                                                       <span id='f0c259'>(progn <span id='f0c258'>(funcall &#39;stack:push <span id='f0c257'>&#39;&#39;(1 &#47; 2 3 &#47; &#47; 2 0&#46;5)</span>)</span>
+                                                              <span id='f0c256'>&#39;(1 &#47; 2 3 &#47; &#47; 2 0&#46;5)</span>)</span>
+                                                     <span id='f0c255'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                 <span id='f0c263'>(funcall &#39;stack:pop)</span>)</span>
+                               <span id='f0c168'>(unwind-protect
+                                   <span id='f0c166'>(progn <span id='f0c165'>(funcall &#39;stack:push
+                                                   <span id='f0c164'>&#39;(let* ((temp &#39;(1 2 3)))
+                                                      (equalp 1
+                                                              (multiple-value-prog1
+                                                                (values-list temp)
+                                                                (setq temp nil)
+                                                                (values-list temp))))</span>)</span>
+                                          <span id='f0c163'>(let* ((temp
+                                                  <span id='f0c129'>(unwind-protect
+                                                      <span id='f0c128'>(progn <span id='f0c127'>(funcall &#39;stack:push <span id='f0c126'>&#39;&#39;(1 2 3)</span>)</span> <span id='f0c125'>&#39;(1 2 3)</span>)</span>
+                                                    <span id='f0c124'>(funcall &#39;stack:pop)</span>)</span>))
+                                            <span id='f0c162'>(unwind-protect
+                                                <span id='f0c160'>(progn <span id='f0c159'>(funcall &#39;stack:push
+                                                                <span id='f0c158'>&#39;(equalp 1
+                                                                         (multiple-value-prog1
+                                                                           (values-list temp)
+                                                                           (setq temp nil)
+                                                                           (values-list temp)))</span>)</span>
+                                                       <span id='f0c157'>(funcall &#39;equalp
+                                                                1
+                                                                <span id='f0c155'>(unwind-protect
+                                                                    <span id='f0c154'>(progn <span id='f0c132'>(funcall &#39;stack:push
+                                                                                    <span id='f0c131'>&#39;(multiple-value-prog1
+                                                                                       (values-list temp)
+                                                                                       (setq temp nil)
+                                                                                       (values-list temp))</span>)</span>
+                                                                           <span id='f0c153'>(multiple-value-prog1
+                                                                             <span id='f0c145'>(unwind-protect
+                                                                                 <span id='f0c144'>(progn <span id='f0c143'>(funcall &#39;stack:push
+                                                                                                 <span id='f0c142'>&#39;(values-list temp)</span>)</span>
+                                                                                        <span id='f0c141'>(funcall &#39;values-list temp)</span>)</span>
+                                                                               <span id='f0c139'>(funcall &#39;stack:pop)</span>)</span>
+                                                                             <span id='f0c138'>(unwind-protect
+                                                                                 <span id='f0c136'>(progn <span id='f0c134'>(funcall &#39;stack:push
+                                                                                                 <span id='f0c133'>&#39;(setq temp nil)</span>)</span>
+                                                                                        <span id='f0c135'>(setq temp nil)</span>)</span>
+                                                                               <span id='f0c137'>(funcall &#39;stack:pop)</span>)</span>
+                                                                             <span id='f0c152'>(unwind-protect
+                                                                                 <span id='f0c151'>(progn <span id='f0c148'>(funcall &#39;stack:push
+                                                                                                 <span id='f0c147'>&#39;(values-list temp)</span>)</span>
+                                                                                        <span id='f0c150'>(funcall &#39;values-list temp)</span>)</span>
+                                                                               <span id='f0c146'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                  <span id='f0c130'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                              <span id='f0c161'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                 <span id='f0c167'>(funcall &#39;stack:pop)</span>)</span>
+                               <span id='f0c123'>(unwind-protect
+                                   <span id='f0c121'>(progn <span id='f0c120'>(funcall &#39;stack:push
+                                                   <span id='f0c119'>&#39;(equalp &#39;(3 4)
+                                                            (let ((x 3)) (progv &#39;(x) &#39;(4) (list x (symbol-value &#39;x)))))</span>)</span>
+                                          <span id='f0c118'>(funcall &#39;equalp
+                                                   <span id='f0c83'>(unwind-protect
+                                                       <span id='f0c82'>(progn <span id='f0c80'>(funcall &#39;stack:push <span id='f0c79'>&#39;&#39;(3 4)</span>)</span> <span id='f0c81'>&#39;(3 4)</span>)</span>
+                                                     <span id='f0c78'>(funcall &#39;stack:pop)</span>)</span>
+                                                   <span id='f0c117'>(unwind-protect
+                                                       <span id='f0c115'>(progn <span id='f0c85'>(funcall &#39;stack:push
+                                                                       <span id='f0c84'>&#39;(let ((x 3))
+                                                                          (progv &#39;(x) &#39;(4) (list x (symbol-value &#39;x))))</span>)</span>
+                                                              <span id='f0c114'>(let* ()
+                                                                <span id='f0c113'>(unwind-protect
+                                                                    <span id='f0c112'>(progn <span id='f0c88'>(funcall &#39;stack:push
+                                                                                    <span id='f0c87'>&#39;(progv &#39;(x) &#39;(4)
+                                                                                       (list x (symbol-value &#39;x)))</span>)</span>
+                                                                           <span id='f0c111'>(progv <span id='f0c110'>(funcall &#39;ccl::check-symbol-list <span id='f0c109'>&#39;(x)</span>)</span> <span id='f0c108'>&#39;(4)</span>
+                                                                             <span id='f0c107'>(unwind-protect
+                                                                                 <span id='f0c106'>(progn <span id='f0c105'>(funcall &#39;stack:push
+                                                                                                 <span id='f0c104'>&#39;(list x
+                                                                                                        (symbol-value &#39;x))</span>)</span>
+                                                                                        <span id='f0c103'>(list 3
+                                                                                              <span id='f0c101'>(unwind-protect
+                                                                                                  <span id='f0c100'>(progn <span id='f0c92'>(funcall &#39;stack:push
+                                                                                                                  <span id='f0c91'>&#39;(symbol-value &#39;x)</span>)</span>
+                                                                                                         <span id='f0c99'>(funcall &#39;symbol-value
+                                                                                                                  <span id='f0c98'>(unwind-protect
+                                                                                                                      <span id='f0c97'>(progn <span id='f0c95'>(funcall &#39;stack:push
+                                                                                                                                      <span id='f0c94'>&#39;&#39;x</span>)</span>
+                                                                                                                             <span id='f0c96'>&#39;x</span>)</span>
+                                                                                                                    <span id='f0c93'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                                                <span id='f0c90'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                               <span id='f0c89'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                                  <span id='f0c86'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                                     <span id='f0c116'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                                 <span id='f0c122'>(funcall &#39;stack:pop)</span>)</span>)</span>)</span>
+                <span id='f0c269'>(funcall &#39;stack:pop)</span>)</span>)</span>
+     <span id='f0c272'>(funcall &#39;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>127</span> 
+<span class='line'>128</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>129</span> &#59;&#59;&#59; Tests
+<span class='line'>130</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>131</span> 
+<span class='line'>132</span> (test nesting-respected
+<span class='line'>133</span>   (let ((base (calling-base)))
+<span class='line'>134</span>     (is (&#61; (length (stack:stack (stack:current-section base))) 3)
+<span class='line'>135</span>         &#34;The current get should be in the parent&#33;&#34;)
+<span class='line'>136</span>     (is (&#61; (length (stack:stack (stack:current-section
+<span class='line'>137</span>                                  (stack:cdr-current-section base))))
+<span class='line'>138</span>            2)
+<span class='line'>139</span>         &#34;calling a traced function should have the parents call put in
+<span class='line'>140</span>         there as well&#33;&#34;)))
+<span class='line'>141</span> 
+<span class='line'>142</span> (test macro-expected
+<span class='line'>143</span>   (is (equalp (stack:stack (stack:current-section (expansion-call)))
+<span class='line'>144</span>               &#39;((STACK:GET) (PROGN (STACK:GET)) (EXPANSION-TEST (STACK:GET))))
+<span class='line'>145</span>       &#34;The macro should be recorded wholesale along with it&#39;s expansion&#34;)
+<span class='line'>146</span>   (is
+<span class='line'>147</span>    (equalp (stack:stack (stack:current-section (cadr (local-expansion-test 5))))
+<span class='line'>148</span>            &#96;((STACK:GET)
+<span class='line'>149</span>              (LIST X (STACK:GET))
+<span class='line'>150</span>              (EXPANSION-TEST X)
+<span class='line'>151</span>              (FLET ((EXPANSION-TEST (X) (LIST X (STACK:GET)))) (EXPANSION-TEST X))))
+<span class='line'>152</span>    &#34;Fletting beats macros&#33;&#34;)
+<span class='line'>153</span>   (is
+<span class='line'>154</span>    (equalp (stack:stack (stack:current-section
+<span class='line'>155</span>                          (cadr (local-expansion-test-labels 3))))
+<span class='line'>156</span>            &#96;((STACK:GET)
+<span class='line'>157</span>              (LIST X (STACK:GET))
+<span class='line'>158</span>              (EXPANSION-TEST X)
+<span class='line'>159</span>              (FAZ X)
+<span class='line'>160</span>              (LABELS ((EXPANSION-TEST (X) (LIST X (STACK:GET)))
+<span class='line'>161</span>                       (FAZ (X) (EXPANSION-TEST X)))
+<span class='line'>162</span>                (FAZ X))))
+<span class='line'>163</span>    &#34;Labels removes the recursive macro calls&#34;)
+<span class='line'>164</span>   (is (&#61; (length (stack:stack (stack:current-section (macro-let-test))))
+<span class='line'>165</span>          4)
+<span class='line'>166</span>       &#34;Macro expansion from a macrolet works as expected&#34;))
+<span class='line'>167</span> 
+<span class='line'>168</span> (test instrumentation-does-not-interfere
+<span class='line'>169</span>   (is (equalp (king-of-confusion (cons (list 1 2 3)
+<span class='line'>170</span>                                        (list 4 6 7)))
+<span class='line'>171</span>               &#39;((3 &#46; 7) (2 &#46; 6) (1 &#46; 4)))
+<span class='line'>172</span>       &#34;Instrumenting simply adds debugging information does not change semantics&#34;)
+<span class='line'>173</span>   (is (equalp (prince-of-clarity (cons (list 1 2 3)
+<span class='line'>174</span>                                        (list 4 6 7)))
+<span class='line'>175</span>               &#39;((3 &#46; 7) (2 &#46; 6) (1 &#46; 4)))
+<span class='line'>176</span>       &#34;Instrumenting simply adds debugging information does not change semantics&#34;)
+<span class='line'>177</span>   (is (equalp (lets-explore 10) 15)
+<span class='line'>178</span>       &#34;lambda should not loop forever&#34;)
+<span class='line'>179</span>   (is (stack:emptyp (stack:get))
+<span class='line'>180</span>       &#34;Cleanup should be had after all these calls&#33;&#34;)
+<span class='line'>181</span>   (finishes (alu-primitives 3 5))
+<span class='line'>182</span>   (is (eql (throwing-test) :outer-catch))
+<span class='line'>183</span>   (is (every &#35;&#39;identity (rest-test))))
+</code></div>
+</body></html>

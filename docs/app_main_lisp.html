@@ -1,0 +1,173 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='app_main_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;app;main.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59; We can generate out our image with
+<span class='line'>4</span> &#59;&#59; (asdf:make :alu)
+<span class='line'>5</span> 
+<span class='line'>6</span> (defparameter +command-line-spec+
+<span class='line'>7</span>   &#39;(((&#34;input&#34; &#35;&#92;i)
+<span class='line'>8</span>      :type string :optional t :documentation &#34;Input alucard file location&#34;)
+<span class='line'>9</span>     ((&#34;output&#34; &#35;&#92;o)
+<span class='line'>10</span>      :type string :optional t :documentation &#34;Sets compiler to compile mode and output vampir file location&#34;)
+<span class='line'>11</span>     ((&#34;help&#34; &#35;&#92;h &#35;&#92;&#63;)
+<span class='line'>12</span>      :type boolean :optional t :documentation &#34;The current help message&#34;)
+<span class='line'>13</span>     ((&#34;swank&#34; &#35;&#92;s)
+<span class='line'>14</span>      :type boolean :optional t :documentation &#34;Launches a swank server for text editor integration&#34;)
+<span class='line'>15</span>     ((&#34;alive&#34; &#35;&#92;a)
+<span class='line'>16</span>      :type boolean :optional t :documentation &#34;Launches an alive server for text editor integration&#34;)
+<span class='line'>17</span>     ((&#34;sly&#34; &#35;&#92;y)
+<span class='line'>18</span>      :type boolean :optional t :documentation &#34;Launches a sly server for emacs integration&#34;)
+<span class='line'>19</span>     ((&#34;port&#34; &#35;&#92;p)
+<span class='line'>20</span>      :type integer :optional t :documentation &#34;The port for the swank&#47;sly server&#46; Defaults to 4005 &#34;)
+<span class='line'>21</span>     &#59;&#59; ((&#34;check&#34; &#35;&#92;c)
+<span class='line'>22</span>     &#59;&#59;  :type string  :optional t :documentation &#34;a --check or -c flag that takes a string&#34;)
+<span class='line'>23</span>     &#59;&#59; ((&#34;warn&#34; &#34;warning&#34; &#35;&#92;w)
+<span class='line'>24</span>     &#59;&#59;  :type boolean :optional t :documentation &#34;multiple spellings possible&#34;)
+<span class='line'>25</span>     &#59;&#59; ((&#34;version&#34; &#35;&#92;V)
+<span class='line'>26</span>     &#59;&#59;  :type boolean :optional t :documentation &#34;--version or -V&#44; you get the idea&#34;)
+<span class='line'>27</span>     ))
+<span class='line'>28</span> 
+<span id='f0s0'><span class='line'>29</span> (defun main ()
+<span class='line'>30</span>   <span id='f0s1'>(setf uiop:*command-line-arguments* <span id='f0s2'>(uiop:command-line-arguments)</span>)</span>
+<span class='line'>31</span>   <span id='f0s3'>(command-line-arguments:handle-command-line
+<span class='line'>32</span>    +command-line-spec+
+<span class='line'>33</span>    <span id='f0s4'>&#35;&#39;argument-handlers
+</span><span class='line'>34</span>    :name <span id='f0s5'>&#34;alucard&#34;</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c14'> (lambda nil
+   <span id='f0c13'>(progn <span id='f0c12'>(setq uiop&#47;image:*command-line-arguments* <span id='f0c11'>(funcall &#39;uiop&#47;image:command-line-arguments)</span>)</span>
+          <span id='f0c10'>(funcall &#39;command-line-arguments:handle-command-line
+                   +command-line-spec+
+                   <span id='f0c6'>(function argument-handlers)</span>
+                   <span id='f0c8'>&#39;:name</span>
+                   <span id='f0c7'>&#39;&#34;alucard&#34;</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>35</span> 
+<span id='f0s6'><span class='line'>36</span> (defun argument-handlers (&#38;key help output input sly swank port alive)
+<span class='line'>37</span>   <span id='f0s7'>(flet (<span id='f0s8'>(startup-function ()
+<span class='line'>38</span>            <span id='f0s9'>(let ((port <span id='f0s10'>(or port 4005)</span>))
+<span class='line'>39</span>              <span id='f0s11'>(when swank
+<span class='line'>40</span>                <span id='f0s12'>(aluser:start-swank :port port)</span>)</span>
+<span class='line'>41</span>              <span id='f0s13'>(when sly
+<span class='line'>42</span>                <span id='f0s14'>(aluser:start-slynk :port port)</span>)</span>
+<span class='line'>43</span>              <span id='f0s15'>(when alive
+<span class='line'>44</span>                &#59;&#59; really janky please fix
+<span class='line'>45</span>                <span id='f0s16'>(ql:quickload :alive-lsp)</span>
+<span class='line'>46</span>                <span id='f0s17'>(uiop:symbol-call :alive&#47;server :start)</span>)</span>)</span>
+<span class='line'>47</span>            <span id='f0s18'>(when input
+<span class='line'>48</span>              <span id='f0s19'>(load input)</span>)</span>)</span>)
+<span class='line'>49</span>     <span id='f0s20'>(cond (help
+<span class='line'>50</span>            <span id='f0s21'>(command-line-arguments:show-option-help +command-line-spec+ :sort-names t)</span>)
+<span class='line'>51</span>           (<span id='f0s22'>(and output input)</span>
+<span class='line'>52</span>            <span id='f0s23'>(load input)</span>
+<span class='line'>53</span>            <span id='f0s24'>(alu&#46;pipeline:dump-entry-point-to-file output)</span>)
+<span class='line'>54</span>           (output
+<span class='line'>55</span>            <span id='f0s25'>(format t <span id='f0s26'>&#34;Need an input file in order to generate an output file&#126;&#37;&#34;</span>)</span>)
+<span class='line'>56</span>           (t
+<span class='line'>57</span>            <span id='f0s27'>(start-repl <span id='f0s28'>&#35;&#39;startup-function</span>)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c71'> (lambda (&#38;key ((:help help) nil &#35;:compiler-var) ((:output output) nil &#35;:compiler-var)
+          ((:input input) nil &#35;:compiler-var) ((:sly sly) nil &#35;:compiler-var) ((:swank swank) nil &#35;:compiler-var)
+          ((:port port) nil &#35;:compiler-var) ((:alive alive) nil &#35;:compiler-var))
+   <span id='f0c70'>(flet ((&#35;:startup-function <span id='f0c69'>(lambda nil
+                                <span id='f0c68'>(progn <span id='f0c63'>(let* ((port <span id='f0c62'>(or port 4005)</span>))
+                                         (progn <span id='f0c59'>(if swank <span id='f0c57'>(funcall &#39;alu&#46;prelude:start-swank <span id='f0c56'>&#39;:port</span> port)</span> nil)</span>
+                                                <span id='f0c46'>(if sly <span id='f0c44'>(funcall &#39;alu&#46;prelude:start-slynk <span id='f0c42'>&#39;:port</span> port)</span> nil)</span>
+                                                <span id='f0c54'>(if alive
+                                                    <span id='f0c53'>(progn <span id='f0c49'>(funcall &#39;quicklisp-client:quickload <span id='f0c48'>&#39;:alive-lsp</span>)</span>
+                                                           <span id='f0c52'>(funcall &#39;uiop&#47;package:symbol-call <span id='f0c50'>&#39;:alive&#47;server</span> <span id='f0c51'>&#39;:start</span>)</span>)</span>
+                                                    nil)</span>))</span>
+                                       <span id='f0c67'>(if input <span id='f0c66'>(funcall &#39;load input)</span> nil)</span>)</span>)</span>))
+     <span id='f0c41'>(if help
+         <span id='f0c24'>(funcall &#39;command-line-arguments:show-option-help +command-line-spec+ <span id='f0c23'>&#39;:sort-names</span> t)</span>
+         <span id='f0c39'>(if <span id='f0c33'>(if output input nil)</span>
+             <span id='f0c38'>(progn <span id='f0c35'>(funcall &#39;load input)</span> <span id='f0c37'>(funcall &#39;alu&#46;pipeline&#46;pipeline:dump-entry-point-to-file output)</span>)</span>
+             <span id='f0c30'>(if output
+                 <span id='f0c27'>(funcall &#39;format t <span id='f0c26'>&#39;&#34;Need an input file in order to generate an output file&#126;&#37;&#34;</span>)</span>
+                 <span id='f0c29'>(funcall &#39;start-repl &#35;:startup-function)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>58</span> 
+<span id='f0s29'><span class='line'>59</span> (defun start-repl (&#38;optional (func <span id='f0s30'>(lambda () 1)</span>))
+<span class='line'>60</span>   <span id='f0s31'>(funcall func)</span>
+<span class='line'>61</span>   &#35;+ccl
+<span class='line'>62</span>   (ccl:toplevel-loop)
+<span class='line'>63</span>   &#35;+sbcl
+<span class='line'>64</span>   (sb-impl::toplevel-init)
+<span class='line'>65</span>   &#35;+ecl
+<span class='line'>66</span>   (si:top-level t))</span>
+</code></div>
+<a href=javascript:swap('f0t29')><span class='toggle' id='pf0t29'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(29)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t29'><code><span id='f0c21'> (lambda (&#38;optional (func <span id='f0c17'>(function <span id='f0c16'>(lambda nil 1)</span>)</span> &#35;:compiler-var)) <span id='f0c20'>(progn <span id='f0c19'>(funcall func)</span> <span id='f0c18'>(funcall &#39;ccl:toplevel-loop)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>67</span> 
+<span class='line'>68</span> &#59;&#59; If you want compression on your asdf
+<span class='line'>69</span> &#59;&#59; Though I overload so this isn&#39;t needed anymore
+<span id='f0s32'><span class='line'>70</span> (defun save-alu-and-die ()
+<span class='line'>71</span>   &#35;+ccl
+<span class='line'>72</span>   (ccl:save-application &#34;image&#34; :prepend-kernel t
+<span class='line'>73</span>                                 :toplevel-function &#35;&#39;main)
+<span class='line'>74</span>   &#35;+sbcl
+<span class='line'>75</span>   (sb-ext:save-lisp-and-die &#35;p&#34;&#46;&#47;build&#47;alu&#46;image&#34;
+<span class='line'>76</span>                             :toplevel &#35;&#39;main
+<span class='line'>77</span>                             :executable t
+<span class='line'>78</span>                             :COMPRESSION 1))</span>
+</code></div>
+<a href=javascript:swap('f0t32')><span class='toggle' id='pf0t32'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(32)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t32'><code><span id='f0c5'> (lambda nil <span id='f0c4'>(funcall &#39;ccl:save-application <span id='f0c1'>&#39;&#34;image&#34;</span> <span id='f0c2'>&#39;:prepend-kernel</span> t <span id='f0c3'>&#39;:toplevel-function</span> <span id='f0c0'>(function main)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

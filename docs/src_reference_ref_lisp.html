@@ -1,0 +1,93 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_reference_ref_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;reference;ref.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;reference)
+<span class='line'>2</span> 
+<span id='f0s0'><span class='line'>3</span> (defstruct ref contents)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c34'> (lambda (&#35;:value50559 ref)
+   <span id='f0c33'>(ccl::struct-set <span id='f0c32'>(funcall &#39;ccl::require-structure-type ref <span id='f0c30'>&#39;&#35;&#60;class-cell for ref &#35;x302001DE565D&#62;</span>)</span> 1 &#35;:value50559)</span>)</span>
+<span id='f0c22'> (lambda (ref) <span id='f0c21'>(ccl::struct-ref <span id='f0c19'>(funcall &#39;ccl::require-structure-type ref <span id='f0c17'>&#39;&#35;&#60;class-cell for ref &#35;x302001DE565D&#62;</span>)</span> 1)</span>)</span>
+<span id='f0c16'> (lambda (&#38;key ((:contents &#35;:contents) nil &#35;:compiler-var))
+   <span id='f0c15'>(ccl::&#37;gvector 54 <span id='f0c13'>&#39;(&#35;&#60;class-cell for ref &#35;x302001DE565D&#62;)</span> &#35;:contents)</span>)</span>
+<span id='f0c12'> (lambda (ref)
+   <span id='f0c11'>(funcall &#39;ccl::copy-uvector <span id='f0c10'>(funcall &#39;ccl::require-structure-type ref <span id='f0c9'>&#39;&#35;&#60;class-cell for ref &#35;x302001DE565D&#62;</span>)</span>)</span>)</span>
+<span id='f0c3'> (lambda (&#35;:g50558) <span id='f0c2'>(funcall &#39;ccl:structure-typep &#35;:g50558 <span id='f0c1'>&#39;&#35;&#60;class-cell for ref &#35;x302001DE565D&#62;</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>4</span> 
+<span id='f0s1'><span class='line'>5</span> (defun ref (x)
+<span class='line'>6</span>   &#34;Creates a reference out of x&#34;
+<span class='line'>7</span>   <span id='f0s2'>(make-ref :contents x)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t1')><span class='toggle' id='pf0t1'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(1)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t1'><code><span id='f0c7'> (lambda (x) <span id='f0c6'>(funcall &#39;make-ref <span id='f0c5'>&#39;:contents</span> x)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>8</span> 
+<span id='f0s3'><span class='line'>9</span> (defun &#33; (ref)
+<span class='line'>10</span>   &#34;Grabs the contents of a reference&#34;
+<span class='line'>11</span>   <span id='f0s4'>(ref-contents ref)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c27'> (lambda (ref) <span id='f0c26'>(ccl::struct-ref <span id='f0c24'>(ccl::typed-form &#39;ref ref)</span> 1)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>12</span> 
+<span id='f0s5'><span class='line'>13</span> (defun (setf &#33;) (x ref)
+<span class='line'>14</span>   &#34;sets the reference value to x&#34;
+<span class='line'>15</span>   <span id='f0s6'>(setf (ref-contents ref) x)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c40'> (lambda (x ref) <span id='f0c39'>(ccl::struct-set <span id='f0c38'>(ccl::typed-form &#39;ref ref)</span> 1 x)</span>)</span>
+</code></div><hr/>
+</body></html>

@@ -1,0 +1,449 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_typechecker_types_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;typechecker;types.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;typechecker&#46;types)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59;&#59; Typing Context Structure
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span id='f0s0'><span class='line'>7</span> (defclass typing-context ()
+<span class='line'>8</span>   ((holes :initarg :holes
+<span class='line'>9</span>           :accessor holes
+<span class='line'>10</span>           :initform nil
+<span class='line'>11</span>           :type list                    &#59; list (list keywords)
+<span class='line'>12</span>           :documentation &#34;Represents the holes to solve&#46; List of keywords&#34;)
+<span class='line'>13</span>    (hole-info :initarg :hole-info
+<span class='line'>14</span>               :accessor hole-info
+<span class='line'>15</span>               :initform <span id='f0s1'>(closure:allocate)</span>
+<span class='line'>16</span>               :type closure:typ         &#59; Closure:typ hole-information
+<span class='line'>17</span>               :documentation &#34;Represents information about the holes that we know&#34;)
+<span class='line'>18</span>    (dependency :initarg :dependency
+<span class='line'>19</span>                :accessor dependency
+<span class='line'>20</span>                :initform <span id='f0s2'>(dependency:allocate)</span>
+<span class='line'>21</span>                :type dependency:typ
+<span class='line'>22</span>                :documentation &#34;Represents the constraint satisfaction mapping&#34;)
+<span class='line'>23</span>    (typing-closure :initarg :typing-closure
+<span class='line'>24</span>                    :accessor typing-closure
+<span class='line'>25</span>                    :initform <span id='f0s3'>(closure:allocate)</span>
+<span class='line'>26</span>                    :type closure:typ    &#59; Closure:typ type-info
+<span class='line'>27</span>                    :documentation
+<span class='line'>28</span>                    &#34;This is the typing closure for terms which we already know&#34;))
+<span class='line'>29</span>   (:documentation &#34;This represents the typing context the terms we are
+<span class='line'>30</span> analyzing belong in&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c308'> (lambda nil <span id='f0c307'>(funcall &#39;closure:allocate)</span>)</span>
+<span id='f0c268'> (lambda nil <span id='f0c267'>(funcall &#39;dependency:allocate)</span>)</span>
+<span id='f0c102'> (lambda nil <span id='f0c101'>(funcall &#39;closure:allocate)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>31</span> 
+<span class='line'>32</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>33</span> &#59;&#59;&#59; Function Return Value
+<span class='line'>34</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span id='f0s4'><span class='line'>35</span> (deftype typing-result ()
+<span class='line'>36</span>   &#34;The result of trying to annotate a term&#34;
+<span class='line'>37</span>   <span id='f0s5'>&#96;(or type-info hole-conditions)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c365'> (lambda (&#35;:whole55007 &#35;:environment55008)
+   <span id='f0c364'>(let* ((&#35;:args55009 <span id='f0c362'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c359'>(cdr &#35;:whole55007)</span> nil 0 0)</span>))
+     <span id='f0c363'>&#39;(or type-info hole-conditions)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>38</span> 
+<span class='line'>39</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>40</span> &#59;&#59;&#59; Known Type Cache
+<span class='line'>41</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>42</span> 
+<span id='f0s6'><span class='line'>43</span> (defstruct type-info
+<span class='line'>44</span>   &#34;Type information of a fully realized type&#46;&#34;
+<span class='line'>45</span>   &#59;&#59; if we don&#39;t know the size quite yet it will be nil
+<span class='line'>46</span>   (size nil :type (or fixnum null))
+<span class='line'>47</span>   (type nil :type ir:type-reference))</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c306'> (lambda (type-info)
+   <span id='f0c305'>(funcall &#39;ccl::copy-uvector
+            <span id='f0c304'>(funcall &#39;ccl::require-structure-type type-info <span id='f0c302'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>)</span>)</span>
+<span id='f0c280'> (lambda (&#35;:g55037) <span id='f0c279'>(funcall &#39;ccl:structure-typep &#35;:g55037 <span id='f0c278'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>)</span>
+<span id='f0c235'> (lambda (&#35;:value55039 type-info)
+   <span id='f0c234'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+    <span id='f0c233'>(ccl::struct-set <span id='f0c215'>(funcall &#39;ccl::require-structure-type type-info <span id='f0c213'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>
+                     2
+                     <span id='f0c232'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+                      <span id='f0c231'>(let* ((&#35;:g55084 &#35;:value55039))
+                        <span id='f0c230'>(if <span id='f0c228'>(let* ((&#35;:g55086 &#35;:g55084))
+                              <span id='f0c227'>(or <span id='f0c226'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                           &#35;:g55086
+                                           <span id='f0c225'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200384414F&#62;))</span>)</span>
+                                  <span id='f0c223'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                           &#35;:g55086
+                                           <span id='f0c221'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020038412AF&#62;))</span>)</span>)</span>)</span>
+                            &#35;:g55084
+                            <span id='f0c220'>(funcall &#39;ccl::&#37;kernel-restart
+                                     157
+                                     &#35;:g55084
+                                     <span id='f0c217'>&#39;(or alu&#46;spec:reference-type alu&#46;spec:application)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+<span id='f0c142'> (lambda (&#35;:value55038 type-info)
+   <span id='f0c141'>(ccl::typed-form &#39;(or fixnum null)
+    <span id='f0c140'>(ccl::struct-set <span id='f0c125'>(funcall &#39;ccl::require-structure-type type-info <span id='f0c124'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>
+                     1
+                     <span id='f0c138'>(ccl::typed-form &#39;(or fixnum null)
+                      <span id='f0c137'>(let* ((&#35;:g55072 &#35;:value55038))
+                        <span id='f0c136'>(if <span id='f0c131'>(let* ((&#35;:g55074 &#35;:g55072)) <span id='f0c130'>(or <span id='f0c128'>(eq (ccl::lisptag &#35;:g55074) 0)</span> <span id='f0c129'>(not &#35;:g55074)</span>)</span>)</span>
+                            &#35;:g55072
+                            <span id='f0c135'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55072 <span id='f0c133'>&#39;(or fixnum null)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+<span id='f0c72'> (lambda (type-info)
+   <span id='f0c71'>(ccl::typed-form &#39;(or fixnum null)
+    <span id='f0c70'>(ccl::struct-ref <span id='f0c68'>(funcall &#39;ccl::require-structure-type type-info <span id='f0c66'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span> 1)</span>)</span>)</span>
+<span id='f0c65'> (lambda (&#38;key ((:size &#35;:size) nil &#35;:compiler-var) ((:type &#35;:type) nil &#35;:compiler-var))
+   <span id='f0c64'>(ccl::&#37;gvector 54
+                  <span id='f0c47'>&#39;(&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;)</span>
+                  <span id='f0c46'>(ccl::typed-form &#39;(or fixnum null)
+                   <span id='f0c45'>(let* ((&#35;:g55096 &#35;:size))
+                     <span id='f0c44'>(if <span id='f0c43'>(let* ((&#35;:g55099 &#35;:g55096)) <span id='f0c42'>(or <span id='f0c41'>(eq (ccl::lisptag &#35;:g55099) 0)</span> <span id='f0c39'>(not &#35;:g55099)</span>)</span>)</span>
+                         &#35;:g55096
+                         <span id='f0c38'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55096 <span id='f0c37'>&#39;(or fixnum null)</span>)</span>)</span>)</span>)</span>
+                  <span id='f0c63'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+                   <span id='f0c62'>(let* ((&#35;:g55097 &#35;:type))
+                     <span id='f0c61'>(if <span id='f0c55'>(let* ((&#35;:g55101 &#35;:g55097))
+                           <span id='f0c54'>(or <span id='f0c53'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                        &#35;:g55101
+                                        <span id='f0c52'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200386053F&#62;))</span>)</span>
+                               <span id='f0c50'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                        &#35;:g55101
+                                        <span id='f0c49'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200389D69F&#62;))</span>)</span>)</span>)</span>
+                         &#35;:g55097
+                         <span id='f0c59'>(funcall &#39;ccl::&#37;kernel-restart
+                                  157
+                                  &#35;:g55097
+                                  <span id='f0c56'>&#39;(or alu&#46;spec:reference-type alu&#46;spec:application)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+<span id='f0c29'> (lambda (type-info)
+   <span id='f0c28'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+    <span id='f0c27'>(ccl::struct-ref <span id='f0c25'>(funcall &#39;ccl::require-structure-type type-info <span id='f0c24'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span> 2)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>48</span> 
+<span class='line'>49</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>50</span> &#59;&#59;&#59; Data Types about Holes
+<span class='line'>51</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>52</span> 
+<span id='f0s7'><span class='line'>53</span> (defstruct hole-information
+<span class='line'>54</span>   (unrefined nil :type hole)
+<span class='line'>55</span>   &#59;&#59; We should redefine term&#44; to be a list of ir:term-no-binding
+<span class='line'>56</span>   &#59;&#59; as we can be solved by various sets of equations&#46;
+<span class='line'>57</span>   &#59;&#59;
+<span class='line'>58</span>   &#59;&#59; What I mean is that if we have &#96;x &#61; some equation&#39;&#44; and then
+<span class='line'>59</span>   &#59;&#59; later &#96;y &#61; x&#39; where we solve for &#96;y&#39;&#44; then we&#39;ve solved for &#96;x&#39;&#46;
+<span class='line'>60</span>   &#59;&#59;
+<span class='line'>61</span>   &#59;&#59; Thus the hole-information should be (list equation &#35;&#60;reference y&#62;)
+<span class='line'>62</span>   &#59;&#59;
+<span class='line'>63</span>   &#59;&#59; And when our dependency closure says we&#39;ve solved it&#44; try the
+<span class='line'>64</span>   &#59;&#59; list until we get the equation that satisfies the constraint&#46;
+<span class='line'>65</span>   (term nil :type list))</span>
+</code></div>
+<a href=javascript:swap('f0t7')><span class='toggle' id='pf0t7'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(7)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t7'><code><span id='f0c332'> (lambda (hole-information)
+   <span id='f0c331'>(ccl::typed-form &#39;(or null keyword)
+    <span id='f0c330'>(ccl::struct-ref <span id='f0c328'>(funcall &#39;ccl::require-structure-type
+                              hole-information
+                              <span id='f0c327'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>
+                     1)</span>)</span>)</span>
+<span id='f0c325'> (lambda (hole-information)
+   <span id='f0c324'>(ccl::typed-form &#39;list
+    <span id='f0c323'>(ccl::struct-ref <span id='f0c321'>(funcall &#39;ccl::require-structure-type
+                              hole-information
+                              <span id='f0c320'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>
+                     2)</span>)</span>)</span>
+<span id='f0c318'> (lambda (&#35;:value55116 hole-information)
+   <span id='f0c317'>(ccl::typed-form &#39;list
+    <span id='f0c316'>(ccl::struct-set <span id='f0c315'>(funcall &#39;ccl::require-structure-type
+                              hole-information
+                              <span id='f0c314'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>
+                     2
+                     <span id='f0c312'>(ccl::typed-form &#39;list <span id='f0c311'>(ccl::require-list &#35;:value55116)</span>)</span>)</span>)</span>)</span>
+<span id='f0c301'> (lambda (hole-information)
+   <span id='f0c300'>(funcall &#39;ccl::copy-uvector
+            <span id='f0c299'>(funcall &#39;ccl::require-structure-type hole-information <span id='f0c298'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>)</span>)</span>
+<span id='f0c266'> (lambda (&#38;key ((:unrefined &#35;:unrefined) nil &#35;:compiler-var) ((:term &#35;:term) nil &#35;:compiler-var))
+   <span id='f0c265'>(ccl::&#37;gvector 54
+                  <span id='f0c248'>&#39;(&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;)</span>
+                  <span id='f0c261'>(ccl::typed-form &#39;(or null keyword)
+                   <span id='f0c260'>(let* ((&#35;:g55167 &#35;:unrefined))
+                     <span id='f0c259'>(if <span id='f0c258'>(let* ((&#35;:g55169 &#35;:g55167)) <span id='f0c257'>(or <span id='f0c256'>(not &#35;:g55169)</span> <span id='f0c255'>(funcall &#39;keywordp &#35;:g55169)</span>)</span>)</span>
+                         &#35;:g55167
+                         <span id='f0c252'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55167 <span id='f0c251'>&#39;(or null keyword)</span>)</span>)</span>)</span>)</span>
+                  <span id='f0c264'>(ccl::typed-form &#39;list <span id='f0c263'>(ccl::require-list &#35;:term)</span>)</span>)</span>)</span>
+<span id='f0c239'> (lambda (&#35;:g55114) <span id='f0c238'>(funcall &#39;ccl:structure-typep &#35;:g55114 <span id='f0c237'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>)</span>
+<span id='f0c100'> (lambda (&#35;:value55115 hole-information)
+   <span id='f0c99'>(ccl::typed-form &#39;(or null keyword)
+    <span id='f0c98'>(ccl::struct-set <span id='f0c84'>(funcall &#39;ccl::require-structure-type
+                              hole-information
+                              <span id='f0c82'>&#39;&#35;&#60;class-cell for hole-information &#35;x302001E23E1D&#62;</span>)</span>
+                     1
+                     <span id='f0c97'>(ccl::typed-form &#39;(or null keyword)
+                      <span id='f0c96'>(let* ((&#35;:g55152 &#35;:value55115))
+                        <span id='f0c95'>(if <span id='f0c94'>(let* ((&#35;:g55154 &#35;:g55152)) <span id='f0c93'>(or <span id='f0c90'>(not &#35;:g55154)</span> <span id='f0c92'>(funcall &#39;keywordp &#35;:g55154)</span>)</span>)</span>
+                            &#35;:g55152
+                            <span id='f0c89'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55152 <span id='f0c87'>&#39;(or null keyword)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>66</span> 
+<span class='line'>67</span> &#59;&#59; TODO :: with generics we should make this type a lot more rich and
+<span class='line'>68</span> &#59;&#59;         informative
+<span id='f0s8'><span class='line'>69</span> (deftype hole ()
+<span class='line'>70</span>   &#34;Represents the format of holes that have yet to be fully realized&#46;&#34;
+<span class='line'>71</span>   <span id='f0s9'>&#96;(or null keyword)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c296'> (lambda (&#35;:whole55176 &#35;:environment55177)
+   <span id='f0c295'>(let* ((&#35;:args55178 <span id='f0c294'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c293'>(cdr &#35;:whole55176)</span> nil 0 0)</span>)) <span id='f0c289'>&#39;(or null keyword)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>72</span> 
+<span id='f0s10'><span class='line'>73</span> (deftype hole-conditions ()
+<span class='line'>74</span>   &#34;The conditions in which a fialure can happen for &#34;
+<span class='line'>75</span>   <span id='f0s11'>&#96;(or same-as
+<span class='line'>76</span>        (eql :refine-integer)
+<span class='line'>77</span>        (eql :refine-array)
+<span class='line'>78</span>        depends-on)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c340'> (lambda (&#35;:whole55197 &#35;:environment55198)
+   <span id='f0c339'>(let* ((&#35;:args55199 <span id='f0c337'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c334'>(cdr &#35;:whole55197)</span> nil 0 0)</span>))
+     <span id='f0c338'>&#39;(or same-as (eql :refine-integer) (eql :refine-array) depends-on)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>79</span> 
+<span class='line'>80</span> &#59;&#59; infer-from
+<span id='f0s12'><span class='line'>81</span> (defstruct same-as
+<span class='line'>82</span>   &#34;Represents that the hole is the same as this other variable&#34;
+<span class='line'>83</span>   (value <span id='f0s13'>(error <span id='f0s14'>&#34;fill in the value&#34;</span>)</span> :type keyword))</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c377'> (lambda (same-as)
+   <span id='f0c376'>(funcall &#39;ccl::copy-uvector <span id='f0c375'>(funcall &#39;ccl::require-structure-type same-as <span id='f0c374'>&#39;&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;</span>)</span>)</span>)</span>
+<span id='f0c357'> (lambda (&#35;:value55216 same-as)
+   <span id='f0c356'>(ccl::typed-form &#39;keyword
+    <span id='f0c355'>(ccl::struct-set <span id='f0c343'>(funcall &#39;ccl::require-structure-type same-as <span id='f0c342'>&#39;&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;</span>)</span>
+                     1
+                     <span id='f0c354'>(ccl::typed-form &#39;keyword
+                      <span id='f0c353'>(let* ((&#35;:g55249 &#35;:value55216))
+                        <span id='f0c352'>(if <span id='f0c346'>(funcall &#39;keywordp &#35;:g55249)</span>
+                            &#35;:g55249
+                            <span id='f0c351'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55249 <span id='f0c350'>&#39;keyword</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+<span id='f0c212'> (lambda (&#38;key ((:value &#35;:value) <span id='f0c199'>(values (funcall &#39;error <span id='f0c198'>&#39;&#34;fill in the value&#34;</span>))</span> &#35;:compiler-var))
+   <span id='f0c211'>(ccl::&#37;gvector 54
+                  <span id='f0c200'>&#39;(&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;)</span>
+                  <span id='f0c210'>(ccl::typed-form &#39;keyword
+                   <span id='f0c209'>(let* ((&#35;:g55253 &#35;:value))
+                     <span id='f0c208'>(if <span id='f0c207'>(funcall &#39;keywordp &#35;:g55253)</span> &#35;:g55253 <span id='f0c204'>(funcall &#39;ccl::&#37;kernel-restart 157 &#35;:g55253 <span id='f0c203'>&#39;keyword</span>)</span>)</span>)</span>)</span>)</span>)</span>
+<span id='f0c122'> (lambda (&#35;:g55215) <span id='f0c121'>(funcall &#39;ccl:structure-typep &#35;:g55215 <span id='f0c119'>&#39;&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;</span>)</span>)</span>
+<span id='f0c6'> (lambda (same-as)
+   <span id='f0c5'>(ccl::typed-form &#39;keyword
+    <span id='f0c4'>(ccl::struct-ref <span id='f0c2'>(funcall &#39;ccl::require-structure-type same-as <span id='f0c0'>&#39;&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;</span>)</span> 1)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>84</span> 
+<span id='f0s15'><span class='line'>85</span> (defstruct depends-on
+<span class='line'>86</span>   &#34;this represents that the value is tied to the list of values in some
+<span class='line'>87</span> way&#46;&#34;
+<span class='line'>88</span>   (value nil :type list))</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c382'> (lambda (depends-on)
+   <span id='f0c381'>(funcall &#39;ccl::copy-uvector
+            <span id='f0c380'>(funcall &#39;ccl::require-structure-type depends-on <span id='f0c378'>&#39;&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;</span>)</span>)</span>)</span>
+<span id='f0c372'> (lambda (depends-on)
+   <span id='f0c371'>(ccl::typed-form &#39;list
+    <span id='f0c370'>(ccl::struct-ref <span id='f0c368'>(funcall &#39;ccl::require-structure-type depends-on <span id='f0c366'>&#39;&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;</span>)</span> 1)</span>)</span>)</span>
+<span id='f0c33'> (lambda (&#35;:g55260) <span id='f0c32'>(funcall &#39;ccl:structure-typep &#35;:g55260 <span id='f0c31'>&#39;&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;</span>)</span>)</span>
+<span id='f0c22'> (lambda (&#35;:value55261 depends-on)
+   <span id='f0c21'>(ccl::typed-form &#39;list
+    <span id='f0c20'>(ccl::struct-set <span id='f0c15'>(funcall &#39;ccl::require-structure-type depends-on <span id='f0c13'>&#39;&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;</span>)</span>
+                     1
+                     <span id='f0c19'>(ccl::typed-form &#39;list <span id='f0c18'>(ccl::require-list &#35;:value55261)</span>)</span>)</span>)</span>)</span>
+<span id='f0c12'> (lambda (&#38;key ((:value &#35;:value) nil &#35;:compiler-var))
+   <span id='f0c11'>(ccl::&#37;gvector 54 <span id='f0c7'>&#39;(&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;)</span> <span id='f0c10'>(ccl::typed-form &#39;list <span id='f0c9'>(ccl::require-list &#35;:value)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>89</span> 
+<span class='line'>90</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>91</span> &#59;&#59;&#59; Data Types about Querying Types
+<span class='line'>92</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>93</span> 
+<span id='f0s16'><span class='line'>94</span> (deftype current-information ()
+<span class='line'>95</span>   &#34;Represents the current knowledge we have on a given type&#46; Thus a
+<span class='line'>96</span> hole&#44; or if the type is known a type reference&#34;
+<span class='line'>97</span>   <span id='f0s17'>&#96;(or hole ir:type-reference)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t16')><span class='toggle' id='pf0t16'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(16)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t16'><code><span id='f0c276'> (lambda (&#35;:whole55306 &#35;:environment55307)
+   <span id='f0c275'>(let* ((&#35;:args55308 <span id='f0c273'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c272'>(cdr &#35;:whole55306)</span> nil 0 0)</span>))
+     <span id='f0c274'>&#39;(or hole alu&#46;spec:type-reference)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>98</span> 
+<span id='f0s18'><span class='line'>99</span> (deftype lookup-type ()
+<span class='line'>100</span>   &#34;represents the potential type of a reference&#46;
+<span class='line'>101</span> 
+<span class='line'>102</span> &#95;It can either be&#95;
+<span class='line'>103</span> 1&#46; known
+<span class='line'>104</span> 
+<span class='line'>105</span> 2&#46; an unrefined value
+<span class='line'>106</span>   - which we represent with a keyword&#46;
+<span class='line'>107</span>   - TODO :: Once we update with generics&#44; we should move this to a
+<span class='line'>108</span>     &#96;ir:type-reference&#39;
+<span class='line'>109</span> 
+<span class='line'>110</span> 3&#46; unknown
+<span class='line'>111</span>   - which we represent with null&#46;&#34;
+<span class='line'>112</span>   <span id='f0s19'>&#96;(or type-info hole)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t18')><span class='toggle' id='pf0t18'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(18)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t18'><code><span id='f0c288'> (lambda (&#35;:whole55327 &#35;:environment55328)
+   <span id='f0c287'>(let* ((&#35;:args55329 <span id='f0c285'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c283'>(cdr &#35;:whole55327)</span> nil 0 0)</span>)) <span id='f0c286'>&#39;(or type-info hole)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>113</span> 
+<span class='line'>114</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>115</span> &#59;&#59;&#59; Data Types about known type primitives
+<span class='line'>116</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>117</span> 
+<span id='f0s20'><span class='line'>118</span> (deftype known-primitve-types ()
+<span class='line'>119</span>   <span id='f0s21'>&#96;(or (eql :int)
+<span class='line'>120</span>        (eql :bool)
+<span class='line'>121</span>        (eql :void)
+<span class='line'>122</span>        (eql :array))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t20')><span class='toggle' id='pf0t20'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(20)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t20'><code><span id='f0c80'> (lambda (&#35;:whole55345 &#35;:environment55346)
+   <span id='f0c79'>(let* ((&#35;:args55347 <span id='f0c77'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c75'>(cdr &#35;:whole55345)</span> nil 0 0)</span>))
+     <span id='f0c78'>&#39;(or (eql :int) (eql :bool) (eql :void) (eql :array))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>123</span> 
+<span id='f0s22'><span class='line'>124</span> (deftype known-primitve-functions ()
+<span class='line'>125</span>   <span id='f0s23'>&#96;(or (eql :+)
+<span class='line'>126</span>        (eql :*)
+<span class='line'>127</span>        (eql :&#61;)
+<span class='line'>128</span>        (eql :exp))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t22')><span class='toggle' id='pf0t22'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(22)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t22'><code><span id='f0c247'> (lambda (&#35;:whole55363 &#35;:environment55364)
+   <span id='f0c246'>(let* ((&#35;:args55365 <span id='f0c245'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c242'>(cdr &#35;:whole55363)</span> nil 0 0)</span>))
+     <span id='f0c240'>&#39;(or (eql :+) (eql :*) (eql :&#61;) (eql :exp))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>129</span> 
+<span class='line'>130</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>131</span> &#59;&#59;&#59; Operations on Typing Context
+<span class='line'>132</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>133</span> 
+<span id='f0s24'><span class='line'>134</span> (defmethod print-object ((obj typing-context) stream)
+<span class='line'>135</span>   <span id='f0s25'>(print-unreadable-object (obj stream :type t)
+<span class='line'>136</span>     <span id='f0s26'>(pprint-logical-block (stream nil)
+<span class='line'>137</span>         <span id='f0s27'>(format stream <span id='f0s28'>&#34;:HOLES &#126;A&#126;&#95;:HOLE-INFO &#126;A&#126;&#95;:DEPENDENCY &#126;A&#126;&#95;:TYPING-CLOSURE &#126;A&#34;</span>
+<span class='line'>138</span>                 <span id='f0s29'>(holes obj)</span> <span id='f0s30'>(hole-info obj)</span> <span id='f0s31'>(dependency obj)</span> <span id='f0s32'>(typing-closure obj)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c197'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c196'>(flet ()
+     <span id='f0c195'>(let* ((&#35;:g55389
+             <span id='f0c194'>(function <span id='f0c193'>(lambda nil
+                         <span id='f0c192'>(let* ((ccl::*logical-block-p* t))
+                           <span id='f0c191'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                                    <span id='f0c190'>(function <span id='f0c189'>(lambda (stream)
+                                                <span id='f0c188'>(let ((ccl::+p <span id='f0c149'>(or nil nil)</span>))
+                                                  <span id='f0c187'>(let ((ccl::*current-level* <span id='f0c151'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                                        (ccl::*current-length* -1))
+                                                    <span id='f0c186'>(if <span id='f0c156'>(not <span id='f0c155'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                                        <span id='f0c185'>(progn <span id='f0c184'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c183'>&#39;&#34;&#34;</span>)</span>
+                                                               <span id='f0c180'>(if <span id='f0c179'>(catch <span id='f0c178'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                                     (progn <span id='f0c174'>(progn <span id='f0c173'>(funcall &#39;format
+                                                                                            stream
+                                                                                            <span id='f0c171'>&#39;&#34;:HOLES &#126;A&#126;&#95;:HOLE-INFO &#126;A&#126;&#95;:DEPENDENCY &#126;A&#126;&#95;:TYPING-CLOSURE &#126;A&#34;</span>
+                                                                                            <span id='f0c166'>(funcall &#39;holes obj)</span>
+                                                                                            <span id='f0c164'>(funcall &#39;hole-info obj)</span>
+                                                                                            <span id='f0c170'>(funcall &#39;dependency obj)</span>
+                                                                                            <span id='f0c168'>(funcall &#39;typing-closure
+                                                                                                     obj)</span>)</span>
+                                                                                   nil)</span>
+                                                                            <span id='f0c177'>(funcall &#39;ccl::end-block stream <span id='f0c176'>&#39;&#34;&#34;</span>)</span>
+                                                                            nil))</span>
+                                                                   <span id='f0c162'>(progn <span id='f0c159'>(funcall &#39;ccl::end-block stream <span id='f0c158'>&#39;&#34;&#34;</span>)</span>
+                                                                          <span id='f0c161'>(throw <span id='f0c160'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                                                   nil)</span>)</span>
+                                                        nil)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c148'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c146'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g55389)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>139</span> 
+<span class='line'>140</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>141</span> &#59;&#59;&#59; Operations on hole Info
+<span class='line'>142</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>143</span> 
+<span class='line'>144</span> (-&#62; add-hole-formula (hole-information alu&#46;spec:term-no-binding) hole-information)
+<span id='f0s33'><span class='line'>145</span> (defun add-hole-formula (hole new-formula)
+<span class='line'>146</span>   <span id='f0s34'>(make-hole-information :unrefined <span id='f0s35'>(hole-information-unrefined hole)</span>
+<span class='line'>147</span>                          :term <span id='f0s36'>(cons new-formula <span id='f0s37'>(hole-information-term hole)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t33')><span class='toggle' id='pf0t33'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(33)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t33'><code><span id='f0c118'> (lambda (hole new-formula)
+   <span id='f0c117'>(funcall &#39;make-hole-information
+            <span id='f0c110'>&#39;:unrefined</span>
+            <span id='f0c115'>(ccl::typed-form &#39;(or null keyword) <span id='f0c114'>(ccl::struct-ref <span id='f0c113'>(ccl::typed-form &#39;hole-information hole)</span> 1)</span>)</span>
+            <span id='f0c116'>&#39;:term</span>
+            <span id='f0c109'>(cons new-formula <span id='f0c108'>(ccl::typed-form &#39;list <span id='f0c107'>(ccl::struct-ref <span id='f0c105'>(ccl::typed-form &#39;hole-information hole)</span> 2)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

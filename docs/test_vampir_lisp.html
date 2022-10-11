@@ -1,0 +1,119 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_vampir_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;vampir.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite vampir
+<span class='line'>4</span>   :description &#34;Test the vampir layer&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite vampir)
+<span class='line'>7</span> 
+<span class='line'>8</span> (defparameter *vamp-example-1*
+<span class='line'>9</span>   (list (vspc:make-pub :wires (list :fi :bar))
+<span class='line'>10</span>         (vspc:make-alias
+<span class='line'>11</span>          :name :xor
+<span class='line'>12</span>          :inputs &#39;(:a :b)
+<span class='line'>13</span>          :body (list (vspc:make-bind
+<span class='line'>14</span>                       :names (list (vspc:make-wire :var :c))
+<span class='line'>15</span>                       :value (vspc:make-infix :op :+
+<span class='line'>16</span>                                               :lhs (vspc:make-wire :var :a)
+<span class='line'>17</span>                                               :rhs (vspc:make-wire :var :b)))
+<span class='line'>18</span>                      (vspc:make-wire :var :c)))))
+<span class='line'>19</span> 
+<span class='line'>20</span> (defparameter *expected-1*
+<span class='line'>21</span>   (with-output-to-string (stream)
+<span class='line'>22</span>     (format stream &#34;pub fi&#126;&#37;&#34;)
+<span class='line'>23</span>     (format stream &#34;pub bar&#126;&#37;&#34;)
+<span class='line'>24</span>     (format stream &#34;def xor a b &#123;&#126;&#37;&#34;)
+<span class='line'>25</span>     (format stream &#34;  def c &#61; a + b&#59;&#126;&#37;&#34;)
+<span class='line'>26</span>     (format stream &#34;  c&#126;&#37;&#34;)
+<span class='line'>27</span>     (format stream &#34;&#125;&#34;)))
+<span class='line'>28</span> 
+<span class='line'>29</span> (defparameter *vamp-example-2*
+<span class='line'>30</span>   (list (vspc:make-pub :wires (list :fi :bar))
+<span class='line'>31</span>         (vspc:make-alias
+<span class='line'>32</span>          :name :xor
+<span class='line'>33</span>          :inputs &#39;(:a :b)
+<span class='line'>34</span>          :body
+<span class='line'>35</span>          (list (vspc:make-bind
+<span class='line'>36</span>                 :names (list (vspc:make-wire :var :c))
+<span class='line'>37</span>                 :value &#35;1&#61;(vspc:make-infix :op :*
+<span class='line'>38</span>                                            :lhs (vspc:make-wire :var :a)
+<span class='line'>39</span>                                            :rhs (vspc:make-wire :var :b)))
+<span class='line'>40</span>                (vspc:make-equality
+<span class='line'>41</span>                 :lhs (vspc:make-wire :var :baz)
+<span class='line'>42</span>                 :rhs (vspc:make-infix :op :+
+<span class='line'>43</span>                                       :lhs (vspc:make-wire :var :a)
+<span class='line'>44</span>                                       :rhs &#35;1&#35;))
+<span class='line'>45</span>                (vspc:make-application
+<span class='line'>46</span>                 :func :foo
+<span class='line'>47</span>                 :arguments (list &#35;1&#35;))
+<span class='line'>48</span>                (vspc:make-wire :var :c)))))
+<span class='line'>49</span> 
+<span class='line'>50</span> (defparameter *expected-2*
+<span class='line'>51</span>   (with-output-to-string (stream)
+<span class='line'>52</span>     (format stream &#34;pub fi&#126;&#37;&#34;)
+<span class='line'>53</span>     (format stream &#34;pub bar&#126;&#37;&#34;)
+<span class='line'>54</span>     (format stream &#34;def xor a b &#123;&#126;&#37;&#34;)
+<span class='line'>55</span>     (format stream &#34;  def c &#61; a * b&#59;&#126;&#37;&#34;)
+<span class='line'>56</span>     (format stream &#34;  baz &#61; a + (a * b)&#59;&#126;&#37;&#34;)
+<span class='line'>57</span>     (format stream &#34;  foo (a * b)&#59;&#126;&#37;&#34;)
+<span class='line'>58</span>     (format stream &#34;  c&#126;&#37;&#34;)
+<span class='line'>59</span>     (format stream &#34;&#125;&#34;)))
+<span class='line'>60</span> 
+<span class='line'>61</span> (test extract-alias
+<span class='line'>62</span>   (let ((ran-1 (with-output-to-string (stream)
+<span class='line'>63</span>                  (vamp:extract *vamp-example-1* stream)))
+<span class='line'>64</span>         (ran-2 (with-output-to-string (stream)
+<span class='line'>65</span>                  (vamp:extract *vamp-example-2* stream))))
+<span class='line'>66</span>     (is (equalp *expected-1* ran-1))
+<span class='line'>67</span>     (is (equalp *expected-2* ran-2))))
+</code></div>
+</body></html>

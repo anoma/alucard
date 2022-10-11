@@ -1,0 +1,386 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_intermediate_spec_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;intermediate;spec.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;ir&#46;spec)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; IR Variants through the pipeline
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> &#59;&#59; The Pipeline for how these types get used is roughly as follows&#46;
+<span class='line'>8</span> &#59;&#59;
+<span class='line'>9</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>10</span> &#59;&#59;        &#124;             Linear-Term           &#124;
+<span class='line'>11</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>12</span> &#59;&#59;        &#124; Alu Term through ANF              &#124;
+<span class='line'>13</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>14</span> &#59;&#59;        &#124; Binders contain term-type-manip&#8230; &#124;
+<span class='line'>15</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>16</span> &#59;&#59;        &#124; No other changes                  &#124;
+<span class='line'>17</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>18</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>19</span> &#59;&#59;                          &#124;
+<span class='line'>20</span> &#59;&#59;                          &#124;
+<span class='line'>21</span> &#59;&#59;                          v
+<span class='line'>22</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>23</span> &#59;&#59;        &#124;           Type Aware Term         &#124;
+<span class='line'>24</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>25</span> &#59;&#59;        &#124; Term through removal of top level &#124;
+<span class='line'>26</span> &#59;&#59;        &#124; normal form                       &#124;
+<span class='line'>27</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>28</span> &#59;&#59;        &#124; Binders contain term-type-manip&#8230; &#124;
+<span class='line'>29</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>30</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>31</span> &#59;&#59;        &#124; We run algorithms like            &#124;
+<span class='line'>32</span> &#59;&#59;        &#124; - type checking                   &#124;
+<span class='line'>33</span> &#59;&#59;        &#124; - Expansion                       &#124;
+<span class='line'>34</span> &#59;&#59;        &#124; - ETC                             &#124;
+<span class='line'>35</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>36</span> &#59;&#59;                          &#124;
+<span class='line'>37</span> &#59;&#59;                          &#124;
+<span class='line'>38</span> &#59;&#59;                          v
+<span class='line'>39</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>40</span> &#59;&#59;        &#124;             Expanded-Term         &#124;
+<span class='line'>41</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>42</span> &#59;&#59;        &#124; Term through removal of top level &#124;
+<span class='line'>43</span> &#59;&#59;        &#124; normal forms                      &#124;
+<span class='line'>44</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>45</span> &#59;&#59;        &#124; Binders contain term-no-binders   &#124;
+<span class='line'>46</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>47</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>48</span> &#59;&#59;        &#124; We run algorithms like            &#124;
+<span class='line'>49</span> &#59;&#59;        &#124; - type checking                   &#124;
+<span class='line'>50</span> &#59;&#59;        &#124; - Expansion                       &#124;
+<span class='line'>51</span> &#59;&#59;        &#124; - ETC                             &#124;
+<span class='line'>52</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>53</span> &#59;&#59;                        &#124;
+<span class='line'>54</span> &#59;&#59;                        &#124;
+<span class='line'>55</span> &#59;&#59;                        v
+<span class='line'>56</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>57</span> &#59;&#59;        &#124;        Fully-Expanded-Term        &#124;
+<span class='line'>58</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>59</span> &#59;&#59;        &#124; Term where concepts like          &#124;
+<span class='line'>60</span> &#59;&#59;        &#124; Arrays and records are            &#124;
+<span class='line'>61</span> &#59;&#59;        &#124; expanded out&#46;                     &#124;
+<span class='line'>62</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>63</span> &#59;&#59;        &#124; Binders contain spc:base          &#124;
+<span class='line'>64</span> &#59;&#59;        &#124;                                   &#124;
+<span class='line'>65</span> &#59;&#59;        &#124; We run algorithms like            &#124;
+<span class='line'>66</span> &#59;&#59;        &#124; - void removal                    &#124;
+<span class='line'>67</span> &#59;&#59;        &#124; - extra let removal               &#124;
+<span class='line'>68</span> &#59;&#59;        &#124; - ETC                             &#124;
+<span class='line'>69</span> &#59;&#59;        +-----------------------------------+
+<span class='line'>70</span> &#59;&#59;
+<span class='line'>71</span> 
+<span id='f0s0'><span class='line'>72</span> (deftype linear-term ()
+<span class='line'>73</span>   &#34;A Linear term is a term with no nested terms and is in proper ANF form&#46;&#34;
+<span class='line'>74</span>   <span id='f0s1'>&#96;(or spc:term-type-manipulation
+<span class='line'>75</span>        (starting-binders spc:term-type-manipulation)
+<span class='line'>76</span>        terms:standalone-ret)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c138'> (lambda (&#35;:whole54555 &#35;:environment54556)
+   <span id='f0c137'>(let* ((&#35;:args54557 <span id='f0c136'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c135'>(cdr &#35;:whole54555)</span> nil 0 0)</span>))
+     <span id='f0c131'>&#39;(or spc:term-type-manipulation (starting-binders spc:term-type-manipulation) terms:standalone-ret)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>77</span> 
+<span id='f0s2'><span class='line'>78</span> (deftype type-aware-term ()
+<span class='line'>79</span>   &#34;An expanded term is a term where all top level forms have been
+<span class='line'>80</span> expanded into lets or returns&#34;
+<span class='line'>81</span>   <span id='f0s3'>&#96;(or (starting-binders spc:term-type-manipulation)
+<span class='line'>82</span>        terms:standalone-ret)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c178'> (lambda (&#35;:whole54573 &#35;:environment54574)
+   <span id='f0c177'>(let* ((&#35;:args54575 <span id='f0c176'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c175'>(cdr &#35;:whole54573)</span> nil 0 0)</span>))
+     <span id='f0c171'>&#39;(or (starting-binders spc:term-type-manipulation) terms:standalone-ret)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>83</span> 
+<span id='f0s4'><span class='line'>84</span> (deftype expanded-term ()
+<span class='line'>85</span>   &#34;An expanded term is a term where all top level forms have been
+<span class='line'>86</span> expanded into lets or returns&#44; and type coercions have been removed&#34;
+<span class='line'>87</span>   <span id='f0s5'>&#96;(or (starting-binders spc:term-no-binding)
+<span class='line'>88</span>        terms:standalone-ret)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c225'> (lambda (&#35;:whole54591 &#35;:environment54592)
+   <span id='f0c224'>(let* ((&#35;:args54593 <span id='f0c222'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c219'>(cdr &#35;:whole54591)</span> nil 0 0)</span>))
+     <span id='f0c223'>&#39;(or (starting-binders spc:term-no-binding) terms:standalone-ret)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>89</span> 
+<span id='f0s6'><span class='line'>90</span> (deftype fully-expanded-term ()
+<span class='line'>91</span>   &#34;A fully expanded term is a &#96;expanded-term&#39; with the records part
+<span class='line'>92</span> removed&#46; Or as we can view it a base term&#44; with the binders added in&#46;&#34;
+<span class='line'>93</span>   <span id='f0s7'>&#96;(or (binders spc:base)
+<span class='line'>94</span>        terms:standalone-ret)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c170'> (lambda (&#35;:whole54609 &#35;:environment54610)
+   <span id='f0c169'>(let* ((&#35;:args54611 <span id='f0c168'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c166'>(cdr &#35;:whole54609)</span> nil 0 0)</span>))
+     <span id='f0c163'>&#39;(or (binders spc:base) terms:standalone-ret)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>95</span> 
+<span id='f0s8'><span class='line'>96</span> (deftype starting-binders (&#38;optional contains)
+<span class='line'>97</span>   &#34;Terms which deal with binding and naming&#44; the input argument
+<span class='line'>98</span> represents what data may be in the value of the binders&#46;&#34;
+<span class='line'>99</span>   (declare (ignore contains))
+<span class='line'>100</span>   <span id='f0s9'>&#96;(or terms:bind
+<span class='line'>101</span>        spc:bind-constraint)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c18'> (lambda (&#35;:whole54627 &#35;:environment54628)
+   <span id='f0c17'>(let* ((&#35;:args54629 <span id='f0c5'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c4'>(cdr &#35;:whole54627)</span> <span id='f0c0'>&#39;(&#38;optional contains)</span> 0 1)</span>)
+          (contains
+           <span id='f0c15'>(if &#35;:args54629
+               <span id='f0c14'>(prog1 <span id='f0c9'>(ccl::&#37;car &#35;:args54629)</span> <span id='f0c13'>(setq &#35;:args54629 <span id='f0c12'>(ccl::&#37;cdr <span id='f0c11'>(ccl::typed-form &#39;list &#35;:args54629)</span>)</span>)</span>)</span>
+               <span id='f0c6'>&#39;*</span>)</span>))
+     <span id='f0c16'>&#39;(or terms:bind spc:bind-constraint)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>102</span> 
+<span id='f0s10'><span class='line'>103</span> (deftype binders (&#38;optional contains)
+<span class='line'>104</span>   &#34;Terms which deal with binding and naming&#44; the input argument
+<span class='line'>105</span> represents what data may be in the value of the binders&#46;&#34;
+<span class='line'>106</span>   <span id='f0s11'>&#96;(or (starting-binders &#44;contains)
+<span class='line'>107</span>        terms:multiple-bind)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c162'> (lambda (&#35;:whole54645 &#35;:environment54646)
+   <span id='f0c161'>(let* ((&#35;:args54647 <span id='f0c144'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c140'>(cdr &#35;:whole54645)</span> <span id='f0c143'>&#39;(&#38;optional contains)</span> 0 1)</span>)
+          (contains
+           <span id='f0c154'>(if &#35;:args54647
+               <span id='f0c151'>(prog1 <span id='f0c146'>(ccl::&#37;car &#35;:args54647)</span> <span id='f0c150'>(setq &#35;:args54647 <span id='f0c149'>(ccl::&#37;cdr <span id='f0c148'>(ccl::typed-form &#39;list &#35;:args54647)</span>)</span>)</span>)</span>
+               <span id='f0c152'>&#39;*</span>)</span>))
+     <span id='f0c160'>(list* <span id='f0c156'>&#39;or</span> <span id='f0c159'>(list <span id='f0c158'>&#39;starting-binders</span> contains)</span> <span id='f0c155'>&#39;(terms:multiple-bind)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>108</span> 
+<span class='line'>109</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>110</span> &#59;&#59; Linearized types List Aliases
+<span class='line'>111</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>112</span> 
+<span id='f0s12'><span class='line'>113</span> (deftype constraint-list ()
+<span class='line'>114</span>   &#34;A constraint-list is a list of linear-terms&#34;
+<span class='line'>115</span>   <span id='f0s13'>&#96;(satisfies linear-list)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c233'> (lambda (&#35;:whole54663 &#35;:environment54664)
+   <span id='f0c232'>(let* ((&#35;:args54665 <span id='f0c231'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c230'>(cdr &#35;:whole54663)</span> nil 0 0)</span>)) <span id='f0c226'>&#39;(satisfies linear-list)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>116</span> 
+<span id='f0s14'><span class='line'>117</span> (deftype type-aware-list ()
+<span class='line'>118</span>   <span id='f0s15'>&#96;(satisfies type-aware-list)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c186'> (lambda (&#35;:whole54681 &#35;:environment54682)
+   <span id='f0c185'>(let* ((&#35;:args54683 <span id='f0c184'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c182'>(cdr &#35;:whole54681)</span> nil 0 0)</span>)) <span id='f0c179'>&#39;(satisfies type-aware-list)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>119</span> 
+<span id='f0s16'><span class='line'>120</span> (deftype expanded-list ()
+<span class='line'>121</span>   &#34;A constraint-list is a list of expanded-terms&#34;
+<span class='line'>122</span>   <span id='f0s17'>&#96;(satisfies expanded-list)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t16')><span class='toggle' id='pf0t16'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(16)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t16'><code><span id='f0c217'> (lambda (&#35;:whole54699 &#35;:environment54700)
+   <span id='f0c216'>(let* ((&#35;:args54701 <span id='f0c215'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c214'>(cdr &#35;:whole54699)</span> nil 0 0)</span>)) <span id='f0c210'>&#39;(satisfies expanded-list)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>123</span> 
+<span id='f0s18'><span class='line'>124</span> (deftype fully-expanded-list ()
+<span class='line'>125</span>   &#34;A constraint-list is a list of fully-expanded-terms&#34;
+<span class='line'>126</span>   <span id='f0s19'>&#96;(satisfies fully-expanded-list)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t18')><span class='toggle' id='pf0t18'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(18)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t18'><code><span id='f0c52'> (lambda (&#35;:whole54717 &#35;:environment54718)
+   <span id='f0c51'>(let* ((&#35;:args54719 <span id='f0c49'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c46'>(cdr &#35;:whole54717)</span> nil 0 0)</span>))
+     <span id='f0c50'>&#39;(satisfies fully-expanded-list)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>127</span> 
+<span id='f0s20'><span class='line'>128</span> (defun linear-list (list)
+<span class='line'>129</span>   <span id='f0s21'>(and <span id='f0s22'>(listp list)</span>
+<span class='line'>130</span>        <span id='f0s23'>(every <span id='f0s24'>(lambda (x) <span id='f0s25'>(typep x &#39;linear-term)</span>)</span> list)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t20')><span class='toggle' id='pf0t20'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(20)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t20'><code><span id='f0c130'> (lambda (list)
+   <span id='f0c129'>(if <span id='f0c77'>(eq (ccl::lisptag list) 3)</span>
+       <span id='f0c128'>(let ((&#35;:g54735
+              <span id='f0c122'>(function <span id='f0c121'>(lambda (x)
+                          <span id='f0c120'>(let* ((&#35;:g54737 x))
+                            <span id='f0c119'>(or <span id='f0c82'>(funcall &#39;numberp &#35;:g54737)</span>
+                                <span id='f0c115'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c113'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036935AF&#62;))</span>)</span>
+                                <span id='f0c97'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c95'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200369070F&#62;))</span>)</span>
+                                <span id='f0c118'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c116'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200368D86F&#62;))</span>)</span>
+                                <span id='f0c103'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c102'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200368A9CF&#62;))</span>)</span>
+                                <span id='f0c91'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c89'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003687B2F&#62;))</span>)</span>
+                                <span id='f0c88'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c86'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003684C8F&#62;))</span>)</span>
+                                <span id='f0c85'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c83'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003681DEF&#62;))</span>)</span>
+                                <span id='f0c94'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c93'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367EF4F&#62;))</span>)</span>
+                                <span id='f0c80'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c78'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367C0AF&#62;))</span>)</span>
+                                <span id='f0c106'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c104'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367920F&#62;))</span>)</span>
+                                <span id='f0c100'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c98'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367636F&#62;))</span>)</span>
+                                <span id='f0c109'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c108'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036734CF&#62;))</span>)</span>
+                                <span id='f0c112'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54737
+                                         <span id='f0c111'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200367062F&#62;))</span>)</span>)</span>)</span>)</span>)</span>)
+             (&#35;:g54736 list))
+         <span id='f0c127'>(funcall &#39;ccl::some-xx-one 2 t &#35;:g54735 &#35;:g54736)</span>)</span>
+       nil)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>131</span> 
+<span id='f0s26'><span class='line'>132</span> (defun type-aware-list (list)
+<span class='line'>133</span>   <span id='f0s27'>(and <span id='f0s28'>(listp list)</span>
+<span class='line'>134</span>        <span id='f0s29'>(every <span id='f0s30'>(lambda (x) <span id='f0s31'>(typep x &#39;type-aware-term)</span>)</span> list)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t26')><span class='toggle' id='pf0t26'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(26)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t26'><code><span id='f0c209'> (lambda (list)
+   <span id='f0c208'>(if <span id='f0c207'>(eq (ccl::lisptag list) 3)</span>
+       <span id='f0c205'>(let ((&#35;:g54783
+              <span id='f0c204'>(function <span id='f0c203'>(lambda (x)
+                          <span id='f0c202'>(let* ((&#35;:g54785 x))
+                            <span id='f0c201'>(or <span id='f0c197'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54785
+                                         <span id='f0c196'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036C880F&#62;))</span>)</span>
+                                <span id='f0c200'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54785
+                                         <span id='f0c198'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036C596F&#62;))</span>)</span>
+                                <span id='f0c194'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54785
+                                         <span id='f0c192'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036C2ACF&#62;))</span>)</span>)</span>)</span>)</span>)</span>)
+             (&#35;:g54784 list))
+         <span id='f0c191'>(funcall &#39;ccl::some-xx-one 2 t &#35;:g54783 &#35;:g54784)</span>)</span>
+       nil)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>135</span> 
+<span id='f0s32'><span class='line'>136</span> (defun expanded-list (list)
+<span class='line'>137</span>   <span id='f0s33'>(and <span id='f0s34'>(listp list)</span>
+<span class='line'>138</span>        <span id='f0s35'>(every <span id='f0s36'>(lambda (x) <span id='f0s37'>(typep x &#39;expanded-term)</span>)</span> list)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t32')><span class='toggle' id='pf0t32'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(32)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t32'><code><span id='f0c75'> (lambda (list)
+   <span id='f0c74'>(if <span id='f0c54'>(eq (ccl::lisptag list) 3)</span>
+       <span id='f0c73'>(let ((&#35;:g54801
+              <span id='f0c72'>(function <span id='f0c71'>(lambda (x)
+                          <span id='f0c70'>(let* ((&#35;:g54803 x))
+                            <span id='f0c69'>(or <span id='f0c68'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54803
+                                         <span id='f0c67'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036E24BF&#62;))</span>)</span>
+                                <span id='f0c65'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54803
+                                         <span id='f0c63'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200371F5FF&#62;))</span>)</span>
+                                <span id='f0c62'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54803
+                                         <span id='f0c60'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200371C75F&#62;))</span>)</span>)</span>)</span>)</span>)</span>)
+             (&#35;:g54802 list))
+         <span id='f0c58'>(funcall &#39;ccl::some-xx-one 2 t &#35;:g54801 &#35;:g54802)</span>)</span>
+       nil)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>139</span> 
+<span id='f0s38'><span class='line'>140</span> (defun fully-expanded-list (list)
+<span class='line'>141</span>   <span id='f0s39'>(and <span id='f0s40'>(listp list)</span>
+<span class='line'>142</span>        <span id='f0s41'>(every <span id='f0s42'>(lambda (x) <span id='f0s43'>(typep x &#39;fully-expanded-term)</span>)</span> list)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t38')><span class='toggle' id='pf0t38'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(38)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t38'><code><span id='f0c44'> (lambda (list)
+   <span id='f0c43'>(if <span id='f0c20'>(eq (ccl::lisptag list) 3)</span>
+       <span id='f0c42'>(let ((&#35;:g54819
+              <span id='f0c37'>(function <span id='f0c36'>(lambda (x)
+                          <span id='f0c35'>(let* ((&#35;:g54821 x))
+                            <span id='f0c34'>(or <span id='f0c30'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54821
+                                         <span id='f0c28'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200373BF7F&#62;))</span>)</span>
+                                <span id='f0c33'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54821
+                                         <span id='f0c32'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037390DF&#62;))</span>)</span>
+                                <span id='f0c24'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54821
+                                         <span id='f0c23'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200373623F&#62;))</span>)</span>
+                                <span id='f0c27'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54821
+                                         <span id='f0c26'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200373339F&#62;))</span>)</span>)</span>)</span>)</span>)</span>)
+             (&#35;:g54820 list))
+         <span id='f0c41'>(funcall &#39;ccl::some-xx-one 2 t &#35;:g54819 &#35;:g54820)</span>)</span>
+       nil)</span>)</span>
+</code></div><hr/>
+</body></html>

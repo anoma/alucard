@@ -1,0 +1,1139 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_typechecker_unifier_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;typechecker;unifier.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;typechecker&#46;check)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; Main Unification Algorithm
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> (-&#62; unify (ir:term-normal-form current-information typing-context) typing-context)
+<span id='f0s0'><span class='line'>8</span> (defun unify (term expected-type context)
+<span class='line'>9</span>   &#34;unify tries to unify term with expected-type&#44; This can result in
+<span class='line'>10</span> either holes being refined&#44; unknown values being turned into unrefined
+<span class='line'>11</span> values&#44; or an error being thrown if the information is contradictory&#46;&#34;
+<span class='line'>12</span>   <span id='f0s1'>(flet (<span id='f0s2'>(unification-error (type)
+<span class='line'>13</span>            <span id='f0s3'>(log:error term <span id='f0s4'>&#39;(:unifier :type)</span>
+<span class='line'>14</span>                       <span id='f0s5'>&#34;Could not unify Defined type &#126;A with int&#34;</span> type)</span>)</span>)
+<span class='line'>15</span>     <span id='f0s6'>(match-of ir:term-normal-form term
+<span class='line'>16</span>       &#59;&#59; For references we need to check if the reference is known&#46; If
+<span class='line'>17</span>       &#59;&#59; the term is known&#44; then it is a simple equality check that
+<span class='line'>18</span>       &#59;&#59; the types agree&#46; Note that if &#96;expected-type&#39; is a &#96;hole&#39;
+<span class='line'>19</span>       &#59;&#59; then we are trying to unify a known type with less
+<span class='line'>20</span>       &#59;&#59; information&#44; thus we error (why are we even trying it&#63;&#33;)&#46;
+<span class='line'>21</span>       &#59;&#59;
+<span class='line'>22</span>       &#59;&#59; If the reference is unknown&#44; then we need to unify it with
+<span class='line'>23</span>       &#59;&#59; the given type&#46; At this point we can find contradictory
+<span class='line'>24</span>       &#59;&#59; information&#44; from the partial data we have&#46; If this is the
+<span class='line'>25</span>       &#59;&#59; case&#44; we should throw and report to the user this issue&#46;
+<span class='line'>26</span>       &#59;&#59;
+<span class='line'>27</span>       &#59;&#59; If the unification is with partial information we note the
+<span class='line'>28</span>       &#59;&#59; partial information as hole information to be resolved later&#46;
+<span class='line'>29</span>       ((ir:reference :name term-name)
+<span class='line'>30</span>        <span id='f0s7'>(let ((value <span id='f0s8'>(find-type-info term term-name context)</span>))
+<span class='line'>31</span>          <span id='f0s9'>(dispatch-case ((value         lookup-type)
+<span class='line'>32</span>                          (expected-type current-information))
+<span class='line'>33</span>            ((type-info hole)
+<span class='line'>34</span>             <span id='f0s10'>(log:error term <span id='f0s11'>&#39;(:unifier :type)</span>
+<span class='line'>35</span>                        <span id='f0s12'>&#34;Internal compiler error&#46; Tried to unify a fully
+<span class='line'>36</span>                         known type &#126;A with the hole &#126;A&#46;&#34;</span>
+<span class='line'>37</span>                        value expected-type)</span>)
+<span class='line'>38</span>            ((type-info ir:type-reference)
+<span class='line'>39</span>             <span id='f0s13'>(if <span id='f0s14'>(type-equality expected-type (type-info-type value))</span>
+<span class='line'>40</span>                 context
+<span class='line'>41</span>                 <span id='f0s15'>(log:error term <span id='f0s16'>&#39;(:unifier :type)</span>
+<span class='line'>42</span>                            <span id='f0s17'>&#34;The types &#126;A and &#126;A are not equivalent&#34;</span>
+<span class='line'>43</span>                            expected-type
+<span class='line'>44</span>                            <span id='f0s18'>(type-info-type value)</span>)</span>)</span>)
+<span class='line'>45</span>            ((hole ir:type-reference)
+<span class='line'>46</span>             <span id='f0s19'>(etypecase-of hole value
+<span class='line'>47</span>               (null t)
+<span class='line'>48</span>               (keyword
+<span class='line'>49</span>                <span id='f0s20'>(typecase-of known-primitve-types value
+<span class='line'>50</span>                  ((or (eql :int)
+<span class='line'>51</span>                       (eql :bool))
+<span class='line'>52</span>                   <span id='f0s21'>(unless <span id='f0s22'>(type-op:int-reference&#63; expected-type)</span>
+<span class='line'>53</span>                     <span id='f0s23'>(log:error term <span id='f0s24'>&#39;(:unifier :type)</span>
+<span class='line'>54</span>                                <span id='f0s25'>&#34;Trying to unify an Integer type with &#126;A&#34;</span>
+<span class='line'>55</span>                                expected-type)</span>)</span>)
+<span class='line'>56</span>                  &#59;&#59; we should check that we unify it with void properly
+<span class='line'>57</span>                  ((eql :void)
+<span class='line'>58</span>                   <span id='f0s26'>(unless <span id='f0s27'>(type-op:void-reference&#63; expected-type)</span>
+<span class='line'>59</span>                     <span id='f0s28'>(log:error term <span id='f0s29'>&#39;(:unifier :type)</span>
+<span class='line'>60</span>                                <span id='f0s30'>&#34;Trying to unify a void type with &#126;A&#34;</span>
+<span class='line'>61</span>                                expected-type)</span>)</span>)
+<span class='line'>62</span>                  ((eql :array)
+<span class='line'>63</span>                   <span id='f0s31'>(unless <span id='f0s32'>(type-op:array-reference&#63; expected-type)</span>
+<span class='line'>64</span>                     <span id='f0s33'>(log:error term <span id='f0s34'>&#39;(:unifier :type)</span>
+<span class='line'>65</span>                                <span id='f0s35'>&#34;Trying to unify an array type with &#126;A&#34;</span>
+<span class='line'>66</span>                                expected-type)</span>)</span>)
+<span class='line'>67</span>                  (otherwise
+<span class='line'>68</span>                   <span id='f0s36'>(log:error term <span id='f0s37'>&#39;(:unifier :type)</span>
+<span class='line'>69</span>                              <span id='f0s38'>&#34;Unknown primitive type &#126;A&#34;</span> value)</span>))</span>))</span>
+<span class='line'>70</span>             <span id='f0s39'>(solve-recursively term term-name expected-type context)</span>)
+<span class='line'>71</span>             ((hole hole)
+<span class='line'>72</span>              <span id='f0s40'>(refine-hole-with-hole value expected-type context)</span>))</span>)</span>)
+<span class='line'>73</span>       &#59;&#59; we only succeed unification if the expected value of this is a
+<span class='line'>74</span>       &#59;&#59; number
+<span class='line'>75</span>       ((number &#95;)
+<span class='line'>76</span>        <span id='f0s41'>(etypecase-of current-information expected-type
+<span class='line'>77</span>          (hole context)
+<span class='line'>78</span>          (ir:type-reference
+<span class='line'>79</span>           <span id='f0s42'>(let* ((type-name <span id='f0s43'>(etypecase-of ir:type-reference expected-type
+<span class='line'>80</span>                               (ir:application    <span id='f0s44'>(ir:name <span id='f0s45'>(ir:func expected-type)</span>)</span>)
+<span class='line'>81</span>                               (ir:reference-type <span id='f0s46'>(ir:name expected-type)</span>))</span>)
+<span class='line'>82</span>                  (lookup <span id='f0s47'>(storage:lookup-type type-name)</span>))
+<span class='line'>83</span>             <span id='f0s48'>(etypecase-of (or null ir:type-storage) lookup
+<span class='line'>84</span>               (ir:type-declaration <span id='f0s49'>(unification-error type-name)</span>)
+<span class='line'>85</span>               (null                 <span id='f0s50'>(log:error term <span id='f0s51'>&#39;(:unifier :type)</span>
+<span class='line'>86</span>                                                <span id='f0s52'>&#34;Type &#126;A is not defined&#34;</span>
+<span class='line'>87</span>                                                type-name)</span>)
+<span class='line'>88</span>               (ir:primitive
+<span class='line'>89</span>                <span id='f0s53'>(typecase <span id='f0s54'>(ir:name lookup)</span>
+<span class='line'>90</span>                  ((or (eql :int) (eql :bool)) context)
+<span class='line'>91</span>                  (otherwise                   <span id='f0s55'>(unification-error type-name)</span>))</span>))</span>)</span>))</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c928'> (lambda (term expected-type context)
+   <span id='f0c927'>(flet ((&#35;:unification-error &#35;1&#61;<span id='f0c926'>(lambda (type)
+                                    <span id='f0c925'>(funcall &#39;log:error
+                                             term
+                                             <span id='f0c922'>&#39;(:unifier :type)</span>
+                                             <span id='f0c924'>&#39;&#34;Could not unify Defined type &#126;A with int&#34;</span>
+                                             type)</span>)</span>))
+     <span id='f0c920'>(let* ((&#35;:what155550 term))
+       <span id='f0c919'>(block trivia&#46;level1&#46;impl::whole
+         (progn <span id='f0c918'>(block trivia&#46;level1&#46;impl::clause
+                  <span id='f0c917'>(let* ((&#35;:it55543 &#35;:what155550))
+                    <span id='f0c916'>(if <span id='f0c915'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                 &#35;:it55543
+                                 <span id='f0c914'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037A956F&#62;))</span>)</span>
+                        <span id='f0c912'>(ccl::&#37;decls-body
+                         <span id='f0c911'>(let* ((term-name
+                                 <span id='f0c910'>(funcall &#39;ccl::slot-id-value
+                                          &#35;:it55543
+                                          <span id='f0c909'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037A657F&#62;))</span>)</span>))
+                           <span id='f0c907'>(return-from trivia&#46;level1&#46;impl::whole
+                             <span id='f0c906'>(let* ()
+                               <span id='f0c905'>(block trivia&#46;level1&#46;impl::whole
+                                 (progn <span id='f0c904'>(let* ((&#35;:it55545 nil))
+                                          <span id='f0c903'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c902'>(let* ((value
+                                                    <span id='f0c901'>(funcall &#39;find-type-info
+                                                             <span id='f0c900'>(ccl::typed-form &#39;alu&#46;spec:reference term)</span>
+                                                             <span id='f0c896'>(ccl::typed-form &#39;keyword term-name)</span>
+                                                             <span id='f0c898'>(ccl::typed-form &#39;typing-context context)</span>)</span>))
+                                              <span id='f0c894'>(let ((&#35;:arg0 value) (&#35;:arg1 expected-type))
+                                                <span id='f0c893'>(let ((&#35;:arg055565 &#35;:arg0) (&#35;:arg155566 &#35;:arg1))
+                                                  <span id='f0c892'>(block &#35;:block55560
+                                                    <span id='f0c891'>(tagbody <span id='f0c785'>(let* ((&#35;:expr55567 &#35;:arg055565))
+                                                               <span id='f0c784'>(let* ((&#35;:g55568 &#35;:expr55567))
+                                                                 <span id='f0c783'>(if <span id='f0c782'>(funcall &#39;ccl:structure-typep
+                                                                              &#35;:g55568
+                                                                              <span id='f0c781'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>
+                                                                     <span id='f0c728'>(progn nil
+                                                                            <span id='f0c727'>(let* ((&#35;:expr55569 &#35;:arg155566))
+                                                                              <span id='f0c726'>(let* ((&#35;:g55570 &#35;:expr55569))
+                                                                                <span id='f0c725'>(if <span id='f0c724'>(let* ((&#35;:g55572 &#35;:g55570))
+                                                                                      <span id='f0c723'>(or <span id='f0c722'>(not &#35;:g55572)</span>
+                                                                                          <span id='f0c721'>(funcall &#39;keywordp &#35;:g55572)</span>)</span>)</span>
+                                                                                    <span id='f0c696'>(progn nil <span id='f0c695'>(go &#35;:tag55561)</span>)</span>
+                                                                                    <span id='f0c719'>(if <span id='f0c716'>(let* ((&#35;:g55574 &#35;:g55570))
+                                                                                          <span id='f0c715'>(or <span id='f0c714'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                       &#35;:g55574
+                                                                                                       <span id='f0c713'>&#39;(&#35;:load-time-eval
+                                                                                                          (funcall &#35;&#60;Anonymous Function &#35;x3020037DD54F&#62;))</span>)</span>
+                                                                                              <span id='f0c711'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                       &#35;:g55574
+                                                                                                       <span id='f0c709'>&#39;(&#35;:load-time-eval
+                                                                                                          (funcall &#35;&#60;Anonymous Function &#35;x3020037DA6AF&#62;))</span>)</span>)</span>)</span>
+                                                                                        <span id='f0c718'>(progn nil <span id='f0c717'>(go &#35;:tag55562)</span>)</span>
+                                                                                        <span id='f0c708'>(if <span id='f0c707'>(progn &#35;:g55570 t)</span>
+                                                                                            <span id='f0c705'>(progn nil
+                                                                                                   <span id='f0c704'>(values (funcall &#39;error
+                                                                                                                    <span id='f0c698'>&#39;dispatch-case-error</span>
+                                                                                                                    <span id='f0c700'>&#39;:expected-type</span>
+                                                                                                                    <span id='f0c703'>&#39;current-information</span>
+                                                                                                                    <span id='f0c701'>&#39;:datum</span>
+                                                                                                                    &#35;:expr55569
+                                                                                                                    <span id='f0c702'>&#39;:matched-types</span>
+                                                                                                                    <span id='f0c697'>&#39;(current-information)</span>))</span>)</span>
+                                                                                            nil)</span>)</span>)</span>)</span>)</span>)</span>
+                                                                     <span id='f0c779'>(if <span id='f0c733'>(let* ((&#35;:g55582 &#35;:g55568))
+                                                                           <span id='f0c732'>(or <span id='f0c731'>(not &#35;:g55582)</span>
+                                                                               <span id='f0c730'>(funcall &#39;keywordp &#35;:g55582)</span>)</span>)</span>
+                                                                         <span id='f0c767'>(progn nil
+                                                                                <span id='f0c766'>(let* ((&#35;:expr55583 &#35;:arg155566))
+                                                                                  <span id='f0c765'>(let* ((&#35;:g55584 &#35;:expr55583))
+                                                                                    <span id='f0c764'>(if <span id='f0c763'>(let* ((&#35;:g55586 &#35;:g55584))
+                                                                                          <span id='f0c762'>(or <span id='f0c758'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                       &#35;:g55586
+                                                                                                       <span id='f0c756'>&#39;(&#35;:load-time-eval
+                                                                                                          (funcall &#35;&#60;Anonymous Function &#35;x3020037CF4CF&#62;))</span>)</span>
+                                                                                              <span id='f0c761'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                                       &#35;:g55586
+                                                                                                       <span id='f0c760'>&#39;(&#35;:load-time-eval
+                                                                                                          (funcall &#35;&#60;Anonymous Function &#35;x3020037CC62F&#62;))</span>)</span>)</span>)</span>
+                                                                                        <span id='f0c755'>(progn nil <span id='f0c754'>(go &#35;:tag55563)</span>)</span>
+                                                                                        <span id='f0c753'>(if <span id='f0c740'>(let* ((&#35;:g55594 &#35;:g55584))
+                                                                                              <span id='f0c739'>(or <span id='f0c738'>(not &#35;:g55594)</span>
+                                                                                                  <span id='f0c737'>(funcall &#39;keywordp
+                                                                                                           &#35;:g55594)</span>)</span>)</span>
+                                                                                            <span id='f0c735'>(progn nil <span id='f0c734'>(go &#35;:tag55564)</span>)</span>
+                                                                                            <span id='f0c752'>(if <span id='f0c751'>(progn &#35;:g55584 t)</span>
+                                                                                                <span id='f0c749'>(progn nil
+                                                                                                       <span id='f0c748'>(values (funcall &#39;error
+                                                                                                                        <span id='f0c742'>&#39;dispatch-case-error</span>
+                                                                                                                        <span id='f0c745'>&#39;:expected-type</span>
+                                                                                                                        <span id='f0c746'>&#39;current-information</span>
+                                                                                                                        <span id='f0c743'>&#39;:datum</span>
+                                                                                                                        &#35;:expr55583
+                                                                                                                        <span id='f0c744'>&#39;:matched-types</span>
+                                                                                                                        <span id='f0c741'>&#39;(current-information)</span>))</span>)</span>
+                                                                                                nil)</span>)</span>)</span>)</span>)</span>)</span>
+                                                                         <span id='f0c778'>(if <span id='f0c769'>(progn &#35;:g55568 t)</span>
+                                                                             <span id='f0c777'>(progn nil
+                                                                                    <span id='f0c776'>(values (funcall &#39;error
+                                                                                                     <span id='f0c773'>&#39;dispatch-case-error</span>
+                                                                                                     <span id='f0c771'>&#39;:expected-type</span>
+                                                                                                     <span id='f0c772'>&#39;lookup-type</span>
+                                                                                                     <span id='f0c770'>&#39;:datum</span>
+                                                                                                     &#35;:expr55567
+                                                                                                     <span id='f0c775'>&#39;:matched-types</span>
+                                                                                                     nil))</span>)</span>
+                                                                             nil)</span>)</span>)</span>)</span>)</span>
+                                                             (&#35;:tag55561 nil (0)
+                                                              &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037A0CFD&#62; t nil)
+                                                             <span id='f0c665'>(return-from &#35;:block55560
+                                                               <span id='f0c664'>(funcall &#39;log:error
+                                                                        term
+                                                                        <span id='f0c663'>&#39;(:unifier :type)</span>
+                                                                        <span id='f0c660'>&#39;&#34;Internal compiler error&#46; Tried to unify a fully
+                         known type &#126;A with the hole &#126;A&#46;&#34;</span>
+                                                                        value
+                                                                        expected-type)</span>)</span>
+                                                             (&#35;:tag55562 nil (0)
+                                                              &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037A0CFD&#62; t nil)
+                                                             <span id='f0c694'>(return-from &#35;:block55560
+                                                               <span id='f0c693'>(if <span id='f0c691'>(funcall &#39;type-equality
+                                                                            <span id='f0c690'>(ccl::typed-form
+                                                                             &#39;(or alu&#46;spec:reference-type
+                                                                                  alu&#46;spec:application
+                                                                                  number)
+                                                                             expected-type)</span>
+                                                                            <span id='f0c688'>(ccl::typed-form
+                                                                             &#39;(or alu&#46;spec:reference-type
+                                                                                  alu&#46;spec:application)
+                                                                             <span id='f0c687'>(ccl::struct-ref <span id='f0c686'>(ccl::typed-form
+                                                                                               &#39;type-info value)</span>
+                                                                                              2)</span>)</span>)</span>
+                                                                   context
+                                                                   <span id='f0c683'>(funcall &#39;log:error
+                                                                            term
+                                                                            <span id='f0c681'>&#39;(:unifier :type)</span>
+                                                                            <span id='f0c674'>&#39;&#34;The types &#126;A and &#126;A are not equivalent&#34;</span>
+                                                                            expected-type
+                                                                            <span id='f0c679'>(ccl::typed-form
+                                                                             &#39;(or alu&#46;spec:reference-type
+                                                                                  alu&#46;spec:application)
+                                                                             <span id='f0c678'>(ccl::struct-ref <span id='f0c677'>(ccl::typed-form
+                                                                                               &#39;type-info value)</span>
+                                                                                              2)</span>)</span>)</span>)</span>)</span>
+                                                             (&#35;:tag55563 nil (0)
+                                                              &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037A0CFD&#62; t nil)
+                                                             <span id='f0c890'>(return-from &#35;:block55560
+                                                               <span id='f0c889'>(progn <span id='f0c880'>(let* ((&#35;:x55595 value))
+                                                                        <span id='f0c879'>(let* ((&#35;:g55596 &#35;:x55595))
+                                                                          <span id='f0c878'>(if <span id='f0c786'>(not &#35;:g55596)</span>
+                                                                              <span id='f0c787'>(progn nil t)</span>
+                                                                              <span id='f0c877'>(if <span id='f0c799'>(funcall &#39;keywordp &#35;:g55596)</span>
+                                                                                  <span id='f0c876'>(progn nil
+                                                                                         <span id='f0c875'>(let* ((&#35;:g55597 value))
+                                                                                           <span id='f0c874'>(if <span id='f0c830'>(not &#39;:ne
+                                                                                                    <span id='f0c829'>(block nil
+                                                                                                      <span id='f0c828'>(let* ((&#35;:g55602
+                                                                                                              &#35;:g55597)
+                                                                                                             (&#35;:g55603
+                                                                                                              <span id='f0c811'>&#39;(:int
+                                                                                                                :bool)</span>))
+                                                                                                        <span id='f0c827'>(tagbody <span id='f0c812'>(go &#35;:g55605)</span>
+                                                                                                                 (&#35;:g55604
+                                                                                                                  nil
+                                                                                                                  (0)
+                                                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037FB04D&#62;
+                                                                                                                  t t)
+                                                                                                                 <span id='f0c826'>(tagbody <span id='f0c825'>(if <span id='f0c822'>(eq <span id='f0c820'>(car &#35;:g55603)</span>
+                                                                                                                                  &#35;:g55602)</span>
+                                                                                                                              <span id='f0c824'>(return-from nil
+                                                                                                                                &#35;:g55603)</span>
+                                                                                                                              nil)</span>)</span>
+                                                                                                                 <span id='f0c818'>(setq &#35;:g55603
+                                                                                                                       <span id='f0c817'>(ccl::&#37;cdr <span id='f0c816'>(ccl::typed-form
+                                                                                                                                   &#39;list
+                                                                                                                                   &#35;:g55603)</span>)</span>)</span>
+                                                                                                                 (&#35;:g55605
+                                                                                                                  nil
+                                                                                                                  (0)
+                                                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037FB04D&#62;
+                                                                                                                  t nil)
+                                                                                                                 <span id='f0c814'>(if <span id='f0c813'>(not &#39;:ne
+                                                                                                                          &#35;:g55603)</span>
+                                                                                                                     (go &#35;:g55604)
+                                                                                                                     nil)</span>)</span>)</span>)</span>)</span>
+                                                                                               <span id='f0c810'>(progn nil
+                                                                                                      <span id='f0c809'>(if <span id='f0c803'>(not <span id='f0c802'>(funcall &#39;type-op:int-reference&#63;
+                                                                                                                        <span id='f0c801'>(ccl::typed-form
+                                                                                                                         &#39;(or alu&#46;spec:reference-type
+                                                                                                                              alu&#46;spec:application)
+                                                                                                                         expected-type)</span>)</span>)</span>
+                                                                                                          <span id='f0c808'>(funcall &#39;log:error
+                                                                                                                   term
+                                                                                                                   <span id='f0c805'>&#39;(:unifier
+                                                                                                                     :type)</span>
+                                                                                                                   <span id='f0c806'>&#39;&#34;Trying to unify an Integer type with &#126;A&#34;</span>
+                                                                                                                   expected-type)</span>
+                                                                                                          nil)</span>)</span>
+                                                                                               <span id='f0c873'>(if <span id='f0c872'>(not &#39;:ne
+                                                                                                        <span id='f0c871'>(if <span id='f0c870'>(eq &#35;:g55597
+                                                                                                                &#39;:void)</span>
+                                                                                                            <span id='f0c868'>&#39;(:void)</span>
+                                                                                                            nil)</span>)</span>
+                                                                                                   <span id='f0c867'>(progn nil
+                                                                                                          <span id='f0c866'>(if <span id='f0c860'>(not <span id='f0c859'>(funcall &#39;type-op:void-reference&#63;
+                                                                                                                            <span id='f0c858'>(ccl::typed-form
+                                                                                                                             &#39;(or alu&#46;spec:reference-type
+                                                                                                                                  alu&#46;spec:application)
+                                                                                                                             expected-type)</span>)</span>)</span>
+                                                                                                              <span id='f0c865'>(funcall &#39;log:error
+                                                                                                                       term
+                                                                                                                       <span id='f0c862'>&#39;(:unifier
+                                                                                                                         :type)</span>
+                                                                                                                       <span id='f0c861'>&#39;&#34;Trying to unify a void type with &#126;A&#34;</span>
+                                                                                                                       expected-type)</span>
+                                                                                                              nil)</span>)</span>
+                                                                                                   <span id='f0c856'>(if <span id='f0c844'>(not &#39;:ne
+                                                                                                            <span id='f0c843'>(if <span id='f0c842'>(eq &#35;:g55597
+                                                                                                                    &#39;:array)</span>
+                                                                                                                <span id='f0c840'>&#39;(:array)</span>
+                                                                                                                nil)</span>)</span>
+                                                                                                       <span id='f0c855'>(progn nil
+                                                                                                              <span id='f0c854'>(if <span id='f0c848'>(not <span id='f0c847'>(funcall &#39;type-op:array-reference&#63;
+                                                                                                                                <span id='f0c846'>(ccl::typed-form
+                                                                                                                                 &#39;(or alu&#46;spec:reference-type
+                                                                                                                                      alu&#46;spec:application)
+                                                                                                                                 expected-type)</span>)</span>)</span>
+                                                                                                                  <span id='f0c853'>(funcall &#39;log:error
+                                                                                                                           term
+                                                                                                                           <span id='f0c850'>&#39;(:unifier
+                                                                                                                             :type)</span>
+                                                                                                                           <span id='f0c849'>&#39;&#34;Trying to unify an array type with &#126;A&#34;</span>
+                                                                                                                           expected-type)</span>
+                                                                                                                  nil)</span>)</span>
+                                                                                                       <span id='f0c839'>(if <span id='f0c838'>(progn &#35;:g55597
+                                                                                                                  t)</span>
+                                                                                                           <span id='f0c836'>(progn nil
+                                                                                                                  <span id='f0c835'>(funcall &#39;log:error
+                                                                                                                           term
+                                                                                                                           <span id='f0c832'>&#39;(:unifier
+                                                                                                                             :type)</span>
+                                                                                                                           <span id='f0c833'>&#39;&#34;Unknown primitive type &#126;A&#34;</span>
+                                                                                                                           value)</span>)</span>
+                                                                                                           nil)</span>)</span>)</span>)</span>)</span>)</span>
+                                                                                  <span id='f0c797'>(if <span id='f0c796'>(progn &#35;:g55596 t)</span>
+                                                                                      <span id='f0c794'>(progn nil
+                                                                                             <span id='f0c793'>(values (funcall &#39;error
+                                                                                                              <span id='f0c792'>&#39;type-error</span>
+                                                                                                              <span id='f0c790'>&#39;:datum</span>
+                                                                                                              &#35;:x55595
+                                                                                                              <span id='f0c789'>&#39;:expected-type</span>
+                                                                                                              <span id='f0c788'>&#39;hole</span>))</span>)</span>
+                                                                                      nil)</span>)</span>)</span>)</span>)</span>
+                                                                      <span id='f0c888'>(funcall &#39;solve-recursively
+                                                                               (ccl::typed-form
+                                                                                &#39;(or number alu&#46;spec:reference) term)
+                                                                               <span id='f0c884'>(ccl::typed-form &#39;keyword term-name)</span>
+                                                                               <span id='f0c882'>(ccl::typed-form
+                                                                                &#39;(or alu&#46;spec:reference-type
+                                                                                     alu&#46;spec:application)
+                                                                                expected-type)</span>
+                                                                               <span id='f0c886'>(ccl::typed-form &#39;typing-context
+                                                                                context)</span>)</span>)</span>)</span>
+                                                             (&#35;:tag55564 nil (0)
+                                                              &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020037A0CFD&#62; t nil)
+                                                             <span id='f0c673'>(return-from &#35;:block55560
+                                                               <span id='f0c672'>(funcall &#39;refine-hole-with-hole
+                                                                        <span id='f0c669'>(ccl::typed-form &#39;(or null keyword) value)</span>
+                                                                        <span id='f0c671'>(ccl::typed-form &#39;(or null keyword)
+                                                                         expected-type)</span>
+                                                                        <span id='f0c667'>(ccl::typed-form &#39;typing-context
+                                                                         context)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c658'>(let* ((&#35;:it55546 nil))
+                                          <span id='f0c657'>(return-from trivia&#46;level1&#46;impl::whole
+                                            <span id='f0c656'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>)</span>
+                        nil)</span>)</span>)</span>
+                <span id='f0c642'>(block trivia&#46;level1&#46;impl::clause
+                  <span id='f0c641'>(let* ((&#35;:it55544 &#35;:what155550))
+                    <span id='f0c640'>(if <span id='f0c639'>(funcall &#39;numberp &#35;:it55544)</span>
+                        <span id='f0c637'>(ccl::&#37;decls-body
+                         <span id='f0c636'>(return-from trivia&#46;level1&#46;impl::whole
+                           <span id='f0c635'>(let* ()
+                             <span id='f0c634'>(block trivia&#46;level1&#46;impl::whole
+                               (progn <span id='f0c633'>(let* ((&#35;:it55547 nil))
+                                        <span id='f0c632'>(return-from trivia&#46;level1&#46;impl::whole
+                                          <span id='f0c631'>(let* ((&#35;:x55609 expected-type))
+                                            <span id='f0c630'>(let* ((&#35;:g55610 &#35;:x55609))
+                                              <span id='f0c629'>(if <span id='f0c626'>(let* ((&#35;:g55612 &#35;:g55610))
+                                                    <span id='f0c625'>(or <span id='f0c624'>(not &#35;:g55612)</span> <span id='f0c623'>(funcall &#39;keywordp &#35;:g55612)</span>)</span>)</span>
+                                                  <span id='f0c628'>(progn nil context)</span>
+                                                  <span id='f0c621'>(if <span id='f0c514'>(let* ((&#35;:g55614 &#35;:g55610))
+                                                        <span id='f0c513'>(or <span id='f0c512'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                     &#35;:g55614
+                                                                     <span id='f0c510'>&#39;(&#35;:load-time-eval
+                                                                        (funcall &#35;&#60;Anonymous Function &#35;x302003816B2F&#62;))</span>)</span>
+                                                            <span id='f0c509'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                     &#35;:g55614
+                                                                     <span id='f0c507'>&#39;(&#35;:load-time-eval
+                                                                        (funcall &#35;&#60;Anonymous Function &#35;x302003813C8F&#62;))</span>)</span>)</span>)</span>
+                                                      <span id='f0c620'>(progn nil
+                                                             <span id='f0c619'>(let* ((type-name
+                                                                     <span id='f0c554'>(let* ((&#35;:x55621 expected-type))
+                                                                       <span id='f0c553'>(let* ((&#35;:g55622 &#35;:x55621))
+                                                                         <span id='f0c552'>(if <span id='f0c551'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                      &#35;:g55622
+                                                                                      <span id='f0c549'>&#39;(&#35;:load-time-eval
+                                                                                         (funcall &#35;&#60;Anonymous Function &#35;x30200380F41F&#62;))</span>)</span>
+                                                                             <span id='f0c548'>(progn nil
+                                                                                    <span id='f0c547'>(funcall &#39;alu&#46;spec:name
+                                                                                             <span id='f0c546'>(funcall &#39;alu&#46;spec:func
+                                                                                                      expected-type)</span>)</span>)</span>
+                                                                             <span id='f0c544'>(if <span id='f0c530'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                          &#35;:g55622
+                                                                                          <span id='f0c529'>&#39;(&#35;:load-time-eval
+                                                                                             (funcall &#35;&#60;Anonymous Function &#35;x30200380BE4F&#62;))</span>)</span>
+                                                                                 <span id='f0c543'>(progn nil
+                                                                                        <span id='f0c542'>(funcall &#39;alu&#46;spec:name
+                                                                                                 expected-type)</span>)</span>
+                                                                                 <span id='f0c540'>(if <span id='f0c539'>(progn &#35;:g55622 t)</span>
+                                                                                     <span id='f0c537'>(progn nil
+                                                                                            <span id='f0c536'>(values (funcall &#39;error
+                                                                                                             <span id='f0c531'>&#39;type-error</span>
+                                                                                                             <span id='f0c535'>&#39;:datum</span>
+                                                                                                             &#35;:x55621
+                                                                                                             <span id='f0c532'>&#39;:expected-type</span>
+                                                                                                             <span id='f0c534'>&#39;alu&#46;spec:type-reference</span>))</span>)</span>
+                                                                                     nil)</span>)</span>)</span>)</span>)</span>)
+                                                                    (lookup
+                                                                     <span id='f0c527'>(funcall &#39;storage:lookup-type
+                                                                              <span id='f0c526'>(ccl::typed-form &#39;keyword type-name)</span>)</span>))
+                                                               <span id='f0c618'>(let* ((&#35;:x55629 lookup))
+                                                                 <span id='f0c617'>(let* ((&#35;:g55630 &#35;:x55629))
+                                                                   <span id='f0c616'>(if <span id='f0c615'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                &#35;:g55630
+                                                                                <span id='f0c613'>&#39;(&#35;:load-time-eval
+                                                                                   (funcall &#35;&#60;Anonymous Function &#35;x302003804B3F&#62;))</span>)</span>
+                                                                       <span id='f0c557'>(progn nil <span id='f0c556'>(funcall &#35;1&#35; type-name)</span>)</span>
+                                                                       <span id='f0c612'>(if <span id='f0c605'>(not &#35;:g55630)</span>
+                                                                           <span id='f0c611'>(progn nil
+                                                                                  <span id='f0c610'>(funcall &#39;log:error
+                                                                                           term
+                                                                                           <span id='f0c607'>&#39;(:unifier :type)</span>
+                                                                                           <span id='f0c606'>&#39;&#34;Type &#126;A is not defined&#34;</span>
+                                                                                           type-name)</span>)</span>
+                                                                           <span id='f0c604'>(if <span id='f0c560'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                                        &#35;:g55630
+                                                                                        <span id='f0c559'>&#39;(&#35;:load-time-eval
+                                                                                           (funcall &#35;&#60;Anonymous Function &#35;x302003800F4F&#62;))</span>)</span>
+                                                                               <span id='f0c603'>(progn nil
+                                                                                      <span id='f0c602'>(let* ((&#35;:g55637
+                                                                                              <span id='f0c572'>(funcall &#39;alu&#46;spec:name
+                                                                                                       lookup)</span>))
+                                                                                        <span id='f0c601'>(if <span id='f0c594'>(not &#39;:ne
+                                                                                                 <span id='f0c593'>(block nil
+                                                                                                   <span id='f0c592'>(let* ((&#35;:g55642
+                                                                                                           &#35;:g55637)
+                                                                                                          (&#35;:g55643
+                                                                                                           <span id='f0c575'>&#39;(:int
+                                                                                                             :bool)</span>))
+                                                                                                     <span id='f0c591'>(tagbody <span id='f0c578'>(go &#35;:g55645)</span>
+                                                                                                              (&#35;:g55644
+                                                                                                               nil (0)
+                                                                                                               &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200383C04D&#62;
+                                                                                                               t t)
+                                                                                                              <span id='f0c590'>(tagbody <span id='f0c589'>(if <span id='f0c586'>(eq <span id='f0c585'>(car &#35;:g55643)</span>
+                                                                                                                               &#35;:g55642)</span>
+                                                                                                                           <span id='f0c588'>(return-from nil
+                                                                                                                             &#35;:g55643)</span>
+                                                                                                                           nil)</span>)</span>
+                                                                                                              <span id='f0c582'>(setq &#35;:g55643
+                                                                                                                    <span id='f0c581'>(ccl::&#37;cdr <span id='f0c580'>(ccl::typed-form
+                                                                                                                                &#39;list
+                                                                                                                                &#35;:g55643)</span>)</span>)</span>
+                                                                                                              (&#35;:g55645
+                                                                                                               nil (0)
+                                                                                                               &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200383C04D&#62;
+                                                                                                               t nil)
+                                                                                                              <span id='f0c577'>(if <span id='f0c576'>(not &#39;:ne
+                                                                                                                       &#35;:g55643)</span>
+                                                                                                                  (go &#35;:g55644)
+                                                                                                                  nil)</span>)</span>)</span>)</span>)</span>
+                                                                                            <span id='f0c574'>(progn nil context)</span>
+                                                                                            <span id='f0c600'>(if <span id='f0c596'>(progn &#35;:g55637 t)</span>
+                                                                                                <span id='f0c599'>(progn nil
+                                                                                                       <span id='f0c598'>(funcall &#35;1&#35;
+                                                                                                                type-name)</span>)</span>
+                                                                                                nil)</span>)</span>)</span>)</span>
+                                                                               <span id='f0c570'>(if <span id='f0c562'>(progn &#35;:g55630 t)</span>
+                                                                                   <span id='f0c569'>(progn nil
+                                                                                          <span id='f0c568'>(values (funcall &#39;error
+                                                                                                           <span id='f0c564'>&#39;type-error</span>
+                                                                                                           <span id='f0c567'>&#39;:datum</span>
+                                                                                                           &#35;:x55629
+                                                                                                           <span id='f0c565'>&#39;:expected-type</span>
+                                                                                                           <span id='f0c566'>&#39;(or null
+                                                                                                                alu&#46;spec:type-storage)</span>))</span>)</span>
+                                                                                   nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                                      <span id='f0c524'>(if <span id='f0c523'>(progn &#35;:g55610 t)</span>
+                                                          <span id='f0c521'>(progn nil
+                                                                 <span id='f0c520'>(values (funcall &#39;error
+                                                                                  <span id='f0c519'>&#39;type-error</span>
+                                                                                  <span id='f0c516'>&#39;:datum</span>
+                                                                                  &#35;:x55609
+                                                                                  <span id='f0c518'>&#39;:expected-type</span>
+                                                                                  <span id='f0c515'>&#39;current-information</span>))</span>)</span>
+                                                          nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                      <span id='f0c506'>(let* ((&#35;:it55548 nil))
+                                        <span id='f0c505'>(return-from trivia&#46;level1&#46;impl::whole
+                                          <span id='f0c504'>(return-from trivia&#46;level1&#46;impl::clause nil)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+                        nil)</span>)</span>)</span>
+                <span id='f0c655'>(let* ((&#35;:otherwise55541 &#35;:what155550))
+                  <span id='f0c654'>(return-from trivia&#46;level1&#46;impl::whole
+                    <span id='f0c653'>(let* ()
+                      <span id='f0c652'>(block trivia&#46;level1&#46;impl::whole
+                        <span id='f0c651'>(let* ((&#35;:it55549 nil))
+                          <span id='f0c650'>(return-from trivia&#46;level1&#46;impl::whole
+                            <span id='f0c649'>(values (funcall &#39;error
+                                             <span id='f0c647'>&#39;trivia&#46;level2:match-error</span>
+                                             <span id='f0c643'>&#39;:pattern</span>
+                                             <span id='f0c644'>&#39;(((alu&#46;spec:reference :name term-name)
+                                                (let ((value (find-type-info term term-name context)))
+                                                  (dispatch-case
+                                                    ((value lookup-type) (expected-type current-information))
+                                                    ((type-info hole)
+                                                     (log:error term
+                                                                &#39;(:unifier :type)
+                                                                &#34;Internal compiler error&#46; Tried to unify a fully
+                         known type &#126;A with the hole &#126;A&#46;&#34;
+                                                                value
+                                                                expected-type))
+                                                    ((type-info alu&#46;spec:type-reference)
+                                                     (if (type-equality expected-type (type-info-type value))
+                                                         context
+                                                         (log:error term
+                                                                    &#39;(:unifier :type)
+                                                                    &#34;The types &#126;A and &#126;A are not equivalent&#34;
+                                                                    expected-type
+                                                                    (type-info-type value))))
+                                                    ((hole alu&#46;spec:type-reference)
+                                                     (etypecase-of hole
+                                                                   value
+                                                                   (null t)
+                                                                   (keyword
+                                                                    (typecase-of known-primitve-types
+                                                                                 value
+                                                                                 ((or (eql :int) (eql :bool))
+                                                                                  (unless (type-op:int-reference&#63;
+                                                                                            expected-type)
+                                                                                    (log:error term
+                                                                                               &#39;(:unifier :type)
+                                                                                               &#34;Trying to unify an Integer type with &#126;A&#34;
+                                                                                               expected-type)))
+                                                                                 ((eql :void)
+                                                                                  (unless (type-op:void-reference&#63;
+                                                                                            expected-type)
+                                                                                    (log:error term
+                                                                                               &#39;(:unifier :type)
+                                                                                               &#34;Trying to unify a void type with &#126;A&#34;
+                                                                                               expected-type)))
+                                                                                 ((eql :array)
+                                                                                  (unless (type-op:array-reference&#63;
+                                                                                            expected-type)
+                                                                                    (log:error term
+                                                                                               &#39;(:unifier :type)
+                                                                                               &#34;Trying to unify an array type with &#126;A&#34;
+                                                                                               expected-type)))
+                                                                                 (otherwise
+                                                                                  (log:error term
+                                                                                             &#39;(:unifier :type)
+                                                                                             &#34;Unknown primitive type &#126;A&#34;
+                                                                                             value)))))
+                                                     (solve-recursively term term-name expected-type context))
+                                                    ((hole hole) (refine-hole-with-hole value expected-type context)))))
+                                               ((number &#95;)
+                                                (etypecase-of current-information
+                                                              expected-type
+                                                              (hole context)
+                                                              (alu&#46;spec:type-reference
+                                                               (let* ((type-name
+                                                                       (etypecase-of alu&#46;spec:type-reference
+                                                                                     expected-type
+                                                                                     (alu&#46;spec:application
+                                                                                      (alu&#46;spec:name (alu&#46;spec:func expected-type)))
+                                                                                     (alu&#46;spec:reference-type
+                                                                                      (alu&#46;spec:name expected-type))))
+                                                                      (lookup (storage:lookup-type type-name)))
+                                                                 (etypecase-of (or null alu&#46;spec:type-storage)
+                                                                               lookup
+                                                                               (alu&#46;spec:type-declaration
+                                                                                (unification-error type-name))
+                                                                               (null (log:error term
+                                                                                                &#39;(:unifier :type)
+                                                                                                &#34;Type &#126;A is not defined&#34;
+                                                                                                type-name))
+                                                                               (alu&#46;spec:primitive
+                                                                                (typecase (alu&#46;spec:name lookup)
+                                                                                  ((or (eql :int) (eql :bool)) context)
+                                                                                  (otherwise
+                                                                                   (unification-error
+                                                                                    type-name))))))))))</span>
+                                             <span id='f0c648'>&#39;:values</span>
+                                             <span id='f0c646'>(cons &#35;:otherwise55541 nil)</span>))</span>)</span>)</span>)</span>)</span>)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>92</span> 
+<span class='line'>93</span> (-&#62; solve-recursively
+<span class='line'>94</span>     &#59;&#59; term normal form is just for error reporting
+<span class='line'>95</span>     (ir:term-normal-form keyword ir:type-reference typing-context)
+<span class='line'>96</span>     typing-context)
+<span id='f0s56'><span class='line'>97</span> (defun solve-recursively (term name solved-value context)
+<span class='line'>98</span>   &#34;Solves the given keyword with given type-reference&#46; After solving&#44;
+<span class='line'>99</span> &#96;solve-recursively&#39;&#44; will attempt to solve any new variables that were
+<span class='line'>100</span> entailed by the given keyword&#46;&#34;
+<span class='line'>101</span>   <span id='f0s57'>(let* ((info    <span id='f0s58'>(make-type-info :size <span id='f0s59'>(size:reference solved-value)</span>
+<span class='line'>102</span>                                   :type solved-value)</span>)
+<span class='line'>103</span>          (context <span id='f0s60'>(solved name info context)</span>)
+<span class='line'>104</span>          &#59;&#59; IMPORTANT :: We remove the value we solved for otherwise
+<span class='line'>105</span>          &#59;&#59; we try to solve for it again and error out
+<span class='line'>106</span>          (solved <span id='f0s61'>(remove-if (lambda (x) <span id='f0s62'>(eql x name)</span>)
+<span class='line'>107</span>                             <span id='f0s63'>(dependency:get-solved <span id='f0s64'>(dependency context)</span>)</span>)</span>))
+<span class='line'>108</span>     <span id='f0s65'>(labels
+<span class='line'>109</span>         (<span id='f0s66'>(solving-current-set (context current-resolve-symbol)
+<span class='line'>110</span>            <span id='f0s67'>(let ((hole <span id='f0s68'>(closure:lookup <span id='f0s69'>(hole-info context)</span>
+<span class='line'>111</span>                                        current-resolve-symbol)</span>))
+<span class='line'>112</span>              <span id='f0s70'>(if hole
+<span class='line'>113</span>                  <span id='f0s71'>(multiple-value-bind (context solved&#63;)
+<span class='line'>114</span>                      <span id='f0s72'>(try-equations current-resolve-symbol hole context)</span>
+<span class='line'>115</span>                    <span id='f0s73'>(if solved&#63;
+<span class='line'>116</span>                        context
+<span class='line'>117</span>                        <span id='f0s74'>(log:error term <span id='f0s75'>&#39;(:unifier :type)</span>
+<span class='line'>118</span>                                   <span id='f0s76'>&#34;could not solve value &#126;A&#34;</span>
+<span class='line'>119</span>                                   current-resolve-symbol)</span>)</span>)</span>
+<span class='line'>120</span>                  <span id='f0s77'>(log:error term <span id='f0s78'>&#39;(:unifier :type)</span>
+<span class='line'>121</span>                             <span id='f0s79'>&#34;How can I solve hole &#126;A: if no equations exist for it&#34;</span>
+<span class='line'>122</span>                             current-resolve-symbol)</span>)</span>)</span>)</span>
+<span class='line'>123</span>          <span id='f0s80'>(solve-recursive (context symbol-set)
+<span class='line'>124</span>            &#59;&#59; The dependency module does not remember what values have
+<span class='line'>125</span>            &#59;&#59; been solved&#46; Thus we need to manually filter out
+<span class='line'>126</span>            &#59;&#59; previously dealt with values&#44; by looking in our typing
+<span class='line'>127</span>            &#59;&#59; map and seeing what we&#39;ve already figured out&#46;
+<span class='line'>128</span>            <span id='f0s81'>(let* ((not-solved <span id='f0s82'>(remove-if
+<span class='line'>129</span>                                <span id='f0s83'>(lambda (x)
+<span class='line'>130</span>                                  <span id='f0s84'>(closure:lookup <span id='f0s85'>(typing-closure context)</span> x)</span>)</span>
+<span class='line'>131</span>                                symbol-set)</span>)
+<span class='line'>132</span>                   (context  <span id='f0s86'>(mvfold <span id='f0s87'>&#35;&#39;solving-current-set </span>not-solved context)</span>)
+<span class='line'>133</span>                   (resolved <span id='f0s88'>(dependency:get-solved <span id='f0s89'>(dependency context)</span>)</span>))
+<span class='line'>134</span>              &#59;&#59; We keep dumping them&#44; eventually we should get through
+<span class='line'>135</span>              &#59;&#59; them all&#33;
+<span class='line'>136</span>              <span id='f0s90'>(if resolved
+<span class='line'>137</span>                  <span id='f0s91'>(solve-recursive <span id='f0s92'>(dump-solved context)</span> resolved)</span>
+<span class='line'>138</span>                  context)</span>)</span>)</span>)
+<span class='line'>139</span>       <span id='f0s93'>(solve-recursive <span id='f0s94'>(dump-solved context)</span> solved)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t56')><span class='toggle' id='pf0t56'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(56)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t56'><code><span id='f0c121'> (lambda (term name solved-value context)
+   <span id='f0c120'>(let* ((info
+           <span id='f0c119'>(funcall &#39;make-type-info
+                    <span id='f0c118'>&#39;:size</span>
+                    <span id='f0c115'>(funcall &#39;size:reference
+                             <span id='f0c114'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application) solved-value)</span>)</span>
+                    <span id='f0c116'>&#39;:type</span>
+                    solved-value)</span>)
+          (context
+           <span id='f0c6'>(funcall &#39;solved
+                    <span id='f0c5'>(ccl::typed-form &#39;keyword name)</span>
+                    <span id='f0c3'>(ccl::typed-form &#39;type-info info)</span>
+                    <span id='f0c1'>(ccl::typed-form &#39;typing-context context)</span>)</span>)
+          (solved
+           (ccl::typed-form &#39;list
+            <span id='f0c45'>(let* ((&#35;:g55659 <span id='f0c7'>(cons nil nil)</span>) (&#35;:g55660 &#35;:g55659))
+              <span id='f0c43'>(let* ((&#35;:g55662
+                      <span id='f0c42'>(funcall &#39;dependency:get-solved <span id='f0c41'>(ccl::typed-form &#39;dependency:typ <span id='f0c40'>(funcall &#39;dependency context)</span>)</span>)</span>))
+                (progn <span id='f0c38'>(tagbody <span id='f0c35'>(go &#35;:g55664)</span>
+                                (&#35;:g55663 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200390B7AD&#62; t t)
+                                <span id='f0c30'>(tagbody <span id='f0c29'>(let* ((&#35;:g55661 <span id='f0c28'>(car &#35;:g55662)</span>))
+                                           <span id='f0c26'>(tagbody <span id='f0c25'>(if <span id='f0c16'>(not <span id='f0c15'>(ccl::lambda-bind (x) (&#35;:g55661) <span id='f0c14'>(funcall 10 x name)</span>)</span>)</span>
+                                                        <span id='f0c24'>(setq &#35;:g55659
+                                                              <span id='f0c23'>(ccl::&#37;cdr <span id='f0c22'>(ccl::typed-form &#39;list
+                                                                          <span id='f0c21'>(ccl::&#37;rplacd <span id='f0c20'>(ccl::typed-form &#39;cons &#35;:g55659)</span>
+                                                                                        <span id='f0c18'>(cons &#35;:g55661 nil)</span>)</span>)</span>)</span>)</span>
+                                                        nil)</span>)</span>)</span>)</span>
+                                <span id='f0c34'>(setq &#35;:g55662 <span id='f0c33'>(ccl::&#37;cdr <span id='f0c32'>(ccl::typed-form &#39;list &#35;:g55662)</span>)</span>)</span>
+                                (&#35;:g55664 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200390B7AD&#62; t nil)
+                                <span id='f0c37'>(if <span id='f0c36'>(not &#39;:ne &#35;:g55662)</span> (go &#35;:g55663) nil)</span>)</span>
+                       <span id='f0c11'>(let* () <span id='f0c10'>(ccl::&#37;cdr <span id='f0c9'>(ccl::typed-form &#39;list &#35;:g55660)</span>)</span>)</span>))</span>)</span>)))
+     <span id='f0c112'>(labels ((&#35;:solving-current-set <span id='f0c76'>(lambda (context current-resolve-symbol)
+                                       <span id='f0c75'>(let* ((hole
+                                               <span id='f0c51'>(funcall &#39;closure:lookup
+                                                        <span id='f0c48'>(ccl::typed-form &#39;closure:typ <span id='f0c47'>(funcall &#39;hole-info context)</span>)</span>
+                                                        <span id='f0c50'>(ccl::typed-form &#39;keyword current-resolve-symbol)</span>)</span>))
+                                         <span id='f0c74'>(if hole
+                                             <span id='f0c72'>(multiple-value-bind (context solved&#63;)
+                                                 <span id='f0c63'>(funcall &#39;try-equations
+                                                          <span id='f0c60'>(ccl::typed-form &#39;keyword current-resolve-symbol)</span>
+                                                          <span id='f0c58'>(ccl::typed-form &#39;hole-information hole)</span>
+                                                          <span id='f0c62'>(ccl::typed-form &#39;typing-context context)</span>)</span>
+                                               <span id='f0c71'>(if solved&#63;
+                                                   context
+                                                   <span id='f0c70'>(funcall &#39;log:error
+                                                            term
+                                                            <span id='f0c67'>&#39;(:unifier :type)</span>
+                                                            <span id='f0c69'>&#39;&#34;could not solve value &#126;A&#34;</span>
+                                                            current-resolve-symbol)</span>)</span>)</span>
+                                             <span id='f0c56'>(funcall &#39;log:error
+                                                      term
+                                                      <span id='f0c54'>&#39;(:unifier :type)</span>
+                                                      <span id='f0c53'>&#39;&#34;How can I solve hole &#126;A: if no equations exist for it&#34;</span>
+                                                      current-resolve-symbol)</span>)</span>)</span>)</span>)
+              (&#35;:solve-recursive &#35;1&#61;<span id='f0c106'>(lambda (context symbol-set)
+                                      <span id='f0c105'>(let* ((not-solved
+                                              <span id='f0c104'>(funcall &#39;remove-if
+                                                       <span id='f0c102'>(function <span id='f0c101'>(lambda (x)
+                                                                   <span id='f0c100'>(funcall &#39;closure:lookup
+                                                                            <span id='f0c97'>(ccl::typed-form &#39;closure:typ
+                                                                             <span id='f0c96'>(funcall &#39;typing-closure context)</span>)</span>
+                                                                            <span id='f0c99'>(ccl::typed-form &#39;keyword x)</span>)</span>)</span>)</span>
+                                                       symbol-set)</span>)
+                                             (context
+                                              <span id='f0c94'>(funcall &#39;reduce
+                                                       &#35;:solving-current-set
+                                                       not-solved
+                                                       <span id='f0c93'>&#39;:from-end</span>
+                                                       nil
+                                                       <span id='f0c92'>&#39;:initial-value</span>
+                                                       context)</span>)
+                                             (resolved
+                                              <span id='f0c80'>(funcall &#39;dependency:get-solved
+                                                       <span id='f0c79'>(ccl::typed-form &#39;dependency:typ
+                                                        <span id='f0c78'>(funcall &#39;dependency context)</span>)</span>)</span>))
+                                        <span id='f0c88'>(if resolved
+                                            <span id='f0c86'>(ccl::self-funcall
+                                             <span id='f0c85'>(funcall &#39;dump-solved <span id='f0c84'>(ccl::typed-form &#39;typing-context context)</span>)</span> resolved)</span>
+                                            context)</span>)</span>)</span>))
+       <span id='f0c111'>(funcall &#35;1&#35; <span id='f0c110'>(funcall &#39;dump-solved <span id='f0c109'>(ccl::typed-form &#39;typing-context context)</span>)</span> solved)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>140</span> 
+<span class='line'>141</span> (-&#62; try-equations
+<span class='line'>142</span>     (keyword hole-information typing-context)
+<span class='line'>143</span>     (values typing-context boolean))
+<span id='f0s95'><span class='line'>144</span> (defun try-equations (name hole-info context)
+<span class='line'>145</span>   &#34;We try the series of equations until one of them works&#44; once the
+<span class='line'>146</span> first equation that is found working&#44; we stop trying to evaluate the other expressions&#46;
+<span class='line'>147</span> Note that we do not recursively solve&#44; thus the solved list may fill up&#34;
+<span class='line'>148</span>   <span id='f0s96'>(mvfold <span id='f0s97'>(lambda (context found&#63; term)
+<span class='line'>149</span>             <span id='f0s98'>(if found&#63;
+<span class='line'>150</span>                 <span id='f0s99'>(values context found&#63;)</span>
+<span class='line'>151</span>                 <span id='f0s100'>(multiple-value-bind (result context)
+<span class='line'>152</span>                     <span id='f0s101'>(annotate-term-no-binder term context)</span>
+<span class='line'>153</span>                   <span id='f0s102'>(etypecase-of typing-result result
+<span class='line'>154</span>                     (type-info       <span id='f0s103'>(values <span id='f0s104'>(solved name result context)</span> t)</span>)
+<span class='line'>155</span>                     (hole-conditions <span id='f0s105'>(values context nil)</span>))</span>)</span>)</span>)</span>
+<span class='line'>156</span>           <span id='f0s106'>(hole-information-term hole-info)</span>
+<span class='line'>157</span>           context
+<span class='line'>158</span>           nil)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t95')><span class='toggle' id='pf0t95'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(95)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t95'><code><span id='f0c503'> (lambda (name hole-info context)
+   <span id='f0c502'>(let* ((&#35;:fn55686
+           <span id='f0c501'>(funcall &#39;alexandria:ensure-function
+                    <span id='f0c500'>(function <span id='f0c499'>(lambda (context found&#63; term)
+                                <span id='f0c498'>(if found&#63;
+                                    <span id='f0c433'>(values context found&#63;)</span>
+                                    <span id='f0c496'>(multiple-value-bind (result context)
+                                        <span id='f0c495'>(funcall &#39;annotate-term-no-binder
+                                                 <span id='f0c492'>(ccl::typed-form
+                                                  &#39;(or number
+                                                       alu&#46;spec:reference
+                                                       alu&#46;spec:application
+                                                       alu&#46;spec:record
+                                                       alu&#46;spec:record-lookup
+                                                       alu&#46;spec:array-lookup
+                                                       alu&#46;spec:array-allocate
+                                                       alu&#46;spec:from-data
+                                                       alu&#46;spec:array-set
+                                                       alu&#46;spec:type-coerce
+                                                       alu&#46;spec:type-check)
+                                                  term)</span>
+                                                 <span id='f0c494'>(ccl::typed-form &#39;typing-context context)</span>)</span>
+                                      <span id='f0c490'>(let* ((&#35;:x55687 result))
+                                        <span id='f0c489'>(let* ((&#35;:g55688 &#35;:x55687))
+                                          <span id='f0c488'>(if <span id='f0c436'>(funcall &#39;ccl:structure-typep
+                                                       &#35;:g55688
+                                                       <span id='f0c434'>&#39;&#35;&#60;class-cell for type-info &#35;x302001E23B4D&#62;</span>)</span>
+                                              <span id='f0c487'>(progn nil
+                                                     <span id='f0c486'>(values <span id='f0c485'>(funcall &#39;solved
+                                                                      <span id='f0c484'>(ccl::typed-form &#39;keyword name)</span>
+                                                                      <span id='f0c482'>(ccl::typed-form &#39;type-info result)</span>
+                                                                      <span id='f0c480'>(ccl::typed-form &#39;typing-context context)</span>)</span>
+                                                             t)</span>)</span>
+                                              <span id='f0c478'>(if <span id='f0c477'>(let* ((&#35;:g55690 &#35;:g55688))
+                                                    <span id='f0c476'>(or <span id='f0c475'>(funcall &#39;ccl:structure-typep
+                                                                 &#35;:g55690
+                                                                 <span id='f0c473'>&#39;&#35;&#60;class-cell for same-as &#35;x302001E2417D&#62;</span>)</span>
+                                                        <span id='f0c469'>(not &#39;:ne
+                                                             <span id='f0c468'>(block nil
+                                                               <span id='f0c467'>(let* ((&#35;:g55691 &#35;:g55690)
+                                                                      (&#35;:g55692 <span id='f0c466'>&#39;(:refine-integer :refine-array)</span>))
+                                                                 <span id='f0c465'>(tagbody <span id='f0c456'>(go &#35;:g55694)</span>
+                                                                          (&#35;:g55693 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039B5FBD&#62; t
+                                                                           t)
+                                                                          <span id='f0c464'>(tagbody <span id='f0c463'>(if <span id='f0c462'>(eq <span id='f0c461'>(car &#35;:g55692)</span> &#35;:g55691)</span>
+                                                                                       <span id='f0c458'>(return-from nil &#35;:g55692)</span>
+                                                                                       nil)</span>)</span>
+                                                                          <span id='f0c453'>(setq &#35;:g55692
+                                                                                <span id='f0c452'>(ccl::&#37;cdr <span id='f0c451'>(ccl::typed-form &#39;list
+                                                                                            &#35;:g55692)</span>)</span>)</span>
+                                                                          (&#35;:g55694 nil (0)
+                                                                           &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039B5FBD&#62; t
+                                                                           nil)
+                                                                          <span id='f0c455'>(if <span id='f0c454'>(not &#39;:ne &#35;:g55692)</span> (go &#35;:g55693) nil)</span>)</span>)</span>)</span>)</span>
+                                                        <span id='f0c472'>(funcall &#39;ccl:structure-typep
+                                                                 &#35;:g55690
+                                                                 <span id='f0c471'>&#39;&#35;&#60;class-cell for depends-on &#35;x302001E2445D&#62;</span>)</span>)</span>)</span>
+                                                  <span id='f0c449'>(progn nil <span id='f0c448'>(values context nil)</span>)</span>
+                                                  <span id='f0c446'>(if <span id='f0c445'>(progn &#35;:g55688 t)</span>
+                                                      <span id='f0c443'>(progn nil
+                                                             <span id='f0c442'>(values (funcall &#39;error
+                                                                              <span id='f0c437'>&#39;type-error</span>
+                                                                              <span id='f0c439'>&#39;:datum</span>
+                                                                              &#35;:x55687
+                                                                              <span id='f0c438'>&#39;:expected-type</span>
+                                                                              <span id='f0c441'>&#39;typing-result</span>))</span>)</span>
+                                                      nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+     <span id='f0c430'>(let ((&#35;:g55683 context) (&#35;:g55684 nil))
+       <span id='f0c429'>(flet ((&#35;:stack-fn-body60300 &#35;1&#61;<span id='f0c334'>(lambda (&#35;:item55685)
+                                         <span id='f0c333'>(ccl::&#37;decls-body
+                                          <span id='f0c332'>(multiple-value-bind (&#35;:g55718 &#35;:g55719)
+                                              <span id='f0c331'>(funcall &#35;:fn55686 &#35;:g55683 &#35;:g55684 &#35;:item55685)</span>
+                                            <span id='f0c327'>(values <span id='f0c326'>(setq &#35;:g55683 &#35;:g55718)</span> <span id='f0c324'>(setq &#35;:g55684 &#35;:g55719)</span>)</span>)</span>)</span>)</span>))
+         <span id='f0c428'>(ccl::&#37;decls-body
+          <span id='f0c427'>(progn <span id='f0c426'>(let* ((&#35;:seq55695
+                         (ccl::typed-form &#39;list <span id='f0c342'>(ccl::struct-ref <span id='f0c341'>(ccl::typed-form &#39;hole-information hole-info)</span> 2)</span>)))
+                   <span id='f0c425'>(if <span id='f0c424'>(funcall 12 &#35;:seq55695)</span>
+                       <span id='f0c422'>(let* ((&#35;:seq55695 (ccl::typed-form &#39;list &#35;:seq55695)))
+                         <span id='f0c421'>(let* ((&#35;:seq5569555696 &#35;:seq55695))
+                           <span id='f0c420'>(let* ((&#35;:g55697 &#35;:seq5569555696))
+                             <span id='f0c418'>(tagbody <span id='f0c417'>(go &#35;:g55699)</span>
+                                      (&#35;:g55698 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039AF58D&#62; t t)
+                                      <span id='f0c416'>(tagbody <span id='f0c415'>(let* ((&#35;:item55685 <span id='f0c410'>(car &#35;:g55697)</span>))
+                                                 <span id='f0c414'>(tagbody <span id='f0c413'>(tagbody <span id='f0c412'>(funcall &#35;1&#35; &#35;:item55685)</span>)</span>)</span>)</span>)</span>
+                                      <span id='f0c408'>(setq &#35;:g55697 <span id='f0c407'>(ccl::&#37;cdr <span id='f0c406'>(ccl::typed-form &#39;list &#35;:g55697)</span>)</span>)</span>
+                                      (&#35;:g55699 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039AF58D&#62; t nil)
+                                      <span id='f0c404'>(if <span id='f0c403'>(not &#39;:ne &#35;:g55697)</span> (go &#35;:g55698) nil)</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c402'>(if <span id='f0c401'>(funcall &#39;simple-vector-p &#35;:seq55695)</span>
+                           <span id='f0c371'>(let* ((&#35;:seq55695 (ccl::typed-form &#39;simple-vector &#35;:seq55695)))
+                             <span id='f0c370'>(ccl::&#37;decls-body
+                              <span id='f0c369'>(let* ((&#35;:seq5569555706 &#35;:seq55695))
+                                <span id='f0c368'>(progn <span id='f0c367'>(let* ((&#35;:g55711 &#35;:seq5569555706)
+                                              (&#35;:g55709 <span id='f0c366'>(funcall 11 &#35;:g55711)</span>)
+                                              (&#35;:g55710 0)
+                                              (&#35;:item55685 nil))
+                                         <span id='f0c363'>(tagbody <span id='f0c343'>(go &#35;:g55708)</span>
+                                                  (&#35;:g55707 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039A220D&#62; t t)
+                                                  <span id='f0c356'>(progn (setq &#35;:item55685
+                                                               <span id='f0c351'>(ccl::&#37;decls-body <span id='f0c350'>(ccl::&#37;aref1 &#35;:g55711 &#35;:g55710)</span>)</span>)
+                                                         (setq &#35;:g55710
+                                                               <span id='f0c355'>(ccl::typed-form &#39;fixnum
+                                                                <span id='f0c354'>(ccl::fixnum-add-no-overflow
+                                                                 <span id='f0c353'>(ccl::typed-form &#39;fixnum &#35;:g55710)</span>
+                                                                 (ccl::typed-form &#39;(integer 1 1) 1))</span>)</span>))</span>
+                                                  <span id='f0c347'>(tagbody <span id='f0c346'>(tagbody <span id='f0c345'>(funcall &#35;1&#35; &#35;:item55685)</span>)</span>)</span>
+                                                  (&#35;:g55708 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039A220D&#62; t nil)
+                                                  <span id='f0c362'>(if <span id='f0c361'>(ccl::&#37;i&#60;&#62; &#39;:lt <span id='f0c360'>(ccl::typed-form &#39;fixnum &#35;:g55710)</span>
+                                                       <span id='f0c358'>(ccl::typed-form &#39;fixnum &#35;:g55709)</span>)</span>
+                                                      (go &#35;:g55707)
+                                                      nil)</span>)</span>)</span>
+                                       nil)</span>)</span>)</span>)</span>
+                           <span id='f0c399'>(let* ((&#35;:seq55695 (ccl::typed-form &#39;vector &#35;:seq55695)))
+                             <span id='f0c398'>(let* ((&#35;:seq5569555712 &#35;:seq55695))
+                               <span id='f0c397'>(progn <span id='f0c396'>(let* ((&#35;:g55717 &#35;:seq5569555712)
+                                             (&#35;:g55715 <span id='f0c395'>(funcall 11 &#35;:g55717)</span>)
+                                             (&#35;:g55716 0)
+                                             (&#35;:item55685 nil))
+                                        <span id='f0c393'>(tagbody <span id='f0c392'>(go &#35;:g55714)</span>
+                                                 (&#35;:g55713 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039DDB4D&#62; t t)
+                                                 <span id='f0c391'>(progn (setq &#35;:item55685
+                                                              <span id='f0c386'>(ccl::&#37;decls-body <span id='f0c385'>(ccl::&#37;aref1 &#35;:g55717 &#35;:g55716)</span>)</span>)
+                                                        (setq &#35;:g55716
+                                                              <span id='f0c390'>(ccl::typed-form &#39;fixnum
+                                                               <span id='f0c389'>(ccl::fixnum-add-no-overflow
+                                                                <span id='f0c388'>(ccl::typed-form &#39;fixnum &#35;:g55716)</span>
+                                                                (ccl::typed-form &#39;(integer 1 1) 1))</span>)</span>))</span>
+                                                 <span id='f0c376'>(tagbody <span id='f0c375'>(tagbody <span id='f0c374'>(funcall &#35;1&#35; &#35;:item55685)</span>)</span>)</span>
+                                                 (&#35;:g55714 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039DDB4D&#62; t nil)
+                                                 <span id='f0c382'>(if <span id='f0c381'>(ccl::&#37;i&#60;&#62; &#39;:lt <span id='f0c378'>(ccl::typed-form &#39;fixnum &#35;:g55716)</span>
+                                                      <span id='f0c380'>(ccl::typed-form &#39;fixnum &#35;:g55715)</span>)</span>
+                                                     (go &#35;:g55713)
+                                                     nil)</span>)</span>)</span>
+                                      nil)</span>)</span>)</span>)</span>)</span>)</span>
+                 <span id='f0c338'>(let* () <span id='f0c337'>(values &#35;:g55683 &#35;:g55684)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>159</span> 
+<span class='line'>160</span> 
+<span class='line'>161</span> (-&#62; type-equality (ir:type-reference-full ir:type-reference-full) boolean)
+<span id='f0s107'><span class='line'>162</span> (defun type-equality (type-1 type-2)
+<span class='line'>163</span>   &#34;Checks that the two types given are equal&#34;
+<span class='line'>164</span>   <span id='f0s108'>(dispatch-case ((type-1 ir:type-reference-full)
+<span class='line'>165</span>                   (type-2 ir:type-reference-full))
+<span class='line'>166</span>     ((ir:reference-type ir:reference-type)
+<span class='line'>167</span>      <span id='f0s109'>(eq <span id='f0s110'>(ir:name type-1)</span> <span id='f0s111'>(ir:name type-2)</span>)</span>)
+<span class='line'>168</span>     ((ir:application ir:application)
+<span class='line'>169</span>      <span id='f0s112'>(every <span id='f0s113'>&#35;&#39;type-equality
+</span><span class='line'>170</span>             <span id='f0s114'>(cons <span id='f0s115'>(ir:func type-1)</span> <span id='f0s116'>(ir:arguments type-1)</span>)</span>
+<span class='line'>171</span>             <span id='f0s117'>(cons <span id='f0s118'>(ir:func type-2)</span> <span id='f0s119'>(ir:arguments type-2)</span>)</span>)</span>)
+<span class='line'>172</span>     ((number number)
+<span class='line'>173</span>      <span id='f0s120'>(&#61; type-1 type-2)</span>)
+<span class='line'>174</span>     ((* ir:application)
+<span class='line'>175</span>      nil)
+<span class='line'>176</span>     ((* ir:reference-type)
+<span class='line'>177</span>      nil)
+<span class='line'>178</span>     ((* number)
+<span class='line'>179</span>      nil))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t107')><span class='toggle' id='pf0t107'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(107)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t107'><code><span id='f0c278'> (lambda (type-1 type-2)
+   <span id='f0c277'>(let ((&#35;:arg0 type-1) (&#35;:arg1 type-2))
+     <span id='f0c276'>(let ((&#35;:arg055742 &#35;:arg0) (&#35;:arg155743 &#35;:arg1))
+       <span id='f0c275'>(block &#35;:block55735
+         <span id='f0c274'>(tagbody <span id='f0c273'>(let* ((&#35;:expr55744 &#35;:arg055742))
+                    <span id='f0c272'>(let* ((&#35;:g55745 &#35;:expr55744))
+                      <span id='f0c271'>(if <span id='f0c156'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                   &#35;:g55745
+                                   <span id='f0c154'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200392D75F&#62;))</span>)</span>
+                          <span id='f0c188'>(progn nil
+                                 <span id='f0c187'>(let* ((&#35;:expr55749 &#35;:arg155743))
+                                   <span id='f0c186'>(let* ((&#35;:g55750 &#35;:expr55749))
+                                     <span id='f0c185'>(if <span id='f0c159'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                  &#35;:g55750
+                                                  <span id='f0c157'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003927B1F&#62;))</span>)</span>
+                                         <span id='f0c161'>(progn nil <span id='f0c160'>(go &#35;:tag55736)</span>)</span>
+                                         <span id='f0c184'>(if <span id='f0c164'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                      &#35;:g55750
+                                                      <span id='f0c163'>&#39;(&#35;:load-time-eval
+                                                         (funcall &#35;&#60;Anonymous Function &#35;x3020039248BF&#62;))</span>)</span>
+                                             <span id='f0c183'>(progn nil <span id='f0c182'>(go &#35;:tag55739)</span>)</span>
+                                             <span id='f0c181'>(if <span id='f0c180'>(funcall &#39;numberp &#35;:g55750)</span>
+                                                 <span id='f0c178'>(progn nil <span id='f0c177'>(go &#35;:tag55741)</span>)</span>
+                                                 <span id='f0c176'>(if <span id='f0c175'>(progn &#35;:g55750 t)</span>
+                                                     <span id='f0c173'>(progn nil
+                                                            <span id='f0c172'>(values (funcall &#39;error
+                                                                             <span id='f0c171'>&#39;dispatch-case-error</span>
+                                                                             <span id='f0c170'>&#39;:expected-type</span>
+                                                                             <span id='f0c168'>&#39;alu&#46;spec:type-reference-full</span>
+                                                                             <span id='f0c165'>&#39;:datum</span>
+                                                                             &#35;:expr55749
+                                                                             <span id='f0c167'>&#39;:matched-types</span>
+                                                                             <span id='f0c169'>&#39;(alu&#46;spec:type-reference-full)</span>))</span>)</span>
+                                                     nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                          <span id='f0c270'>(if <span id='f0c269'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                       &#35;:g55745
+                                       <span id='f0c268'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020039201FF&#62;))</span>)</span>
+                              <span id='f0c266'>(progn nil
+                                     <span id='f0c265'>(let* ((&#35;:expr55760 &#35;:arg155743))
+                                       <span id='f0c264'>(let* ((&#35;:g55761 &#35;:expr55760))
+                                         <span id='f0c263'>(if <span id='f0c262'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                      &#35;:g55761
+                                                      <span id='f0c260'>&#39;(&#35;:load-time-eval
+                                                         (funcall &#35;&#60;Anonymous Function &#35;x30200395A56F&#62;))</span>)</span>
+                                             <span id='f0c236'>(progn nil <span id='f0c235'>(go &#35;:tag55737)</span>)</span>
+                                             <span id='f0c259'>(if <span id='f0c258'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                          &#35;:g55761
+                                                          <span id='f0c257'>&#39;(&#35;:load-time-eval
+                                                             (funcall &#35;&#60;Anonymous Function &#35;x30200395730F&#62;))</span>)</span>
+                                                 <span id='f0c238'>(progn nil <span id='f0c237'>(go &#35;:tag55740)</span>)</span>
+                                                 <span id='f0c255'>(if <span id='f0c254'>(funcall &#39;numberp &#35;:g55761)</span>
+                                                     <span id='f0c252'>(progn nil <span id='f0c251'>(go &#35;:tag55741)</span>)</span>
+                                                     <span id='f0c250'>(if <span id='f0c240'>(progn &#35;:g55761 t)</span>
+                                                         <span id='f0c249'>(progn nil
+                                                                <span id='f0c248'>(values (funcall &#39;error
+                                                                                 <span id='f0c242'>&#39;dispatch-case-error</span>
+                                                                                 <span id='f0c246'>&#39;:expected-type</span>
+                                                                                 <span id='f0c241'>&#39;alu&#46;spec:type-reference-full</span>
+                                                                                 <span id='f0c247'>&#39;:datum</span>
+                                                                                 &#35;:expr55760
+                                                                                 <span id='f0c245'>&#39;:matched-types</span>
+                                                                                 <span id='f0c244'>&#39;(alu&#46;spec:type-reference-full)</span>))</span>)</span>
+                                                         nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                              <span id='f0c234'>(if <span id='f0c190'>(funcall &#39;numberp &#35;:g55745)</span>
+                                  <span id='f0c222'>(progn nil
+                                         <span id='f0c221'>(let* ((&#35;:expr55768 &#35;:arg155743))
+                                           <span id='f0c220'>(let* ((&#35;:g55769 &#35;:expr55768))
+                                             <span id='f0c219'>(if <span id='f0c192'>(funcall &#39;numberp &#35;:g55769)</span>
+                                                 <span id='f0c194'>(progn nil <span id='f0c193'>(go &#35;:tag55738)</span>)</span>
+                                                 <span id='f0c218'>(if <span id='f0c197'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                              &#35;:g55769
+                                                              <span id='f0c195'>&#39;(&#35;:load-time-eval
+                                                                 (funcall &#35;&#60;Anonymous Function &#35;x30200394F6AF&#62;))</span>)</span>
+                                                     <span id='f0c217'>(progn nil <span id='f0c216'>(go &#35;:tag55739)</span>)</span>
+                                                     <span id='f0c215'>(if <span id='f0c202'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                  &#35;:g55769
+                                                                  <span id='f0c200'>&#39;(&#35;:load-time-eval
+                                                                     (funcall &#35;&#60;Anonymous Function &#35;x30200394C44F&#62;))</span>)</span>
+                                                         <span id='f0c199'>(progn nil <span id='f0c198'>(go &#35;:tag55740)</span>)</span>
+                                                         <span id='f0c214'>(if <span id='f0c213'>(progn &#35;:g55769 t)</span>
+                                                             <span id='f0c211'>(progn nil
+                                                                    <span id='f0c210'>(values (funcall &#39;error
+                                                                                     <span id='f0c207'>&#39;dispatch-case-error</span>
+                                                                                     <span id='f0c209'>&#39;:expected-type</span>
+                                                                                     <span id='f0c208'>&#39;alu&#46;spec:type-reference-full</span>
+                                                                                     <span id='f0c205'>&#39;:datum</span>
+                                                                                     &#35;:expr55768
+                                                                                     <span id='f0c203'>&#39;:matched-types</span>
+                                                                                     <span id='f0c206'>&#39;(alu&#46;spec:type-reference-full)</span>))</span>)</span>
+                                                             nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+                                  <span id='f0c233'>(if <span id='f0c224'>(progn &#35;:g55745 t)</span>
+                                      <span id='f0c232'>(progn nil
+                                             <span id='f0c231'>(values (funcall &#39;error
+                                                              <span id='f0c225'>&#39;dispatch-case-error</span>
+                                                              <span id='f0c227'>&#39;:expected-type</span>
+                                                              <span id='f0c230'>&#39;alu&#46;spec:type-reference-full</span>
+                                                              <span id='f0c226'>&#39;:datum</span>
+                                                              &#35;:expr55744
+                                                              <span id='f0c228'>&#39;:matched-types</span>
+                                                              nil))</span>)</span>
+                                      nil)</span>)</span>)</span>)</span>)</span>)</span>
+                  (&#35;:tag55736 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c134'>(return-from &#35;:block55735 <span id='f0c133'>(eq <span id='f0c130'>(funcall &#39;alu&#46;spec:name type-1)</span> <span id='f0c132'>(funcall &#39;alu&#46;spec:name type-2)</span>)</span>)</span>
+                  (&#35;:tag55737 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c153'>(return-from &#35;:block55735
+                    <span id='f0c152'>(let ((&#35;:g55776 <span id='f0c140'>(function type-equality)</span>)
+                          (&#35;:g55777 <span id='f0c139'>(cons <span id='f0c138'>(funcall &#39;alu&#46;spec:func type-1)</span> <span id='f0c136'>(funcall &#39;alu&#46;spec:arguments type-1)</span>)</span>)
+                          (&#35;:g55778
+                           <span id='f0c151'>(cons <span id='f0c150'>(cons <span id='f0c149'>(funcall &#39;alu&#46;spec:func type-2)</span> <span id='f0c147'>(funcall &#39;alu&#46;spec:arguments type-2)</span>)</span> nil)</span>))
+                      <span id='f0c145'>(funcall &#39;ccl::some-xx-multi 2 t &#35;:g55776 &#35;:g55777 &#35;:g55778)</span>)</span>)</span>
+                  (&#35;:tag55738 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c126'>(return-from &#35;:block55735 <span id='f0c125'>(ccl::numcmp &#39;:eq type-1 type-2)</span>)</span>
+                  (&#35;:tag55739 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c128'>(return-from &#35;:block55735 nil)</span>
+                  (&#35;:tag55740 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c122'>(return-from &#35;:block55735 nil)</span>
+                  (&#35;:tag55741 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039368AD&#62; t nil)
+                  <span id='f0c127'>(return-from &#35;:block55735 nil)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>180</span> 
+<span class='line'>181</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>182</span> &#59;&#59; Refining Partial Information
+<span class='line'>183</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>184</span> 
+<span class='line'>185</span> &#59;&#59; TODO :: Fill in the details
+<span class='line'>186</span> (-&#62; refine-hole-with-hole (hole hole typing-context) typing-context)
+<span id='f0s121'><span class='line'>187</span> (defun refine-hole-with-hole (original-hole new-hole-info context)
+<span class='line'>188</span>   &#34;Refines the given hole with the new hole and stores it back into the
+<span class='line'>189</span> typing context&#46;&#34;
+<span class='line'>190</span>   original-hole
+<span class='line'>191</span>   new-hole-info
+<span class='line'>192</span>   context)</span>
+</code></div>
+<a href=javascript:swap('f0t121')><span class='toggle' id='pf0t121'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(121)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t121'><code><span id='f0c321'> (lambda (original-hole new-hole-info context) <span id='f0c320'>(progn original-hole new-hole-info context)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>193</span> 
+<span class='line'>194</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>195</span> &#59;&#59; Updating Typing Context
+<span class='line'>196</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>197</span> 
+<span class='line'>198</span> (-&#62; solved (keyword type-info typing-context) typing-context)
+<span id='f0s122'><span class='line'>199</span> (defun solved (name info context)
+<span class='line'>200</span>   &#34;Updates the &#96;typing-context&#39; with the fact that given name is solved
+<span class='line'>201</span> with the given &#96;type-info&#39;&#34;
+<span class='line'>202</span>   <span id='f0s123'>(values
+<span class='line'>203</span>    <span id='f0s124'>(make-instance
+<span class='line'>204</span>     &#39;typing-context
+<span class='line'>205</span>     :typing-closure <span id='f0s125'>(closure:insert <span id='f0s126'>(typing-closure context)</span> name info)</span>
+<span class='line'>206</span>     :holes          <span id='f0s127'>(remove-if <span id='f0s128'>(lambda (x) <span id='f0s129'>(eql x name)</span>)</span> <span id='f0s130'>(holes context)</span>)</span>
+<span class='line'>207</span>     :hole-info      <span id='f0s131'>(closure:remove <span id='f0s132'>(hole-info context)</span> name)</span>
+<span class='line'>208</span>     :dependency     <span id='f0s133'>(dependency:solved-for <span id='f0s134'>(dependency context)</span> name)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t122')><span class='toggle' id='pf0t122'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(122)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t122'><code><span id='f0c316'> (lambda (name info context)
+   <span id='f0c315'>(values <span id='f0c314'>(let* ()
+             <span id='f0c313'>(funcall <span id='f0c295'>(ccl::&#37;svref <span id='f0c294'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020039F244F&#62;))</span> 3)</span>
+                      <span id='f0c293'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020039F244F&#62;))</span>
+                      <span id='f0c305'>&#39;:typing-closure</span>
+                      <span id='f0c312'>(funcall &#39;closure:insert
+                               <span id='f0c309'>(ccl::typed-form &#39;closure:typ <span id='f0c308'>(funcall &#39;typing-closure context)</span>)</span>
+                               <span id='f0c311'>(ccl::typed-form &#39;keyword name)</span>
+                               info)</span>
+                      <span id='f0c303'>&#39;:holes</span>
+                      <span id='f0c292'>(funcall &#39;remove-if <span id='f0c291'>(function <span id='f0c290'>(lambda (x) <span id='f0c289'>(funcall 10 x name)</span>)</span>)</span> <span id='f0c286'>(funcall &#39;holes context)</span>)</span>
+                      <span id='f0c302'>&#39;:hole-info</span>
+                      <span id='f0c284'>(funcall &#39;closure:remove
+                               <span id='f0c281'>(ccl::typed-form &#39;closure:typ <span id='f0c280'>(funcall &#39;hole-info context)</span>)</span>
+                               <span id='f0c283'>(ccl::typed-form &#39;keyword name)</span>)</span>
+                      <span id='f0c304'>&#39;:dependency</span>
+                      <span id='f0c301'>(funcall &#39;dependency:solved-for
+                               <span id='f0c298'>(ccl::typed-form &#39;dependency:typ <span id='f0c297'>(funcall &#39;dependency context)</span>)</span>
+                               <span id='f0c300'>(ccl::typed-form &#39;keyword name)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

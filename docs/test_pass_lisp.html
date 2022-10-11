@@ -1,0 +1,153 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_pass_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;pass.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> (def-suite alucard&#46;pass
+<span class='line'>4</span>   :description &#34;Test the compiler pipeline&#34;)
+<span class='line'>5</span> 
+<span class='line'>6</span> (in-suite alucard&#46;pass)
+<span class='line'>7</span> 
+<span class='line'>8</span> (test to-expand-away-records
+<span class='line'>9</span>   (let* ((look (pipeline:to-expand-away-records
+<span class='line'>10</span>                 (storage:lookup-function :record-test)))
+<span class='line'>11</span>          (multi-let (remove-if-not (lambda (x) (typep x &#39;ir:multiple-bind))
+<span class='line'>12</span>                                    look))
+<span class='line'>13</span>          (multi-ret (remove-if-not (lambda (x) (typep x &#39;ir:standalone-ret))
+<span class='line'>14</span>                                    look)))
+<span class='line'>15</span>     (is (&#61; 3
+<span class='line'>16</span>            (&#126;&#62; multi-let car ir:value ir:arguments length))
+<span class='line'>17</span>         &#34;The point type should expand into two arguments&#34;)
+<span class='line'>18</span>     (is (&#61; 4 (length (ir:var (car multi-ret))))
+<span class='line'>19</span>         &#34;The nested type should be expanded into output&#34;)))
+<span class='line'>20</span> 
+<span class='line'>21</span> (test to-expand-away-records-intermediate
+<span class='line'>22</span>   (let* ((look (pipeline:to-expand-away-records
+<span class='line'>23</span>                 (storage:lookup-function :record-test-mult)))
+<span class='line'>24</span>          (multi-lets (remove-if-not (lambda (x) (typep x &#39;ir:multiple-bind))
+<span class='line'>25</span>                                     look))
+<span class='line'>26</span>          (returns    (remove-if-not (lambda (x) (typep x &#39;ir:standalone-ret))
+<span class='line'>27</span>                                     look)))
+<span class='line'>28</span>     (is (&#61; 3
+<span class='line'>29</span>            (&#126;&#62; multi-lets car ir:value ir:arguments length))
+<span class='line'>30</span>         &#34;The point type should expand into two arguments&#34;)
+<span class='line'>31</span>     (is (&#61; 2 (length (ir:var (car returns))))
+<span class='line'>32</span>         &#34;The nested type should be expanded into output&#34;)))
+<span class='line'>33</span> 
+<span class='line'>34</span> (test void-removal
+<span class='line'>35</span>   (let ((ran (pipeline:to-expand-away-records
+<span class='line'>36</span>               (storage:lookup-function :use-constrain))))
+<span class='line'>37</span>     (is (&#61; 1 (length ran)))))
+<span class='line'>38</span> 
+<span class='line'>39</span> (test renaming
+<span class='line'>40</span>   (let ((ran  (pipeline:to-primitive-circuit (storage:lookup-function :record-test)))
+<span class='line'>41</span>         (ran2 (pipeline:to-primitive-circuit (storage:lookup-function :record-test-mult)))
+<span class='line'>42</span>         (ran3 (pipeline:to-primitive-circuit (storage:lookup-function :use-constrain))))
+<span class='line'>43</span>     ran2 ran3
+<span class='line'>44</span>     (is (every (lambda (x)
+<span class='line'>45</span>                  (not
+<span class='line'>46</span>                   (or (string-contains-p &#34;&#38;&#34; x)
+<span class='line'>47</span>                       (string-contains-p &#34;-&#34; x)
+<span class='line'>48</span>                       (string-contains-p &#34;&#37;&#34; x))))
+<span class='line'>49</span>                (ir:returns ran)))))
+<span class='line'>50</span> 
+<span class='line'>51</span> (test trans-let
+<span class='line'>52</span>   (let ((term
+<span class='line'>53</span>           (ir:make-bind-constraint
+<span class='line'>54</span>            :var (list :a :b :c)
+<span class='line'>55</span>            :value
+<span class='line'>56</span>            (list
+<span class='line'>57</span>             (ir:make-application
+<span class='line'>58</span>              :function (ir:make-reference :name :&#61;)
+<span class='line'>59</span>              :arguments
+<span class='line'>60</span>              (list (ir:make-application
+<span class='line'>61</span>                     :function (ir:make-reference :name :fun2)
+<span class='line'>62</span>                     :arguments
+<span class='line'>63</span>                     (list &#35;1&#61;(ir:make-application
+<span class='line'>64</span>                               :function (ir:make-reference :name :fun3)
+<span class='line'>65</span>                               :arguments
+<span class='line'>66</span>                               (list (ir:make-reference :name :hi)))
+<span class='line'>67</span>                           (ir:make-record-lookup
+<span class='line'>68</span>                            :record (ir:make-record :name :utxo
+<span class='line'>69</span>                                                     :owner 3
+<span class='line'>70</span>                                                     :amount 5
+<span class='line'>71</span>                                                     :nonce &#35;1&#35;)
+<span class='line'>72</span>                            :field  :nonce)))
+<span class='line'>73</span>                    (ir:make-reference :name :bob)))))))
+<span class='line'>74</span>     (is
+<span class='line'>75</span>      &#59;&#59; the type check is good enough to ensure that the pass works&#33;
+<span class='line'>76</span>      (typep (alu&#46;pass::transform-let (anf:normalize-expression term))
+<span class='line'>77</span>             &#39;ir:constraint-list))))
+<span class='line'>78</span> 
+<span class='line'>79</span> (test constrain-example
+<span class='line'>80</span>   (let* ((circuit (storage:lookup-function :manual-constraint))
+<span class='line'>81</span>          (linear  (pass:linearize circuit))
+<span class='line'>82</span>          (record  (pass:expand-away-records linear circuit)))
+<span class='line'>83</span>     (is (equalp (ir:var (car (last linear)))
+<span class='line'>84</span>                 (list :a :b :c))
+<span class='line'>85</span>         &#34;The values in the constraint are returned if they are the last value&#34;)
+<span class='line'>86</span>     (is (typep (ir:value (car record)) &#39;ir:fully-expanded-list))))
+<span class='line'>87</span> 
+<span class='line'>88</span> (test standalone-ret-expansion
+<span class='line'>89</span>   (let* ((circuit  (storage:lookup-function :record-ret))
+<span class='line'>90</span>          (expanded (pipeline:to-expand-away-records circuit)))
+<span class='line'>91</span>     (is (&#60; 1 (length (ir:var (car (last expanded))))))))
+<span class='line'>92</span> 
+<span class='line'>93</span> (test extraction
+<span class='line'>94</span>   (finishes (pipeline:pipeline (storage:lookup-function :poly-check)))
+<span class='line'>95</span>   (finishes (pipeline:pipeline (storage:lookup-function :record-test-mult)))
+<span class='line'>96</span>   (finishes (pipeline:pipeline (storage:lookup-function :array-lookup-equation)))
+<span class='line'>97</span>   (finishes (pipeline:pipeline (storage:lookup-function :explicit-type-coercsion)))
+<span class='line'>98</span>   (finishes (pipeline:pipeline (storage:lookup-function :explicit-type-check)))
+<span class='line'>99</span>   (finishes (pipeline:pipeline (storage:lookup-function :array-from-data-check)))
+<span class='line'>100</span>   &#59;&#59; We should make a more full test for this
+<span class='line'>101</span>   (finishes (pipeline:pipeline (storage:lookup-function :silly-range-check))))
+</code></div>
+</body></html>

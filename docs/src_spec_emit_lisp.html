@@ -1,0 +1,85 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_emit_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;emit.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;spec&#46;emit)
+<span class='line'>2</span> 
+<span class='line'>3</span> (defparameter *circuit-body* (list nil))
+<span class='line'>4</span> 
+<span id='f0s0'><span class='line'>5</span> (defmacro with-circuit-body (init-body &#38;body body)
+<span class='line'>6</span>   &#34;Creates a fresh circuit body&#34;
+<span class='line'>7</span>   <span id='f0s1'>&#96;(progn (let ((*circuit-body* &#44;init-body))
+<span class='line'>8</span>             &#44;&#64;body)
+<span class='line'>9</span>           (setf &#44;init-body (remove-if &#35;&#39;null &#44;init-body))
+<span class='line'>10</span>           &#44;init-body)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c30'> (lambda (&#35;:whole53444 &#35;:environment53445)
+   <span id='f0c29'>(let* ((&#35;:args53446 <span id='f0c4'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c3'>(cdr &#35;:whole53444)</span> <span id='f0c0'>&#39;(init-body &#38;body body)</span> 1 nil)</span>)
+          (init-body <span id='f0c28'>(prog1 <span id='f0c27'>(car &#35;:args53446)</span> <span id='f0c25'>(setq &#35;:args53446 <span id='f0c24'>(ccl::&#37;cdr <span id='f0c23'>(ccl::typed-form &#39;list &#35;:args53446)</span>)</span>)</span>)</span>)
+          (&#35;:rest53447 &#35;:args53446)
+          (body &#35;:rest53447))
+     <span id='f0c21'>(list <span id='f0c13'>&#39;progn</span>
+           <span id='f0c12'>(list* <span id='f0c7'>&#39;let</span> <span id='f0c11'>(cons <span id='f0c10'>(list <span id='f0c8'>&#39;*circuit-body*</span> init-body)</span> nil)</span> body)</span>
+           <span id='f0c20'>(list <span id='f0c14'>&#39;setf</span> init-body <span id='f0c18'>(list <span id='f0c16'>&#39;remove-if</span> <span id='f0c15'>&#39;(function null)</span> init-body)</span>)</span>
+           init-body)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>11</span> 
+<span id='f0s2'><span class='line'>12</span> (defun instruction (term)
+<span class='line'>13</span>   &#34;Adds the given term to the circuit body&#46; This adds the value to the
+<span class='line'>14</span> last slot of the given body&#34;
+<span class='line'>15</span>   <span id='f0s3'>(setf (cdr *circuit-body*) <span id='f0s4'>(list term)</span>
+<span class='line'>16</span>         *circuit-body*       <span id='f0s5'>(cdr *circuit-body*)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c39'> (lambda (term) <span id='f0c38'>(progn <span id='f0c37'>(ccl::set-cdr *circuit-body* <span id='f0c35'>(cons term nil)</span>)</span> <span id='f0c33'>(setq *circuit-body* <span id='f0c32'>(cdr *circuit-body*)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

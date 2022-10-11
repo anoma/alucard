@@ -1,0 +1,501 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_vampir_vampir_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;vampir;vampir.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;vampir)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59; We use CL streams as they are much better for concatenating to&#44; and
+<span class='line'>4</span> &#59;&#59; have us worry less&#46; they are a mutable interface however&#46;
+<span class='line'>5</span> 
+<span class='line'>6</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>7</span> &#59;&#59; FORMAT RUNDOWN FOR THOSE WHO ARE UNFAMILIAR
+<span class='line'>8</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>9</span> 
+<span class='line'>10</span> &#59;&#59; https:&#47;&#47;www&#46;cs&#46;cmu&#46;edu&#47;Groups&#47;AI&#47;html&#47;cltl&#47;clm&#47;node257&#46;html
+<span class='line'>11</span> 
+<span class='line'>12</span> &#59;&#59; DSL FOR NEWLINES AND CONTROL OF IT
+<span class='line'>13</span> 
+<span class='line'>14</span> &#59;&#59; &#126;4I  &#61; (pprint-indent :block   4)
+<span class='line'>15</span> &#59;&#59; &#126;4:I &#61; (pprint-indent :current 4)
+<span class='line'>16</span> &#59;&#59; &#126;&#95;   &#61; (pprint-newline :linear)
+<span class='line'>17</span> &#59;&#59; &#126;&#64;&#95;  &#61; (pprint-newline :miser)
+<span class='line'>18</span> &#59;&#59; &#126;:&#64;&#95; &#61; (pprint-newline :mandatory)
+<span class='line'>19</span> &#59;&#59; &#126;:&#95;  &#61; (pprint-newline :fill)
+<span class='line'>20</span> 
+<span class='line'>21</span> 
+<span class='line'>22</span> &#59;&#59; FOR PRINTING NORMALLY NOTE THESE TAKE ARGUMENTS&#33;
+<span class='line'>23</span> 
+<span class='line'>24</span> &#59;&#59; &#126;(&#126;a&#126;)    &#61; print symbol lower case instead of upper case
+<span class='line'>25</span> &#59;&#59; &#126;&#123;&#126;A&#126;&#125;    &#61; prints a list element by element&#46;
+<span class='line'>26</span> 
+<span class='line'>27</span> &#59;&#59; &#126;&#123;&#126;A&#126;&#94; &#126;&#125; &#61; prints a list element by element&#44; the last element of
+<span class='line'>28</span> &#59;&#59;             the list does not print the extra space
+<span class='line'>29</span> &#59;&#59; EXAMPLE:
+<span class='line'>30</span> &#59;&#59; VAMPIR&#62; (format nil &#34;&#126;&#123;&#126;A&#126;&#94; &#126;&#125;&#34; (list 1 2 3 4 5))
+<span class='line'>31</span> &#59;&#59; &#34;1 2 3 4 5&#34;
+<span class='line'>32</span> &#59;&#59; VAMPIR&#62; (format nil &#34;&#126;&#123;&#126;A &#126;&#125;&#34; (list 1 2 3 4 5))
+<span class='line'>33</span> &#59;&#59; &#34;1 2 3 4 5 &#34;
+<span class='line'>34</span> 
+<span class='line'>35</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>36</span> &#59;&#59; TopLevel Extraction
+<span class='line'>37</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>38</span> 
+<span class='line'>39</span> (-&#62; extract (list &#38;optional stream) stream)
+<span id='f0s0'><span class='line'>40</span> (defun extract (stmts &#38;optional (stream *standard-output*))
+<span class='line'>41</span>   <span id='f0s1'>(let ((*print-pretty*      t)
+<span class='line'>42</span>         (*print-miser-width* 40))
+<span class='line'>43</span>     <span id='f0s2'>(format stream <span id='f0s3'>&#34;&#126;&#123;&#126;A&#126;&#94;&#126;&#37;&#126;&#125;&#34;</span> stmts)</span>)</span>
+<span class='line'>44</span>   stream)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c9'> (lambda (stmts &#38;optional (stream *standard-output* &#35;:compiler-var))
+   <span id='f0c7'>(progn <span id='f0c6'>(let ((*print-pretty* t) (*print-miser-width* 40)) <span id='f0c4'>(funcall &#39;format stream <span id='f0c2'>&#39;&#34;&#126;&#123;&#126;A&#126;&#94;&#126;&#37;&#126;&#125;&#34;</span> stmts)</span>)</span> stream)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>45</span> 
+<span class='line'>46</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>47</span> &#59;&#59; Statement Extraction
+<span class='line'>48</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>49</span> 
+<span id='f0s4'><span class='line'>50</span> (defmethod print-object ((pub spc:pub) stream)
+<span class='line'>51</span>   <span id='f0s5'>(pprint-logical-block (stream nil)
+<span class='line'>52</span>     <span id='f0s6'>(format stream <span id='f0s7'>&#34;&#126;I&#126;&#123;pub &#126;(&#126;a&#126;)&#126;&#94;&#126;:&#64;&#95;&#126;&#125;&#34;</span> <span id='f0s8'>(spc:wires pub)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c110'> (lambda (&#35;:next-method-context pub stream)
+   <span id='f0c109'>(flet ()
+     <span id='f0c108'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c107'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c104'>(function <span id='f0c103'>(lambda (stream)
+                            <span id='f0c102'>(let ((ccl::+p <span id='f0c101'>(or nil nil)</span>))
+                              <span id='f0c100'>(let ((ccl::*current-level* <span id='f0c99'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c97'>(if <span id='f0c96'>(not <span id='f0c95'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c92'>(progn <span id='f0c73'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c70'>&#39;&#34;&#34;</span>)</span>
+                                           <span id='f0c91'>(if <span id='f0c90'>(catch <span id='f0c89'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c85'>(progn <span id='f0c84'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c82'>&#39;&#34;&#126;I&#126;&#123;pub &#126;(&#126;a&#126;)&#126;&#94;&#126;:&#64;&#95;&#126;&#125;&#34;</span>
+                                                                        <span id='f0c81'>(funcall &#39;spc:wires pub)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c88'>(funcall &#39;ccl::end-block stream <span id='f0c87'>&#39;&#34;&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c79'>(progn <span id='f0c76'>(funcall &#39;ccl::end-block stream <span id='f0c75'>&#39;&#34;&#34;</span>)</span>
+                                                      <span id='f0c78'>(throw <span id='f0c77'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c106'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>53</span> 
+<span id='f0s9'><span class='line'>54</span> (defmethod print-object ((alias spc:alias) stream)
+<span class='line'>55</span>   <span id='f0s10'>(pprint-logical-block (stream nil)
+<span class='line'>56</span>     <span id='f0s11'>(format stream <span id='f0s12'>&#34;def &#126;(&#126;a&#126;)&#34;</span> <span id='f0s13'>(spc:name alias)</span>)</span>
+<span class='line'>57</span>     <span id='f0s14'>(format stream <span id='f0s15'>&#34;&#126;4I&#126;&#123; &#126;&#64;&#95;&#126;(&#126;a&#126;)&#126;&#125; &#34;</span> <span id='f0s16'>(spc:inputs alias)</span>)</span>
+<span class='line'>58</span> 
+<span class='line'>59</span>     &#59;&#59; no more output circuits&#44; but may it rest here
+<span class='line'>60</span>     &#59;&#59; (when (spc:outputs alias)
+<span class='line'>61</span>     &#59;&#59;   (format stream &#34;&#126;&#64;&#95;-&#62;&#126;&#123; &#126;&#64;&#95;&#126;(&#126;a&#126;)&#126;&#125; &#34; (spc:outputs alias)))
+<span class='line'>62</span> 
+<span class='line'>63</span>     <span id='f0s17'>(format stream <span id='f0s18'>&#34;&#126;0I&#126;&#64;&#95;&#123;&#126;2I&#34;</span>)</span>
+<span class='line'>64</span>     <span id='f0s19'>(extract-constraint-list <span id='f0s20'>(spc:body alias)</span> stream)</span>
+<span class='line'>65</span>     <span id='f0s21'>(format stream <span id='f0s22'>&#34;&#126;0I&#126;:&#64;&#95;&#125;&#34;</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c409'> (lambda (&#35;:next-method-context alias stream)
+   <span id='f0c408'>(flet ()
+     <span id='f0c407'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c406'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c405'>(function <span id='f0c404'>(lambda (stream)
+                            <span id='f0c403'>(let ((ccl::+p <span id='f0c402'>(or nil nil)</span>))
+                              <span id='f0c401'>(let ((ccl::*current-level* <span id='f0c400'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c398'>(if <span id='f0c397'>(not <span id='f0c396'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c393'>(progn <span id='f0c357'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c355'>&#39;&#34;&#34;</span>)</span>
+                                           <span id='f0c392'>(if <span id='f0c385'>(catch <span id='f0c358'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c381'>(progn <span id='f0c363'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c359'>&#39;&#34;def &#126;(&#126;a&#126;)&#34;</span>
+                                                                        <span id='f0c362'>(funcall &#39;spc:name alias)</span>)</span>
+                                                               <span id='f0c368'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c367'>&#39;&#34;&#126;4I&#126;&#123; &#126;&#64;&#95;&#126;(&#126;a&#126;)&#126;&#125; &#34;</span>
+                                                                        <span id='f0c366'>(funcall &#39;spc:inputs alias)</span>)</span>
+                                                               <span id='f0c371'>(funcall &#39;format stream <span id='f0c369'>&#39;&#34;&#126;0I&#126;&#64;&#95;&#123;&#126;2I&#34;</span>)</span>
+                                                               <span id='f0c380'>(funcall &#39;extract-constraint-list
+                                                                        <span id='f0c379'>(ccl::typed-form
+                                                                         &#39;(satisfies spc:constraint-list)
+                                                                         <span id='f0c378'>(funcall &#39;spc:body alias)</span>)</span>
+                                                                        <span id='f0c376'>(ccl::typed-form &#39;stream stream)</span>)</span>
+                                                               <span id='f0c374'>(funcall &#39;format stream <span id='f0c372'>&#39;&#34;&#126;0I&#126;:&#64;&#95;&#125;&#34;</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c384'>(funcall &#39;ccl::end-block stream <span id='f0c382'>&#39;&#34;&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c391'>(progn <span id='f0c390'>(funcall &#39;ccl::end-block stream <span id='f0c388'>&#39;&#34;&#34;</span>)</span>
+                                                      <span id='f0c387'>(throw <span id='f0c386'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c352'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>66</span> 
+<span class='line'>67</span> (-&#62; extract-constraint-list (spc:constraint-list &#38;optional stream) stream)
+<span id='f0s23'><span class='line'>68</span> (defun extract-constraint-list (cs &#38;optional (stream *standard-output*))
+<span class='line'>69</span>   <span id='f0s24'>(format stream <span id='f0s25'>&#34;&#126;&#123;&#126;:&#64;&#95;&#126;A&#126;&#94;&#59;&#126;&#125;&#34;</span> cs)</span>
+<span class='line'>70</span>   stream)</span>
+</code></div>
+<a href=javascript:swap('f0t23')><span class='toggle' id='pf0t23'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(23)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t23'><code><span id='f0c417'> (lambda (cs &#38;optional (stream *standard-output* &#35;:compiler-var))
+   <span id='f0c415'>(progn <span id='f0c413'>(funcall &#39;format stream <span id='f0c412'>&#39;&#34;&#126;&#123;&#126;:&#64;&#95;&#126;A&#126;&#94;&#59;&#126;&#125;&#34;</span> cs)</span> stream)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>71</span> 
+<span class='line'>72</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>73</span> &#59;&#59; Constraint Extraction
+<span class='line'>74</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>75</span> 
+<span id='f0s26'><span class='line'>76</span> (defmethod print-object ((bind spc:bind) stream)
+<span class='line'>77</span>   <span id='f0s27'>(pprint-logical-block (stream nil)
+<span class='line'>78</span>     <span id='f0s28'>(cond (<span id='f0s29'>(cdr <span id='f0s30'>(spc:names bind)</span>)</span>
+<span class='line'>79</span>            <span id='f0s31'>(format stream <span id='f0s32'>&#34;def (&#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125;) &#61; &#34;</span> <span id='f0s33'>(spc:names bind)</span>)</span>)
+<span class='line'>80</span>           (<span id='f0s34'>(spc:names bind)</span>
+<span class='line'>81</span>            <span id='f0s35'>(format stream <span id='f0s36'>&#34;def &#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125; &#61; &#34;</span> <span id='f0s37'>(spc:names bind)</span>)</span>))</span>
+<span class='line'>82</span>     <span id='f0s38'>(format stream <span id='f0s39'>&#34;&#126;2I&#126;&#64;&#95;&#126;A&#34;</span> <span id='f0s40'>(spc:value bind)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t26')><span class='toggle' id='pf0t26'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(26)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t26'><code><span id='f0c68'> (lambda (&#35;:next-method-context bind stream)
+   <span id='f0c67'>(flet ()
+     <span id='f0c66'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c65'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c64'>(function <span id='f0c63'>(lambda (stream)
+                            <span id='f0c62'>(let ((ccl::+p <span id='f0c12'>(or nil nil)</span>))
+                              <span id='f0c61'>(let ((ccl::*current-level* <span id='f0c14'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c59'>(if <span id='f0c58'>(not <span id='f0c57'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c54'>(progn <span id='f0c53'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c50'>&#39;&#34;&#34;</span>)</span>
+                                           <span id='f0c49'>(if <span id='f0c48'>(catch <span id='f0c47'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c43'>(progn <span id='f0c42'>(if <span id='f0c28'>(cdr <span id='f0c27'>(funcall &#39;spc:names bind)</span>)</span>
+                                                                   <span id='f0c41'>(funcall &#39;format
+                                                                            stream
+                                                                            <span id='f0c37'>&#39;&#34;def (&#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125;) &#61; &#34;</span>
+                                                                            <span id='f0c39'>(funcall &#39;spc:names bind)</span>)</span>
+                                                                   <span id='f0c36'>(if <span id='f0c35'>(funcall &#39;spc:names bind)</span>
+                                                                       <span id='f0c33'>(funcall &#39;format
+                                                                                stream
+                                                                                <span id='f0c29'>&#39;&#34;def &#126;&#123;&#126;A&#126;&#94;&#44; &#126;&#125; &#61; &#34;</span>
+                                                                                <span id='f0c31'>(funcall &#39;spc:names bind)</span>)</span>
+                                                                       nil)</span>)</span>
+                                                               <span id='f0c25'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c21'>&#39;&#34;&#126;2I&#126;&#64;&#95;&#126;A&#34;</span>
+                                                                        <span id='f0c24'>(funcall &#39;spc:value bind)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c46'>(funcall &#39;ccl::end-block stream <span id='f0c44'>&#39;&#34;&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c20'>(progn <span id='f0c17'>(funcall &#39;ccl::end-block stream <span id='f0c16'>&#39;&#34;&#34;</span>)</span>
+                                                      <span id='f0c19'>(throw <span id='f0c18'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c11'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>83</span> 
+<span id='f0s41'><span class='line'>84</span> (defmethod print-object ((eql spc:equality) stream)
+<span class='line'>85</span>   <span id='f0s42'>(pprint-logical-block (stream nil)
+<span class='line'>86</span>     <span id='f0s43'>(format stream <span id='f0s44'>&#34;&#126;A &#126;2:I&#61; &#126;4I&#126;&#64;&#95;&#126;A&#34;</span> <span id='f0s45'>(spc:lhs eql)</span> <span id='f0s46'>(spc:rhs eql)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t41')><span class='toggle' id='pf0t41'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(41)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t41'><code><span id='f0c461'> (lambda (&#35;:next-method-context eql stream)
+   <span id='f0c460'>(flet ()
+     <span id='f0c459'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c458'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c457'>(function <span id='f0c456'>(lambda (stream)
+                            <span id='f0c455'>(let ((ccl::+p <span id='f0c420'>(or nil nil)</span>))
+                              <span id='f0c454'>(let ((ccl::*current-level* <span id='f0c453'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c451'>(if <span id='f0c450'>(not <span id='f0c449'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c446'>(progn <span id='f0c445'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c443'>&#39;&#34;&#34;</span>)</span>
+                                           <span id='f0c441'>(if <span id='f0c440'>(catch <span id='f0c436'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c435'>(progn <span id='f0c434'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c430'>&#39;&#34;&#126;A &#126;2:I&#61; &#126;4I&#126;&#64;&#95;&#126;A&#34;</span>
+                                                                        <span id='f0c429'>(funcall &#39;spc:lhs eql)</span>
+                                                                        <span id='f0c432'>(funcall &#39;spc:rhs eql)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c439'>(funcall &#39;ccl::end-block stream <span id='f0c437'>&#39;&#34;&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c427'>(progn <span id='f0c424'>(funcall &#39;ccl::end-block stream <span id='f0c422'>&#39;&#34;&#34;</span>)</span>
+                                                      <span id='f0c426'>(throw <span id='f0c425'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c419'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>87</span> 
+<span class='line'>88</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>89</span> &#59;&#59; Expression Extraction
+<span class='line'>90</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>91</span> 
+<span class='line'>92</span> (-&#62; extract-expression (spc:expression &#38;optional stream) stream)
+<span id='f0s47'><span class='line'>93</span> (defun extract-expression (expr &#38;optional (stream *standard-output*))
+<span class='line'>94</span>   &#34;Extract-expression is like a &#96;print-object&#39; but adds an extra set
+<span class='line'>95</span> of ()&#39;s for any non normal form&#34;
+<span class='line'>96</span>   <span id='f0s48'>(etypecase-of spc:expression expr
+<span class='line'>97</span>     (spc:infix
+<span class='line'>98</span>      <span id='f0s49'>(pprint-logical-block (stream nil :prefix <span id='f0s50'>&#34;(&#34;</span> :suffix &#34;)&#34;)
+<span class='line'>99</span>        <span id='f0s51'>(print-object expr stream)</span>)</span>)
+<span class='line'>100</span>     (spc:application
+<span class='line'>101</span>      <span id='f0s52'>(pprint-logical-block (stream nil :prefix <span id='f0s53'>&#34;(&#34;</span> :suffix &#34;)&#34;)
+<span class='line'>102</span>        <span id='f0s54'>(print-object expr stream)</span>)</span>)
+<span class='line'>103</span>     ((or spc:tuple spc:normal-form)
+<span class='line'>104</span>      <span id='f0s55'>(print-object expr stream)</span>))</span>
+<span class='line'>105</span>   stream)</span>
+</code></div>
+<a href=javascript:swap('f0t47')><span class='toggle' id='pf0t47'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(47)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t47'><code><span id='f0c230'> (lambda (expr &#38;optional (stream *standard-output* &#35;:compiler-var))
+   <span id='f0c228'>(progn <span id='f0c226'>(let* ((&#35;:x54119 expr))
+            <span id='f0c225'>(let* ((&#35;:g54120 &#35;:x54119))
+              <span id='f0c224'>(if <span id='f0c153'>(funcall &#39;ccl::std-instance-class-cell-typep
+                           &#35;:g54120
+                           <span id='f0c151'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A4556F&#62;))</span>)</span>
+                  <span id='f0c150'>(progn nil
+                         <span id='f0c149'>(let* ((ccl::*logical-block-p* t))
+                           <span id='f0c148'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                                    <span id='f0c147'>(function <span id='f0c146'>(lambda (stream)
+                                                <span id='f0c145'>(let ((ccl::+p <span id='f0c144'>(or <span id='f0c143'>&#39;&#34;(&#34;</span>)</span>))
+                                                  <span id='f0c142'>(let ((ccl::*current-level* <span id='f0c114'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                                        (ccl::*current-length* -1))
+                                                    <span id='f0c141'>(if <span id='f0c140'>(not <span id='f0c139'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                                        <span id='f0c136'>(progn <span id='f0c119'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c116'>&#39;&#34;)&#34;</span>)</span>
+                                                               <span id='f0c135'>(if <span id='f0c134'>(catch <span id='f0c126'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                                     (progn <span id='f0c130'>(progn <span id='f0c129'>(funcall &#39;print-object expr stream)</span>
+                                                                                   nil)</span>
+                                                                            <span id='f0c133'>(funcall &#39;ccl::end-block stream <span id='f0c131'>&#39;&#34;)&#34;</span>)</span>
+                                                                            nil))</span>
+                                                                   <span id='f0c125'>(progn <span id='f0c124'>(funcall &#39;ccl::end-block stream <span id='f0c122'>&#39;&#34;)&#34;</span>)</span>
+                                                                          <span id='f0c121'>(throw <span id='f0c120'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                                                   nil)</span>)</span>
+                                                        nil)</span>)</span>)</span>)</span>)</span>
+                                    <span id='f0c112'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>
+                  <span id='f0c223'>(if <span id='f0c196'>(funcall &#39;ccl::std-instance-class-cell-typep
+                               &#35;:g54120
+                               <span id='f0c195'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A707EF&#62;))</span>)</span>
+                      <span id='f0c193'>(progn nil
+                             <span id='f0c192'>(let* ((ccl::*logical-block-p* t))
+                               <span id='f0c191'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                                        <span id='f0c190'>(function <span id='f0c189'>(lambda (stream)
+                                                    <span id='f0c188'>(let ((ccl::+p <span id='f0c157'>(or <span id='f0c156'>&#39;&#34;(&#34;</span>)</span>))
+                                                      <span id='f0c187'>(let ((ccl::*current-level* <span id='f0c185'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                                            (ccl::*current-length* -1))
+                                                        <span id='f0c183'>(if <span id='f0c161'>(not <span id='f0c160'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                                            <span id='f0c182'>(progn <span id='f0c181'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c179'>&#39;&#34;)&#34;</span>)</span>
+                                                                   <span id='f0c177'>(if <span id='f0c170'>(catch <span id='f0c169'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                                         (progn <span id='f0c168'>(progn <span id='f0c167'>(funcall &#39;print-object
+                                                                                                expr
+                                                                                                stream)</span>
+                                                                                       nil)</span>
+                                                                                <span id='f0c164'>(funcall &#39;ccl::end-block stream <span id='f0c163'>&#39;&#34;)&#34;</span>)</span>
+                                                                                nil))</span>
+                                                                       <span id='f0c176'>(progn <span id='f0c175'>(funcall &#39;ccl::end-block stream <span id='f0c173'>&#39;&#34;)&#34;</span>)</span>
+                                                                              <span id='f0c172'>(throw <span id='f0c171'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                                                t)</span>)</span>
+                                                                       nil)</span>)</span>
+                                                            nil)</span>)</span>)</span>)</span>)</span>
+                                        <span id='f0c155'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>
+                      <span id='f0c222'>(if <span id='f0c207'>(let* ((&#35;:g54152 &#35;:g54120))
+                            <span id='f0c206'>(or <span id='f0c205'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54152
+                                         <span id='f0c204'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A9A94F&#62;))</span>)</span>
+                                <span id='f0c202'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54152
+                                         <span id='f0c201'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A97AAF&#62;))</span>)</span>
+                                <span id='f0c199'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                         &#35;:g54152
+                                         <span id='f0c197'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003A94C0F&#62;))</span>)</span>)</span>)</span>
+                          <span id='f0c211'>(progn nil <span id='f0c210'>(funcall &#39;print-object expr stream)</span>)</span>
+                          <span id='f0c221'>(if <span id='f0c220'>(progn &#35;:g54120 t)</span>
+                              <span id='f0c218'>(progn nil
+                                     <span id='f0c217'>(values (funcall &#39;error
+                                                      <span id='f0c213'>&#39;type-error</span>
+                                                      <span id='f0c216'>&#39;:datum</span>
+                                                      &#35;:x54119
+                                                      <span id='f0c212'>&#39;:expected-type</span>
+                                                      <span id='f0c214'>&#39;spc:expression</span>))</span>)</span>
+                              nil)</span>)</span>)</span>)</span>)</span>)</span>
+          stream)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>106</span> 
+<span id='f0s56'><span class='line'>107</span> (defmethod print-object ((infix spc:infix) stream)
+<span class='line'>108</span>   <span id='f0s57'>(extract-expression <span id='f0s58'>(spc:lhs infix)</span> stream)</span>
+<span class='line'>109</span>   <span id='f0s59'>(format stream <span id='f0s60'>&#34; &#126;A &#34;</span> <span id='f0s61'>(spc:op infix)</span>)</span>
+<span class='line'>110</span>   <span id='f0s62'>(extract-expression <span id='f0s63'>(spc:rhs infix)</span> stream)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t56')><span class='toggle' id='pf0t56'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(56)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t56'><code><span id='f0c350'> (lambda (&#35;:next-method-context infix stream)
+   <span id='f0c349'>(flet ()
+     (progn <span id='f0c348'>(funcall &#39;extract-expression
+                     <span id='f0c347'>(ccl::typed-form &#39;(or spc:infix spc:application spc:wire spc:constant spc:tuple)
+                      <span id='f0c346'>(funcall &#39;spc:lhs infix)</span>)</span>
+                     <span id='f0c344'>(ccl::typed-form &#39;stream stream)</span>)</span>
+            <span id='f0c342'>(funcall &#39;format stream <span id='f0c338'>&#39;&#34; &#126;A &#34;</span> <span id='f0c341'>(funcall &#39;spc:op infix)</span>)</span>
+            <span id='f0c337'>(funcall &#39;extract-expression
+                     <span id='f0c334'>(ccl::typed-form &#39;(or spc:infix spc:application spc:wire spc:constant spc:tuple)
+                      <span id='f0c333'>(funcall &#39;spc:rhs infix)</span>)</span>
+                     <span id='f0c336'>(ccl::typed-form &#39;stream stream)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>111</span> 
+<span id='f0s64'><span class='line'>112</span> (defmethod print-object ((application spc:application) stream)
+<span class='line'>113</span>   <span id='f0s65'>(format stream <span id='f0s66'>&#34;&#126;(&#126;a&#126;)&#34;</span> <span id='f0s67'>(spc:func application)</span>)</span>
+<span class='line'>114</span>   &#59;&#59; put fill printing&#63;
+<span class='line'>115</span>   <span id='f0s68'>(dolist (expr <span id='f0s69'>(spc:arguments application)</span>)
+<span class='line'>116</span>     <span id='f0s70'>(format stream <span id='f0s71'>&#34; &#34;</span>)</span>
+<span class='line'>117</span>     <span id='f0s72'>(extract-expression expr stream)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t64')><span class='toggle' id='pf0t64'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(64)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t64'><code><span id='f0c331'> (lambda (&#35;:next-method-context application stream)
+   <span id='f0c330'>(flet ()
+     (progn <span id='f0c329'>(funcall &#39;format stream <span id='f0c328'>&#39;&#34;&#126;(&#126;a&#126;)&#34;</span> <span id='f0c327'>(funcall &#39;spc:func application)</span>)</span>
+            <span id='f0c324'>(let* ((&#35;:g54193 <span id='f0c274'>(funcall &#39;spc:arguments application)</span>))
+              <span id='f0c323'>(tagbody <span id='f0c320'>(go &#35;:g54195)</span>
+                       (&#35;:g54194 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003B2DDBD&#62; t t)
+                       <span id='f0c319'>(tagbody <span id='f0c318'>(let* ((expr <span id='f0c280'>(car &#35;:g54193)</span>))
+                                  <span id='f0c317'>(tagbody <span id='f0c316'>(let* ((stream stream))
+                                             <span id='f0c315'>(if <span id='f0c303'>(or <span id='f0c286'>(not stream)</span>
+                                                     <span id='f0c302'>(let* ((&#35;:g54196 stream) (&#35;:g54197 <span id='f0c301'>(ccl::typecode &#35;:g54196)</span>))
+                                                       <span id='f0c299'>(if <span id='f0c290'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g54197 166)</span>
+                                                           <span id='f0c298'>(ccl::&#37;i&#60;&#62; &#39;:eq
+                                                            <span id='f0c297'>(ccl::typed-form &#39;(unsigned-byte 8)
+                                                             <span id='f0c296'>(ccl::&#37;ilogand2 255
+                                                                             <span id='f0c295'>(ccl::typed-form &#39;fixnum
+                                                                              <span id='f0c294'>(ccl::&#37;iasr 8
+                                                                                          <span id='f0c293'>(ccl::typed-form &#39;fixnum
+                                                                                           <span id='f0c292'>(ccl::&#37;svref &#35;:g54196 4)</span>)</span>)</span>)</span>)</span>)</span>
+                                                            201)</span>
+                                                           <span id='f0c288'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g54197 201)</span>)</span>)</span>)</span>
+                                                 <span id='f0c314'>(funcall &#39;ccl::format-to-string stream <span id='f0c312'>&#39;&#34; &#34;</span>)</span>
+                                                 <span id='f0c311'>(progn <span id='f0c310'>(funcall &#39;ccl::write-simple-string
+                                                                 <span id='f0c309'>&#39;&#34; &#34;</span>
+                                                                 <span id='f0c307'>(if <span id='f0c306'>(ccl:neq &#39;:ne stream t)</span> stream nil)</span>
+                                                                 0
+                                                                 nil)</span>
+                                                        nil)</span>)</span>)</span>
+                                           <span id='f0c285'>(funcall &#39;extract-expression
+                                                    <span id='f0c284'>(ccl::typed-form
+                                                     &#39;(or spc:infix spc:application spc:wire spc:constant spc:tuple)
+                                                     expr)</span>
+                                                    <span id='f0c282'>(ccl::typed-form &#39;stream stream)</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c278'>(setq &#35;:g54193 <span id='f0c277'>(ccl::&#37;cdr <span id='f0c276'>(ccl::typed-form &#39;list &#35;:g54193)</span>)</span>)</span>
+                       (&#35;:g54195 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020039EF10D&#62; t nil)
+                       <span id='f0c322'>(if <span id='f0c321'>(not &#39;:ne &#35;:g54193)</span> (go &#35;:g54194) nil)</span>)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>118</span> 
+<span id='f0s73'><span class='line'>119</span> (defmethod print-object ((wire spc:wire) stream)
+<span class='line'>120</span>   <span id='f0s74'>(format stream <span id='f0s75'>&#34;&#126;(&#126;a&#126;)&#34;</span> <span id='f0s76'>(spc:var wire)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t73')><span class='toggle' id='pf0t73'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(73)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t73'><code><span id='f0c237'> (lambda (&#35;:next-method-context wire stream) <span id='f0c236'>(flet () <span id='f0c235'>(funcall &#39;format stream <span id='f0c232'>&#39;&#34;&#126;(&#126;a&#126;)&#34;</span> <span id='f0c234'>(funcall &#39;spc:var wire)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>121</span> 
+<span id='f0s77'><span class='line'>122</span> (defmethod print-object ((tup spc:tuple) stream)
+<span class='line'>123</span>   <span id='f0s78'>(pprint-logical-block (stream nil :prefix <span id='f0s79'>&#34;(&#34;</span> :suffix &#34;)&#34;)
+<span class='line'>124</span>     <span id='f0s80'>(format stream <span id='f0s81'>&#34;&#126;&#123;&#126;(&#126;a&#126;)&#126;&#94;&#44; &#126;&#125;&#34;</span> <span id='f0s82'>(spc:wires tup)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t77')><span class='toggle' id='pf0t77'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(77)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t77'><code><span id='f0c504'> (lambda (&#35;:next-method-context tup stream)
+   <span id='f0c503'>(flet ()
+     <span id='f0c502'>(let* ((ccl::*logical-block-p* t))
+       <span id='f0c501'>(funcall &#39;ccl::maybe-initiate-xp-printing
+                <span id='f0c498'>(function <span id='f0c497'>(lambda (stream)
+                            <span id='f0c496'>(let ((ccl::+p <span id='f0c463'>(or <span id='f0c462'>&#39;&#34;(&#34;</span>)</span>))
+                              <span id='f0c495'>(let ((ccl::*current-level* <span id='f0c466'>(ccl::add2 1 ccl::*current-level*)</span>)
+                                    (ccl::*current-length* -1))
+                                <span id='f0c494'>(if <span id='f0c493'>(not <span id='f0c492'>(funcall &#39;ccl::check-block-abbreviation stream nil t)</span>)</span>
+                                    <span id='f0c489'>(progn <span id='f0c470'>(funcall &#39;ccl::start-block stream ccl::+p nil <span id='f0c468'>&#39;&#34;)&#34;</span>)</span>
+                                           <span id='f0c488'>(if <span id='f0c481'>(catch <span id='f0c480'>&#39;ccl::line-limit-abbreviation-exit</span>
+                                                 (progn <span id='f0c476'>(progn <span id='f0c475'>(funcall &#39;format
+                                                                        stream
+                                                                        <span id='f0c471'>&#39;&#34;&#126;&#123;&#126;(&#126;a&#126;)&#126;&#94;&#44; &#126;&#125;&#34;</span>
+                                                                        <span id='f0c473'>(funcall &#39;spc:wires tup)</span>)</span>
+                                                               nil)</span>
+                                                        <span id='f0c479'>(funcall &#39;ccl::end-block stream <span id='f0c477'>&#39;&#34;)&#34;</span>)</span>
+                                                        nil))</span>
+                                               <span id='f0c487'>(progn <span id='f0c484'>(funcall &#39;ccl::end-block stream <span id='f0c483'>&#39;&#34;)&#34;</span>)</span>
+                                                      <span id='f0c486'>(throw <span id='f0c485'>&#39;ccl::line-limit-abbreviation-exit</span> t)</span>)</span>
+                                               nil)</span>)</span>
+                                    nil)</span>)</span>)</span>)</span>)</span>
+                <span id='f0c500'>(funcall &#39;ccl::decode-stream-arg stream)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>125</span> 
+<span id='f0s83'><span class='line'>126</span> (defmethod print-object ((const spc:constant) stream)
+<span class='line'>127</span>   <span id='f0s84'>(format stream <span id='f0s85'>&#34;&#126;A&#34;</span> <span id='f0s86'>(spc:const const)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t83')><span class='toggle' id='pf0t83'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(83)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t83'><code><span id='f0c272'> (lambda (&#35;:next-method-context const stream)
+   <span id='f0c271'>(flet ()
+     <span id='f0c270'>(let ((stream stream) (ccl::object <span id='f0c269'>(funcall &#39;spc:const const)</span>))
+       <span id='f0c267'>(if <span id='f0c262'>(or <span id='f0c245'>(not stream)</span>
+               <span id='f0c261'>(let* ((&#35;:g54255 stream) (&#35;:g54256 <span id='f0c260'>(ccl::typecode &#35;:g54255)</span>))
+                 <span id='f0c258'>(if <span id='f0c249'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g54256 166)</span>
+                     <span id='f0c257'>(ccl::&#37;i&#60;&#62; &#39;:eq
+                      <span id='f0c256'>(ccl::typed-form &#39;(unsigned-byte 8)
+                       <span id='f0c255'>(ccl::&#37;ilogand2 255
+                                       <span id='f0c254'>(ccl::typed-form &#39;fixnum
+                                        <span id='f0c253'>(ccl::&#37;iasr 8 <span id='f0c252'>(ccl::typed-form &#39;fixnum <span id='f0c251'>(ccl::&#37;svref &#35;:g54255 4)</span>)</span>)</span>)</span>)</span>)</span>
+                      201)</span>
+                     <span id='f0c247'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g54256 201)</span>)</span>)</span>)</span>
+           <span id='f0c266'>(funcall &#39;ccl::format-to-string stream <span id='f0c265'>&#39;&#34;&#126;A&#34;</span> ccl::object)</span>
+           <span id='f0c244'>(progn <span id='f0c243'>(funcall &#39;princ ccl::object <span id='f0c242'>(if <span id='f0c240'>(ccl:neq &#39;:ne stream t)</span> stream nil)</span>)</span> nil)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

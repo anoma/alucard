@@ -1,0 +1,455 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_pack_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;pack.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;pass&#46;pack)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; Packing Operations
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> (-&#62; op
+<span class='line'>8</span>     (check:typing-context
+<span class='line'>9</span>      check:type-info
+<span class='line'>10</span>      ir:term-no-binding
+<span class='line'>11</span>      &#38;rest ir:term-normal-form)
+<span class='line'>12</span>     (values check:typing-context ir:expanded-list))
+<span id='f0s0'><span class='line'>13</span> (defun op (closure type-format term &#38;rest data)
+<span class='line'>14</span>   &#34;Packs the given data into the format specified by the
+<span class='line'>15</span> &#96;type-format&#39;&#46; the &#96;term&#39; is used solely for meta information
+<span class='line'>16</span> propagation&#34;
+<span class='line'>17</span>   <span id='f0s1'>(let ((ref <span id='f0s2'>(check:type-info-type type-format)</span>))
+<span class='line'>18</span>     <span id='f0s3'>(cond (<span id='f0s4'>(type-op:array-reference&#63;  ref)</span>
+<span class='line'>19</span>            <span id='f0s5'>(apply &#35;&#39;array  closure type-format term data)</span>)
+<span class='line'>20</span>           (<span id='f0s6'>(type-op:record-reference&#63; ref)</span>
+<span class='line'>21</span>            <span id='f0s7'>(apply &#35;&#39;record closure type-format term data)</span>)
+<span class='line'>22</span>           (t
+<span class='line'>23</span>            <span id='f0s8'>(error <span id='f0s9'>&#34;Reference of type &#126;A can not be packed&#34;</span> ref)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c216'> (lambda (closure type-format term &#38;rest data)
+   <span id='f0c215'>(let* ((ref
+           (ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+            <span id='f0c193'>(ccl::struct-ref <span id='f0c192'>(ccl::typed-form &#39;check&#46;type:type-info type-format)</span> 2)</span>)))
+     <span id='f0c214'>(if <span id='f0c208'>(funcall &#39;type-op:array-reference&#63; <span id='f0c207'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application) ref)</span>)</span>
+         <span id='f0c213'>(apply &#39;array
+                (ccl::typed-form &#39;check&#46;type:typing-context closure)
+                (ccl::typed-form &#39;check&#46;type:type-info type-format)
+                (ccl::typed-form
+                 &#39;(or number
+                      alu&#46;spec:reference
+                      alu&#46;spec:application
+                      alu&#46;spec:record
+                      alu&#46;spec:record-lookup
+                      alu&#46;spec:array-lookup
+                      alu&#46;spec:array-allocate
+                      alu&#46;spec:from-data
+                      alu&#46;spec:array-set)
+                 term)
+                data)</span>
+         <span id='f0c205'>(if <span id='f0c196'>(funcall &#39;type-op:record-reference&#63;
+                      <span id='f0c195'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application) ref)</span>)</span>
+             <span id='f0c204'>(apply &#39;record
+                    (ccl::typed-form &#39;check&#46;type:typing-context closure)
+                    (ccl::typed-form &#39;check&#46;type:type-info type-format)
+                    (ccl::typed-form &#39;alu&#46;spec:record-lookup term)
+                    data)</span>
+             <span id='f0c199'>(values (funcall &#39;error <span id='f0c198'>&#39;&#34;Reference of type &#126;A can not be packed&#34;</span> ref))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>24</span> 
+<span class='line'>25</span> (-&#62; array
+<span class='line'>26</span>     (check:typing-context
+<span class='line'>27</span>      check:type-info
+<span class='line'>28</span>      ir:term-no-binding
+<span class='line'>29</span>      &#38;rest
+<span class='line'>30</span>      ir:term-normal-form)
+<span class='line'>31</span>     (values check:typing-context ir:expanded-list))
+<span id='f0s10'><span class='line'>32</span> (defun array (closure type-format term &#38;rest data)
+<span class='line'>33</span>   <span id='f0s11'>(let ((length    <span id='f0s12'>(ir:array-type-len (check:type-info-type type-format))</span>)
+<span class='line'>34</span>         (data-size <span id='f0s13'>(array-data-size type-format)</span>))
+<span class='line'>35</span>     <span id='f0s14'>(pipeline:type-check-expression
+<span class='line'>36</span>      &#59;&#59; We can pack the data by adding all the values together in a
+<span class='line'>37</span>      &#59;&#59; smart way&#46; Namely if we bitshift by the length of the type&#44;
+<span class='line'>38</span>      &#59;&#59; then there can be no clash&#44; and we can just make our
+<span class='line'>39</span>      &#59;&#59; constraints &#96;util:sequence-to-number&#39; is this same algorithm
+<span class='line'>40</span>      &#59;&#59; except for CL data&#46;
+<span class='line'>41</span>      &#59;&#59;
+<span class='line'>42</span>      &#59;&#59; We get back an expanded list from this&#44; with the last let&#44;
+<span class='line'>43</span>      &#59;&#59; being the value that contains our addition&#46;
+<span class='line'>44</span>      &#59;&#59;
+<span class='line'>45</span>      &#59;&#59; TODO :: Add type coercing on the element&#44; as we will want a
+<span class='line'>46</span>      &#59;&#59;         bignum out of the computation&#46; This only matters when
+<span class='line'>47</span>      &#59;&#59;         we generate code mod n
+<span class='line'>48</span>      <span id='f0s15'>(ir:copy-meta
+<span class='line'>49</span>       term
+<span class='line'>50</span>       <span id='f0s16'>(apply &#35;&#39;term-op:add
+<span class='line'>51</span>              <span id='f0s17'>(mapcar <span id='f0s18'>(lambda (element position)
+<span class='line'>52</span>                        <span id='f0s19'>(term-op:times element
+<span class='line'>53</span>                                       <span id='f0s20'>(expt 2 <span id='f0s21'>(* position data-size)</span>)</span>)</span>)</span>
+<span class='line'>54</span>                      data
+<span class='line'>55</span>                      <span id='f0s22'>(alexandria:iota length)</span>)</span>)</span>)</span>
+<span class='line'>56</span>      closure)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c253'> (lambda (closure type-format term &#38;rest data)
+   <span id='f0c252'>(let ((length
+          <span id='f0c231'>(funcall &#39;alu&#46;spec:array-type-len
+                   <span id='f0c230'>(ccl::typed-form &#39;alu&#46;spec:application
+                    <span id='f0c229'>(ccl::struct-ref <span id='f0c227'>(ccl::typed-form &#39;check&#46;type:type-info type-format)</span> 2)</span>)</span>)</span>)
+         (data-size <span id='f0c225'>(funcall &#39;array-data-size <span id='f0c224'>(ccl::typed-form &#39;check&#46;type:type-info type-format)</span>)</span>))
+     <span id='f0c251'>(funcall &#39;pipeline:type-check-expression
+              <span id='f0c250'>(ccl::typed-form
+               &#39;(or cons
+                    number
+                    alu&#46;spec:reference
+                    alu&#46;spec:application
+                    alu&#46;spec:record
+                    alu&#46;spec:record-lookup
+                    alu&#46;spec:array-lookup
+                    alu&#46;spec:array-allocate
+                    alu&#46;spec:from-data
+                    alu&#46;spec:array-set
+                    alu&#46;spec:bind-constraint
+                    alu&#46;spec:let-node
+                    alu&#46;spec:type-coerce
+                    alu&#46;spec:type-check)
+               <span id='f0c249'>(funcall &#39;alu&#46;spec:copy-meta
+                        term
+                        <span id='f0c248'>(apply &#39;term-op:add
+                               <span id='f0c247'>(funcall &#39;mapcar
+                                        <span id='f0c243'>(function <span id='f0c242'>(lambda (element position)
+                                                    <span id='f0c241'>(funcall &#39;term-op:times
+                                                             element
+                                                             <span id='f0c240'>(funcall &#39;expt 2 <span id='f0c238'>(ccl::mul2 position data-size)</span>)</span>)</span>)</span>)</span>
+                                        data
+                                        <span id='f0c245'>(funcall &#39;alexandria:iota length)</span>)</span>)</span>)</span>)</span>
+              <span id='f0c233'>(ccl::typed-form &#39;check&#46;type:typing-context closure)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>57</span> 
+<span class='line'>58</span> (-&#62; final-ref-from-op (ir:expanded-list) ir:reference)
+<span id='f0s23'><span class='line'>59</span> (defun final-ref-from-op (result-terms)
+<span class='line'>60</span>   <span id='f0s24'>(ir:make-reference :name
+<span class='line'>61</span>                      <span id='f0s25'>(ir:var <span id='f0s26'>(car <span id='f0s27'>(last result-terms)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t23')><span class='toggle' id='pf0t23'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(23)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t23'><code><span id='f0c20'> (lambda (result-terms)
+   <span id='f0c19'>(funcall &#39;alu&#46;spec:make-reference
+            <span id='f0c18'>&#39;:name</span>
+            <span id='f0c17'>(ccl::typed-form &#39;keyword
+             <span id='f0c16'>(funcall &#39;alu&#46;spec:var
+                      <span id='f0c15'>(car <span id='f0c14'>(let* ((&#35;:g58047 result-terms) (&#35;:g58048 &#35;:g58047))
+                             (progn <span id='f0c13'>(tagbody <span id='f0c12'>(go &#35;:g58050)</span>
+                                             (&#35;:g58049 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E5709D&#62; t t)
+                                             <span id='f0c5'>(tagbody <span id='f0c4'>(setq &#35;:g58048 &#35;:g58047)</span>)</span>
+                                             <span id='f0c11'>(setq &#35;:g58047 <span id='f0c10'>(cdr &#35;:g58047)</span>)</span>
+                                             (&#35;:g58050 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003E5709D&#62; t nil)
+                                             <span id='f0c8'>(if <span id='f0c7'>(eq (ccl::fulltag &#35;:g58047) 3)</span> (go &#35;:g58049) nil)</span>)</span>
+                                    &#35;:g58048))</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>62</span> 
+<span class='line'>63</span> 
+<span class='line'>64</span> (-&#62; record
+<span class='line'>65</span>     (check:typing-context check:type-info ir:record-lookup ir:term-normal-form)
+<span class='line'>66</span>     (values check:typing-context ir:expanded-list))
+<span id='f0s28'><span class='line'>67</span> (defun record (closure type-format term data)
+<span class='line'>68</span>   type-format closure data term
+<span class='line'>69</span>   <span id='f0s29'>(error <span id='f0s30'>&#34;not implemented&#34;</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t28')><span class='toggle' id='pf0t28'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(28)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t28'><code><span id='f0c28'> (lambda (closure type-format term data)
+   <span id='f0c27'>(progn type-format closure data term <span id='f0c25'>(values (funcall &#39;error <span id='f0c24'>&#39;&#34;not implemented&#34;</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>70</span> 
+<span class='line'>71</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>72</span> &#59;&#59; Indexing Operations
+<span class='line'>73</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>74</span> 
+<span class='line'>75</span> (-&#62; lookup-at
+<span class='line'>76</span>     (check:typing-context
+<span class='line'>77</span>      check:type-info
+<span class='line'>78</span>      ir:term-no-binding
+<span class='line'>79</span>      (or ir:term-normal-form keyword)
+<span class='line'>80</span>      ir:term-normal-form)
+<span class='line'>81</span>     (values check:typing-context ir:expanded-list))
+<span id='f0s31'><span class='line'>82</span> (defun lookup-at (context type term to-find data)
+<span class='line'>83</span>   <span id='f0s32'>(let ((ref <span id='f0s33'>(check:type-info-type type)</span>))
+<span class='line'>84</span>     <span id='f0s34'>(cond (<span id='f0s35'>(and <span id='f0s36'>(type-op:array-reference&#63;  ref)</span>
+<span class='line'>85</span>                 <span id='f0s37'>(not <span id='f0s38'>(keywordp to-find)</span>)</span>)</span>
+<span class='line'>86</span>            <span id='f0s39'>(array-lookup context type term to-find data)</span>)
+<span class='line'>87</span>           (<span id='f0s40'>(type-op:record-reference&#63; ref)</span>
+<span class='line'>88</span>            <span id='f0s41'>(error <span id='f0s42'>&#34;not implemented&#34;</span>)</span>)
+<span class='line'>89</span>           (t
+<span class='line'>90</span>            <span id='f0s43'>(error <span id='f0s44'>&#34;Reference of type &#126;A can not be packed&#34;</span> ref)</span>))</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c189'> (lambda (context type term to-find data)
+   <span id='f0c188'>(let* ((ref
+           (ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+            <span id='f0c187'>(ccl::struct-ref <span id='f0c186'>(ccl::typed-form &#39;check&#46;type:type-info type)</span> 2)</span>)))
+     <span id='f0c183'>(if <span id='f0c182'>(if <span id='f0c178'>(funcall &#39;type-op:array-reference&#63;
+                      <span id='f0c177'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application) ref)</span>)</span>
+             <span id='f0c181'>(not <span id='f0c180'>(funcall &#39;keywordp to-find)</span>)</span>
+             nil)</span>
+         <span id='f0c166'>(funcall &#39;array-lookup
+                  (ccl::typed-form &#39;check&#46;type:typing-context context)
+                  (ccl::typed-form &#39;check&#46;type:type-info type)
+                  <span id='f0c159'>(ccl::typed-form &#39;alu&#46;spec:array-lookup term)</span>
+                  <span id='f0c162'>(ccl::typed-form &#39;(or number alu&#46;spec:reference) to-find)</span>
+                  <span id='f0c164'>(ccl::typed-form &#39;(or number alu&#46;spec:reference) data)</span>)</span>
+         <span id='f0c175'>(if <span id='f0c174'>(funcall &#39;type-op:record-reference&#63;
+                      <span id='f0c173'>(ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application) ref)</span>)</span>
+             <span id='f0c171'>(values (funcall &#39;error <span id='f0c170'>&#39;&#34;not implemented&#34;</span>))</span>
+             <span id='f0c169'>(values (funcall &#39;error <span id='f0c168'>&#39;&#34;Reference of type &#126;A can not be packed&#34;</span> ref))</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>91</span> 
+<span class='line'>92</span> 
+<span class='line'>93</span> (-&#62; array-lookup
+<span class='line'>94</span>     (check:typing-context
+<span class='line'>95</span>      check:type-info
+<span class='line'>96</span>      ir:array-lookup
+<span class='line'>97</span>      ir:term-normal-form
+<span class='line'>98</span>      ir:term-normal-form)
+<span class='line'>99</span>     (values check:typing-context ir:expanded-list))
+<span id='f0s45'><span class='line'>100</span> (defun array-lookup (closure type term index data)
+<span class='line'>101</span>   <span id='f0s46'>(flet (<span id='f0s47'>(int (data)
+<span class='line'>102</span>            <span id='f0s48'>(term-op:coerce :int data)</span>)</span>
+<span class='line'>103</span>          <span id='f0s49'>(ref (keyword)
+<span class='line'>104</span>            <span id='f0s50'>(ir:make-reference :name keyword)</span>)</span>
+<span class='line'>105</span>          <span id='f0s51'>(+ (left right)
+<span class='line'>106</span>            <span id='f0s52'>(term-op:add left right)</span>)</span>
+<span class='line'>107</span>          <span id='f0s53'>(&#215; (left right)
+<span class='line'>108</span>            <span id='f0s54'>(term-op:times left right)</span>)</span>)
+<span class='line'>109</span>     <span id='f0s55'>(let ((size        <span id='f0s56'>(array-data-size type)</span>)
+<span class='line'>110</span>           (target-type <span id='f0s57'>(ir:array-type-content (check:type-info-type type))</span>))
+<span class='line'>111</span>       <span id='f0s58'>(check:with-intro (closure unused-array unused-mod
+<span class='line'>112</span>                                  smaller-array lookup-answer)
+<span class='line'>113</span>           closure
+<span class='line'>114</span>         &#59;&#59; The equation here is trying to do the following equation
+<span class='line'>115</span>         &#59;&#59;
+<span class='line'>116</span>         &#59;&#59; want : array&#91;index&#93;
+<span class='line'>117</span>         &#59;&#59;
+<span class='line'>118</span>         &#59;&#59; how to compute :
+<span class='line'>119</span>         &#59;&#59;
+<span class='line'>120</span>         &#59;&#59; array &#61; 2 &#94; (index * size) * smaller-array + unused-mod
+<span class='line'>121</span>         &#59;&#59;
+<span class='line'>122</span>         &#59;&#59; smaller-array &#61; 2 &#94; size * unused-arr + answer
+<span class='line'>123</span>         &#59;&#59;
+<span class='line'>124</span>         &#59;&#59; answer
+<span class='line'>125</span>         &#59;&#59;
+<span class='line'>126</span>         &#59;&#59; However we have to coerce:
+<span class='line'>127</span>         &#59;&#59;  - answer to the proper type&#46;
+<span class='line'>128</span>         &#59;&#59;  - index to be a bignum
+<span class='line'>129</span>         &#59;&#59;  - array to be a bignum
+<span class='line'>130</span>         &#59;&#59;
+<span class='line'>131</span>         &#59;&#59; Thus we arrive at
+<span class='line'>132</span>         &#59;&#59; (def ((with-constraint (smal unused-mod unused-arr answer)
+<span class='line'>133</span>         &#59;&#59;          (&#61; data (+ (* smal (expt 2 (* index size))) unused-mod))
+<span class='line'>134</span>         &#59;&#59;          (&#61; smal (+ (* unused-arr (expt 2 index))    answer))))
+<span class='line'>135</span>         &#59;&#59;   (coerce answer type)
+<span class='line'>136</span>         &#59;&#59;
+<span class='line'>137</span>         &#59;&#59; However we have to use more verbose names and coerce by hand&#46;
+<span class='line'>138</span>         &#59;&#59;
+<span class='line'>139</span>         &#59;&#59; TODO :: Ι was told that this creates too many solutions&#44;
+<span class='line'>140</span>         &#59;&#59;         so we have to note a range check on the size of the
+<span class='line'>141</span>         &#59;&#59;         elements to properly constrain the values&#46; Thus we
+<span class='line'>142</span>         &#59;&#59;         need to do 0 &#60;&#61; mod value &#60;&#61; 2 &#94; value
+<span class='line'>143</span>         <span id='f0s59'>(pipeline:type-check-expression
+<span class='line'>144</span>          <span id='f0s60'>(ir:copy-meta
+<span class='line'>145</span>           term
+<span class='line'>146</span>           <span id='f0s61'>(ir:make-bind-constraint
+<span class='line'>147</span>            :var <span id='f0s62'>(list unused-array unused-mod smaller-array lookup-answer)</span>
+<span class='line'>148</span>            :value
+<span class='line'>149</span>            <span id='f0s63'>(list
+<span class='line'>150</span>             <span id='f0s64'>(term-op:&#61; <span id='f0s65'>(int data)</span>
+<span class='line'>151</span>                        <span id='f0s66'>(+ <span id='f0s67'>(&#215; <span id='f0s68'>(term-op:exp 2 <span id='f0s69'>(term-op:times size <span id='f0s70'>(int index)</span>)</span>)</span>
+<span class='line'>152</span>                               <span id='f0s71'>(ref smaller-array)</span>)</span>
+<span class='line'>153</span>                           <span id='f0s72'>(ref unused-mod)</span>)</span>)</span>
+<span class='line'>154</span>             &#59;&#59; range check
+<span class='line'>155</span>             <span id='f0s73'>(term-op:&#61; <span id='f0s74'>(ref smaller-array)</span>
+<span class='line'>156</span>                        <span id='f0s75'>(+ <span id='f0s76'>(&#215; <span id='f0s77'>(term-op:exp 2 size)</span>
+<span class='line'>157</span>                               <span id='f0s78'>(ref unused-array)</span>)</span>
+<span class='line'>158</span>                           <span id='f0s79'>(ref lookup-answer)</span>)</span>)</span>
+<span class='line'>159</span>             <span id='f0s80'>(ir:copy-meta term
+<span class='line'>160</span>                           <span id='f0s81'>(ir:make-type-coerce :typ target-type
+<span class='line'>161</span>                                                :value <span id='f0s82'>(ref lookup-answer)</span>)</span>)</span>)</span>)</span>)</span>
+<span class='line'>162</span>          closure)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t45')><span class='toggle' id='pf0t45'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(45)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t45'><code><span id='f0c157'> (lambda (closure type term index data)
+   <span id='f0c156'>(flet ((&#35;:int &#35;1&#61;<span id='f0c55'>(lambda (data) <span id='f0c54'>(funcall &#39;term-op:coerce <span id='f0c52'>&#39;:int</span> data)</span>)</span>)
+          (&#35;:ref &#35;2&#61;<span id='f0c155'>(lambda (keyword) <span id='f0c154'>(funcall &#39;alu&#46;spec:make-reference <span id='f0c151'>&#39;:name</span> <span id='f0c153'>(ccl::typed-form &#39;keyword keyword)</span>)</span>)</span>)
+          (&#35;:+ &#35;3&#61;<span id='f0c146'>(lambda (left right) <span id='f0c145'>(funcall &#39;term-op:add left right)</span>)</span>)
+          (&#35;:&#215; &#35;4<span id='f0c150'>&#61;(lambda (left right) <span id='f0c149'>(funcall &#39;term-op:times left right</span>)</span>)))
+     <span id='f0c142'>(let ((size <span id='f0c135'>(funcall &#39;array-data-size <span id='f0c134'>(ccl::typed-form &#39;check&#46;type:type-info type</span>)</span>))
+           (target-type
+            <span id='f0c141'>(funcall &#39;alu&#46;spec:array-type-content
+                     <span id='f0c140'>(ccl::typed-form &#39;alu&#46;spec:application
+                      <span id='f0c139'>(ccl::struct-ref <span id='f0c137'>(ccl::typed-form &#39;check&#46;type:type-info type</span>) 2</span>)</span>)</span>)))
+       <span id='f0c132'>(let ((unused-array <span id='f0c131'>(funcall &#39;util:symbol-to-keyword <span id='f0c130'>(funcall &#39;gensym <span id='f0c129'>(funcall &#39;symbol-name <span id='f0c128'>&#39;unused-arra</span>y</span>)</span>)</span>))
+             (unused-mod <span id='f0c59'>(funcall &#39;util:symbol-to-keyword <span id='f0c58'>(funcall &#39;gensym <span id='f0c57'>(funcall &#39;symbol-name <span id='f0c56'>&#39;unused-mo</span>d</span>)</span>)</span>))
+             (smaller-array <span id='f0c67'>(funcall &#39;util:symbol-to-keyword <span id='f0c66'>(funcall &#39;gensym <span id='f0c65'>(funcall &#39;symbol-name <span id='f0c64'>&#39;smaller-arra</span>y</span>)</span>)</span>))
+             (lookup-answer <span id='f0c63'>(funcall &#39;util:symbol-to-keyword <span id='f0c62'>(funcall &#39;gensym <span id='f0c61'>(funcall &#39;symbol-name <span id='f0c60'>&#39;lookup-answe</span>r</span>)</span>)</span>)))
+         <span id='f0c127'>(let* ((closure
+                 <span id='f0c126'>(funcall &#39;alu&#46;typechecker&#46;intro:intro
+                          (ccl::typed-form &#39;check&#46;type:typing-context closure)
+                          (ccl::typed-form &#39;keyword unused-array)
+                          <span id='f0c122'>(ccl::typed-form &#39;keyword unused-mod</span>)
+                          <span id='f0c125'>(ccl::typed-form &#39;keyword smaller-array</span>)
+                          <span id='f0c119'>(ccl::typed-form &#39;keyword lookup-answer</span>)</span>)))
+           <span id='f0c117'>(funcall &#39;pipeline:type-check-expression
+                    <span id='f0c116'>(ccl::typed-form
+                     &#39;(or cons
+                          number
+                          alu&#46;spec:reference
+                          alu&#46;spec:application
+                          alu&#46;spec:record
+                          alu&#46;spec:record-lookup
+                          alu&#46;spec:array-lookup
+                          alu&#46;spec:array-allocate
+                          alu&#46;spec:from-data
+                          alu&#46;spec:array-set
+                          alu&#46;spec:bind-constraint
+                          alu&#46;spec:let-node
+                          alu&#46;spec:type-coerce
+                          alu&#46;spec:type-check)
+                     <span id='f0c115'>(funcall &#39;alu&#46;spec:copy-meta
+                              term
+                              <span id='f0c114'>(funcall &#39;alu&#46;spec:make-bind-constraint
+                                       <span id='f0c112'>&#39;:va</span>r
+                                       <span id='f0c111'>(list unused-array unused-mod smaller-array lookup-answer</span>)
+                                       <span id='f0c113'>&#39;:valu</span>e
+                                       <span id='f0c106'>(list <span id='f0c93'>(funcall &#39;term-op:&#61;
+                                                      <span id='f0c80'>(funcall &#35;1&#35; data</span>)
+                                                      <span id='f0c92'>(funcall &#35;3&#35;
+                                                               <span id='f0c89'>(funcall &#35;4&#35;
+                                                                        <span id='f0c88'>(funcall &#39;term-op:exp
+                                                                                 2
+                                                                                 <span id='f0c87'>(funcall &#39;term-op:times
+                                                                                          size
+                                                                                          <span id='f0c85'>(funcall &#35;1&#35; index</span>)</span>)</span>)
+                                                                        <span id='f0c82'>(funcall &#35;2&#35; smaller-array</span>)</span>)
+                                                               <span id='f0c91'>(funcall &#35;2&#35; unused-mod</span>)</span>)</span>)
+                                             <span id='f0c105'>(funcall &#39;term-op:&#61;
+                                                      <span id='f0c104'>(funcall &#35;2&#35; smaller-array</span>)
+                                                      <span id='f0c102'>(funcall &#35;3&#35;
+                                                               <span id='f0c101'>(funcall &#35;4&#35;
+                                                                        <span id='f0c98'>(funcall &#39;term-op:exp 2 size</span>)
+                                                                        <span id='f0c100'>(funcall &#35;2&#35; unused-array</span>)</span>)
+                                                               <span id='f0c95'>(funcall &#35;2&#35; lookup-answer</span>)</span>)</span>)
+                                             <span id='f0c78'>(funcall &#39;alu&#46;spec:copy-meta
+                                                      term
+                                                      <span id='f0c76'>(funcall &#39;alu&#46;spec:make-type-coerce
+                                                               <span id='f0c74'>&#39;:ty</span>p
+                                                               target-type
+                                                               <span id='f0c73'>&#39;:valu</span>e
+                                                               <span id='f0c72'>(funcall &#35;2&#35; lookup-answer</span>)</span>)</span>)</span>)</span>)</span>)</span>)
+                    <span id='f0c69'>(ccl::typed-form &#39;check&#46;type:typing-context closure</span>)</span>)</span>)</span>)</span>)</span>)</span>)
+</code></div><hr/>
+<div class='source'><code><span class='line'>163</span> 
+<span class='line'>164</span> (-&#62; array-lookup-final-ref (ir:expanded-list) ir:reference)
+<span id='f0s83'><span class='line'>165</span> (defun array-lookup-final-ref (result-term)
+<span class='line'>166</span>   <span id='f0s84'>(ir:make-reference :name <span id='f0s85'>(ir:var
+<span class='line'>167</span>                             <span id='f0s86'>(car <span id='f0s87'>(last <span id='f0s88'>(ir:value <span id='f0s89'>(car result-term)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t83')><span class='toggle' id='pf0t83'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(83)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t83'><code><span id='f0c51'> (lambda (result-term)
+   <span id='f0c50'>(funcall &#39;alu&#46;spec:make-reference
+            <span id='f0c29'>&#39;:name</span>
+            <span id='f0c49'>(ccl::typed-form &#39;keyword
+             <span id='f0c48'>(funcall &#39;alu&#46;spec:var
+                      <span id='f0c47'>(car <span id='f0c46'>(let* ((&#35;:g58099 <span id='f0c43'>(funcall &#39;alu&#46;spec:value <span id='f0c42'>(car result-term)</span>)</span>) (&#35;:g58100 &#35;:g58099))
+                             (progn <span id='f0c40'>(tagbody <span id='f0c36'>(go &#35;:g58102)</span>
+                                             (&#35;:g58101 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DCD38D&#62; t t)
+                                             <span id='f0c35'>(tagbody <span id='f0c34'>(setq &#35;:g58100 &#35;:g58099)</span>)</span>
+                                             <span id='f0c39'>(setq &#35;:g58099 <span id='f0c38'>(cdr &#35;:g58099)</span>)</span>
+                                             (&#35;:g58102 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DCD38D&#62; t nil)
+                                             <span id='f0c32'>(if <span id='f0c31'>(eq (ccl::fulltag &#35;:g58099) 3)</span> (go &#35;:g58101) nil)</span>)</span>
+                                    &#35;:g58100))</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>168</span> 
+<span class='line'>169</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>170</span> &#59;&#59; Full Unpacking logic
+<span class='line'>171</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>172</span> 
+<span class='line'>173</span> (-&#62; unpack (check:type-info ir:term-normal-form) ir:expanded-term)
+<span id='f0s90'><span class='line'>174</span> (defun unpack (type data)
+<span class='line'>175</span>   type data
+<span class='line'>176</span>   <span id='f0s91'>(error <span id='f0s92'>&#34;not implemented&#34;</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t90')><span class='toggle' id='pf0t90'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(90)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t90'><code><span id='f0c222'> (lambda (type data) <span id='f0c221'>(progn type data <span id='f0c219'>(values (funcall &#39;error <span id='f0c218'>&#39;&#34;not implemented&#34;</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>177</span> 
+<span class='line'>178</span> 
+<span class='line'>179</span> (-&#62; array-data-size (check:type-info) fixnum)
+<span id='f0s93'><span class='line'>180</span> (defun array-data-size (format)
+<span class='line'>181</span>   <span id='f0s94'>(let* ((array-info <span id='f0s95'>(check:type-info-type format)</span>)
+<span class='line'>182</span>          (length     <span id='f0s96'>(ir:array-type-len array-info)</span>))
+<span class='line'>183</span>     <span id='f0s97'>(&#47; <span id='f0s98'>(check:type-info-size format)</span>
+<span class='line'>184</span>        length)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t93')><span class='toggle' id='pf0t93'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(93)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t93'><code><span id='f0c269'> (lambda (format)
+   <span id='f0c268'>(let* ((array-info
+           (ccl::typed-form &#39;(or alu&#46;spec:reference-type alu&#46;spec:application)
+            <span id='f0c257'>(ccl::struct-ref <span id='f0c255'>(ccl::typed-form &#39;check&#46;type:type-info format)</span> 2)</span>))
+          (length <span id='f0c260'>(funcall &#39;alu&#46;spec:array-type-len <span id='f0c259'>(ccl::typed-form &#39;alu&#46;spec:application array-info)</span>)</span>))
+     <span id='f0c267'>(ccl::div2 <span id='f0c265'>(ccl::typed-form &#39;(or fixnum null) <span id='f0c264'>(ccl::struct-ref <span id='f0c263'>(ccl::typed-form &#39;check&#46;type:type-info format)</span> 1)</span>)</span>
+      length)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

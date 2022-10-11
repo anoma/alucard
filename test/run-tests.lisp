@@ -73,7 +73,7 @@
             (setf (gethash test coverage)
                   (ccl:get-incremental-coverage)))
           *all-tests*)
-    (ccl:report-coverage #P"./html/report.html" :tags coverage))
+    (ccl:report-coverage #P"./docs/index.html" :tags coverage))
 
   (setq ccl:*compile-code-coverage* nil)
   (asdf:compile-system :alu :force t)

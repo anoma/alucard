@@ -1,0 +1,193 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_storage_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;storage.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;storage)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; Language Storage Locations
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> &#59;&#59; *type-table* : Hash-Table keyword type-storage
+<span class='line'>8</span> (defvar *types* (make-hash-table :test &#35;&#39;eq)
+<span class='line'>9</span>   &#34;Serves as the table which stores all the circuit types that are
+<span class='line'>10</span> relevant to the system&#34;)
+<span class='line'>11</span> 
+<span class='line'>12</span> &#59;&#59; *function-table* : Hash-Table keyword function-type
+<span class='line'>13</span> (defvar *functions* (make-hash-table :test &#35;&#39;eq)
+<span class='line'>14</span>   &#34;Serves as the table which stores all custom circuits that are
+<span class='line'>15</span> defined&#34;)
+<span class='line'>16</span> 
+<span class='line'>17</span> (defvar *entry-point* nil
+<span class='line'>18</span>   &#34;Serves as the entry point to the generated circuit&#34;)
+<span class='line'>19</span> 
+<span class='line'>20</span> (defvar *cannonical-function-table* nil
+<span class='line'>21</span>   &#34;serves as the backup of the original function table&#46; Useful when
+<span class='line'>22</span> swapping to another env&#34;)
+<span class='line'>23</span> 
+<span class='line'>24</span> (defvar *cannonical-type-table* nil
+<span class='line'>25</span>   &#34;serves as the backup of the original type table&#46; Useful when
+<span class='line'>26</span> swapping to another env&#34;)
+<span class='line'>27</span> 
+<span class='line'>28</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>29</span> &#59;&#59; Entry Functions
+<span class='line'>30</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>31</span> 
+<span id='f0s0'><span class='line'>32</span> (defun get-entry-point ()
+<span class='line'>33</span>   &#34;Grabs the entry point function for the alucard program&#34;
+<span class='line'>34</span>   *entry-point*)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c64'> (lambda nil *entry-point*)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>35</span> 
+<span id='f0s1'><span class='line'>36</span> (defun set-entry-point (keyword)
+<span class='line'>37</span>   <span id='f0s2'>(setf *entry-point* keyword)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t1')><span class='toggle' id='pf0t1'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(1)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t1'><code><span id='f0c2'> (lambda (keyword) <span id='f0c1'>(setq *entry-point* keyword)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>38</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>39</span> &#59;&#59; Storage Addition Functions
+<span class='line'>40</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>41</span> 
+<span class='line'>42</span> (-&#62; add-function (keyword format:function-type) t)
+<span id='f0s3'><span class='line'>43</span> (defun add-function (name func)
+<span class='line'>44</span>   &#34;Adds the given function to the &#96;*functions&#39; table&#34;
+<span class='line'>45</span>   <span id='f0s4'>(setf (gethash name *functions*) func)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c7'> (lambda (name func) <span id='f0c6'>(funcall &#39;ccl::puthash name *functions* func)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>46</span> 
+<span class='line'>47</span> (-&#62; add-type (keyword format:type-storage) t)
+<span id='f0s5'><span class='line'>48</span> (defun add-type (name type)
+<span class='line'>49</span>   &#34;Adds the given Type to the &#96;*types*&#39; table&#34;
+<span class='line'>50</span>   <span id='f0s6'>(setf (gethash name *types*) type)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c56'> (lambda (name type) <span id='f0c55'>(funcall &#39;ccl::puthash name *types* type)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>51</span> 
+<span class='line'>52</span> (-&#62; lookup-function (keyword) (or format:function-type null))
+<span id='f0s7'><span class='line'>53</span> (defun lookup-function (name)
+<span class='line'>54</span>   <span id='f0s8'>(gethash name *functions*)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t7')><span class='toggle' id='pf0t7'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(7)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t7'><code><span id='f0c51'> (lambda (name) <span id='f0c50'>(funcall &#39;gethash name *functions*)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>55</span> 
+<span class='line'>56</span> (-&#62; lookup-type (keyword) (or format:type-storage null))
+<span id='f0s9'><span class='line'>57</span> (defun lookup-type (name)
+<span class='line'>58</span>   <span id='f0s10'>(gethash name *types*)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c11'> (lambda (name) <span id='f0c10'>(funcall &#39;gethash name *types*)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>59</span> 
+<span class='line'>60</span> (-&#62; swap-tables (hash-table hash-table) null)
+<span id='f0s11'><span class='line'>61</span> (defun swap-tables (func-table type-table)
+<span class='line'>62</span>   <span id='f0s12'>(when <span id='f0s13'>(and <span id='f0s14'>(not *cannonical-function-table*)</span>
+<span class='line'>63</span>              <span id='f0s15'>(not *cannonical-type-table*)</span>)</span>
+<span class='line'>64</span>     <span id='f0s16'>(setf *cannonical-function-table* *functions*
+<span class='line'>65</span>           *cannonical-type-table*     *types*)</span>)</span>
+<span class='line'>66</span> 
+<span class='line'>67</span>   <span id='f0s17'>(setf *functions* func-table
+<span class='line'>68</span>         *types* type-table)</span>
+<span class='line'>69</span>   nil)</span>
+</code></div>
+<a href=javascript:swap('f0t11')><span class='toggle' id='pf0t11'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(11)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t11'><code><span id='f0c29'> (lambda (func-table type-table)
+   <span id='f0c28'>(progn <span id='f0c27'>(if <span id='f0c21'>(if <span id='f0c20'>(not *cannonical-function-table*)</span> <span id='f0c18'>(not *cannonical-type-table*)</span> nil)</span>
+              <span id='f0c26'>(progn <span id='f0c23'>(setq *cannonical-function-table* *functions*)</span> <span id='f0c25'>(setq *cannonical-type-table* *types*)</span>)</span>
+              nil)</span>
+          <span id='f0c16'>(progn <span id='f0c15'>(setq *functions* func-table)</span> <span id='f0c13'>(setq *types* type-table)</span>)</span>
+          nil)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>70</span> 
+<span class='line'>71</span> (-&#62; restore-tables () null)
+<span id='f0s18'><span class='line'>72</span> (defun restore-tables ()
+<span class='line'>73</span>   <span id='f0s19'>(if <span id='f0s20'>(or <span id='f0s21'>(not *cannonical-function-table*)</span>
+<span class='line'>74</span>           <span id='f0s22'>(not *cannonical-type-table*)</span>)</span>
+<span class='line'>75</span>       <span id='f0s23'>(error <span id='f0s24'>&#34;Must swap the tables to restore the original tables&#33;&#34;</span>)</span>
+<span class='line'>76</span>       <span id='f0s25'>(progn
+<span class='line'>77</span>         <span id='f0s26'>(setf *functions* *cannonical-function-table*
+<span class='line'>78</span>               *types*     *cannonical-type-table*)</span>
+<span class='line'>79</span>         <span id='f0s27'>(setf *cannonical-function-table* nil
+<span class='line'>80</span>               *cannonical-type-table*     nil)</span>
+<span class='line'>81</span>         nil)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t18')><span class='toggle' id='pf0t18'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(18)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t18'><code><span id='f0c47'> (lambda nil
+   <span id='f0c46'>(if <span id='f0c36'>(or <span id='f0c35'>(not *cannonical-function-table*)</span> <span id='f0c33'>(not *cannonical-type-table*)</span>)</span>
+       <span id='f0c31'>(values (funcall &#39;error <span id='f0c30'>&#39;&#34;Must swap the tables to restore the original tables&#33;&#34;</span>))</span>
+       <span id='f0c45'>(progn <span id='f0c44'>(progn <span id='f0c43'>(setq *functions* *cannonical-function-table*)</span> <span id='f0c41'>(setq *types* *cannonical-type-table*)</span>)</span>
+              <span id='f0c39'>(progn <span id='f0c38'>(setq *cannonical-function-table* nil)</span> <span id='f0c37'>(setq *cannonical-type-table* nil)</span>)</span>
+              nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>82</span> 
+<span class='line'>83</span> (-&#62; currently-swapped&#63; () boolean)
+<span id='f0s28'><span class='line'>84</span> (defun currently-swapped&#63; ()
+<span class='line'>85</span>   <span id='f0s29'>(and <span id='f0s30'>(hash-table-p *cannonical-function-table*)</span>
+<span class='line'>86</span>        <span id='f0s31'>(hash-table-p *cannonical-function-table*)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t28')><span class='toggle' id='pf0t28'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(28)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t28'><code><span id='f0c62'> (lambda nil
+   <span id='f0c61'>(if <span id='f0c60'>(funcall &#39;hash-table-p *cannonical-function-table*)</span> <span id='f0c58'>(funcall &#39;hash-table-p *cannonical-function-table*)</span> nil)</span>)</span>
+</code></div><hr/>
+</body></html>

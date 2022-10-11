@@ -1,0 +1,213 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_util_bit_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;util;bit.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;utils)
+<span class='line'>2</span> 
+<span class='line'>3</span> (defconstant +byte-size+ 8)
+<span class='line'>4</span> 
+<span class='line'>5</span> (-&#62; string-to-number (string) integer)
+<span id='f0s0'><span class='line'>6</span> (defun string-to-number (string)
+<span class='line'>7</span>   &#34;converts a string to a numerical encoding&#34;
+<span class='line'>8</span>   &#59;&#59; if we had map-accum-r&#44; we could do this with an accumulator
+<span class='line'>9</span>   <span id='f0s1'>(assure integer
+<span class='line'>10</span>     <span id='f0s2'>(let ((cont 0))
+<span class='line'>11</span>       <span id='f0s3'>(sum <span id='f0s4'>(map <span id='f0s5'>&#39;list
+</span><span class='line'>12</span>                 <span id='f0s6'>(lambda (c)
+<span class='line'>13</span>                   <span id='f0s7'>(prog1
+<span class='line'>14</span>                       <span id='f0s8'>(ash <span id='f0s9'>(char-code c)</span> <span id='f0s10'>(* cont +byte-size+)</span>)</span>
+<span class='line'>15</span>                     <span id='f0s11'>(incf cont <span id='f0s12'>(char-byte-size c)</span>)</span>)</span>)</span>
+<span class='line'>16</span>                 &#59;&#59; we should probably remove this and encode it with the
+<span class='line'>17</span>                 &#59;&#59; first element in the last position of the bitstring&#46;
+<span class='line'>18</span>                 <span id='f0s13'>(reverse string)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c138'> (lambda (string)
+   <span id='f0c137'>(ccl::typed-form &#39;integer
+    <span id='f0c136'>(let* ((&#35;:datum50400
+            <span id='f0c135'>(let* ((cont 0))
+              <span id='f0c134'>(funcall &#39;sum
+                       <span id='f0c133'>(funcall &#39;map
+                                <span id='f0c132'>&#39;list</span>
+                                <span id='f0c131'>(function <span id='f0c130'>(lambda (c)
+                                            <span id='f0c129'>(prog1 <span id='f0c119'>(ash <span id='f0c115'>(char-code c)</span> <span id='f0c118'>(ccl::mul2 8 cont)</span>)</span>
+                                                   <span id='f0c128'>(let* ((&#35;:g50402
+                                                           <span id='f0c124'>(funcall &#39;char-byte-size <span id='f0c123'>(ccl::typed-form &#39;character c)</span>)</span>)
+                                                          (&#35;:g50401 <span id='f0c127'>(ccl::add2 cont &#35;:g50402)</span>))
+                                                     <span id='f0c121'>(setq cont &#35;:g50401)</span>)</span>)</span>)</span>)</span>
+                                <span id='f0c113'>(funcall &#39;reverse string)</span>)</span>)</span>)</span>))
+      <span id='f0c110'>(if <span id='f0c109'>(let* ((&#35;:g50404 <span id='f0c103'>(ccl::typecode &#35;:datum50400)</span>))
+            <span id='f0c108'>(if <span id='f0c107'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50404 0)</span> t <span id='f0c105'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50404 25)</span>)</span>)</span>
+          &#35;:datum50400
+          <span id='f0c100'>(ccl::typed-form &#39;integer <span id='f0c99'>(funcall &#39;serapeum::&#37;require-type &#35;:datum50400 <span id='f0c97'>&#39;integer</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>19</span> 
+<span class='line'>20</span> (-&#62; sequence-to-number (fixnum sequence) integer)
+<span id='f0s14'><span class='line'>21</span> (defun sequence-to-number (size arr)
+<span class='line'>22</span>   &#34;converts a sequence literal to a numerical encoding&#34;
+<span class='line'>23</span>   <span id='f0s15'>(assure integer
+<span class='line'>24</span>     <span id='f0s16'>(sum <span id='f0s17'>(map <span id='f0s18'>&#39;list
+</span><span class='line'>25</span>               <span id='f0s19'>(lambda (ele count) <span id='f0s20'>(ash ele <span id='f0s21'>(* count size)</span>)</span>)</span>
+<span class='line'>26</span>               arr
+<span class='line'>27</span>               <span id='f0s22'>(alexandria:iota <span id='f0s23'>(length arr)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c46'> (lambda (size arr)
+   <span id='f0c45'>(ccl::typed-form &#39;integer
+    <span id='f0c44'>(let* ((&#35;:datum50417
+            <span id='f0c29'>(funcall &#39;sum
+                     <span id='f0c28'>(funcall &#39;map
+                              <span id='f0c24'>&#39;list</span>
+                              <span id='f0c23'>(function <span id='f0c22'>(lambda (ele count) <span id='f0c21'>(ash ele <span id='f0c19'>(ccl::mul2 count size)</span>)</span>)</span>)</span>
+                              arr
+                              <span id='f0c27'>(funcall &#39;alexandria:iota <span id='f0c26'>(funcall 11 arr)</span>)</span>)</span>)</span>))
+      <span id='f0c43'>(if <span id='f0c42'>(let* ((&#35;:g50419 <span id='f0c36'>(ccl::typecode &#35;:datum50417)</span>))
+            <span id='f0c41'>(if <span id='f0c38'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50419 0)</span> t <span id='f0c40'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g50419 25)</span>)</span>)</span>
+          &#35;:datum50417
+          <span id='f0c34'>(ccl::typed-form &#39;integer <span id='f0c33'>(funcall &#39;serapeum::&#37;require-type &#35;:datum50417 <span id='f0c32'>&#39;integer</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>28</span> 
+<span class='line'>29</span> &#59;&#59; I can speed this up by manually setfing the fill pointer instead&#44;
+<span class='line'>30</span> &#59;&#59; or tracking it&#44; but makes the code less clear
+<span class='line'>31</span> (-&#62; string-to-bit-array (string) bit-vector)
+<span id='f0s24'><span class='line'>32</span> (defun string-to-bit-array (string)
+<span class='line'>33</span>   &#34;converts a string to a bit-vector encoding&#46; Should agree with &#96;string-to-number&#39;&#34;
+<span class='line'>34</span>   <span id='f0s25'>(let* ((size      <span id='f0s26'>(string-bit-size string)</span>)
+<span class='line'>35</span>          (bit-array <span id='f0s27'>(make-array size :element-type &#39;bit :fill-pointer 0)</span>))
+<span class='line'>36</span>     <span id='f0s28'>(map nil <span id='f0s29'>(lambda (c) <span id='f0s30'>(char-to-bit-array c bit-array)</span>)</span> string)</span>
+<span class='line'>37</span>     bit-array)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c158'> (lambda (string)
+   <span id='f0c157'>(let* ((size <span id='f0c141'>(funcall &#39;string-bit-size <span id='f0c140'>(ccl::typed-form &#39;base-string string)</span>)</span>)
+          (bit-array
+           (ccl::typed-form &#39;(array bit)
+            <span id='f0c156'>(let* ((&#35;:dims size)) <span id='f0c155'>(funcall &#39;ccl::make-uarray-1 247 &#35;:dims nil 0 nil nil nil nil nil nil)</span>)</span>)))
+     (progn <span id='f0c151'>(funcall &#39;map
+                     nil
+                     <span id='f0c150'>(function <span id='f0c149'>(lambda (c)
+                                 <span id='f0c148'>(funcall &#39;char-to-bit-array
+                                          <span id='f0c147'>(ccl::typed-form &#39;character c)</span>
+                                          <span id='f0c145'>(ccl::typed-form &#39;bit-vector bit-array)</span>)</span>)</span>)</span>
+                     string)</span>
+            bit-array))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>38</span> 
+<span class='line'>39</span> (-&#62; char-to-bit-array (character &#38;optional bit-vector) bit-vector)
+<span id='f0s31'><span class='line'>40</span> (defun char-to-bit-array (char &#38;optional
+<span class='line'>41</span>                                  (bit-array <span id='f0s32'>(make-array <span id='f0s33'>(char-code char)</span>
+<span class='line'>42</span>                                                         :element-type &#39;bit
+<span class='line'>43</span>                                                         :fill-pointer 0)</span>))
+<span class='line'>44</span>   <span id='f0s34'>(let ((numb <span id='f0s35'>(char-code char)</span>)
+<span class='line'>45</span>         (size <span id='f0s36'>(char-bit-size char)</span>))
+<span class='line'>46</span>     <span id='f0s37'>(dotimes (i <span id='f0s38'>(char-bit-size char)</span> bit-array)
+<span class='line'>47</span>       <span id='f0s39'>(vector-push <span id='f0s40'>(if <span id='f0s41'>(logbitp <span id='f0s42'>(- size i 1)</span> numb)</span> 1 0)</span> bit-array)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c96'> (lambda (char &#38;optional
+          (bit-array
+           <span id='f0c95'>(ccl::typed-form &#39;(array bit)
+            <span id='f0c94'>(let* ((&#35;:dims <span id='f0c89'>(char-code char)</span>)) <span id='f0c93'>(funcall &#39;ccl::make-uarray-1 247 &#35;:dims nil 0 nil nil nil nil nil nil)</span>)</span>)</span>
+           &#35;:compiler-var))
+   <span id='f0c87'>(let ((numb <span id='f0c55'>(char-code char)</span>) (size <span id='f0c86'>(funcall &#39;char-bit-size <span id='f0c85'>(ccl::typed-form &#39;character char)</span>)</span>))
+     <span id='f0c83'>(let* ((&#35;:g50444 <span id='f0c59'>(funcall &#39;char-bit-size <span id='f0c58'>(ccl::typed-form &#39;character char)</span>)</span>) (i 0))
+       <span id='f0c82'>(progn <span id='f0c80'>(tagbody <span id='f0c68'>(go &#35;:g50446)</span>
+                       (&#35;:g50445 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003525E0D&#62; t t)
+                       <span id='f0c79'>(funcall &#39;vector-push
+                                <span id='f0c78'>(if <span id='f0c76'>(logbitp <span id='f0c74'>(ccl::sub2 <span id='f0c73'>(ccl::fixnum-sub-overflow size i)</span> 1)</span> numb)</span> 1 0)</span>
+                                bit-array)</span>
+                       <span id='f0c63'>(ccl::&#37;decls-body <span id='f0c62'>(setq i <span id='f0c61'>(ccl::fixnum-add-no-overflow 1 i)</span>)</span>)</span>
+                       (&#35;:g50446 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003525E0D&#62; t nil)
+                       <span id='f0c67'>(if <span id='f0c66'>(ccl::&#37;i&#60;&#62; &#39;:lt i &#35;:g50444)</span> (go &#35;:g50445) nil)</span>)</span>
+              bit-array)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>48</span> 
+<span class='line'>49</span> (-&#62; string-bit-size (string) fixnum)
+<span id='f0s43'><span class='line'>50</span> (defun string-bit-size (string)
+<span class='line'>51</span>   <span id='f0s44'>(* <span id='f0s45'>(string-byte-size string)</span> +byte-size+)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t43')><span class='toggle' id='pf0t43'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(43)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t43'><code><span id='f0c15'> (lambda (string) <span id='f0c14'>(ash <span id='f0c13'>(funcall &#39;string-byte-size <span id='f0c12'>(ccl::typed-form &#39;base-string string)</span>)</span> 3)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>52</span> 
+<span class='line'>53</span> (-&#62; char-bit-size (character) fixnum)
+<span id='f0s46'><span class='line'>54</span> (defun char-bit-size (char)
+<span class='line'>55</span>   <span id='f0s47'>(* <span id='f0s48'>(char-byte-size char)</span> +byte-size+)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t46')><span class='toggle' id='pf0t46'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(46)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t46'><code><span id='f0c10'> (lambda (char) <span id='f0c9'>(ash <span id='f0c8'>(funcall &#39;char-byte-size <span id='f0c7'>(ccl::typed-form &#39;character char)</span>)</span> 3)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>56</span> 
+<span class='line'>57</span> (-&#62; string-byte-size (string) fixnum)
+<span id='f0s49'><span class='line'>58</span> (defun string-byte-size (string)
+<span class='line'>59</span>   <span id='f0s50'>(values
+<span class='line'>60</span>    <span id='f0s51'>(sum <span id='f0s52'>(map <span id='f0s53'>&#39;list </span><span id='f0s54'>&#35;&#39;char-byte-size </span>string)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t49')><span class='toggle' id='pf0t49'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(49)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t49'><code><span id='f0c53'> (lambda (string) <span id='f0c52'>(values <span id='f0c51'>(funcall &#39;sum <span id='f0c50'>(funcall &#39;map <span id='f0c49'>&#39;list</span> <span id='f0c47'>(function char-byte-size)</span> string)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>61</span> 
+<span class='line'>62</span> (-&#62; char-byte-size (character) fixnum)
+<span id='f0s55'><span class='line'>63</span> (defun char-byte-size (char)
+<span class='line'>64</span>   &#34;Calculates how many bytes is needed to model the current char&#34;
+<span class='line'>65</span>   <span id='f0s56'>(ceiling <span id='f0s57'>(integer-length <span id='f0s58'>(char-code char)</span>)</span>
+<span class='line'>66</span>            +byte-size+)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t55')><span class='toggle' id='pf0t55'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(55)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t55'><code><span id='f0c5'> (lambda (char) <span id='f0c4'>(funcall &#39;ceiling <span id='f0c3'>(funcall &#39;integer-length <span id='f0c2'>(char-code char)</span>)</span> 8)</span>)</span>
+</code></div><hr/>
+</body></html>

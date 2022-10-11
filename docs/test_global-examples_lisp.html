@@ -1,0 +1,1065 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_global-examples_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;global-examples.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu-test)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>4</span> &#59;&#59; Table and Setup Swap
+<span class='line'>5</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>6</span> 
+<span class='line'>7</span> (eval-when (:compile-toplevel :load-toplevel :execute)
+<span class='line'>8</span> 
+<span class='line'>9</span>   <span id='f0s0'>(defun clone (hash)
+<span class='line'>10</span>     <span id='f0s1'>(alexandria:plist-hash-table
+<span class='line'>11</span>      <span id='f0s2'>(alexandria:hash-table-plist hash)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c261'> (lambda (hash) <span id='f0c260'>(funcall &#39;alexandria:plist-hash-table <span id='f0c259'>(funcall &#39;alexandria:hash-table-plist hash)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>12</span>   (defparameter *test-functions* (clone storage:*functions*))
+<span class='line'>13</span> 
+<span class='line'>14</span>   (defparameter *test-types* (clone storage:*types*))
+<span class='line'>15</span> 
+<span class='line'>16</span>   (defparameter *swapped* (storage:currently-swapped&#63;))
+<span class='line'>17</span> 
+<span class='line'>18</span>   <span id='f0s3'>(defun swap-tables ()
+<span class='line'>19</span>     <span id='f0s4'>(storage:swap-tables *test-functions*
+<span class='line'>20</span>                          *test-types*)</span>)</span>)
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c123'> (lambda nil
+   <span id='f0c122'>(funcall &#39;storage:swap-tables
+            <span id='f0c121'>(ccl::typed-form &#39;hash-table *test-functions*)</span>
+            <span id='f0c119'>(ccl::typed-form &#39;hash-table *test-types*)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>21</span> 
+<span class='line'>22</span> &#59;&#59; We do this to ensure that the tables get swapped properly
+<span class='line'>23</span> (eval-when (:load-toplevel :execute)
+<span class='line'>24</span>   (swap-tables))
+<span class='line'>25</span> 
+<span class='line'>26</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>27</span> &#59;&#59; Examples in the test table
+<span class='line'>28</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>29</span> (in-package :aluser)
+<span class='line'>30</span> 
+<span id='f0s5'><span class='line'>31</span> (deftype tree ()
+<span class='line'>32</span>   (element int)
+<span class='line'>33</span>   (left    tree)
+<span class='line'>34</span>   (nonce   tree))</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c529'> (lambda (&#38;key ((:element element) nil &#35;:compiler-var) ((:left left) nil &#35;:compiler-var)
+          ((:nonce nonce) nil &#35;:compiler-var))
+   <span id='f0c528'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c527'>(funcall &#39;spc:make-record
+                     <span id='f0c526'>&#39;:name</span>
+                     (ccl::typed-form &#39;(member :tree) <span id='f0c524'>&#39;:tree</span>)
+                     <span id='f0c521'>&#39;:element</span>
+                     element
+                     <span id='f0c523'>&#39;:left</span>
+                     left
+                     <span id='f0c522'>&#39;:nonce</span>
+                     nonce)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>35</span> 
+<span id='f0s6'><span class='line'>36</span> (deftype utx ()
+<span class='line'>37</span>   &#59;&#59; replace with a string type once we get strings
+<span class='line'>38</span>   (owner  int)
+<span class='line'>39</span>   (amount (int 64))
+<span class='line'>40</span>   (nonce  (int 64)))</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c117'> (lambda (&#38;key ((:owner owner) nil &#35;:compiler-var) ((:amount amount) nil &#35;:compiler-var)
+          ((:nonce nonce) nil &#35;:compiler-var))
+   <span id='f0c116'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c115'>(funcall &#39;spc:make-record
+                     <span id='f0c112'>&#39;:name</span>
+                     (ccl::typed-form &#39;(member :utx) <span id='f0c109'>&#39;:utx</span>)
+                     <span id='f0c111'>&#39;:owner</span>
+                     owner
+                     <span id='f0c114'>&#39;:amount</span>
+                     amount
+                     <span id='f0c107'>&#39;:nonce</span>
+                     nonce)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>41</span> 
+<span id='f0s7'><span class='line'>42</span> (deftype point ()
+<span class='line'>43</span>   (x int)
+<span class='line'>44</span>   (y int))</span>
+</code></div>
+<a href=javascript:swap('f0t7')><span class='toggle' id='pf0t7'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(7)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t7'><code><span id='f0c610'> (lambda (&#38;key ((:x x) nil &#35;:compiler-var) ((:y y) nil &#35;:compiler-var))
+   <span id='f0c609'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c608'>(funcall &#39;spc:make-record <span id='f0c606'>&#39;:name</span> (ccl::typed-form &#39;(member :point) <span id='f0c602'>&#39;:point</span>) <span id='f0c604'>&#39;:x</span> x <span id='f0c607'>&#39;:y</span> y)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>45</span> 
+<span id='f0s8'><span class='line'>46</span> (deftype nested ()
+<span class='line'>47</span>   (plane point)
+<span class='line'>48</span>   (time  point))</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c31'> (lambda (&#38;key ((:plane plane) nil &#35;:compiler-var) ((:time time) nil &#35;:compiler-var))
+   <span id='f0c30'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c29'>(funcall &#39;spc:make-record <span id='f0c24'>&#39;:name</span> (ccl::typed-form &#39;(member :nested) <span id='f0c28'>&#39;:nested</span>) <span id='f0c25'>&#39;:plane</span> plane <span id='f0c26'>&#39;:time</span> time)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>49</span> 
+<span id='f0s9'><span class='line'>50</span> (defcircuit constrain ((public nest nested)
+<span class='line'>51</span>                        (output void))
+<span class='line'>52</span>   (def ((plane (plane nest))
+<span class='line'>53</span>         (time  (time nest)))
+<span class='line'>54</span>     (&#61; (* (x plane)
+<span class='line'>55</span>           (y plane))
+<span class='line'>56</span>        (+ (x time)
+<span class='line'>57</span>           (y time)))))</span>
+</code></div>
+<a href=javascript:swap('f0t9')><span class='toggle' id='pf0t9'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(9)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t9'><code><span id='f0c95'> (lambda (nest)
+   <span id='f0c94'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c93'>(funcall &#39;spc:make-application
+                     <span id='f0c92'>&#39;:function</span>
+                     <span id='f0c88'>(funcall &#39;spc:make-reference <span id='f0c85'>&#39;:name</span> <span id='f0c87'>(ccl::typed-form &#39;(member :constrain) <span id='f0c86'>&#39;:constrain</span>)</span>)</span>
+                     <span id='f0c91'>&#39;:arguments</span>
+                     <span id='f0c90'>(cons nest nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>58</span> 
+<span id='f0s10'><span class='line'>59</span> (defcircuit use-constrain ((public foo nested)
+<span class='line'>60</span>                            (output void))
+<span class='line'>61</span>   (constrain foo))</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c204'> (lambda (foo)
+   <span id='f0c203'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c202'>(funcall &#39;spc:make-application
+                     <span id='f0c198'>&#39;:function</span>
+                     <span id='f0c197'>(funcall &#39;spc:make-reference <span id='f0c196'>&#39;:name</span> <span id='f0c195'>(ccl::typed-form &#39;(member :use-constrain) <span id='f0c194'>&#39;:use-constrain</span>)</span>)</span>
+                     <span id='f0c201'>&#39;:arguments</span>
+                     <span id='f0c200'>(cons foo nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>62</span> 
+<span id='f0s11'><span class='line'>63</span> (defcircuit arg-test-exp ((public  root int)
+<span class='line'>64</span>                           (private sig  int)
+<span class='line'>65</span>                           (private utx utx)
+<span class='line'>66</span>                           (output int))
+<span class='line'>67</span>   3)</span>
+</code></div>
+<a href=javascript:swap('f0t11')><span class='toggle' id='pf0t11'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(11)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t11'><code><span id='f0c274'> (lambda (root sig utx)
+   <span id='f0c273'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c272'>(funcall &#39;spc:make-application
+                     <span id='f0c267'>&#39;:function</span>
+                     <span id='f0c271'>(funcall &#39;spc:make-reference <span id='f0c270'>&#39;:name</span> <span id='f0c269'>(ccl::typed-form &#39;(member :arg-test-exp) <span id='f0c268'>&#39;:arg-test-exp</span>)</span>)</span>
+                     <span id='f0c262'>&#39;:arguments</span>
+                     <span id='f0c266'>(list root sig utx)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>68</span> 
+<span class='line'>69</span> 
+<span id='f0s12'><span class='line'>70</span> (defcircuit arg-foo ((public  root int)
+<span class='line'>71</span>                      (private sig  int)
+<span class='line'>72</span>                      (private foo  int)
+<span class='line'>73</span>                      (output nested))
+<span class='line'>74</span>       3)</span>
+</code></div>
+<a href=javascript:swap('f0t12')><span class='toggle' id='pf0t12'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(12)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t12'><code><span id='f0c330'> (lambda (root sig foo)
+   <span id='f0c329'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c328'>(funcall &#39;spc:make-application
+                     <span id='f0c323'>&#39;:function</span>
+                     <span id='f0c327'>(funcall &#39;spc:make-reference <span id='f0c326'>&#39;:name</span> <span id='f0c325'>(ccl::typed-form &#39;(member :arg-foo) <span id='f0c324'>&#39;:arg-foo</span>)</span>)</span>
+                     <span id='f0c322'>&#39;:arguments</span>
+                     <span id='f0c321'>(list root sig foo)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>75</span> 
+<span id='f0s13'><span class='line'>76</span> (defcircuit int-return  ((output int))
+<span class='line'>77</span>   3)</span>
+</code></div>
+<a href=javascript:swap('f0t13')><span class='toggle' id='pf0t13'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(13)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t13'><code><span id='f0c224'> (lambda nil
+   <span id='f0c223'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c222'>(funcall &#39;spc:make-application
+                     <span id='f0c216'>&#39;:function</span>
+                     <span id='f0c220'>(funcall &#39;spc:make-reference <span id='f0c219'>&#39;:name</span> <span id='f0c218'>(ccl::typed-form &#39;(member :int-return) <span id='f0c217'>&#39;:int-return</span>)</span>)</span>
+                     <span id='f0c221'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>78</span> 
+<span id='f0s14'><span class='line'>79</span> (defcircuit arg-circuit-input ((public  root int)
+<span class='line'>80</span>                                (private sig  point)
+<span class='line'>81</span>                                (output nested))
+<span class='line'>82</span>   (nested :plane sig :time sig))</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c590'> (lambda (root sig)
+   <span id='f0c589'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c588'>(funcall &#39;spc:make-application
+                     <span id='f0c579'>&#39;:function</span>
+                     <span id='f0c586'>(funcall &#39;spc:make-reference
+                              <span id='f0c585'>&#39;:name</span>
+                              <span id='f0c584'>(ccl::typed-form &#39;(member :arg-circuit-input) <span id='f0c583'>&#39;:arg-circuit-input</span>)</span>)</span>
+                     <span id='f0c587'>&#39;:arguments</span>
+                     <span id='f0c582'>(list root sig)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>83</span> 
+<span id='f0s15'><span class='line'>84</span> (defcircuit record-test ((public  root int)
+<span class='line'>85</span>                          (private sig  int)
+<span class='line'>86</span>                          (private utx nested)
+<span class='line'>87</span>                          (output point))
+<span class='line'>88</span>   (arg-circuit-input 3 (plane utx)))</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c158'> (lambda (root sig utx)
+   <span id='f0c157'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c156'>(funcall &#39;spc:make-application
+                     <span id='f0c155'>&#39;:function</span>
+                     <span id='f0c150'>(funcall &#39;spc:make-reference <span id='f0c147'>&#39;:name</span> <span id='f0c149'>(ccl::typed-form &#39;(member :record-test) <span id='f0c148'>&#39;:record-test</span>)</span>)</span>
+                     <span id='f0c146'>&#39;:arguments</span>
+                     <span id='f0c154'>(list root sig utx)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>89</span> 
+<span id='f0s16'><span class='line'>90</span> (defcircuit record-test-mult ((public  root int)
+<span class='line'>91</span>                               (private sig  int)
+<span class='line'>92</span>                               (private utx nested)
+<span class='line'>93</span>                               (output point))
+<span class='line'>94</span>   (def ((circ (arg-circuit-input 3 (plane utx))))
+<span class='line'>95</span>     (plane circ)))</span>
+</code></div>
+<a href=javascript:swap('f0t16')><span class='toggle' id='pf0t16'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(16)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t16'><code><span id='f0c136'> (lambda (root sig utx)
+   <span id='f0c135'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c134'>(funcall &#39;spc:make-application
+                     <span id='f0c128'>&#39;:function</span>
+                     <span id='f0c127'>(funcall &#39;spc:make-reference
+                              <span id='f0c124'>&#39;:name</span>
+                              <span id='f0c126'>(ccl::typed-form &#39;(member :record-test-mult) <span id='f0c125'>&#39;:record-test-mult</span>)</span>)</span>
+                     <span id='f0c133'>&#39;:arguments</span>
+                     <span id='f0c132'>(list root sig utx)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>96</span> 
+<span id='f0s17'><span class='line'>97</span> (defcircuit record-ret ((public x int)
+<span class='line'>98</span>                         (public y int))
+<span class='line'>99</span>   (nested :plane (point :x x :y y)
+<span class='line'>100</span>           :time  (point :x x :y y)))</span>
+</code></div>
+<a href=javascript:swap('f0t17')><span class='toggle' id='pf0t17'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(17)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t17'><code><span id='f0c475'> (lambda (x y)
+   <span id='f0c474'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c473'>(funcall &#39;spc:make-application
+                     <span id='f0c472'>&#39;:function</span>
+                     <span id='f0c467'>(funcall &#39;spc:make-reference <span id='f0c466'>&#39;:name</span> <span id='f0c465'>(ccl::typed-form &#39;(member :record-ret) <span id='f0c464'>&#39;:record-ret</span>)</span>)</span>
+                     <span id='f0c471'>&#39;:arguments</span>
+                     <span id='f0c470'>(list x y)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>101</span> 
+<span id='f0s18'><span class='line'>102</span> (defcircuit poly-check ((public x int)
+<span class='line'>103</span>                         (output bool))
+<span class='line'>104</span>   (&#61; (+ (exp x 3)
+<span class='line'>105</span>         (* 3 (exp x 2))
+<span class='line'>106</span>         (* 2 x)
+<span class='line'>107</span>         4)
+<span class='line'>108</span>      0))</span>
+</code></div>
+<a href=javascript:swap('f0t18')><span class='toggle' id='pf0t18'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(18)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t18'><code><span id='f0c441'> (lambda (x)
+   <span id='f0c440'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c439'>(funcall &#39;spc:make-application
+                     <span id='f0c435'>&#39;:function</span>
+                     <span id='f0c434'>(funcall &#39;spc:make-reference <span id='f0c433'>&#39;:name</span> <span id='f0c432'>(ccl::typed-form &#39;(member :poly-check) <span id='f0c431'>&#39;:poly-check</span>)</span>)</span>
+                     <span id='f0c438'>&#39;:arguments</span>
+                     <span id='f0c437'>(cons x nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>109</span> 
+<span id='f0s19'><span class='line'>110</span> (defcircuit invalid-type-unification ((public x (int 64))
+<span class='line'>111</span>                                       (public y (int 32))
+<span class='line'>112</span>                                       (output (int 64)))
+<span class='line'>113</span>   (+ x y))</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c170'> (lambda (x y)
+   <span id='f0c169'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c168'>(funcall &#39;spc:make-application
+                     <span id='f0c159'>&#39;:function</span>
+                     <span id='f0c167'>(funcall &#39;spc:make-reference
+                              <span id='f0c164'>&#39;:name</span>
+                              <span id='f0c166'>(ccl::typed-form &#39;(member :invalid-type-unification) <span id='f0c165'>&#39;:invalid-type-unification</span>)</span>)</span>
+                     <span id='f0c160'>&#39;:arguments</span>
+                     <span id='f0c163'>(list x y)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>114</span> 
+<span id='f0s20'><span class='line'>115</span> (defcircuit invalid-record-lookup ((output (int 64)))
+<span class='line'>116</span>   (x 3))</span>
+</code></div>
+<a href=javascript:swap('f0t20')><span class='toggle' id='pf0t20'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(20)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t20'><code><span id='f0c560'> (lambda nil
+   <span id='f0c559'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c558'>(funcall &#39;spc:make-application
+                     <span id='f0c553'>&#39;:function</span>
+                     <span id='f0c557'>(funcall &#39;spc:make-reference
+                              <span id='f0c554'>&#39;:name</span>
+                              <span id='f0c556'>(ccl::typed-form &#39;(member :invalid-record-lookup) <span id='f0c555'>&#39;:invalid-record-lookup</span>)</span>)</span>
+                     <span id='f0c552'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>117</span> 
+<span id='f0s21'><span class='line'>118</span> (defcircuit invalid-record-creation ((output (int 64)))
+<span class='line'>119</span>   (def ((y (alu&#46;ir:make-record :name :foo)))
+<span class='line'>120</span>     y))</span>
+</code></div>
+<a href=javascript:swap('f0t21')><span class='toggle' id='pf0t21'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(21)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t21'><code><span id='f0c430'> (lambda nil
+   <span id='f0c429'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c428'>(funcall &#39;spc:make-application
+                     <span id='f0c422'>&#39;:function</span>
+                     <span id='f0c427'>(funcall &#39;spc:make-reference
+                              <span id='f0c426'>&#39;:name</span>
+                              <span id='f0c425'>(ccl::typed-form &#39;(member :invalid-record-creation) <span id='f0c424'>&#39;:invalid-record-creation</span>)</span>)</span>
+                     <span id='f0c423'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>121</span> 
+<span id='f0s22'><span class='line'>122</span> (defcircuit invalid-record-primitive ((public x (int 32))
+<span class='line'>123</span>                                       (output (int 64)))
+<span class='line'>124</span>   (def ((y (+ 3 x)))
+<span class='line'>125</span>     (x y)))</span>
+</code></div>
+<a href=javascript:swap('f0t22')><span class='toggle' id='pf0t22'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(22)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t22'><code><span id='f0c285'> (lambda (x)
+   <span id='f0c284'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c283'>(funcall &#39;spc:make-application
+                     <span id='f0c280'>&#39;:function</span>
+                     <span id='f0c279'>(funcall &#39;spc:make-reference
+                              <span id='f0c276'>&#39;:name</span>
+                              <span id='f0c278'>(ccl::typed-form &#39;(member :invalid-record-primitive) <span id='f0c277'>&#39;:invalid-record-primitive</span>)</span>)</span>
+                     <span id='f0c275'>&#39;:arguments</span>
+                     <span id='f0c282'>(cons x nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>126</span> 
+<span id='f0s23'><span class='line'>127</span> (defcircuit basic-unification ((public x (int 32))
+<span class='line'>128</span>                                (output (int 32)))
+<span class='line'>129</span>   (def ((y 55)
+<span class='line'>130</span>         (z (+ 55 y y)))
+<span class='line'>131</span>     (+ y x z)))</span>
+</code></div>
+<a href=javascript:swap('f0t23')><span class='toggle' id='pf0t23'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(23)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t23'><code><span id='f0c235'> (lambda (x)
+   <span id='f0c234'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c233'>(funcall &#39;spc:make-application
+                     <span id='f0c230'>&#39;:function</span>
+                     <span id='f0c229'>(funcall &#39;spc:make-reference
+                              <span id='f0c226'>&#39;:name</span>
+                              <span id='f0c228'>(ccl::typed-form &#39;(member :basic-unification) <span id='f0c227'>&#39;:basic-unification</span>)</span>)</span>
+                     <span id='f0c225'>&#39;:arguments</span>
+                     <span id='f0c232'>(cons x nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>132</span> 
+<span id='f0s24'><span class='line'>133</span> (defcircuit invalid-record-primitive-2 ((public x int)
+<span class='line'>134</span>                                         (output (int 64)))
+<span class='line'>135</span>   (def ((y (+ 3 x)))
+<span class='line'>136</span>     (x y)))</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c106'> (lambda (x)
+   <span id='f0c105'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c104'>(funcall &#39;spc:make-application
+                     <span id='f0c102'>&#39;:function</span>
+                     <span id='f0c101'>(funcall &#39;spc:make-reference
+                              <span id='f0c100'>&#39;:name</span>
+                              <span id='f0c99'>(ccl::typed-form &#39;(member :invalid-record-primitive-2) <span id='f0c98'>&#39;:invalid-record-primitive-2</span>)</span>)</span>
+                     <span id='f0c103'>&#39;:arguments</span>
+                     <span id='f0c97'>(cons x nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>137</span> 
+<span id='f0s25'><span class='line'>138</span> (defcircuit invalid-record-lookup-type ((public ntest nested)
+<span class='line'>139</span>                                         (output (int 64)))
+<span class='line'>140</span>   (x ntest))</span>
+</code></div>
+<a href=javascript:swap('f0t25')><span class='toggle' id='pf0t25'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(25)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t25'><code><span id='f0c22'> (lambda (ntest)
+   <span id='f0c21'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c20'>(funcall &#39;spc:make-application
+                     <span id='f0c19'>&#39;:function</span>
+                     <span id='f0c15'>(funcall &#39;spc:make-reference
+                              <span id='f0c14'>&#39;:name</span>
+                              <span id='f0c13'>(ccl::typed-form &#39;(member :invalid-record-lookup-type) <span id='f0c12'>&#39;:invalid-record-lookup-type</span>)</span>)</span>
+                     <span id='f0c16'>&#39;:arguments</span>
+                     <span id='f0c18'>(cons ntest nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>141</span> 
+<span id='f0s26'><span class='line'>142</span> (defcircuit invalid-application-unification ((output (int 64)))
+<span class='line'>143</span>   (arg-circuit-input 35 35))</span>
+</code></div>
+<a href=javascript:swap('f0t26')><span class='toggle' id='pf0t26'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(26)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t26'><code><span id='f0c339'> (lambda nil
+   <span id='f0c338'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c337'>(funcall &#39;spc:make-application
+                     <span id='f0c331'>&#39;:function</span>
+                     <span id='f0c335'>(funcall &#39;spc:make-reference
+                              <span id='f0c334'>&#39;:name</span>
+                              <span id='f0c333'>(ccl::typed-form &#39;(member :invalid-application-unification)
+                               <span id='f0c332'>&#39;:invalid-application-unification</span>)</span>)</span>
+                     <span id='f0c336'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>144</span> 
+<span id='f0s27'><span class='line'>145</span> (defcircuit array-lookup-equation ((public x (int 25))
+<span class='line'>146</span>                                    (output (int 25)))
+<span class='line'>147</span>   (def ((with-constraint (y z)
+<span class='line'>148</span>           (&#61; x (+ (* y 10) z))))
+<span class='line'>149</span>     z))</span>
+</code></div>
+<a href=javascript:swap('f0t27')><span class='toggle' id='pf0t27'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(27)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t27'><code><span id='f0c181'> (lambda (x)
+   <span id='f0c180'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c179'>(funcall &#39;spc:make-application
+                     <span id='f0c174'>&#39;:function</span>
+                     <span id='f0c178'>(funcall &#39;spc:make-reference
+                              <span id='f0c177'>&#39;:name</span>
+                              <span id='f0c176'>(ccl::typed-form &#39;(member :array-lookup-equation) <span id='f0c175'>&#39;:array-lookup-equation</span>)</span>)</span>
+                     <span id='f0c171'>&#39;:arguments</span>
+                     <span id='f0c173'>(cons x nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>150</span> 
+<span id='f0s28'><span class='line'>151</span> (defcircuit explicit-type-coercsion ((public x (int 64))
+<span class='line'>152</span>                                      (public y (int 32))
+<span class='line'>153</span>                                      (output (int 64)))
+<span class='line'>154</span>   (+ x (coerce y (int 64))))</span>
+</code></div>
+<a href=javascript:swap('f0t28')><span class='toggle' id='pf0t28'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(28)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t28'><code><span id='f0c487'> (lambda (x y)
+   <span id='f0c486'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c485'>(funcall &#39;spc:make-application
+                     <span id='f0c481'>&#39;:function</span>
+                     <span id='f0c480'>(funcall &#39;spc:make-reference
+                              <span id='f0c479'>&#39;:name</span>
+                              <span id='f0c478'>(ccl::typed-form &#39;(member :explicit-type-coercsion) <span id='f0c477'>&#39;:explicit-type-coercsion</span>)</span>)</span>
+                     <span id='f0c476'>&#39;:arguments</span>
+                     <span id='f0c484'>(list x y)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>155</span> 
+<span id='f0s29'><span class='line'>156</span> (defcircuit explicit-type-check ((public x (int 64))
+<span class='line'>157</span>                                  (public y (int 32))
+<span class='line'>158</span>                                  (output (int 64)))
+<span class='line'>159</span>   (def ((z (+ y (check 35 (int 32)))))
+<span class='line'>160</span>     (+ x (coerce z (int 64)))))</span>
+</code></div>
+<a href=javascript:swap('f0t29')><span class='toggle' id='pf0t29'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(29)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t29'><code><span id='f0c11'> (lambda (x y)
+   <span id='f0c10'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c9'>(funcall &#39;spc:make-application
+                     <span id='f0c8'>&#39;:function</span>
+                     <span id='f0c3'>(funcall &#39;spc:make-reference
+                              <span id='f0c0'>&#39;:name</span>
+                              <span id='f0c2'>(ccl::typed-form &#39;(member :explicit-type-check) <span id='f0c1'>&#39;:explicit-type-check</span>)</span>)</span>
+                     <span id='f0c4'>&#39;:arguments</span>
+                     <span id='f0c7'>(list x y)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>161</span> 
+<span id='f0s30'><span class='line'>162</span> (defcircuit invalid-type-check ((public x (int 64))
+<span class='line'>163</span>                                 (public y (int 32))
+<span class='line'>164</span>                                 (output (int 64)))
+<span class='line'>165</span>   (def ((z (+ y 35)))
+<span class='line'>166</span>     (+ x (check z (int 64)))))</span>
+</code></div>
+<a href=javascript:swap('f0t30')><span class='toggle' id='pf0t30'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(30)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t30'><code><span id='f0c308'> (lambda (x y)
+   <span id='f0c307'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c306'>(funcall &#39;spc:make-application
+                     <span id='f0c300'>&#39;:function</span>
+                     <span id='f0c305'>(funcall &#39;spc:make-reference
+                              <span id='f0c304'>&#39;:name</span>
+                              <span id='f0c303'>(ccl::typed-form &#39;(member :invalid-type-check) <span id='f0c302'>&#39;:invalid-type-check</span>)</span>)</span>
+                     <span id='f0c301'>&#39;:arguments</span>
+                     <span id='f0c299'>(list x y)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>167</span> 
+<span class='line'>168</span> 
+<span id='f0s31'><span class='line'>169</span> (defcircuit array-type-check ((public arr (array 10 int))
+<span class='line'>170</span>                               (output (array int 10)))
+<span class='line'>171</span>   (def ((foo (get arr 9)))
+<span class='line'>172</span>     (+ 25 foo)))</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c246'> (lambda (arr)
+   <span id='f0c245'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c244'>(funcall &#39;spc:make-application
+                     <span id='f0c243'>&#39;:function</span>
+                     <span id='f0c240'>(funcall &#39;spc:make-reference
+                              <span id='f0c237'>&#39;:name</span>
+                              <span id='f0c239'>(ccl::typed-form &#39;(member :array-type-check) <span id='f0c238'>&#39;:array-type-check</span>)</span>)</span>
+                     <span id='f0c236'>&#39;:arguments</span>
+                     <span id='f0c242'>(cons arr nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>173</span> 
+<span id='f0s32'><span class='line'>174</span> (defcircuit invalid-array-type-check ((public arr (array 10 int))
+<span class='line'>175</span>                                       (output (array int 10)))
+<span class='line'>176</span>   (def ((foo (get arr 10)))
+<span class='line'>177</span>     (+ (check 25 (int 64)) foo)))</span>
+</code></div>
+<a href=javascript:swap('f0t32')><span class='toggle' id='pf0t32'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(32)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t32'><code><span id='f0c257'> (lambda (arr)
+   <span id='f0c256'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c255'>(funcall &#39;spc:make-application
+                     <span id='f0c249'>&#39;:function</span>
+                     <span id='f0c254'>(funcall &#39;spc:make-reference
+                              <span id='f0c251'>&#39;:name</span>
+                              <span id='f0c253'>(ccl::typed-form &#39;(member :invalid-array-type-check) <span id='f0c252'>&#39;:invalid-array-type-check</span>)</span>)</span>
+                     <span id='f0c250'>&#39;:arguments</span>
+                     <span id='f0c248'>(cons arr nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>178</span> 
+<span id='f0s33'><span class='line'>179</span> (defcircuit array-creation-check ((output (array 10 int)))
+<span class='line'>180</span>   (def ((foo (array 10 (int 32)))
+<span class='line'>181</span>         (bar (array 10 (int 32))))
+<span class='line'>182</span>     (setf (get foo 0) (check 23 (int 32)))
+<span class='line'>183</span>     (setf (get foo 1) 25)
+<span class='line'>184</span>     (+ 25 (get foo 0) (get foo 1))))</span>
+</code></div>
+<a href=javascript:swap('f0t33')><span class='toggle' id='pf0t33'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(33)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t33'><code><span id='f0c507'> (lambda nil
+   <span id='f0c506'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c505'>(funcall &#39;spc:make-application
+                     <span id='f0c504'>&#39;:function</span>
+                     <span id='f0c503'>(funcall &#39;spc:make-reference
+                              <span id='f0c502'>&#39;:name</span>
+                              <span id='f0c501'>(ccl::typed-form &#39;(member :array-creation-check) <span id='f0c500'>&#39;:array-creation-check</span>)</span>)</span>
+                     <span id='f0c499'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>185</span> 
+<span id='f0s34'><span class='line'>186</span> (defcircuit array-from-data-check ((output (array 10 int)))
+<span class='line'>187</span>   (def ((foo 35)
+<span class='line'>188</span>         (bar (to-array foo 36)))
+<span class='line'>189</span>     (+ (check foo (int 32))
+<span class='line'>190</span>        (get bar 0))))</span>
+</code></div>
+<a href=javascript:swap('f0t34')><span class='toggle' id='pf0t34'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(34)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t34'><code><span id='f0c619'> (lambda nil
+   <span id='f0c618'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c617'>(funcall &#39;spc:make-application
+                     <span id='f0c615'>&#39;:function</span>
+                     <span id='f0c614'>(funcall &#39;spc:make-reference
+                              <span id='f0c611'>&#39;:name</span>
+                              <span id='f0c613'>(ccl::typed-form &#39;(member :array-from-data-check) <span id='f0c612'>&#39;:array-from-data-check</span>)</span>)</span>
+                     <span id='f0c616'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>191</span> 
+<span id='f0s35'><span class='line'>192</span> (defcircuit type-checking-fun&#33; ((output (int 32)))
+<span class='line'>193</span>   (def ((foo 35)
+<span class='line'>194</span>         (bar (to-array foo 36)))
+<span class='line'>195</span>     (+ (check 32 (int 32))
+<span class='line'>196</span>        (get bar 0))))</span>
+</code></div>
+<a href=javascript:swap('f0t35')><span class='toggle' id='pf0t35'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(35)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t35'><code><span id='f0c145'> (lambda nil
+   <span id='f0c144'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c143'>(funcall &#39;spc:make-application
+                     <span id='f0c142'>&#39;:function</span>
+                     <span id='f0c140'>(funcall &#39;spc:make-reference
+                              <span id='f0c139'>&#39;:name</span>
+                              <span id='f0c138'>(ccl::typed-form &#39;(member :type-checking-fun&#33;) <span id='f0c137'>&#39;:type-checking-fun&#33;</span>)</span>)</span>
+                     <span id='f0c141'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>197</span> 
+<span id='f0s36'><span class='line'>198</span> (defcircuit array-from-data-check-consts ((output (array 10 int)))
+<span class='line'>199</span>   (def ((bar (to-array 36)))
+<span class='line'>200</span>     (+ (check 5 (int 32))
+<span class='line'>201</span>        (get bar 0))))</span>
+</code></div>
+<a href=javascript:swap('f0t36')><span class='toggle' id='pf0t36'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(36)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t36'><code><span id='f0c569'> (lambda nil
+   <span id='f0c568'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c567'>(funcall &#39;spc:make-application
+                     <span id='f0c561'>&#39;:function</span>
+                     <span id='f0c566'>(funcall &#39;spc:make-reference
+                              <span id='f0c563'>&#39;:name</span>
+                              <span id='f0c565'>(ccl::typed-form &#39;(member :array-from-data-check-consts) <span id='f0c564'>&#39;:array-from-data-check-consts</span>)</span>)</span>
+                     <span id='f0c562'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>202</span> 
+<span id='f0s37'><span class='line'>203</span> (defcircuit silly-range-check ((private input int)
+<span class='line'>204</span>                                (output void))
+<span class='line'>205</span>   (with-constraint (b1 b0)
+<span class='line'>206</span>     (with-constraint (b2 b3)
+<span class='line'>207</span>       (&#61; input (+ b1 b2)))))</span>
+</code></div>
+<a href=javascript:swap('f0t37')><span class='toggle' id='pf0t37'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(37)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t37'><code><span id='f0c601'> (lambda (input)
+   <span id='f0c600'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c599'>(funcall &#39;spc:make-application
+                     <span id='f0c592'>&#39;:function</span>
+                     <span id='f0c596'>(funcall &#39;spc:make-reference
+                              <span id='f0c595'>&#39;:name</span>
+                              <span id='f0c594'>(ccl::typed-form &#39;(member :silly-range-check) <span id='f0c593'>&#39;:silly-range-check</span>)</span>)</span>
+                     <span id='f0c591'>&#39;:arguments</span>
+                     <span id='f0c598'>(cons input nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>208</span> 
+<span id='f0s38'><span class='line'>209</span> (deftype 3d-point ()
+<span class='line'>210</span>   (x-plane int)
+<span class='line'>211</span>   (y-plane int)
+<span class='line'>212</span>   (z-plane int))</span>
+</code></div>
+<a href=javascript:swap('f0t38')><span class='toggle' id='pf0t38'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(38)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t38'><code><span id='f0c215'> (lambda (&#38;key ((:x-plane x-plane) nil &#35;:compiler-var) ((:y-plane y-plane) nil &#35;:compiler-var)
+          ((:z-plane z-plane) nil &#35;:compiler-var))
+   <span id='f0c214'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c213'>(funcall &#39;spc:make-record
+                     <span id='f0c205'>&#39;:name</span>
+                     (ccl::typed-form &#39;(member :3d-point) <span id='f0c211'>&#39;:3d-point</span>)
+                     <span id='f0c208'>&#39;:x-plane</span>
+                     x-plane
+                     <span id='f0c212'>&#39;:y-plane</span>
+                     y-plane
+                     <span id='f0c206'>&#39;:z-plane</span>
+                     z-plane)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>213</span> 
+<span id='f0s39'><span class='line'>214</span> (defcircuit square-root ((private p int)
+<span class='line'>215</span>                          (output int))
+<span class='line'>216</span>   (def ((with-constraint (x&#8321;)
+<span class='line'>217</span>           (&#61; p (* x&#8321; x&#8321;))))
+<span class='line'>218</span>     x&#8321;))</span>
+</code></div>
+<a href=javascript:swap('f0t39')><span class='toggle' id='pf0t39'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(39)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t39'><code><span id='f0c498'> (lambda (p)
+   <span id='f0c497'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c496'>(funcall &#39;spc:make-application
+                     <span id='f0c488'>&#39;:function</span>
+                     <span id='f0c494'>(funcall &#39;spc:make-reference <span id='f0c493'>&#39;:name</span> <span id='f0c492'>(ccl::typed-form &#39;(member :square-root) <span id='f0c491'>&#39;:square-root</span>)</span>)</span>
+                     <span id='f0c495'>&#39;:arguments</span>
+                     <span id='f0c490'>(cons p nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>219</span> 
+<span id='f0s40'><span class='line'>220</span> (defun square-root-func (p)
+<span class='line'>221</span>   (def ((with-constraint (x1)
+<span class='line'>222</span>           (&#61; p (* x1 x1))))
+<span class='line'>223</span>     x1))</span>
+</code></div>
+<a href=javascript:swap('f0t40')><span class='toggle' id='pf0t40'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(40)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t40'><code><span id='f0c421'> (lambda (p)
+   <span id='f0c420'>(unwind-protect
+       <span id='f0c418'>(progn <span id='f0c417'>(funcall &#39;alu&#46;stack::push-section <span id='f0c416'>(ccl::typed-form &#39;(member square-root-func) <span id='f0c415'>&#39;square-root-func</span>)</span>)</span>
+              <span id='f0c414'>(unwind-protect
+                  <span id='f0c413'>(progn <span id='f0c412'>(funcall &#39;alu&#46;stack:push <span id='f0c411'>&#39;(def ((with-constraint (x1) (&#61; p (* x1 x1)))) x1)</span>)</span>
+                         <span id='f0c410'>(let* ((x1
+                                 <span id='f0c408'>(funcall &#39;spc:make-reference <span id='f0c407'>&#39;:name</span> <span id='f0c406'>(ccl::typed-form &#39;(member :x161127) <span id='f0c405'>&#39;:x161127</span>)</span>)</span>))
+                           (progn <span id='f0c404'>(let* ((&#35;:g61128 <span id='f0c341'>(cons nil nil)</span>))
+                                    (progn <span id='f0c403'>(progn <span id='f0c397'>(let* ((emit::*circuit-body* &#35;:g61128))
+                                                    <span id='f0c395'>(let* ((&#35;:x161127
+                                                            <span id='f0c394'>(funcall &#39;spc:make-reference
+                                                                     <span id='f0c393'>&#39;:name</span>
+                                                                     <span id='f0c392'>(ccl::typed-form &#39;(member :x161127) <span id='f0c391'>&#39;:x161127</span>)</span>)</span>))
+                                                      <span id='f0c390'>(unwind-protect
+                                                          <span id='f0c388'>(progn <span id='f0c387'>(funcall &#39;alu&#46;stack:push <span id='f0c386'>&#39;(&#61; p (* x1 x1))</span>)</span>
+                                                                 <span id='f0c385'>(funcall &#39;&#61;
+                                                                          p
+                                                                          <span id='f0c384'>(unwind-protect
+                                                                              <span id='f0c383'>(progn <span id='f0c379'>(funcall &#39;alu&#46;stack:push
+                                                                                              <span id='f0c378'>&#39;(* x1 x1)</span>)</span>
+                                                                                     <span id='f0c382'>(funcall &#39;* x1 x1)</span>)</span>
+                                                                            <span id='f0c377'>(funcall &#39;alu&#46;stack:pop)</span>)</span>)</span>)</span>
+                                                        <span id='f0c389'>(funcall &#39;alu&#46;stack:pop)</span>)</span>)</span>)</span>
+                                                  <span id='f0c401'>(setq &#35;:g61128 <span id='f0c400'>(funcall &#39;remove-if <span id='f0c398'>(function not)</span> &#35;:g61128)</span>)</span>
+                                                  &#35;:g61128)</span>
+                                           <span id='f0c374'>(funcall &#39;emit:instruction
+                                                    <span id='f0c373'>(funcall &#39;spc:make-bind-constraint
+                                                             <span id='f0c372'>&#39;:var</span>
+                                                             <span id='f0c370'>(let* ((&#35;:g61129 <span id='f0c368'>(cons nil nil)</span>)
+                                                                    (&#35;:g61130 &#35;:g61129)
+                                                                    (&#35;:g61132 <span id='f0c367'>(function util:symbol-to-keyword)</span>))
+                                                               <span id='f0c366'>(let* ((&#35;:g61133 <span id='f0c365'>&#39;(&#35;:x161127)</span>))
+                                                                 (progn <span id='f0c361'>(tagbody <span id='f0c360'>(go &#35;:g61135)</span>
+                                                                                 (&#35;:g61134 nil (0)
+                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020041C4ECD&#62;
+                                                                                  t t)
+                                                                                 <span id='f0c359'>(tagbody <span id='f0c358'>(let* ((&#35;:g61131
+                                                                                                  <span id='f0c350'>(car &#35;:g61133)</span>))
+                                                                                            <span id='f0c357'>(tagbody <span id='f0c356'>(setq &#35;:g61129
+                                                                                                           <span id='f0c355'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g61129
+                                                                                                                                    <span id='f0c354'>(cons <span id='f0c353'>(funcall &#35;:g61132
+                                                                                                                                                   &#35;:g61131)</span>
+                                                                                                                                          nil)</span>))</span>)</span>)</span>)</span>)</span>
+                                                                                 <span id='f0c346'>(setq &#35;:g61133
+                                                                                       <span id='f0c345'>(ccl::&#37;cdr <span id='f0c344'>(ccl::typed-form &#39;list
+                                                                                                   &#35;:g61133)</span>)</span>)</span>
+                                                                                 (&#35;:g61135 nil (0)
+                                                                                  &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020041C4ECD&#62;
+                                                                                  t nil)
+                                                                                 <span id='f0c348'>(if <span id='f0c347'>(not &#39;:ne &#35;:g61133)</span>
+                                                                                     (go &#35;:g61134)
+                                                                                     nil)</span>)</span>
+                                                                        <span id='f0c364'>(let* () <span id='f0c363'>(ccl::&#37;cdr &#35;:g61130)</span>)</span>))</span>)</span>
+                                                             <span id='f0c342'>&#39;:value</span>
+                                                             &#35;:g61128)</span>)</span>
+                                           alu::*storage-for-deflex-var-void*))</span>
+                                  x1))</span>)</span>
+                <span id='f0c340'>(funcall &#39;alu&#46;stack:pop)</span>)</span>)</span>
+     <span id='f0c419'>(funcall &#39;alu&#46;stack::pop-section)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>224</span> 
+<span id='f0s41'><span class='line'>225</span> (defcircuit test-square ((output int))
+<span class='line'>226</span>   (def ((x1 5))
+<span class='line'>227</span>     (square-root-func 7)
+<span class='line'>228</span>     x1))</span>
+</code></div>
+<a href=javascript:swap('f0t41')><span class='toggle' id='pf0t41'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(41)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t41'><code><span id='f0c317'> (lambda nil
+   <span id='f0c316'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c315'>(funcall &#39;spc:make-application
+                     <span id='f0c309'>&#39;:function</span>
+                     <span id='f0c314'>(funcall &#39;spc:make-reference <span id='f0c311'>&#39;:name</span> <span id='f0c313'>(ccl::typed-form &#39;(member :test-square) <span id='f0c312'>&#39;:test-square</span>)</span>)</span>
+                     <span id='f0c310'>&#39;:arguments</span>
+                     nil)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>229</span> 
+<span id='f0s42'><span class='line'>230</span> (defcircuit l2-norm ((public p 3d-point)
+<span class='line'>231</span>                      (output int))
+<span class='line'>232</span>   (flet ((sum (list)
+<span class='line'>233</span>            (apply &#35;&#39;+ list)))
+<span class='line'>234</span>     (square-root
+<span class='line'>235</span>      (sum (mapcar (lambda (x) (exp x 2))
+<span class='line'>236</span>                   (list (x-plane p) (y-plane p) (z-plane p)))))))</span>
+</code></div>
+<a href=javascript:swap('f0t42')><span class='toggle' id='pf0t42'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(42)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t42'><code><span id='f0c518'> (lambda (p)
+   <span id='f0c517'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c516'>(funcall &#39;spc:make-application
+                     <span id='f0c514'>&#39;:function</span>
+                     <span id='f0c511'>(funcall &#39;spc:make-reference <span id='f0c510'>&#39;:name</span> <span id='f0c509'>(ccl::typed-form &#39;(member :l2-norm) <span id='f0c508'>&#39;:l2-norm</span>)</span>)</span>
+                     <span id='f0c515'>&#39;:arguments</span>
+                     <span id='f0c513'>(cons p nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>237</span> 
+<span id='f0s43'><span class='line'>238</span> (defcircuit l2-norm-by-hand ((public p 3d-point)
+<span class='line'>239</span>                              (output int))
+<span class='line'>240</span>   (square-root
+<span class='line'>241</span>    (+ (exp (x-plane p) 2)
+<span class='line'>242</span>       (exp (y-plane p) 2)
+<span class='line'>243</span>       (exp (z-plane p) 2))))</span>
+</code></div>
+<a href=javascript:swap('f0t43')><span class='toggle' id='pf0t43'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(43)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t43'><code><span id='f0c452'> (lambda (p)
+   <span id='f0c451'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c450'>(funcall &#39;spc:make-application
+                     <span id='f0c447'>&#39;:function</span>
+                     <span id='f0c445'>(funcall &#39;spc:make-reference <span id='f0c442'>&#39;:name</span> <span id='f0c444'>(ccl::typed-form &#39;(member :l2-norm-by-hand) <span id='f0c443'>&#39;:l2-norm-by-hand</span>)</span>)</span>
+                     <span id='f0c446'>&#39;:arguments</span>
+                     <span id='f0c449'>(cons p nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>244</span> 
+<span class='line'>245</span> &#59;&#59; Write some tests over these
+<span class='line'>246</span> 
+<span id='f0s44'><span class='line'>247</span> (defcircuit upper-half-of-the-first-element ((public arr (array 4 (int 32))))
+<span class='line'>248</span>   (def ((foo (coerce arr (array 8 (int 16)))))
+<span class='line'>249</span>     (get foo 0)))</span>
+</code></div>
+<a href=javascript:swap('f0t44')><span class='toggle' id='pf0t44'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(44)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t44'><code><span id='f0c296'> (lambda (arr)
+   <span id='f0c295'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c294'>(funcall &#39;spc:make-application
+                     <span id='f0c292'>&#39;:function</span>
+                     <span id='f0c289'>(funcall &#39;spc:make-reference
+                              <span id='f0c286'>&#39;:name</span>
+                              <span id='f0c288'>(ccl::typed-form &#39;(member :upper-half-of-the-first-element)
+                               <span id='f0c287'>&#39;:upper-half-of-the-first-element</span>)</span>)</span>
+                     <span id='f0c293'>&#39;:arguments</span>
+                     <span id='f0c291'>(cons arr nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>250</span> 
+<span id='f0s45'><span class='line'>251</span> (defmacro reshape (array length &#38;key type)
+<span class='line'>252</span>   <span id='f0s46'>&#96;(coerce &#44;array (array &#44;length &#44;type))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t45')><span class='toggle' id='pf0t45'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(45)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t45'><code><span id='f0c84'> (lambda (&#35;:whole61242 &#35;:environment61243)
+   <span id='f0c83'>(let* ((&#35;:args61244 <span id='f0c36'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c33'>(cdr &#35;:whole61242)</span> <span id='f0c34'>&#39;(array length &#38;key type)</span> 2 nil)</span>)
+          (array <span id='f0c43'>(prog1 <span id='f0c42'>(car &#35;:args61244)</span> <span id='f0c40'>(setq &#35;:args61244 <span id='f0c39'>(ccl::&#37;cdr <span id='f0c38'>(ccl::typed-form &#39;list &#35;:args61244)</span>)</span>)</span>)</span>)
+          (length <span id='f0c82'>(prog1 <span id='f0c77'>(car &#35;:args61244)</span> <span id='f0c81'>(setq &#35;:args61244 <span id='f0c80'>(ccl::&#37;cdr <span id='f0c79'>(ccl::typed-form &#39;list &#35;:args61244)</span>)</span>)</span>)</span>)
+          (&#35;:keys61245 &#35;:args61244)
+          (type
+           <span id='f0c68'>(progn <span id='f0c67'>(funcall &#39;ccl::check-keywords <span id='f0c66'>&#39;(:type)</span> &#35;:keys61245 nil)</span>
+                  <span id='f0c64'>(block nil
+                    <span id='f0c63'>(let* ((&#35;:g61264 &#35;:keys61245))
+                      (progn <span id='f0c62'>(tagbody <span id='f0c50'>(go &#35;:g61267)</span>
+                                      (&#35;:g61266 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004235ECD&#62; t t)
+                                      <span id='f0c59'>(tagbody <span id='f0c58'>(if <span id='f0c53'>(eq &#39;:type <span id='f0c52'>(car &#35;:g61264)</span>)</span>
+                                                   <span id='f0c57'>(return-from nil <span id='f0c56'>(car <span id='f0c55'>(cdr &#35;:g61264)</span>)</span>)</span>
+                                                   nil)</span>)</span>
+                                      <span id='f0c49'>(setq &#35;:g61264 <span id='f0c48'>(cdr <span id='f0c47'>(cdr &#35;:g61264)</span>)</span>)</span>
+                                      (&#35;:g61267 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302004235ECD&#62; t nil)
+                                      <span id='f0c61'>(if <span id='f0c60'>(not &#39;:ne &#35;:g61264)</span> (go &#35;:g61266) nil)</span>)</span>
+                             nil))</span>)</span>)</span>))
+     <span id='f0c75'>(list <span id='f0c70'>&#39;coerce</span> array <span id='f0c74'>(list <span id='f0c73'>&#39;array</span> length type)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>253</span> 
+<span id='f0s47'><span class='line'>254</span> (defcircuit reveal-bit ((private arr (array 16 (int 32)))
+<span class='line'>255</span>                         (public  bit (int 32)))
+<span class='line'>256</span>   (def ((bit-array (reshape arr 512 :type (int 1))))
+<span class='line'>257</span>     (get bit-array bit)))</span>
+</code></div>
+<a href=javascript:swap('f0t47')><span class='toggle' id='pf0t47'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(47)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t47'><code><span id='f0c193'> (lambda (arr bit)
+   <span id='f0c192'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c191'>(funcall &#39;spc:make-application
+                     <span id='f0c186'>&#39;:function</span>
+                     <span id='f0c190'>(funcall &#39;spc:make-reference <span id='f0c187'>&#39;:name</span> <span id='f0c189'>(ccl::typed-form &#39;(member :reveal-bit) <span id='f0c188'>&#39;:reveal-bit</span>)</span>)</span>
+                     <span id='f0c182'>&#39;:arguments</span>
+                     <span id='f0c185'>(list arr bit)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>258</span> 
+<span id='f0s48'><span class='line'>259</span> (defcircuit first-16-bits ((private number (int 64)))
+<span class='line'>260</span>   (get (coerce number (array 4 (int 16))) 0))</span>
+</code></div>
+<a href=javascript:swap('f0t48')><span class='toggle' id='pf0t48'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(48)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t48'><code><span id='f0c540'> (lambda (number)
+   <span id='f0c539'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c538'>(funcall &#39;spc:make-application
+                     <span id='f0c530'>&#39;:function</span>
+                     <span id='f0c535'>(funcall &#39;spc:make-reference <span id='f0c534'>&#39;:name</span> <span id='f0c533'>(ccl::typed-form &#39;(member :first-16-bits) <span id='f0c532'>&#39;:first-16-bits</span>)</span>)</span>
+                     <span id='f0c531'>&#39;:arguments</span>
+                     <span id='f0c537'>(cons number nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>261</span> 
+<span class='line'>262</span> &#59;&#59; Write some test over these END
+<span class='line'>263</span> 
+<span id='f0s49'><span class='line'>264</span> (deftype transfer ()
+<span class='line'>265</span>   (from-address (int 16))
+<span class='line'>266</span>   (to-address   (int 16))
+<span class='line'>267</span>   (amount       int))</span>
+</code></div>
+<a href=javascript:swap('f0t49')><span class='toggle' id='pf0t49'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(49)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t49'><code><span id='f0c463'> (lambda (&#38;key ((:from-address from-address) nil &#35;:compiler-var) ((:to-address to-address) nil &#35;:compiler-var)
+          ((:amount amount) nil &#35;:compiler-var))
+   <span id='f0c462'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c461'>(funcall &#39;spc:make-record
+                     <span id='f0c457'>&#39;:name</span>
+                     (ccl::typed-form &#39;(member :transfer) <span id='f0c460'>&#39;:transfer</span>)
+                     <span id='f0c458'>&#39;:from-address</span>
+                     from-address
+                     <span id='f0c453'>&#39;:to-address</span>
+                     to-address
+                     <span id='f0c455'>&#39;:amount</span>
+                     amount)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>268</span> 
+<span id='f0s50'><span class='line'>269</span> (deftype complex-number ()
+<span class='line'>270</span>   (real      int)
+<span class='line'>271</span>   (imaginary int))</span>
+</code></div>
+<a href=javascript:swap('f0t50')><span class='toggle' id='pf0t50'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(50)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t50'><code><span id='f0c578'> (lambda (&#38;key ((:real real) nil &#35;:compiler-var) ((:imaginary imaginary) nil &#35;:compiler-var))
+   <span id='f0c577'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c576'>(funcall &#39;spc:make-record
+                     <span id='f0c570'>&#39;:name</span>
+                     (ccl::typed-form &#39;(member :complex-number) <span id='f0c571'>&#39;:complex-number</span>)
+                     <span id='f0c574'>&#39;:real</span>
+                     real
+                     <span id='f0c573'>&#39;:imaginary</span>
+                     imaginary)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>272</span> 
+<span id='f0s51'><span class='line'>273</span> (defcircuit complex-norm ((private c complex-number) (output int))
+<span class='line'>274</span>   (flet ((square (x)
+<span class='line'>275</span>            (exp x 2)))
+<span class='line'>276</span>     (def ((r-squared (square (real c)))
+<span class='line'>277</span>           (i-squared (square (imaginary c)))
+<span class='line'>278</span>           &#59;&#59; doing square-root by hand&#33;
+<span class='line'>279</span>           (with-constraint (root)
+<span class='line'>280</span>             (&#61; (* r-squared i-squared)
+<span class='line'>281</span>                (square root))))
+<span class='line'>282</span>       root)))</span>
+</code></div>
+<a href=javascript:swap('f0t51')><span class='toggle' id='pf0t51'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(51)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t51'><code><span id='f0c551'> (lambda (c)
+   <span id='f0c550'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c549'>(funcall &#39;spc:make-application
+                     <span id='f0c543'>&#39;:function</span>
+                     <span id='f0c547'>(funcall &#39;spc:make-reference <span id='f0c544'>&#39;:name</span> <span id='f0c546'>(ccl::typed-form &#39;(member :complex-norm) <span id='f0c545'>&#39;:complex-norm</span>)</span>)</span>
+                     <span id='f0c548'>&#39;:arguments</span>
+                     <span id='f0c542'>(cons c nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>283</span> 
+<span class='line'>284</span> 
+<span class='line'>285</span> (in-package :alu-test)
+<span class='line'>286</span> 
+<span class='line'>287</span> &#59;&#59; Manual adding to the storage
+<span class='line'>288</span> &#59;&#59; my god just add storage abstraction&#44; as wew&#33;
+<span class='line'>289</span> (storage:add-function
+<span class='line'>290</span>  :manual-constraint
+<span class='line'>291</span>  (ir:make-circuit
+<span class='line'>292</span>   :return-type (ir:make-type-reference :name :bool)
+<span class='line'>293</span>   :name :manual-constraint
+<span class='line'>294</span>   :arguments nil
+<span class='line'>295</span>   :body
+<span class='line'>296</span>   &#39;(emit:instruction
+<span class='line'>297</span>     (ir:make-bind-constraint
+<span class='line'>298</span>      :var (list :a :b :c)
+<span class='line'>299</span>      :value
+<span class='line'>300</span>      (list
+<span class='line'>301</span>       (ir:make-let :var :fi
+<span class='line'>302</span>                    :val (ir:make-application
+<span class='line'>303</span>                          :function (ir:make-reference :name :record-test-mult)
+<span class='line'>304</span>                          :arguments
+<span class='line'>305</span>                          (list (ir:make-reference :name :hi)
+<span class='line'>306</span>                           (ir:make-reference :name :hi)
+<span class='line'>307</span>                           (ir:make-reference :name :hi))))
+<span class='line'>308</span>       (ir:make-application
+<span class='line'>309</span>        :function (ir:make-reference :name :&#61;)
+<span class='line'>310</span>        :arguments
+<span class='line'>311</span>        (list
+<span class='line'>312</span>         (ir:make-application
+<span class='line'>313</span>          :function (ir:make-reference :name :+)
+<span class='line'>314</span>          :arguments
+<span class='line'>315</span>          (list (ir:make-reference :name :a)
+<span class='line'>316</span>                (ir:make-reference :name :b)
+<span class='line'>317</span>                (ir:make-reference :name :fi)
+<span class='line'>318</span>                (ir:make-record-lookup
+<span class='line'>319</span>                 :record (ir:make-record :name :utxo
+<span class='line'>320</span>                                         :owner 3
+<span class='line'>321</span>                                         :amount 5
+<span class='line'>322</span>                                         :nonce (ir:make-reference :name :hi))
+<span class='line'>323</span>                 :field :nonce)))
+<span class='line'>324</span>         (ir:make-reference :name :bob))))))))
+<span class='line'>325</span> 
+<span class='line'>326</span> (storage:add-function
+<span class='line'>327</span>  :manual-constraint
+<span class='line'>328</span>  (ir:make-circuit
+<span class='line'>329</span>   :return-type (ir:make-type-reference :name :bool)
+<span class='line'>330</span>   :name :manual-constraint
+<span class='line'>331</span>   :arguments nil
+<span class='line'>332</span>   :body
+<span class='line'>333</span>   &#39;(emit:instruction
+<span class='line'>334</span>     (ir:make-bind-constraint
+<span class='line'>335</span>      :var (list :a :b :c)
+<span class='line'>336</span>      :value
+<span class='line'>337</span>      (list
+<span class='line'>338</span>       (ir:make-let :var :fi
+<span class='line'>339</span>                    :val (ir:make-application
+<span class='line'>340</span>                          :function (ir:make-reference :name :record-test-mult)
+<span class='line'>341</span>                          :arguments
+<span class='line'>342</span>                          (list (ir:make-reference :name :hi)
+<span class='line'>343</span>                           (ir:make-reference :name :hi)
+<span class='line'>344</span>                           (ir:make-reference :name :hi))))
+<span class='line'>345</span>       (ir:make-application
+<span class='line'>346</span>        :function (ir:make-reference :name :&#61;)
+<span class='line'>347</span>        :arguments
+<span class='line'>348</span>        (list
+<span class='line'>349</span>         (ir:make-application
+<span class='line'>350</span>          :function (ir:make-reference :name :+)
+<span class='line'>351</span>          :arguments
+<span class='line'>352</span>          (list (ir:make-reference :name :a)
+<span class='line'>353</span>                (ir:make-reference :name :b)
+<span class='line'>354</span>                (ir:make-reference :name :fi)
+<span class='line'>355</span>                (ir:make-record-lookup
+<span class='line'>356</span>                 :record (ir:make-record :name :utxo
+<span class='line'>357</span>                                         :owner 3
+<span class='line'>358</span>                                         :amount 5
+<span class='line'>359</span>                                         :nonce (ir:make-reference :name :hi))
+<span class='line'>360</span>                 :field :nonce)))
+<span class='line'>361</span>         (ir:make-reference :name :bob))))))))
+<span class='line'>362</span> 
+<span class='line'>363</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>364</span> &#59;&#59;&#59; Restoring the original table if we didn&#39;t start in the test table
+<span class='line'>365</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>366</span> 
+<span class='line'>367</span> (in-package :alu-test)
+<span class='line'>368</span> 
+<span class='line'>369</span> (unless *swapped*
+<span class='line'>370</span>   (storage:restore-tables))
+</code></div>
+</body></html>

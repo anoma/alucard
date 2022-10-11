@@ -1,0 +1,243 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='alu_prelude_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;alu;prelude.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;prelude)
+<span class='line'>2</span> 
+<span class='line'>3</span> (defprimitive-type int)
+<span class='line'>4</span> (defprimitive-type int64)
+<span class='line'>5</span> (defprimitive-type void)
+<span class='line'>6</span> (defprimitive-type bool)
+<span class='line'>7</span> (defprimitive-type array)
+<span class='line'>8</span> 
+<span id='f0s0'><span class='line'>9</span> (defprimitive void)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c66'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c65'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c64'>(funcall &#39;spc:make-application
+                     <span id='f0c58'>&#39;:function</span>
+                     <span id='f0c63'>(funcall &#39;spc:make-reference <span id='f0c62'>&#39;:name</span> <span id='f0c61'>(ccl::typed-form &#39;(member :void) <span id='f0c60'>&#39;:void</span>)</span>)</span>
+                     <span id='f0c59'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s1'><span class='line'>10</span> (defprimitive +)</span>
+</code></div>
+<a href=javascript:swap('f0t1')><span class='toggle' id='pf0t1'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(1)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t1'><code><span id='f0c76'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c75'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c74'>(funcall &#39;spc:make-application
+                     <span id='f0c67'>&#39;:function</span>
+                     <span id='f0c72'>(funcall &#39;spc:make-reference <span id='f0c69'>&#39;:name</span> <span id='f0c71'>(ccl::typed-form &#39;(member :+) <span id='f0c70'>&#39;:+</span>)</span>)</span>
+                     <span id='f0c73'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s2'><span class='line'>11</span> (defprimitive *)</span>
+</code></div>
+<a href=javascript:swap('f0t2')><span class='toggle' id='pf0t2'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(2)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t2'><code><span id='f0c86'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c85'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c84'>(funcall &#39;spc:make-application
+                     <span id='f0c81'>&#39;:function</span>
+                     <span id='f0c80'>(funcall &#39;spc:make-reference <span id='f0c79'>&#39;:name</span> <span id='f0c78'>(ccl::typed-form &#39;(member :*) <span id='f0c77'>&#39;:*</span>)</span>)</span>
+                     <span id='f0c83'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s3'><span class='line'>12</span> (defprimitive &#61;)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c111'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c110'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c109'>(funcall &#39;spc:make-application
+                     <span id='f0c102'>&#39;:function</span>
+                     <span id='f0c108'>(funcall &#39;spc:make-reference <span id='f0c105'>&#39;:name</span> <span id='f0c107'>(ccl::typed-form &#39;(member :&#61;) <span id='f0c106'>&#39;:&#61;</span>)</span>)</span>
+                     <span id='f0c104'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s4'><span class='line'>13</span> (defprimitive range)</span>
+</code></div>
+<a href=javascript:swap('f0t4')><span class='toggle' id='pf0t4'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(4)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t4'><code><span id='f0c43'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c42'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c41'>(funcall &#39;spc:make-application
+                     <span id='f0c40'>&#39;:function</span>
+                     <span id='f0c39'>(funcall &#39;spc:make-reference <span id='f0c36'>&#39;:name</span> <span id='f0c38'>(ccl::typed-form &#39;(member :range) <span id='f0c37'>&#39;:range</span>)</span>)</span>
+                     <span id='f0c34'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span id='f0s5'><span class='line'>14</span> (defprimitive exp)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c121'> (lambda (&#38;rest alu::arguments)
+   <span id='f0c120'>(funcall &#39;alu::ensure-call-by-value
+            <span id='f0c119'>(funcall &#39;spc:make-application
+                     <span id='f0c113'>&#39;:function</span>
+                     <span id='f0c118'>(funcall &#39;spc:make-reference <span id='f0c117'>&#39;:name</span> <span id='f0c116'>(ccl::typed-form &#39;(member :exp) <span id='f0c115'>&#39;:exp</span>)</span>)</span>
+                     <span id='f0c112'>&#39;:arguments</span>
+                     alu::arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>15</span> 
+<span id='f0s6'><span class='line'>16</span> (defmacro deflex (var &#38;body (&#38;optional val documentation))
+<span class='line'>17</span>   &#59;&#59; documentation copied from def in serpaeum
+<span class='line'>18</span>   &#34;The famous &#92;&#34;deflex&#92;&#34;&#46;
+<span class='line'>19</span> 
+<span class='line'>20</span> Define a top level (global) lexical VAR with initial value VAL&#44;
+<span class='line'>21</span> which is assigned unconditionally as with DEFPARAMETER&#46; If a DOC
+<span class='line'>22</span> string is provided&#44; it is attached to both the name &#124;VAR&#124; and the name
+<span class='line'>23</span> *STORAGE-FOR-DEFLEX-VAR-&#124;VAR&#124;* as a documentation string of kind
+<span class='line'>24</span> &#39;VARIABLE&#46; The new VAR will have lexical scope and thus may be
+<span class='line'>25</span> shadowed by LET bindings without affecting its dynamic (global) value&#46;
+<span class='line'>26</span> 
+<span class='line'>27</span> The original &#96;deflex&#39; is due to Rob Warnock&#46;
+<span class='line'>28</span> 
+<span class='line'>29</span> This version of &#96;deflex&#39; differs from the original in the following ways:
+<span class='line'>30</span> 
+<span class='line'>31</span> - It is possible for VAL to close over VAR&#46;
+<span class='line'>32</span> - On implementations that support it (SBCL&#44; CCL&#44; and LispWorks&#44; at the
+<span class='line'>33</span> moment) this version creates a backing variable that is &#92;&#34;global&#92;&#34; or
+<span class='line'>34</span> &#92;&#34;static&#92;&#34;&#44; so there is not just a change in semantics&#44; but also a
+<span class='line'>35</span> gain in efficiency&#46;
+<span class='line'>36</span> - If VAR is a list that starts with &#96;values&#96;&#44; each element is treated as
+<span class='line'>37</span> a separate variable and initialized as if by &#96;(setf (values VAR&#46;&#46;&#46;)
+<span class='line'>38</span> VAL)&#96;&#46;&#34;
+<span class='line'>39</span>   <span id='f0s7'>&#96;(serapeum:def &#44;var &#44;val &#44;documentation)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t6')><span class='toggle' id='pf0t6'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(6)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t6'><code><span id='f0c163'> (lambda (&#35;:whole60151 &#35;:environment60152)
+   <span id='f0c162'>(let* ((&#35;:args60153
+           <span id='f0c161'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c158'>(cdr &#35;:whole60151)</span> <span id='f0c159'>&#39;(var &#38;body (&#38;optional val documentation))</span> 1 nil)</span>)
+          (var <span id='f0c133'>(prog1 <span id='f0c132'>(car &#35;:args60153)</span> <span id='f0c130'>(setq &#35;:args60153 <span id='f0c129'>(ccl::&#37;cdr <span id='f0c128'>(ccl::typed-form &#39;list &#35;:args60153)</span>)</span>)</span>)</span>)
+          (&#35;:rest60154 &#35;:args60153)
+          (&#35;:whole60155 &#35;:rest60154)
+          (&#35;:args60156 <span id='f0c126'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole60155 <span id='f0c124'>&#39;(&#38;optional val documentation)</span> 0 2)</span>)
+          (val
+           <span id='f0c147'>(if &#35;:args60156
+               <span id='f0c146'>(prog1 <span id='f0c145'>(ccl::&#37;car &#35;:args60156)</span> <span id='f0c143'>(setq &#35;:args60156 <span id='f0c142'>(ccl::&#37;cdr <span id='f0c141'>(ccl::typed-form &#39;list &#35;:args60156)</span>)</span>)</span>)</span>
+               nil)</span>)
+          (documentation
+           <span id='f0c156'>(if &#35;:args60156
+               <span id='f0c154'>(prog1 <span id='f0c153'>(ccl::&#37;car &#35;:args60156)</span> <span id='f0c151'>(setq &#35;:args60156 <span id='f0c150'>(ccl::&#37;cdr <span id='f0c149'>(ccl::typed-form &#39;list &#35;:args60156)</span>)</span>)</span>)</span>
+               nil)</span>))
+     <span id='f0c138'>(list <span id='f0c134'>&#39;serapeum:def</span> var val documentation)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>40</span> 
+<span id='f0s8'><span class='line'>41</span> (defmacro vampir (function-name)
+<span class='line'>42</span>   <span id='f0s9'>&#96;(vampir-keyword &#44;(util:symbol-to-keyword function-name))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c18'> (lambda (&#35;:whole60169 &#35;:environment60170)
+   <span id='f0c17'>(let* ((&#35;:args60171 <span id='f0c12'>(funcall &#39;ccl::prepare-to-destructure <span id='f0c11'>(cdr &#35;:whole60169)</span> <span id='f0c8'>&#39;(function-name)</span> 1 1)</span>)
+          (function-name
+           <span id='f0c6'>(prog1 <span id='f0c5'>(ccl::&#37;car &#35;:args60171)</span> <span id='f0c3'>(setq &#35;:args60171 <span id='f0c2'>(ccl::&#37;cdr <span id='f0c1'>(ccl::typed-form &#39;list &#35;:args60171)</span>)</span>)</span>)</span>))
+     <span id='f0c16'>(list <span id='f0c13'>&#39;vampir-keyword</span> <span id='f0c15'>(funcall &#39;util:symbol-to-keyword function-name)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>43</span> 
+<span id='f0s10'><span class='line'>44</span> (defun vampir-keyword (keyword)
+<span class='line'>45</span>   <span id='f0s11'>(let ((lookup <span id='f0s12'>(storage:lookup-function keyword)</span>))
+<span class='line'>46</span>     <span id='f0s13'>(if lookup
+<span class='line'>47</span>         <span id='f0s14'>(pipeline:pipeline lookup)</span>
+<span class='line'>48</span>         <span id='f0s15'>(format t <span id='f0s16'>&#34;Function &#126;A is not found&#34;</span> keyword)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c56'> (lambda (keyword)
+   <span id='f0c55'>(let* ((lookup <span id='f0c46'>(funcall &#39;storage:lookup-function <span id='f0c45'>(ccl::typed-form &#39;keyword keyword)</span>)</span>))
+     <span id='f0c54'>(if lookup
+         <span id='f0c53'>(funcall &#39;alu&#46;pipeline&#46;pipeline:pipeline <span id='f0c52'>(ccl::typed-form &#39;spc:circuit lookup)</span>)</span>
+         <span id='f0c49'>(funcall &#39;format t <span id='f0c47'>&#39;&#34;Function &#126;A is not found&#34;</span> keyword)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>49</span> 
+<span id='f0s17'><span class='line'>50</span> (defun start-slynk (&#38;key (port 4005))
+<span class='line'>51</span>   &#59;&#59; doesn&#39;t work in CCL for some reason&#46;&#46;&#46;
+<span class='line'>52</span>   <span id='f0s18'>(slynk-api:add-hook slynk-api:*new-connection-hook*
+<span class='line'>53</span>                       <span id='f0s19'>(lambda (connection)
+<span class='line'>54</span>                         (declare (ignore connection))
+<span class='line'>55</span>                         <span id='f0s20'>(slynk:set-package :aluser)</span>
+<span class='line'>56</span>                         <span id='f0s21'>(setf *print-pretty* t)</span>)</span>)</span>
+<span class='line'>57</span>   <span id='f0s22'>(slynk:create-server :port port :dont-close t)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t17')><span class='toggle' id='pf0t17'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(17)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t17'><code><span id='f0c33'> (lambda (&#38;key ((:port port) 4005 &#35;:compiler-var))
+   <span id='f0c32'>(progn <span id='f0c27'>(setq slynk::*new-connection-hook*
+                <span id='f0c26'>(funcall &#39;ccl::adjoin-eql
+                         <span id='f0c25'>(function <span id='f0c24'>(lambda (connection)
+                                     (progn <span id='f0c23'>(funcall &#39;slynk:set-package <span id='f0c22'>&#39;:aluser</span>)</span> <span id='f0c21'>(setq *print-pretty* t)</span>))</span>)</span>
+                         slynk::*new-connection-hook*)</span>)</span>
+          <span id='f0c31'>(funcall &#39;slynk:create-server <span id='f0c29'>&#39;:port</span> port <span id='f0c28'>&#39;:dont-close</span> t)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>58</span> 
+<span id='f0s23'><span class='line'>59</span> (defun start-swank (&#38;key (port 4005))
+<span class='line'>60</span>   &#59;&#59; this maybe works&#63;
+<span class='line'>61</span>   <span id='f0s24'>(swank::add-hook swank::*new-connection-hook*
+<span class='line'>62</span>                    <span id='f0s25'>(lambda (connection)
+<span class='line'>63</span>                      (declare (ignore connection))
+<span class='line'>64</span>                      <span id='f0s26'>(slynk:set-package :aluser)</span>
+<span class='line'>65</span>                      <span id='f0s27'>(setf *print-pretty* t)</span>)</span>)</span>
+<span class='line'>66</span>   <span id='f0s28'>(swank:create-server :port port :dont-close t)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t23')><span class='toggle' id='pf0t23'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(23)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t23'><code><span id='f0c101'> (lambda (&#38;key ((:port port) 4005 &#35;:compiler-var))
+   <span id='f0c100'>(progn <span id='f0c95'>(setq swank::*new-connection-hook*
+                <span id='f0c94'>(funcall &#39;ccl::adjoin-eql
+                         <span id='f0c93'>(function <span id='f0c92'>(lambda (connection)
+                                     (progn <span id='f0c90'>(funcall &#39;slynk:set-package <span id='f0c89'>&#39;:aluser</span>)</span> <span id='f0c91'>(setq *print-pretty* t)</span>))</span>)</span>
+                         swank::*new-connection-hook*)</span>)</span>
+          <span id='f0c99'>(funcall &#39;swank:create-server <span id='f0c97'>&#39;:port</span> port <span id='f0c96'>&#39;:dont-close</span> t)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

@@ -1,0 +1,213 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_closure_closure_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;closure;closure.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;closure)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59; This is just a glorified hash table
+<span id='f0s0'><span class='line'>4</span> (defclass typ ()
+<span class='line'>5</span>   ((table :initarg  :table
+<span class='line'>6</span>           :type     syc:tree-map
+<span class='line'>7</span>           :initform <span id='f0s1'>(syc:make-tree-map <span id='f0s2'>&#35;&#39;util:hash-compare</span>)</span>
+<span class='line'>8</span>           :accessor table))
+<span class='line'>9</span>   (:documentation &#34;The Closure type&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c94'> (lambda nil <span id='f0c93'>(funcall &#39;syc:make-tree-map <span id='f0c92'>(function util:hash-compare)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>10</span> 
+<span id='f0s3'><span class='line'>11</span> (defmethod print-object ((obj typ) stream)
+<span class='line'>12</span>   <span id='f0s4'>(print-unreadable-object (obj stream :type t)
+<span class='line'>13</span>     <span id='f0s5'>(format stream <span id='f0s6'>&#34;&#126;A&#34;</span> <span id='f0s7'>(table obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c91'> (lambda (&#35;:next-method-context obj stream)
+   <span id='f0c90'>(flet ()
+     <span id='f0c89'>(let* ((&#35;:g51008
+             <span id='f0c84'>(function <span id='f0c83'>(lambda nil
+                         <span id='f0c82'>(let ((stream stream) (ccl::object <span id='f0c81'>(funcall &#39;table obj)</span>))
+                           <span id='f0c79'>(if <span id='f0c78'>(or <span id='f0c61'>(not stream)</span>
+                                   <span id='f0c77'>(let* ((&#35;:g51009 stream) (&#35;:g51010 <span id='f0c63'>(ccl::typecode &#35;:g51009)</span>))
+                                     <span id='f0c76'>(if <span id='f0c73'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g51010 166)</span>
+                                         <span id='f0c71'>(ccl::&#37;i&#60;&#62; &#39;:eq
+                                          <span id='f0c70'>(ccl::typed-form &#39;(unsigned-byte 8)
+                                           <span id='f0c69'>(ccl::&#37;ilogand2 255
+                                                           <span id='f0c68'>(ccl::typed-form &#39;fixnum
+                                                            <span id='f0c67'>(ccl::&#37;iasr 8
+                                                                        <span id='f0c66'>(ccl::typed-form &#39;fixnum
+                                                                         <span id='f0c65'>(ccl::&#37;svref &#35;:g51009 4)</span>)</span>)</span>)</span>)</span>)</span>
+                                          201)</span>
+                                         <span id='f0c75'>(ccl::&#37;i&#60;&#62; &#39;:eq &#35;:g51010 201)</span>)</span>)</span>)</span>
+                               <span id='f0c60'>(funcall &#39;ccl::format-to-string stream <span id='f0c58'>&#39;&#34;&#126;A&#34;</span> ccl::object)</span>
+                               <span id='f0c56'>(progn <span id='f0c55'>(funcall &#39;princ ccl::object <span id='f0c54'>(if <span id='f0c52'>(ccl:neq &#39;:ne stream t)</span> stream nil)</span>)</span> nil)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c88'>(funcall &#39;ccl::&#37;print-unreadable-object obj stream t nil &#35;:g51008)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>14</span> 
+<span class='line'>15</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>16</span> &#59;&#59; Creation Functions
+<span class='line'>17</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>18</span> 
+<span id='f0s8'><span class='line'>19</span> (defun allocate (&#38;rest arguments)
+<span class='line'>20</span>   <span id='f0s9'>(from-plist arguments)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c109'> (lambda (&#38;rest arguments) <span id='f0c108'>(funcall &#39;from-plist <span id='f0c107'>(ccl::typed-form &#39;list arguments)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>21</span> 
+<span class='line'>22</span> (-&#62; from-plist (list) typ)
+<span id='f0s10'><span class='line'>23</span> (defun from-plist (plist)
+<span class='line'>24</span>   <span id='f0s11'>(values
+<span class='line'>25</span>    <span id='f0s12'>(make-instance &#39;typ
+<span class='line'>26</span>                   :table <span id='f0s13'>(util:sycamore-plist-symbol-map plist)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c49'> (lambda (plist)
+   <span id='f0c48'>(values <span id='f0c47'>(let* ()
+             <span id='f0c46'>(funcall <span id='f0c42'>(ccl::&#37;svref <span id='f0c41'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036E1DAF&#62;))</span> 3)</span>
+                      <span id='f0c43'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020036E1DAF&#62;))</span>
+                      <span id='f0c40'>&#39;:table</span>
+                      <span id='f0c45'>(funcall &#39;util:sycamore-plist-symbol-map plist)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>27</span> 
+<span class='line'>28</span> (-&#62; from-alist (list) typ)
+<span id='f0s14'><span class='line'>29</span> (defun from-alist (alist)
+<span class='line'>30</span>   <span id='f0s15'>(values
+<span class='line'>31</span>    <span id='f0s16'>(make-instance &#39;typ
+<span class='line'>32</span>                   :table <span id='f0s17'>(syc:alist-tree-map alist <span id='f0s18'>&#35;&#39;util:hash-compare</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t14')><span class='toggle' id='pf0t14'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(14)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t14'><code><span id='f0c105'> (lambda (alist)
+   <span id='f0c104'>(values <span id='f0c103'>(let* ()
+             <span id='f0c102'>(funcall <span id='f0c101'>(ccl::&#37;svref <span id='f0c100'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200370A73F&#62;))</span> 3)</span>
+                      <span id='f0c99'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x30200370A73F&#62;))</span>
+                      <span id='f0c98'>&#39;:table</span>
+                      <span id='f0c97'>(funcall &#39;syc:alist-tree-map alist <span id='f0c95'>(function util:hash-compare)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>33</span> 
+<span class='line'>34</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>35</span> &#59;&#59; Addition Functions
+<span class='line'>36</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>37</span> 
+<span class='line'>38</span> (-&#62; insert (typ keyword t) typ)
+<span id='f0s19'><span class='line'>39</span> (defun insert (closure name bound-value)
+<span class='line'>40</span>   <span id='f0s20'>(values
+<span class='line'>41</span>    <span id='f0s21'>(make-instance &#39;typ
+<span class='line'>42</span>                   :table <span id='f0s22'>(syc:tree-map-insert <span id='f0s23'>(table closure)</span> name bound-value)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c33'> (lambda (closure name bound-value)
+   <span id='f0c32'>(values <span id='f0c31'>(let* ()
+             <span id='f0c30'>(funcall <span id='f0c28'>(ccl::&#37;svref <span id='f0c27'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037323DF&#62;))</span> 3)</span>
+                      <span id='f0c29'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037323DF&#62;))</span>
+                      <span id='f0c26'>&#39;:table</span>
+                      <span id='f0c25'>(funcall &#39;syc:tree-map-insert <span id='f0c24'>(funcall &#39;table closure)</span> name bound-value)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>43</span> 
+<span class='line'>44</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>45</span> &#59;&#59; Dumping Functions
+<span class='line'>46</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>47</span> 
+<span class='line'>48</span> (-&#62; keys (typ) list)
+<span id='f0s24'><span class='line'>49</span> (defun keys (closure)
+<span class='line'>50</span>   <span id='f0s25'>(sycamore:tree-map-keys <span id='f0s26'>(table closure)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t24')><span class='toggle' id='pf0t24'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(24)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t24'><code><span id='f0c20'> (lambda (closure) <span id='f0c19'>(funcall &#39;syc:tree-map-keys <span id='f0c18'>(funcall &#39;table closure)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>51</span> 
+<span class='line'>52</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>53</span> &#59;&#59; Lookup Functions
+<span class='line'>54</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>55</span> 
+<span class='line'>56</span> (-&#62; lookup (typ keyword) (or t null))
+<span id='f0s27'><span class='line'>57</span> (defun lookup (closure name)
+<span class='line'>58</span>   <span id='f0s28'>(values
+<span class='line'>59</span>    <span id='f0s29'>(syc:tree-map-find <span id='f0s30'>(table closure)</span> name)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t27')><span class='toggle' id='pf0t27'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(27)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t27'><code><span id='f0c39'> (lambda (closure name) <span id='f0c38'>(values <span id='f0c37'>(funcall &#39;syc:tree-map-find <span id='f0c35'>(funcall &#39;table closure)</span> name)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>60</span> 
+<span class='line'>61</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>62</span> &#59;&#59; Removal Functions
+<span class='line'>63</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>64</span> 
+<span class='line'>65</span> (-&#62; remove (typ keyword) typ)
+<span id='f0s31'><span class='line'>66</span> (defun remove (closure name)
+<span class='line'>67</span>   <span id='f0s32'>(values
+<span class='line'>68</span>    <span id='f0s33'>(make-instance &#39;typ
+<span class='line'>69</span>                   :table <span id='f0s34'>(syc:tree-map-remove <span id='f0s35'>(table closure)</span> name)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t31')><span class='toggle' id='pf0t31'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(31)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t31'><code><span id='f0c11'> (lambda (closure name)
+   <span id='f0c10'>(values <span id='f0c9'>(let* ()
+             <span id='f0c8'>(funcall <span id='f0c6'>(ccl::&#37;svref <span id='f0c5'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037782BF&#62;))</span> 3)</span>
+                      <span id='f0c4'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020037782BF&#62;))</span>
+                      <span id='f0c7'>&#39;:table</span>
+                      <span id='f0c3'>(funcall &#39;syc:tree-map-remove <span id='f0c2'>(funcall &#39;table closure)</span> name)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>70</span> 
+<span class='line'>71</span> (-&#62; length (typ) integer)
+<span id='f0s36'><span class='line'>72</span> (defun length (closure)
+<span class='line'>73</span>   <span id='f0s37'>(cl:length <span id='f0s38'>(sycamore:tree-map-keys <span id='f0s39'>(table closure)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t36')><span class='toggle' id='pf0t36'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(36)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t36'><code><span id='f0c16'> (lambda (closure) <span id='f0c15'>(funcall 11 <span id='f0c14'>(funcall &#39;syc:tree-map-keys <span id='f0c13'>(funcall &#39;table closure)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

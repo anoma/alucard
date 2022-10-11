@@ -1,0 +1,264 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_data-traversal_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;data-traversal.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;spec)
+<span class='line'>2</span> 
+<span class='line'>3</span> (defclass direct-slots-mixin () ()
+<span class='line'>4</span>   (:documentation
+<span class='line'>5</span>    &#34;Provides the service of giving generic access to all direct fields in
+<span class='line'>6</span> the class&#46; This allows generic programming to be had &#34;))
+<span class='line'>7</span> 
+<span class='line'>8</span> &#59;&#59; Issue is that we have to include protected by hand on all classes
+<span class='line'>9</span> &#59;&#59; that I want to use this &#9785;
+<span id='f0s0'><span class='line'>10</span> (defclass protect-slots-mixin (direct-slots-mixin)
+<span class='line'>11</span>   ((protected :initform <span id='f0s1'>(make-hash-table :test <span id='f0s2'>&#35;&#39;eq</span>)</span>
+<span class='line'>12</span>               :allocation :class
+<span class='line'>13</span>               :accessor protected))
+<span class='line'>14</span>   (:documentation
+<span class='line'>15</span>    &#34;Extends the service of &#96;direct-slot-mixin&#39; by allowing the filtering
+<span class='line'>16</span> of fields that the programmer does not want to be treated
+<span class='line'>17</span> generically&#46; Further&#44; class allocated slots are ignored&#46;&#34;))</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c238'> (lambda nil <span id='f0c237'>(funcall &#39;make-hash-table <span id='f0c235'>&#39;:test</span> <span id='f0c236'>(function eq)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>18</span> 
+<span class='line'>19</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>20</span> &#59;&#59; Interface Functions
+<span class='line'>21</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>22</span> 
+<span class='line'>23</span> (defgeneric direct-slot-names (obj)
+<span class='line'>24</span>   (:documentation &#34;Grabs all the direct slots of the class&#46;&#34;))
+<span class='line'>25</span> 
+<span class='line'>26</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>27</span> &#59;&#59; Protect slots custom functions
+<span class='line'>28</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>29</span> 
+<span class='line'>30</span> (-&#62; protect-slots (symbol &#38;rest symbol) (or t null))
+<span id='f0s3'><span class='line'>31</span> (defun protect-slots (class-name &#38;rest protected-symbols)
+<span class='line'>32</span>   &#34;Add the following protected symbols to the class&#39;s direct-slot list&#34;
+<span class='line'>33</span>   <span id='f0s4'>(let ((class <span id='f0s5'>(find-class class-name)</span>))
+<span class='line'>34</span>     <span id='f0s6'>(unless <span id='f0s7'>(c2mop:class-finalized-p class)</span>
+<span class='line'>35</span>       <span id='f0s8'>(c2mop:finalize-inheritance class)</span>)</span>
+<span class='line'>36</span> 
+<span class='line'>37</span>     <span id='f0s9'>(let ((table <span id='f0s10'>(slot-value <span id='f0s11'>(c2mop:class-prototype class)</span> &#39;protected)</span>))
+<span class='line'>38</span>       <span id='f0s12'>(mapc <span id='f0s13'>(lambda (symbol)
+<span class='line'>39</span>               <span id='f0s14'>(setf (gethash symbol table) t)</span>)</span>
+<span class='line'>40</span>             protected-symbols)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c70'> (lambda (class-name &#38;rest protected-symbols)
+   <span id='f0c69'>(let* ((class <span id='f0c62'>(funcall &#39;find-class class-name)</span>))
+     (progn <span id='f0c68'>(if <span id='f0c65'>(not <span id='f0c64'>(funcall &#39;ccl:class-finalized-p class)</span>)</span> <span id='f0c67'>(funcall &#39;ccl:finalize-inheritance class)</span> nil)</span>
+            <span id='f0c60'>(let* ((table
+                    <span id='f0c59'>(funcall &#39;ccl::slot-id-value
+                             <span id='f0c57'>(funcall &#39;ccl:class-prototype class)</span>
+                             <span id='f0c58'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x3020034140AF&#62;))</span>)</span>))
+              <span id='f0c55'>(let* ((&#35;:g51463 <span id='f0c35'>(function <span id='f0c34'>(lambda (symbol) <span id='f0c33'>(funcall &#39;ccl::puthash symbol table t)</span>)</span>)</span>)
+                     (&#35;:g51461 protected-symbols))
+                <span id='f0c54'>(let* ((&#35;:g51464 &#35;:g51461))
+                  (progn <span id='f0c50'>(tagbody <span id='f0c38'>(go &#35;:g51466)</span>
+                                  (&#35;:g51465 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200341250D&#62; t t)
+                                  <span id='f0c49'>(tagbody <span id='f0c48'>(let* ((&#35;:g51462 <span id='f0c44'>(car &#35;:g51464)</span>)) <span id='f0c47'>(tagbody <span id='f0c46'>(funcall &#35;:g51463 &#35;:g51462)</span>)</span>)</span>)</span>
+                                  <span id='f0c42'>(setq &#35;:g51464 <span id='f0c41'>(ccl::&#37;cdr <span id='f0c40'>(ccl::typed-form &#39;list &#35;:g51464)</span>)</span>)</span>
+                                  (&#35;:g51466 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200341250D&#62; t nil)
+                                  <span id='f0c37'>(if <span id='f0c36'>(not &#39;:ne &#35;:g51464)</span> (go &#35;:g51465) nil)</span>)</span>
+                         <span id='f0c52'>(let* () &#35;:g51461)</span>))</span>)</span>)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>41</span> 
+<span id='f0s15'><span class='line'>42</span> (defmethod direct-slot-names ((obj protect-slots-mixin))
+<span class='line'>43</span>   <span id='f0s16'>(filter-map <span id='f0s17'>(lambda (x)
+<span class='line'>44</span>                 <span id='f0s18'>(let ((name <span id='f0s19'>(c2mop:slot-definition-name x)</span>))
+<span class='line'>45</span>                   <span id='f0s20'>(if <span id='f0s21'>(or <span id='f0s22'>(eq <span id='f0s23'>(c2mop:slot-definition-allocation x)</span> :class)</span>
+<span class='line'>46</span>                           <span id='f0s24'>(gethash name <span id='f0s25'>(protected obj)</span>)</span>)</span>
+<span class='line'>47</span>                       nil
+<span class='line'>48</span>                       <span id='f0s26'>(c2mop:slot-definition-name x)</span>)</span>)</span>)</span>
+<span class='line'>49</span>               <span id='f0s27'>(c2mop:class-direct-slots <span id='f0s28'>(class-of obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t15')><span class='toggle' id='pf0t15'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(15)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t15'><code><span id='f0c234'> (lambda (&#35;:next-method-context obj)
+   <span id='f0c233'>(flet ()
+     <span id='f0c232'>(let* ((&#35;:f51482
+             <span id='f0c198'>(funcall &#39;alexandria:ensure-function
+                      <span id='f0c197'>(function <span id='f0c196'>(lambda (x)
+                                  <span id='f0c195'>(let* ((name <span id='f0c194'>(funcall &#39;ccl:slot-definition-name x)</span>))
+                                    <span id='f0c192'>(if <span id='f0c191'>(not <span id='f0c190'>(or <span id='f0c189'>(eq <span id='f0c188'>(funcall &#39;ccl:slot-definition-allocation x)</span> &#39;:class)</span>
+                                                 <span id='f0c186'>(funcall &#39;gethash name <span id='f0c185'>(funcall &#39;protected obj)</span>)</span>)</span>)</span>
+                                        <span id='f0c182'>(funcall &#39;ccl:slot-definition-name x)</span>
+                                        nil)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c231'>(block nil
+         <span id='f0c230'>(let ((&#35;:g51481 nil) (&#35;:loop-list-51484 <span id='f0c201'>(funcall &#39;ccl:class-direct-slots <span id='f0c200'>(funcall &#39;class-of obj)</span>)</span>))
+           <span id='f0c229'>(let* ((&#35;:result51483 nil))
+             <span id='f0c228'>(let* ((&#35;:loop-list-head-51485 <span id='f0c203'>(cons nil nil)</span>) (&#35;:loop-list-tail-51486 &#35;:loop-list-head-51485))
+               <span id='f0c227'>(tagbody (ansi-loop::next-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200345D31D&#62; t t)
+                        <span id='f0c219'>(if <span id='f0c218'>(endp &#35;:loop-list-51484)</span> (go ansi-loop::end-loop) nil)</span>
+                        <span id='f0c223'>(setq &#35;:g51481 <span id='f0c222'>(ccl::&#37;car &#35;:loop-list-51484)</span>)</span>
+                        <span id='f0c226'>(setq &#35;:loop-list-51484 <span id='f0c225'>(ccl::&#37;cdr &#35;:loop-list-51484)</span>)</span>
+                        <span id='f0c213'>(setq &#35;:result51483 <span id='f0c212'>(funcall &#35;:f51482 &#35;:g51481)</span>)</span>
+                        <span id='f0c210'>(if &#35;:result51483
+                            <span id='f0c209'>(rplacd &#35;:loop-list-tail-51486 <span id='f0c208'>(setq &#35;:loop-list-tail-51486 <span id='f0c207'>(cons &#35;:result51483 nil)</span>)</span>)</span>
+                            nil)</span>
+                        <span id='f0c220'>(go ansi-loop::next-loop)</span>
+                        (ansi-loop::end-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200345D31D&#62; t nil)
+                        <span id='f0c216'>(return-from nil <span id='f0c215'>(cdr &#35;:loop-list-head-51485)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>50</span> 
+<span class='line'>51</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>52</span> &#59;&#59; Direct slots custom functions
+<span class='line'>53</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>54</span> 
+<span id='f0s29'><span class='line'>55</span> (defmethod direct-slot-names ((obj direct-slots-mixin))
+<span class='line'>56</span>   <span id='f0s30'>(mapcar <span id='f0s31'>&#35;&#39;c2mop:slot-definition-name
+</span><span class='line'>57</span>           <span id='f0s32'>(c2mop:class-direct-slots <span id='f0s33'>(class-of obj)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t29')><span class='toggle' id='pf0t29'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(29)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t29'><code><span id='f0c137'> (lambda (&#35;:next-method-context obj)
+   <span id='f0c136'>(flet ()
+     <span id='f0c135'>(let* ((&#35;:g51504 <span id='f0c106'>(cons nil nil)</span>) (&#35;:g51505 &#35;:g51504) (&#35;:g51507 <span id='f0c107'>(function ccl:slot-definition-name)</span>))
+       <span id='f0c134'>(let* ((&#35;:g51508 <span id='f0c133'>(funcall &#39;ccl:class-direct-slots <span id='f0c132'>(funcall &#39;class-of obj)</span>)</span>))
+         (progn <span id='f0c130'>(tagbody <span id='f0c112'>(go &#35;:g51510)</span>
+                         (&#35;:g51509 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200349412D&#62; t t)
+                         <span id='f0c125'>(tagbody <span id='f0c124'>(let* ((&#35;:g51506 <span id='f0c123'>(car &#35;:g51508)</span>))
+                                    <span id='f0c121'>(tagbody <span id='f0c120'>(setq &#35;:g51504
+                                                   <span id='f0c119'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g51504
+                                                                            <span id='f0c118'>(cons <span id='f0c117'>(funcall &#35;:g51507 &#35;:g51506)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                         <span id='f0c129'>(setq &#35;:g51508 <span id='f0c128'>(ccl::&#37;cdr <span id='f0c127'>(ccl::typed-form &#39;list &#35;:g51508)</span>)</span>)</span>
+                         (&#35;:g51510 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200349412D&#62; t nil)
+                         <span id='f0c114'>(if <span id='f0c113'>(not &#39;:ne &#35;:g51508)</span> (go &#35;:g51509) nil)</span>)</span>
+                <span id='f0c111'>(let* () <span id='f0c110'>(ccl::&#37;cdr &#35;:g51505)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>58</span> 
+<span id='f0s34'><span class='line'>59</span> (defmethod direct-slot-keywords ((obj direct-slots-mixin))
+<span class='line'>60</span>   &#34;Grabs all the direct slots of the class&#44; interned to being keywords&#34;
+<span class='line'>61</span>   <span id='f0s35'>(mapcar <span id='f0s36'>&#35;&#39;util:symbol-to-keyword </span><span id='f0s37'>(direct-slot-names obj)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t34')><span class='toggle' id='pf0t34'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(34)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t34'><code><span id='f0c30'> (lambda (&#35;:next-method-context obj)
+   <span id='f0c29'>(flet ()
+     <span id='f0c28'>(let* ((&#35;:g51525 <span id='f0c0'>(cons nil nil)</span>) (&#35;:g51526 &#35;:g51525) (&#35;:g51528 <span id='f0c26'>(function util:symbol-to-keyword)</span>))
+       <span id='f0c25'>(let* ((&#35;:g51529 <span id='f0c2'>(funcall &#39;direct-slot-names obj)</span>))
+         (progn <span id='f0c21'>(tagbody <span id='f0c3'>(go &#35;:g51531)</span>
+                         (&#35;:g51530 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034A035D&#62; t t)
+                         <span id='f0c20'>(tagbody <span id='f0c19'>(let* ((&#35;:g51527 <span id='f0c11'>(car &#35;:g51529)</span>))
+                                    <span id='f0c18'>(tagbody <span id='f0c17'>(setq &#35;:g51525
+                                                   <span id='f0c16'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g51525
+                                                                            <span id='f0c14'>(cons <span id='f0c13'>(funcall &#35;:g51528 &#35;:g51527)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                         <span id='f0c7'>(setq &#35;:g51529 <span id='f0c6'>(ccl::&#37;cdr <span id='f0c5'>(ccl::typed-form &#39;list &#35;:g51529)</span>)</span>)</span>
+                         (&#35;:g51531 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034A035D&#62; t nil)
+                         <span id='f0c9'>(if <span id='f0c8'>(not &#39;:ne &#35;:g51529)</span> (go &#35;:g51530) nil)</span>)</span>
+                <span id='f0c24'>(let* () <span id='f0c23'>(ccl::&#37;cdr &#35;:g51526)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>62</span> 
+<span id='f0s38'><span class='line'>63</span> (defmethod direct-slots ((obj direct-slots-mixin))
+<span class='line'>64</span>   &#34;Grabs all the direct slots of the class and gives back a plist&#34;
+<span class='line'>65</span>   <span id='f0s39'>(mapcar <span id='f0s40'>(lambda (x)
+<span class='line'>66</span>             <span id='f0s41'>(cons <span id='f0s42'>(util:symbol-to-keyword x)</span>
+<span class='line'>67</span>                   <span id='f0s43'>(slot-value obj x)</span>)</span>)</span>
+<span class='line'>68</span>           <span id='f0s44'>(direct-slot-names obj)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t38')><span class='toggle' id='pf0t38'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(38)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t38'><code><span id='f0c175'> (lambda (&#35;:next-method-context obj)
+   <span id='f0c174'>(flet ()
+     <span id='f0c173'>(let* ((&#35;:g51546 <span id='f0c172'>(cons nil nil)</span>)
+            (&#35;:g51547 &#35;:g51546)
+            (&#35;:g51549 <span id='f0c145'>(function <span id='f0c144'>(lambda (x) <span id='f0c143'>(cons <span id='f0c142'>(funcall &#39;util:symbol-to-keyword x)</span> <span id='f0c140'>(funcall &#39;slot-value obj x)</span>)</span>)</span>)</span>))
+       <span id='f0c171'>(let* ((&#35;:g51550 <span id='f0c170'>(funcall &#39;direct-slot-names obj)</span>))
+         (progn <span id='f0c165'>(tagbody <span id='f0c164'>(go &#35;:g51552)</span>
+                         (&#35;:g51551 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034EB48D&#62; t t)
+                         <span id='f0c163'>(tagbody <span id='f0c162'>(let* ((&#35;:g51548 <span id='f0c161'>(car &#35;:g51550)</span>))
+                                    <span id='f0c159'>(tagbody <span id='f0c158'>(setq &#35;:g51546
+                                                   <span id='f0c157'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g51546
+                                                                            <span id='f0c155'>(cons <span id='f0c154'>(funcall &#35;:g51549 &#35;:g51548)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                         <span id='f0c152'>(setq &#35;:g51550 <span id='f0c151'>(ccl::&#37;cdr <span id='f0c150'>(ccl::typed-form &#39;list &#35;:g51550)</span>)</span>)</span>
+                         (&#35;:g51552 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x3020034EB48D&#62; t nil)
+                         <span id='f0c148'>(if <span id='f0c147'>(not &#39;:ne &#35;:g51550)</span> (go &#35;:g51551) nil)</span>)</span>
+                <span id='f0c168'>(let* () <span id='f0c167'>(ccl::&#37;cdr &#35;:g51547)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>69</span> 
+<span id='f0s45'><span class='line'>70</span> (defmethod direct-slot-values ((obj direct-slots-mixin))
+<span class='line'>71</span>   &#34;Grabs the data from the class&#34;
+<span class='line'>72</span>   <span id='f0s46'>(mapcar <span id='f0s47'>(lambda (x) <span id='f0s48'>(slot-value obj x)</span>)</span>
+<span class='line'>73</span>           <span id='f0s49'>(direct-slot-names obj)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t45')><span class='toggle' id='pf0t45'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(45)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t45'><code><span id='f0c105'> (lambda (&#35;:next-method-context obj)
+   <span id='f0c104'>(flet ()
+     <span id='f0c103'>(let* ((&#35;:g51570 <span id='f0c102'>(cons nil nil)</span>)
+            (&#35;:g51571 &#35;:g51570)
+            (&#35;:g51573 <span id='f0c75'>(function <span id='f0c74'>(lambda (x) <span id='f0c73'>(funcall &#39;slot-value obj x)</span>)</span>)</span>))
+       <span id='f0c100'>(let* ((&#35;:g51574 <span id='f0c96'>(funcall &#39;direct-slot-names obj)</span>))
+         (progn <span id='f0c94'>(tagbody <span id='f0c80'>(go &#35;:g51576)</span>
+                         (&#35;:g51575 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200352DF0D&#62; t t)
+                         <span id='f0c91'>(tagbody <span id='f0c90'>(let* ((&#35;:g51572 <span id='f0c82'>(car &#35;:g51574)</span>))
+                                    <span id='f0c89'>(tagbody <span id='f0c88'>(setq &#35;:g51570
+                                                   <span id='f0c87'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g51570
+                                                                            <span id='f0c86'>(cons <span id='f0c85'>(funcall &#35;:g51573 &#35;:g51572)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                         <span id='f0c79'>(setq &#35;:g51574 <span id='f0c78'>(ccl::&#37;cdr <span id='f0c77'>(ccl::typed-form &#39;list &#35;:g51574)</span>)</span>)</span>
+                         (&#35;:g51576 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x30200352DF0D&#62; t nil)
+                         <span id='f0c93'>(if <span id='f0c92'>(not &#39;:ne &#35;:g51574)</span> (go &#35;:g51575) nil)</span>)</span>
+                <span id='f0c99'>(let* () <span id='f0c98'>(ccl::&#37;cdr &#35;:g51571)</span>)</span>))</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>74</span> 
+<span id='f0s50'><span class='line'>75</span> (defun update-from-alist (obj alist)
+<span class='line'>76</span>   <span id='f0s51'>(apply &#35;&#39;util:copy-instance obj <span id='f0s52'>(alexandria:alist-plist alist)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t50')><span class='toggle' id='pf0t50'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(50)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t50'><code><span id='f0c180'> (lambda (obj alist)
+   <span id='f0c179'>(apply &#39;util:copy-instance (ccl::typed-form &#39;standard-object obj) <span id='f0c178'>(funcall &#39;alexandria:alist-plist alist)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

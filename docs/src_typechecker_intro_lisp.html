@@ -1,0 +1,140 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_typechecker_intro_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;typechecker;intro.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;typechecker&#46;intro)
+<span class='line'>2</span> 
+<span class='line'>3</span> (-&#62; intro (typing-context &#38;rest keyword) typing-context)
+<span id='f0s0'><span class='line'>4</span> (defun intro (ctx &#38;rest keys)
+<span class='line'>5</span>   <span id='f0s1'>(values
+<span class='line'>6</span>    <span id='f0s2'>(check:make-starting-hole keys ctx)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c107'> (lambda (ctx &#38;rest keys) <span id='f0c106'>(values <span id='f0c105'>(funcall &#39;check:make-starting-hole keys ctx)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>7</span> 
+<span class='line'>8</span> &#59;&#59; TODO Finish
+<span class='line'>9</span> (-&#62; intro-maybe-solution (typing-context &#38;rest t) typing-context)
+<span id='f0s3'><span class='line'>10</span> (defun intro-maybe-solution (ctx &#38;rest keys)
+<span class='line'>11</span>   <span id='f0s4'>(let ((solutions <span id='f0s5'>(remove-if <span id='f0s6'>&#35;&#39;listp </span>keys)</span>)
+<span class='line'>12</span>         (holes     <span id='f0s7'>(remove-if-not <span id='f0s8'>&#35;&#39;listp </span>keys)</span>))
+<span class='line'>13</span>     solutions
+<span class='line'>14</span>     <span id='f0s9'>(apply &#35;&#39;intro ctx holes)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t3')><span class='toggle' id='pf0t3'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(3)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t3'><code><span id='f0c11'> (lambda (ctx &#38;rest keys)
+   <span id='f0c10'>(let ((solutions <span id='f0c2'>(funcall &#39;remove-if <span id='f0c0'>(function listp)</span> keys)</span>) (holes <span id='f0c5'>(funcall &#39;remove-if-not <span id='f0c3'>(function listp)</span> keys)</span>))
+     (progn solutions <span id='f0c9'>(apply &#39;intro (ccl::typed-form &#39;typing-context ctx) holes)</span>))</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>15</span> 
+<span class='line'>16</span> &#59;&#59; TODO Need an extra syntax for types to be given with the
+<span class='line'>17</span> &#59;&#59; introduction&#44; since we may know them already&#46;
+<span id='f0s10'><span class='line'>18</span> (defmacro with-intro ((new-context-name &#38;rest names) context &#38;body body)
+<span class='line'>19</span>   &#34;With-intro introduces the names with gensym to the given context&#44;
+<span class='line'>20</span> binding the names for use in the body&#46;
+<span class='line'>21</span> 
+<span class='line'>22</span> EXAMPLE:
+<span class='line'>23</span> 
+<span class='line'>24</span> &#59;&#59; TODO&#44; put some computation here from the code where I use this&#46;
+<span class='line'>25</span> (check:with-intro (ctx bar baz) context
+<span class='line'>26</span>   ctx)&#34;
+<span class='line'>27</span>   <span id='f0s11'>&#96;(let &#44;(mapcar (lambda (symbol)
+<span class='line'>28</span>                    (let ((symbol-name
+<span class='line'>29</span>                            (if (listp symbol) (car symbol) symbol)))
+<span class='line'>30</span>                      &#96;(&#44;symbol-name (util:symbol-to-keyword
+<span class='line'>31</span>                                      (gensym (symbol-name &#39;&#44;symbol-name))))))
+<span class='line'>32</span>                  names)
+<span class='line'>33</span>      (let ((&#44;new-context-name (intro &#44;context &#44;&#64;names)))
+<span class='line'>34</span>        &#44;&#64;body))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t10')><span class='toggle' id='pf0t10'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(10)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t10'><code><span id='f0c102'> (lambda (&#35;:whole56510 &#35;:environment56511)
+   <span id='f0c101'>(let* ((&#35;:args56512
+           <span id='f0c37'>(funcall &#39;ccl::prepare-to-destructure
+                    <span id='f0c34'>(cdr &#35;:whole56510)</span>
+                    <span id='f0c35'>&#39;((new-context-name &#38;rest names) context &#38;body body)</span>
+                    2
+                    nil)</span>)
+          (&#35;:req56513 <span id='f0c18'>(prog1 <span id='f0c13'>(car &#35;:args56512)</span> <span id='f0c17'>(setq &#35;:args56512 <span id='f0c16'>(ccl::&#37;cdr <span id='f0c15'>(ccl::typed-form &#39;list &#35;:args56512)</span>)</span>)</span>)</span>)
+          (&#35;:whole56514 &#35;:req56513)
+          (&#35;:args56515 <span id='f0c100'>(funcall &#39;ccl::prepare-to-destructure &#35;:whole56514 <span id='f0c98'>&#39;(new-context-name &#38;rest names)</span> 1 nil)</span>)
+          (new-context-name
+           <span id='f0c32'>(prog1 <span id='f0c31'>(car &#35;:args56515)</span> <span id='f0c29'>(setq &#35;:args56515 <span id='f0c28'>(ccl::&#37;cdr <span id='f0c27'>(ccl::typed-form &#39;list &#35;:args56515)</span>)</span>)</span>)</span>)
+          (&#35;:rest56516 &#35;:args56515)
+          (names &#35;:rest56516)
+          (context <span id='f0c25'>(prog1 <span id='f0c20'>(car &#35;:args56512)</span> <span id='f0c24'>(setq &#35;:args56512 <span id='f0c23'>(ccl::&#37;cdr <span id='f0c22'>(ccl::typed-form &#39;list &#35;:args56512)</span>)</span>)</span>)</span>)
+          (&#35;:rest56517 &#35;:args56512)
+          (body &#35;:rest56517))
+     <span id='f0c96'>(list <span id='f0c38'>&#39;let</span>
+           <span id='f0c95'>(let* ((&#35;:g56534 <span id='f0c49'>(cons nil nil)</span>)
+                  (&#35;:g56535 &#35;:g56534)
+                  (&#35;:g56537
+                   <span id='f0c69'>(function <span id='f0c68'>(lambda (symbol)
+                               <span id='f0c67'>(let* ((symbol-name <span id='f0c55'>(if <span id='f0c53'>(eq (ccl::lisptag symbol) 3)</span> <span id='f0c51'>(car symbol)</span> symbol)</span>))
+                                 <span id='f0c66'>(list symbol-name
+                                       <span id='f0c64'>(list <span id='f0c63'>&#39;util:symbol-to-keyword</span>
+                                             <span id='f0c62'>(list <span id='f0c61'>&#39;gensym</span> <span id='f0c60'>(list <span id='f0c59'>&#39;symbol-name</span> <span id='f0c58'>(list <span id='f0c56'>&#39;quote</span> symbol-name)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+             <span id='f0c94'>(let* ((&#35;:g56538 names))
+               (progn <span id='f0c90'>(tagbody <span id='f0c89'>(go &#35;:g56540)</span>
+                               (&#35;:g56539 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DF8F0D&#62; t t)
+                               <span id='f0c82'>(tagbody <span id='f0c81'>(let* ((&#35;:g56536 <span id='f0c80'>(car &#35;:g56538)</span>))
+                                          <span id='f0c78'>(tagbody <span id='f0c77'>(setq &#35;:g56534
+                                                         <span id='f0c76'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g56534
+                                                                                  <span id='f0c74'>(cons <span id='f0c73'>(funcall &#35;:g56537 &#35;:g56536)</span>
+                                                                                        nil)</span>))</span>)</span>)</span>)</span>)</span>
+                               <span id='f0c88'>(setq &#35;:g56538 <span id='f0c87'>(ccl::&#37;cdr <span id='f0c86'>(ccl::typed-form &#39;list &#35;:g56538)</span>)</span>)</span>
+                               (&#35;:g56540 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003DF8F0D&#62; t nil)
+                               <span id='f0c84'>(if <span id='f0c83'>(not &#39;:ne &#35;:g56538)</span> (go &#35;:g56539) nil)</span>)</span>
+                      <span id='f0c93'>(let* () <span id='f0c92'>(ccl::&#37;cdr &#35;:g56535)</span>)</span>))</span>)</span>
+           <span id='f0c48'>(list* <span id='f0c39'>&#39;let</span> <span id='f0c47'>(cons <span id='f0c46'>(list new-context-name <span id='f0c45'>(list* <span id='f0c44'>&#39;intro</span> context names)</span>)</span> nil)</span> body)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

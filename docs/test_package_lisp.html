@@ -1,0 +1,79 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='test_package_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;test;package.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (uiop:define-package :alu-test
+<span class='line'>2</span>   (:mix &#35;:cl &#35;:alu&#46;prelude &#35;:fiveam &#35;:serapeum)
+<span class='line'>3</span>   (:shadow &#35;:time)
+<span class='line'>4</span>   (:local-nicknames (:util     :alu&#46;utils)
+<span class='line'>5</span>                     (:ir       :alu&#46;ir)
+<span class='line'>6</span>                     (:storage  :alu&#46;storage)
+<span class='line'>7</span>                     (:emit     :alu&#46;spec&#46;emit)
+<span class='line'>8</span>                     (:anf      :alu&#46;pass&#46;anf)
+<span class='line'>9</span>                     (:closure  :alu&#46;closure)
+<span class='line'>10</span>                     (:expand   :alu&#46;pass&#46;expanded)
+<span class='line'>11</span>                     (:relocate :alu&#46;pass&#46;relocation)
+<span class='line'>12</span>                     (:vamp     :alu&#46;vampir)
+<span class='line'>13</span>                     (:dep      :alu&#46;pass&#46;dependencies)
+<span class='line'>14</span>                     (:eval     :alu&#46;pass&#46;evaluate-body)
+<span class='line'>15</span>                     (:check    :alu&#46;typechecker)
+<span class='line'>16</span>                     (:pass     :alu&#46;pass)
+<span class='line'>17</span>                     (:pack     :alu&#46;pass&#46;pack)
+<span class='line'>18</span>                     (:pipeline :alu&#46;pipeline)
+<span class='line'>19</span>                     (:vspc     :alu&#46;vampir&#46;spec)
+<span class='line'>20</span>                     (:prld     :alu&#46;prelude)
+<span class='line'>21</span>                     (:ref      :alu&#46;reference)
+<span class='line'>22</span>                     (:stack    :alu&#46;stack)
+<span class='line'>23</span>                     (:step     :alu&#46;stepper)
+<span class='line'>24</span>                     (:step&#46;def :alu&#46;stepper&#46;define))
+<span class='line'>25</span>   (:export &#35;:run-tests))
+<span class='line'>26</span> 
+<span class='line'>27</span> (in-package :alu-test)
+</code></div>
+</body></html>

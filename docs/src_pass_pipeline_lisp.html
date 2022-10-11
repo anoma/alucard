@@ -1,0 +1,348 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_pass_pipeline_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;pass;pipeline.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (in-package :alu&#46;pipeline)
+<span class='line'>2</span> 
+<span class='line'>3</span> &#59;&#59; TODO :: Make a Berlin pipeline abstraction&#44; we really need to stop
+<span class='line'>4</span> &#59;&#59; half way through for easier testing&#33; until then I&#39;ll just have many
+<span class='line'>5</span> &#59;&#59; arrow functions for where I want to stop off&#33;
+<span class='line'>6</span> 
+<span class='line'>7</span> (-&#62; to-typecheck           (ir:circuit) (values ir:expanded-list check:typing-context))
+<span class='line'>8</span> (-&#62; to-expand-away-arrays  (ir:circuit) (values ir:expanded-list check:typing-context))
+<span class='line'>9</span> (-&#62; to-expand-away-records (ir:circuit) ir:fully-expanded-list)
+<span class='line'>10</span> (-&#62; to-primitive-circuit   (ir:circuit) ir:prim-circuit)
+<span class='line'>11</span> (-&#62; to-vampir              (ir:circuit) alu&#46;vampir&#46;spec:alias)
+<span class='line'>12</span> 
+<span class='line'>13</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>14</span> &#59;&#59; Compile Circuit and Dependencies
+<span class='line'>15</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>16</span> 
+<span id='f0s0'><span class='line'>17</span> (defun dump-entry-point (&#38;optional (stream *standard-output*))
+<span class='line'>18</span>   <span id='f0s1'>(print-vampir <span id='f0s2'>(comp-all <span id='f0s3'>(storage:lookup-function <span id='f0s4'>(storage:get-entry-point)</span>)</span>)</span>
+<span class='line'>19</span>                 stream)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t0')><span class='toggle' id='pf0t0'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(0)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t0'><code><span id='f0c212'> (lambda (&#38;optional (stream *standard-output* &#35;:compiler-var))
+   <span id='f0c211'>(funcall &#39;print-vampir
+            <span id='f0c209'>(funcall &#39;comp-all
+                     <span id='f0c208'>(funcall &#39;storage:lookup-function <span id='f0c207'>(ccl::typed-form &#39;keyword <span id='f0c206'>(funcall &#39;storage:get-entry-point)</span>)</span>)</span>)</span>
+            stream)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>20</span> 
+<span id='f0s5'><span class='line'>21</span> (defun dump-entry-point-to-file (file-name)
+<span class='line'>22</span>   <span id='f0s6'>(with-open-file (file file-name :direction :output
+<span class='line'>23</span>                                   :if-exists :overwrite
+<span class='line'>24</span>                                   :if-does-not-exist :create)
+<span class='line'>25</span>     <span id='f0s7'>(dump-entry-point file)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t5')><span class='toggle' id='pf0t5'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(5)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t5'><code><span id='f0c235'> (lambda (file-name)
+   <span id='f0c234'>(let ((&#35;:g58993 nil) (&#35;:g58994 nil))
+     <span id='f0c233'>(unwind-protect
+         <span id='f0c226'>(multiple-value-prog1
+           <span id='f0c224'>(let* ((file
+                   <span id='f0c221'>(setq &#35;:g58993
+                         <span id='f0c220'>(funcall &#39;open
+                                  file-name
+                                  <span id='f0c214'>&#39;:direction</span>
+                                  <span id='f0c213'>&#39;:output</span>
+                                  <span id='f0c219'>&#39;:if-exists</span>
+                                  <span id='f0c217'>&#39;:overwrite</span>
+                                  <span id='f0c215'>&#39;:if-does-not-exist</span>
+                                  <span id='f0c218'>&#39;:create</span>)</span>)</span>))
+             <span id='f0c223'>(funcall &#39;dump-entry-point file)</span>)</span>
+           <span id='f0c225'>(setq &#35;:g58994 t)</span>)</span>
+       <span id='f0c232'>(if &#35;:g58993 <span id='f0c230'>(funcall &#39;close &#35;:g58993 <span id='f0c227'>&#39;:abort</span> <span id='f0c229'>(not &#35;:g58994)</span>)</span> nil)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>26</span> 
+<span id='f0s8'><span class='line'>27</span> (defun comp-all (circuit)
+<span class='line'>28</span>   <span id='f0s9'>(mapcar <span id='f0s10'>&#35;&#39;pipeline
+</span><span class='line'>29</span>           <span id='f0s11'>(cons circuit
+<span class='line'>30</span>                 <span id='f0s12'>(filter-map <span id='f0s13'>(alexandria:compose <span id='f0s14'>(lambda (circ)
+<span class='line'>31</span>                                                   <span id='f0s15'>(and <span id='f0s16'>(typep circ &#39;ir:circuit)</span>
+<span class='line'>32</span>                                                        circ)</span>)</span>
+<span class='line'>33</span>                                                 <span id='f0s17'>&#35;&#39;storage:lookup-function</span>)</span>
+<span class='line'>34</span>                             <span id='f0s18'>(dep:track-circuit-deps* circuit)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t8')><span class='toggle' id='pf0t8'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(8)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t8'><code><span id='f0c143'> (lambda (circuit)
+   <span id='f0c142'>(let* ((&#35;:g59003 <span id='f0c63'>(cons nil nil)</span>) (&#35;:g59004 &#35;:g59003) (&#35;:g59006 <span id='f0c141'>(function pipeline)</span>))
+     <span id='f0c140'>(let* ((&#35;:g59007
+             <span id='f0c136'>(cons circuit
+                   <span id='f0c134'>(let* ((&#35;:f59001
+                           <span id='f0c133'>(funcall &#39;alexandria:ensure-function
+                                    <span id='f0c132'>(let ((&#35;:compose58998
+                                           <span id='f0c125'>(funcall &#39;alexandria:ensure-function
+                                                    <span id='f0c124'>(function <span id='f0c123'>(lambda (circ)
+                                                                <span id='f0c122'>(if <span id='f0c121'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                                                             circ
+                                                                             <span id='f0c119'>&#39;(&#35;:load-time-eval
+                                                                                (funcall &#35;&#60;Anonymous Function &#35;x302003EE8B8F&#62;))</span>)</span>
+                                                                    circ
+                                                                    nil)</span>)</span>)</span>)</span>)
+                                          (&#35;:compose58999
+                                           <span id='f0c117'>(funcall &#39;alexandria:ensure-function <span id='f0c116'>(function storage:lookup-function)</span>)</span>))
+                                      <span id='f0c131'>(function <span id='f0c130'>(lambda (&#38;rest alexandria::arguments)
+                                                  <span id='f0c129'>(funcall &#35;:compose58998
+                                                           <span id='f0c128'>(apply &#35;:compose58999 alexandria::arguments)</span>)</span>)</span>)</span>)</span>)</span>))
+                     <span id='f0c115'>(block nil
+                       <span id='f0c114'>(let ((&#35;:g59000 nil)
+                             (&#35;:loop-list-59013
+                              <span id='f0c85'>(funcall &#39;dep:track-circuit-deps*
+                                       <span id='f0c84'>(ccl::typed-form &#39;(or alu&#46;spec:primitive alu&#46;spec:circuit) circuit)</span>)</span>))
+                         <span id='f0c113'>(let* ((&#35;:result59002 nil))
+                           <span id='f0c112'>(let* ((&#35;:loop-list-head-59014 <span id='f0c86'>(cons nil nil)</span>)
+                                  (&#35;:loop-list-tail-59015 &#35;:loop-list-head-59014))
+                             <span id='f0c110'>(tagbody (ansi-loop::next-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003EE409D&#62; t t)
+                                      <span id='f0c109'>(if <span id='f0c108'>(endp &#35;:loop-list-59013)</span> (go ansi-loop::end-loop) nil)</span>
+                                      <span id='f0c99'>(setq &#35;:g59000 <span id='f0c98'>(ccl::&#37;car &#35;:loop-list-59013)</span>)</span>
+                                      <span id='f0c89'>(setq &#35;:loop-list-59013 <span id='f0c88'>(ccl::&#37;cdr &#35;:loop-list-59013)</span>)</span>
+                                      <span id='f0c96'>(setq &#35;:result59002 <span id='f0c95'>(funcall &#35;:f59001 &#35;:g59000)</span>)</span>
+                                      <span id='f0c106'>(if &#35;:result59002
+                                          <span id='f0c104'>(rplacd &#35;:loop-list-tail-59015
+                                                  <span id='f0c102'>(setq &#35;:loop-list-tail-59015 <span id='f0c101'>(cons &#35;:result59002 nil)</span>)</span>)</span>
+                                          nil)</span>
+                                      <span id='f0c90'>(go ansi-loop::next-loop)</span>
+                                      (ansi-loop::end-loop nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003EE409D&#62; t nil)
+                                      <span id='f0c93'>(return-from nil <span id='f0c92'>(cdr &#35;:loop-list-head-59014)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>)</span>))
+       (progn <span id='f0c82'>(tagbody <span id='f0c81'>(go &#35;:g59009)</span>
+                       (&#35;:g59008 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003EE200D&#62; t t)
+                       <span id='f0c74'>(tagbody <span id='f0c73'>(let* ((&#35;:g59005 <span id='f0c65'>(car &#35;:g59007)</span>))
+                                  <span id='f0c72'>(tagbody <span id='f0c71'>(setq &#35;:g59003
+                                                 <span id='f0c70'>(ccl::&#37;cdr (ccl::&#37;rplacd &#35;:g59003
+                                                                          <span id='f0c68'>(cons <span id='f0c67'>(funcall &#35;:g59006 &#35;:g59005)</span> nil)</span>))</span>)</span>)</span>)</span>)</span>
+                       <span id='f0c78'>(setq &#35;:g59007 <span id='f0c77'>(ccl::&#37;cdr <span id='f0c76'>(ccl::typed-form &#39;list &#35;:g59007)</span>)</span>)</span>
+                       (&#35;:g59009 nil (0) &#35;&#60;var &#35;:&#124;tagbody-catch-tag&#124; &#35;x302003EE200D&#62; t nil)
+                       <span id='f0c80'>(if <span id='f0c79'>(not &#39;:ne &#35;:g59007)</span> (go &#35;:g59008) nil)</span>)</span>
+              <span id='f0c139'>(let* () <span id='f0c138'>(ccl::&#37;cdr &#35;:g59004)</span>)</span>))</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>35</span> 
+<span class='line'>36</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>37</span> &#59;&#59; Pipeline Proper
+<span class='line'>38</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>39</span> 
+<span id='f0s19'><span class='line'>40</span> (defun print-vampir (vampir &#38;optional (stream *standard-output*))
+<span class='line'>41</span>   <span id='f0s20'>(vampir:extract vampir stream)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t19')><span class='toggle' id='pf0t19'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(19)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t19'><code><span id='f0c164'> (lambda (vampir &#38;optional (stream *standard-output* &#35;:compiler-var))
+   <span id='f0c163'>(funcall &#39;vampir:extract <span id='f0c162'>(ccl::typed-form &#39;list vampir)</span> <span id='f0c160'>(ccl::typed-form &#39;stream stream)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>42</span> 
+<span class='line'>43</span> (-&#62; pipeline (ir:circuit) (or t alu&#46;vampir&#46;spec:alias))
+<span id='f0s21'><span class='line'>44</span> (defun pipeline (circuit)
+<span class='line'>45</span>   <span id='f0s22'>(handler-case <span id='f0s23'>(&#126;&#62; circuit
+<span class='line'>46</span>                     to-vampir)</span>
+<span class='line'>47</span>     (log:error (c)
+<span class='line'>48</span>       <span id='f0s24'>(format t <span id='f0s25'>&#34;&#126;&#37;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#126;&#37;In Function &#126;A&#126;&#37;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#34;</span>
+<span class='line'>49</span>               <span id='f0s26'>(ir:name circuit)</span>)</span>
+<span class='line'>50</span>       <span id='f0s27'>(log:data c)</span>)
+<span class='line'>51</span>     (simple-error (c)
+<span class='line'>52</span>       <span id='f0s28'>(format t &#34;&#126;A&#34; c)</span>))</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t21')><span class='toggle' id='pf0t21'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(21)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t21'><code><span id='f0c40'> (lambda (circuit)
+   <span id='f0c39'>(block &#35;:g59034
+     <span id='f0c38'>(let* ((&#35;:g59036
+             <span id='f0c37'>(let* ((&#35;:g59035 <span id='f0c36'>(list <span id='f0c33'>&#39;log:error</span> 0 <span id='f0c32'>&#39;simple-error</span> 1)</span>))
+               <span id='f0c31'>(catch &#35;:g59035
+                 <span id='f0c29'>(let* ((ccl::&#37;handlers&#37; <span id='f0c24'>(cons &#35;:g59035 ccl::&#37;handlers&#37;)</span>))
+                   <span id='f0c28'>(return-from &#35;:g59034 <span id='f0c27'>(funcall &#39;to-vampir <span id='f0c26'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>)</span>)</span>)</span>))
+       <span id='f0c21'>(let* ((&#35;:g59037 <span id='f0c20'>(prog1 <span id='f0c19'>(car &#35;:g59036)</span> <span id='f0c17'>(setq &#35;:g59036 <span id='f0c16'>(ccl::&#37;cdr <span id='f0c15'>(ccl::typed-form &#39;list &#35;:g59036)</span>)</span>)</span>)</span>))
+         <span id='f0c13'>(if <span id='f0c5'>(eq &#35;:g59037 0)</span>
+             <span id='f0c12'>(ccl::lambda-bind (c) (&#35;:g59036)
+              (progn <span id='f0c9'>(funcall &#39;format
+                              t
+                              <span id='f0c8'>&#39;&#34;&#126;&#37;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#126;&#37;In Function &#126;A&#126;&#37;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#34;</span>
+                              <span id='f0c7'>(funcall &#39;alu&#46;spec:name circuit)</span>)</span>
+                     <span id='f0c11'>(funcall &#39;log:data c)</span>))</span>
+             <span id='f0c3'>(ccl::lambda-bind (c) (&#35;:g59036) <span id='f0c2'>(progn <span id='f0c1'>(funcall &#39;princ c nil)</span> nil)</span>)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>53</span> 
+<span id='f0s29'><span class='line'>54</span> (defun to-typecheck (circuit)
+<span class='line'>55</span>   <span id='f0s30'>(mvlet ((body typing <span id='f0s31'>(&#126;&#62; circuit
+<span class='line'>56</span>                            pass:linearize
+<span class='line'>57</span>                            (check:check circuit))</span>))
+<span class='line'>58</span>     <span id='f0s32'>(values
+<span class='line'>59</span>      <span id='f0s33'>(pass:remove-type-information body)</span>
+<span class='line'>60</span>      typing)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t29')><span class='toggle' id='pf0t29'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(29)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t29'><code><span id='f0c198'> (lambda (circuit)
+   <span id='f0c197'>(multiple-value-bind (body typing)
+       <span id='f0c191'>(funcall &#39;alu&#46;typechecker&#46;check:check
+                <span id='f0c190'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:type-aware-list)
+                 <span id='f0c189'>(funcall &#39;pass:linearize <span id='f0c188'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>
+                <span id='f0c186'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>
+     <span id='f0c196'>(values <span id='f0c194'>(funcall &#39;pass:remove-type-information <span id='f0c193'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:type-aware-list) body)</span>)</span>
+             typing)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>61</span> 
+<span id='f0s34'><span class='line'>62</span> (defun to-expand-arrays (circuit)
+<span class='line'>63</span>   <span id='f0s35'>(mvlet* ((body context <span id='f0s36'>(to-typecheck circuit)</span>)
+<span class='line'>64</span>            (context body <span id='f0s37'>(&#126;&#62;&#62; body
+<span class='line'>65</span>                               (array:handle-terms context))</span>))
+<span class='line'>66</span>     <span id='f0s38'>(values
+<span class='line'>67</span>      body
+<span class='line'>68</span>      context)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t34')><span class='toggle' id='pf0t34'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(34)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t34'><code><span id='f0c157'> (lambda (circuit)
+   <span id='f0c156'>(multiple-value-bind (body context)
+       <span id='f0c155'>(funcall &#39;to-typecheck <span id='f0c154'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>
+     <span id='f0c152'>(multiple-value-bind (context body)
+         <span id='f0c148'>(funcall &#39;array:handle-terms
+                  <span id='f0c147'>(ccl::typed-form &#39;alu&#46;typechecker&#46;types:typing-context context)</span>
+                  <span id='f0c145'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:expanded-list) body)</span>)</span>
+       <span id='f0c151'>(values body context)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>69</span> 
+<span id='f0s39'><span class='line'>70</span> (defun to-expand-away-records (circuit)
+<span class='line'>71</span>   <span id='f0s40'>(&#126;&#62; circuit
+<span class='line'>72</span>       to-expand-arrays
+<span class='line'>73</span>       (pass:expand-away-records circuit)
+<span class='line'>74</span>       pass:remove-void-bindings)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t39')><span class='toggle' id='pf0t39'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(39)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t39'><code><span id='f0c61'> (lambda (circuit)
+   <span id='f0c60'>(funcall &#39;pass:remove-void-bindings
+            <span id='f0c59'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:fully-expanded-list)
+             <span id='f0c58'>(funcall &#39;pass:expand-away-records
+                      <span id='f0c55'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:expanded-list) <span id='f0c54'>(funcall &#39;to-expand-arrays circuit)</span>)</span>
+                      <span id='f0c57'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>75</span> 
+<span id='f0s41'><span class='line'>76</span> (defun to-primitive-circuit (circuit)
+<span class='line'>77</span>   <span id='f0s42'>(&#126;&#62; circuit
+<span class='line'>78</span>       to-expand-away-records
+<span class='line'>79</span>       pass:filter-redundant-lets
+<span class='line'>80</span>       (pass:primitive-circuit circuit)
+<span class='line'>81</span>       pass:rename-primitive-circuit)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t41')><span class='toggle' id='pf0t41'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(41)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t41'><code><span id='f0c52'> (lambda (circuit)
+   <span id='f0c51'>(funcall &#39;pass:rename-primitive-circuit
+            <span id='f0c50'>(ccl::typed-form &#39;alu&#46;ir&#46;primitive-global:prim-circuit
+             <span id='f0c49'>(funcall &#39;pass:primitive-circuit
+                      <span id='f0c48'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:fully-expanded-list)
+                       <span id='f0c47'>(funcall &#39;pass:filter-redundant-lets
+                                <span id='f0c46'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:fully-expanded-list)
+                                 <span id='f0c45'>(funcall &#39;to-expand-away-records <span id='f0c44'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>)</span>)</span>
+                      <span id='f0c42'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>82</span> 
+<span id='f0s43'><span class='line'>83</span> (defun to-vampir (circuit)
+<span class='line'>84</span>   <span id='f0s44'>(values
+<span class='line'>85</span>    <span id='f0s45'>(&#126;&#62; circuit
+<span class='line'>86</span>        to-primitive-circuit
+<span class='line'>87</span>        pass:circuit-to-alias)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t43')><span class='toggle' id='pf0t43'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(43)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t43'><code><span id='f0c204'> (lambda (circuit)
+   <span id='f0c203'>(values <span id='f0c202'>(funcall &#39;pass:circuit-to-alias <span id='f0c201'>(funcall &#39;to-primitive-circuit <span id='f0c200'>(ccl::typed-form &#39;alu&#46;spec:circuit circuit)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+<div class='source'><code><span class='line'>88</span> 
+<span class='line'>89</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>90</span> &#59;&#59; Pipeline For Expressions
+<span class='line'>91</span> &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>92</span> 
+<span class='line'>93</span> (-&#62; type-check-expression
+<span class='line'>94</span>     (ir:expression alu&#46;typechecker:typing-context)
+<span class='line'>95</span>     (values alu&#46;typechecker:typing-context ir:expanded-list))
+<span id='f0s46'><span class='line'>96</span> (defun type-check-expression (body context)
+<span class='line'>97</span>   <span id='f0s47'>(let ((body <span id='f0s48'>(pass:linearize-body body)</span>))
+<span class='line'>98</span>     <span id='f0s49'>(values
+<span class='line'>99</span>      <span id='f0s50'>(check:annotate-list body context)</span>
+<span class='line'>100</span>      <span id='f0s51'>(remove-if <span id='f0s52'>(lambda (p) <span id='f0s53'>(typep p &#39;ir:standalone-ret)</span>)</span>
+<span class='line'>101</span>                 <span id='f0s54'>(pass:remove-type-information body)</span>)</span>)</span>)</span>)</span>
+</code></div>
+<a href=javascript:swap('f0t46')><span class='toggle' id='pf0t46'>Show expansion</span></a>
+&nbsp;&nbsp;&nbsp;<a href=javascript:show_tags(46)><span class='toggle'>Show tags</span></a>
+<div class='acode' id='af0t46'><code><span id='f0c184'> (lambda (body context)
+   <span id='f0c183'>(let* ((body
+           <span id='f0c167'>(funcall &#39;pass:linearize-body
+                    <span id='f0c166'>(ccl::typed-form
+                     &#39;(or cons
+                          number
+                          alu&#46;spec:reference
+                          alu&#46;spec:application
+                          alu&#46;spec:record
+                          alu&#46;spec:record-lookup
+                          alu&#46;spec:array-lookup
+                          alu&#46;spec:array-allocate
+                          alu&#46;spec:from-data
+                          alu&#46;spec:array-set
+                          alu&#46;spec:bind-constraint
+                          alu&#46;spec:let-node
+                          alu&#46;spec:type-coerce
+                          alu&#46;spec:type-check)
+                     body)</span>)</span>))
+     <span id='f0c182'>(values <span id='f0c181'>(funcall &#39;alu&#46;typechecker&#46;check:annotate-list
+                      <span id='f0c180'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:type-aware-list) body)</span>
+                      <span id='f0c178'>(ccl::typed-form &#39;alu&#46;typechecker&#46;types:typing-context context)</span>)</span>
+             <span id='f0c176'>(funcall &#39;remove-if
+                      <span id='f0c172'>(function <span id='f0c171'>(lambda (p)
+                                  <span id='f0c170'>(funcall &#39;ccl::std-instance-class-cell-typep
+                                           p
+                                           <span id='f0c169'>&#39;(&#35;:load-time-eval (funcall &#35;&#60;Anonymous Function &#35;x302003D6FD9F&#62;))</span>)</span>)</span>)</span>
+                      <span id='f0c175'>(funcall &#39;pass:remove-type-information
+                               <span id='f0c174'>(ccl::typed-form &#39;(satisfies alu&#46;ir&#46;spec:type-aware-list) body)</span>)</span>)</span>)</span>)</span>)</span>
+</code></div><hr/>
+</body></html>

@@ -1,0 +1,219 @@
+<html><head><style type='text/css'>
+*.st1 { background-color: #ffaaaa }
+*.st3 { background-color: #aaffaa }
+*.st2 { background-color: #44dd44 }
+*.stsource { background-color: #eeeeee; }
+*.key { margin: 20px; width: 88ex }
+*.source { width: 120ex; background-color: #eeeeee; padding-left: 5px;
+             /* border-style: solid none none none; border-width: 1px;
+             border-color: #dddddd */
+             white-space: pre; }
+
+*.acode { border-left: 1px dashed #c0c0c0;
+         margin-top: 1ex;
+         margin-left: 6ex;
+         margin-bottom: 2ex;
+         white-space: pre;
+         display: none; }
+
+*.line { color: #666666; float: left; width: 6ex; text-align: right; margin-right: 1ex; }
+
+*.toggle { font-size: small; }
+
+table.summary tr.head-row { background-color: #aaaaff }
+table.summary tr td.text-cell { text-align: left }
+table.summary tr td.main-head { text-align: center }
+table.summary tr td { text-align: right }
+table.summary tr.even { background-color: #eeeeff }
+table.summary tr.subheading { background-color: #aaaaff}
+table.summary tr.subheading td { text-align: left; font-weight: bold; padding-left: 5ex; }
+
+</style>
+
+<script type='text/javascript'>
+function swap (id) {
+  var acode = document.getElementById('a' + id);
+  var prompt = document.getElementById('p' + id);
+  if (acode.style.display == 'block') {
+      acode.style.display = 'none';
+      prompt.innerHTML = 'Show expansion';
+  } else {
+    acode.style.display = 'block';
+    prompt.innerHTML = 'Hide expansion';
+  }
+}
+</script>
+<script src='src_spec_package_lisp.js'></script>
+</head><body onload='init_file()'><h3><a id='backlink' href="index.html">Coverage report:</a> home:Documents;Work;Repo;alu;src;spec;package.lisp.newest <br />
+</h3>
+<table class='summary'><table class='summary'><tr class='head-row'><td class='main-head' colspan='5'>Expressions</td><td class='main-head' colspan='1'>Branches</td><td class='main-head' colspan='3'>Code Forms</td><td class='main-head' colspan='7'>Functions</td></tr><tr class='head-row'><td width='60px'>Total</td><td width='60px'>Entered</td><td width='60px'>% entered</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>total unreached</td><td width='60px'>Total</td><td width='60px'>Covered</td><td width='60px'>% covered</td><td width='60px'>Total</td><td width='60px'>Fully covered</td><td width='60px'>% fully covered</td><td width='60px'>Partly covered</td><td width='60px'>% partly covered</td><td width='60px'>Not entered</td><td width='60px'>% not entered</td></tr><tr class='odd'><td id='srcTotal'></td><td id='srcEntered'></td><td id='srcEnteredPct'></td><td id='srcCovered'></td><td id='srcCoveredPct'></td><td id='branchUnreached'></td><td id='acodeTotal'></td><td id='acodeCovered'></td><td id='acodeCoveredPct'></td><td id='fnTotal'></td><td id='fnCovered'></td><td id='fnCoveredPct'></td><td id='fnPartly'></td><td id='fnPartlyPct'></td><td id='fnUnentered'></td><td id='fnUnenteredPct'></td></table></table><div class='key'><b>Key</b><br />
+<div class='st2'>Fully covered - every single instruction executed</div><div class='st3'>Partly covered - entered but some subforms not executed</div><div class='st1'>Never entered - not a single instruction executed</div><div class='stsource'>Uninstrumented - a form whose coverage was not measured</div></div><p></p>
+<div class='source'><code><span class='line'>1</span> (defpackage &#35;:alu&#46;spec
+<span class='line'>2</span>   (:documentation &#34;the type specification and layout of the alu
+<span class='line'>3</span> package and alu terms&#34;)
+<span class='line'>4</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>5</span>   (:local-nicknames (:util :alu&#46;utils)
+<span class='line'>6</span>                     (:stack :alu&#46;stack))
+<span class='line'>7</span>   (:export
+<span class='line'>8</span> 
+<span class='line'>9</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>10</span>    &#59;&#59;&#59; Mixin Services
+<span class='line'>11</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>12</span> 
+<span class='line'>13</span>    &#59;&#59; Generic Data Manipulation
+<span class='line'>14</span>    :direct-slots-mixin
+<span class='line'>15</span>    :protect-slots-mixin
+<span class='line'>16</span> 
+<span class='line'>17</span>    &#59;&#59; Meta data information
+<span class='line'>18</span>    :stack-mixin
+<span class='line'>19</span>    :meta-mixin
+<span class='line'>20</span> 
+<span class='line'>21</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>22</span>    &#59;&#59; Operations on data traversal
+<span class='line'>23</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>24</span>    :protected
+<span class='line'>25</span>    :protect-slots
+<span class='line'>26</span>    :direct-slots
+<span class='line'>27</span>    :direct-slot-names
+<span class='line'>28</span>    :direct-slot-keywords
+<span class='line'>29</span>    :direct-slot-values
+<span class='line'>30</span>    :update-from-alist
+<span class='line'>31</span> 
+<span class='line'>32</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>33</span>    &#59;&#59; Operations on meta data
+<span class='line'>34</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>35</span>    :stack
+<span class='line'>36</span>    :copy-meta
+<span class='line'>37</span> 
+<span class='line'>38</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>39</span>    &#59;&#59; found in term
+<span class='line'>40</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>41</span> 
+<span class='line'>42</span>    &#59;&#59; New Top Level Term Variants Defined
+<span class='line'>43</span>    :expression
+<span class='line'>44</span>    :term
+<span class='line'>45</span>    :term-no-binding
+<span class='line'>46</span>    :base
+<span class='line'>47</span>    :type-manipulation
+<span class='line'>48</span>    :term-type-manipulation
+<span class='line'>49</span>    :record-forms
+<span class='line'>50</span>    :array-forms
+<span class='line'>51</span>    :term-normal-form
+<span class='line'>52</span> 
+<span class='line'>53</span>    &#59;&#59; Term ADT Constructors Defined
+<span class='line'>54</span>    :application     :func   :arguments
+<span class='line'>55</span>    :primitive       :name
+<span class='line'>56</span>    :record          :name   :contents
+<span class='line'>57</span>    :record-lookup   :record :field
+<span class='line'>58</span>    :let-node        :var    :value
+<span class='line'>59</span>    :reference       :name
+<span class='line'>60</span>    :bind-constraint :var    :value
+<span class='line'>61</span>    :type-coerce     :value :typ
+<span class='line'>62</span>    :type-check      :value :typ
+<span class='line'>63</span>    :from-data       :contents
+<span class='line'>64</span>    :array-allocate  :size  :typ
+<span class='line'>65</span>    :array-lookup    :arr   :pos
+<span class='line'>66</span>    :array-set       :arr   :pos :value
+<span class='line'>67</span> 
+<span class='line'>68</span>    &#59;&#59; Term Applications Defined
+<span class='line'>69</span>    :make-application
+<span class='line'>70</span>    :make-record :lookup-record :make-record-lookup
+<span class='line'>71</span>    :make-type-check :make-type-coerce
+<span class='line'>72</span>    :make-from-data :make-array-allocate :make-array-lookup :make-array-set
+<span class='line'>73</span>    :make-let :make-reference :make-bind-constraint
+<span class='line'>74</span> 
+<span class='line'>75</span>    &#59;&#59; Functions
+<span class='line'>76</span>    :record-&#62;alist
+<span class='line'>77</span> 
+<span class='line'>78</span>    &#59;&#59; Misc pattern matching functions
+<span class='line'>79</span>    :number
+<span class='line'>80</span> 
+<span class='line'>81</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>82</span>    &#59;&#59;&#59; found in type
+<span class='line'>83</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>84</span> 
+<span class='line'>85</span>    &#59;&#59; New Top Level Term Variants Defined
+<span class='line'>86</span>    :type-reference
+<span class='line'>87</span>    :type-reference-full
+<span class='line'>88</span> 
+<span class='line'>89</span>    &#59;&#59; New Types Defined Type-Storage
+<span class='line'>90</span>    :reference-type :name
+<span class='line'>91</span> 
+<span class='line'>92</span>    &#59;&#59; New Array Abstractions
+<span class='line'>93</span>    :array-type :array-type-len :array-type-content
+<span class='line'>94</span> 
+<span class='line'>95</span>    &#59;&#59; Functions
+<span class='line'>96</span>    :to-type-reference-format
+<span class='line'>97</span> 
+<span class='line'>98</span>    &#59;&#59; New Constructors Defined
+<span class='line'>99</span>    :make-type-reference   :make-primitive
+<span class='line'>100</span>    :make-type-declaration :make-record-declaration
+<span class='line'>101</span> 
+<span class='line'>102</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>103</span>    &#59;&#59; found in global
+<span class='line'>104</span>    &#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;&#59;
+<span class='line'>105</span> 
+<span class='line'>106</span>    &#59;&#59; New Top Level Term Variants Defined
+<span class='line'>107</span>    :function-type
+<span class='line'>108</span>    :type-storage
+<span class='line'>109</span> 
+<span class='line'>110</span>    &#59;&#59; New Types Defined Function-type
+<span class='line'>111</span>    :circuit :name :arguments :expanded-arguments :return-type :body :exec
+<span class='line'>112</span> 
+<span class='line'>113</span>    :privacy
+<span class='line'>114</span>    :constraint :name :typ
+<span class='line'>115</span> 
+<span class='line'>116</span>    &#59;&#59; New Types Defined Type-Storage
+<span class='line'>117</span>    :type-declaration :name :generics :options :decl
+<span class='line'>118</span> 
+<span class='line'>119</span>    :type-format
+<span class='line'>120</span>    :record-decl :contents :order
+<span class='line'>121</span>    :sum-decl
+<span class='line'>122</span> 
+<span class='line'>123</span>    &#59;&#59; Functions
+<span class='line'>124</span>    :record-declaration-&#62;alist
+<span class='line'>125</span> 
+<span class='line'>126</span>    &#59;&#59; New Constructors Defined
+<span class='line'>127</span>    :make-circuit
+<span class='line'>128</span>    :make-constraint))
+<span class='line'>129</span> 
+<span class='line'>130</span> (defpackage &#35;:alu&#46;storage
+<span class='line'>131</span>   (:documentation &#34;Serves as the long term storage of any Alucard Circuit&#34;)
+<span class='line'>132</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>133</span>   (:local-nicknames (:format :alu&#46;spec))
+<span class='line'>134</span>   (:export
+<span class='line'>135</span>    :*types*
+<span class='line'>136</span>    :*functions*
+<span class='line'>137</span>    :add-function    :add-type
+<span class='line'>138</span>    :lookup-function :lookup-type
+<span class='line'>139</span>    :swap-tables     :restore-tables
+<span class='line'>140</span>    :currently-swapped&#63;
+<span class='line'>141</span>    &#59;&#59; Entry point operations
+<span class='line'>142</span>    :get-entry-point
+<span class='line'>143</span>    :set-entry-point))
+<span class='line'>144</span> 
+<span class='line'>145</span> (defpackage &#35;:alu&#46;spec&#46;emit
+<span class='line'>146</span>   (:documentation &#34;Emits to the real body of a circuit declaration&#46; By this&#44; we mean
+<span class='line'>147</span> that we modify the current body in scope with the given instruction&#46;&#34;)
+<span class='line'>148</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>149</span>   (:local-nicknames (:spc     :alu&#46;spec)
+<span class='line'>150</span>                     (:storage :alu&#46;storage))
+<span class='line'>151</span>   (:export :with-circuit-body :instruction))
+<span class='line'>152</span> 
+<span class='line'>153</span> (defpackage &#35;:alu&#46;spec&#46;type-op
+<span class='line'>154</span>   (:documentation &#34;Provides basic operations on types&#34;)
+<span class='line'>155</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>156</span>   (:local-nicknames (:spc     :alu&#46;spec)
+<span class='line'>157</span>                     (:storage :alu&#46;storage))
+<span class='line'>158</span>   (:export :primitive&#63; :array-reference&#63; :void-reference&#63; :int-reference&#63;
+<span class='line'>159</span>            :record-reference&#63;))
+<span class='line'>160</span> 
+<span class='line'>161</span> (defpackage &#35;:alu&#46;spec&#46;term-op
+<span class='line'>162</span>   (:documentation &#34;Provides basic operations on types&#34;)
+<span class='line'>163</span>   (:shadow :exp :coerce :&#61;)
+<span class='line'>164</span>   (:use &#35;:common-lisp &#35;:serapeum)
+<span class='line'>165</span>   (:local-nicknames (:spc     :alu&#46;spec)
+<span class='line'>166</span>                     (:storage :alu&#46;storage))
+<span class='line'>167</span>   (:export :add :times :exp :coerce :&#61; :void-reference&#63;))
+</code></div>
+</body></html>
