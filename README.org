@@ -19,6 +19,8 @@ The most complete documentation is the [[https://hackmd.io/emeUBiYoSqmJ95Ls2wsrM
 - [[file:doc/spec.md][Specification]]
 - [[file:doc/using-alucard.md][Syntax Guide]]
 
+For those curious about test coverage, the test coverage of the
+compiler can be found [[https://anoma.github.io/juvix-circuits/][here]].
 ** Editor Integration
 Since Alucard Relies on Common lisp, we support all major editors. For
 the best experience Emacs is recommend though the other editors work
@@ -73,7 +75,10 @@ along with the message
 #+end_src
 This means that you can hookup your editor of choice to localhost:4005
 via =sly-connect= or =alive attach to REPL=.
-** Setting up the Developer Environment
+** For Developers
+*** Test Coverage
+- Test coverage can be found [[https://anoma.github.io/juvix-circuits/][here]].
+*** Setting up the Developer Environment
 _Alucard works on many different implementations of CL, namely_
   + SBCL
   + CCL
@@ -96,7 +101,7 @@ If the commands work, then you can start hacking on Alucard!
 Currently binary extraction does not work with SBCL, but it is
 perfectly fit to load the environment like any normal CL library!
 
-*** Errors with SBCL
+**** Errors with SBCL
 SBCL by default does not ship a new enough version of ASDF, and you
 may encounter an error like
 #+begin_src lisp
