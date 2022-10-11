@@ -1,5 +1,5 @@
 
-;; Setup this package to extract戶川純
+;; Setup this package to extract
 (defpackage #:alu.vampir.spec
   (:documentation "The Vampir model specification")
   (:use #:common-lisp)
@@ -26,9 +26,10 @@
    :equality    :lhs   :rhs
    :wire        :var
    :constant    :const
+   :tuple       :wires
 
    ;; Constructors
-   :make-alias :make-pub :make-infix :make-application
+   :make-alias :make-pub :make-infix :make-application :make-tuples
    :make-bind  :make-equality :make-wire :make-constant))
 
 (defpackage #:alu.vampir

@@ -2,13 +2,10 @@
 
 (-> circuit-to-alias (ir:prim-circuit) spc:alias)
 (defun circuit-to-alias (circuit)
-  (with-accessors ((name ir:name) (arguments ir:arguments)
-                   (body ir:body) (ret       ir:returns))
-      circuit
+  (with-accessors ((name ir:name) (arguments ir:arguments) (body ir:body)) circuit
     (values
      (spc:make-alias :name name
                      :inputs arguments
-                     :outputs ret
                      :body (mapcan #'term->constraint body)))))
 
 (-> term->constraint (ir:fully-expanded-term) spc:constraint-list)
@@ -36,11 +33,19 @@
     (values
      (etypecase-of ir:fully-expanded-term term
        ;; drop standalone constants, we can't emit it!
-       (ir:standalone-ret nil)
+       (ir:standalone-ret (list (return->expression term)))
        ;; (ir:application      (list (app->constraint term)))
        (ir:bind-constraint (mapcan #'term->constraint (ir:value term)))
        (ir:bind            (var-val->bind term))
        (ir:multiple-bind   (var-val->bind term))))))
+
+(-> return->expression (ir:standalone-ret) (or spc:wire spc:tuple))
+(defun return->expression (ret)
+  (values
+   (let ((wires (ir:var ret)))
+     (if (cdr wires)
+         (spc:make-tuples :wires wires)
+         (spc:make-wire :var (car wires))))))
 
 (-> term->expression ((or ir:term-normal-form ir:application)) spc:expression)
 (defun term->expression (app-norm)

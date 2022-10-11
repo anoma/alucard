@@ -16,12 +16,14 @@
    'vampir
    'alucard))
 
-(defun run-tests ()
+(defun run-tests (&key (debug nil))
   (let ((swapped (storage:currently-swapped?)))
     ;; I'm sorry I destroy your custom table if it isn't the test
     ;; one... this is a bug, please FIX ME
     (swap-tables)
-    (mapc #'run! *all-tests*)
+    (if debug
+        (mapc #'debug! *all-tests*)
+        (mapc #'run! *all-tests*))
     (unless swapped
       (storage:restore-tables))))
 

@@ -40,7 +40,7 @@
 (defun print-vampir (vampir &optional (stream *standard-output*))
   (vampir:extract vampir stream))
 
-(-> pipeline (ir:circuit) alu.vampir.spec:alias)
+(-> pipeline (ir:circuit) (or t alu.vampir.spec:alias))
 (defun pipeline (circuit)
   (handler-case (~> circuit
                     to-vampir)

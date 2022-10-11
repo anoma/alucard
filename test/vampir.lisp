@@ -10,19 +10,20 @@
         (vspc:make-alias
          :name :xor
          :inputs '(:a :b)
-         :outputs '(:c)
          :body (list (vspc:make-bind
                       :names (list (vspc:make-wire :var :c))
                       :value (vspc:make-infix :op :+
                                               :lhs (vspc:make-wire :var :a)
-                                              :rhs (vspc:make-wire :var :b)))))))
+                                              :rhs (vspc:make-wire :var :b)))
+                     (vspc:make-wire :var :c)))))
 
 (defparameter *expected-1*
   (with-output-to-string (stream)
     (format stream "pub fi~%")
     (format stream "pub bar~%")
-    (format stream "def xor a b -> c {~%")
-    (format stream "  c = a + b~%")
+    (format stream "def xor a b {~%")
+    (format stream "  def c = a + b;~%")
+    (format stream "  c~%")
     (format stream "}")))
 
 (defparameter *vamp-example-2*
@@ -30,7 +31,6 @@
         (vspc:make-alias
          :name :xor
          :inputs '(:a :b)
-         :outputs '(:c)
          :body
          (list (vspc:make-bind
                 :names (list (vspc:make-wire :var :c))
@@ -44,16 +44,18 @@
                                       :rhs #1#))
                (vspc:make-application
                 :func :foo
-                :arguments (list #1#))))))
+                :arguments (list #1#))
+               (vspc:make-wire :var :c)))))
 
 (defparameter *expected-2*
   (with-output-to-string (stream)
     (format stream "pub fi~%")
     (format stream "pub bar~%")
-    (format stream "def xor a b -> c {~%")
-    (format stream "  c = a * b~%")
-    (format stream "  baz = a + (a * b)~%")
-    (format stream "  foo (a * b)~%")
+    (format stream "def xor a b {~%")
+    (format stream "  def c = a * b;~%")
+    (format stream "  baz = a + (a * b);~%")
+    (format stream "  foo (a * b);~%")
+    (format stream "  c~%")
     (format stream "}")))
 
 (test extract-alias

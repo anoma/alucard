@@ -151,6 +151,7 @@ propagation"
                        (+ (× (term-op:exp 2 (term-op:times size (int index)))
                               (ref smaller-array))
                           (ref unused-mod)))
+            ;; range check
             (term-op:= (ref smaller-array)
                        (+ (× (term-op:exp 2 size)
                               (ref unused-array))

@@ -56,18 +56,17 @@
     (format stream "def ~(~a~)" (spc:name alias))
     (format stream "~4I~{ ~@_~(~a~)~} " (spc:inputs alias))
 
-    (when (spc:outputs alias)
-      (format stream "~@_->~{ ~@_~(~a~)~} " (spc:outputs alias)))
+    ;; no more output circuits, but may it rest here
+    ;; (when (spc:outputs alias)
+    ;;   (format stream "~@_->~{ ~@_~(~a~)~} " (spc:outputs alias)))
 
-    (format stream "~0I~@_{")
-    (pprint-indent :block 2 stream)
-
+    (format stream "~0I~@_{~2I")
     (extract-constraint-list (spc:body alias) stream)
     (format stream "~0I~:@_}")))
 
 (-> extract-constraint-list (spc:constraint-list &optional stream) stream)
 (defun extract-constraint-list (cs &optional (stream *standard-output*))
-  (format stream "~{~:@_~A~}" cs)
+  (format stream "~{~:@_~A~^;~}" cs)
   stream)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -76,9 +75,11 @@
 
 (defmethod print-object ((bind spc:bind) stream)
   (pprint-logical-block (stream nil)
-    (if (spc:names bind)
-        (format stream "~{~A ~^~}= ~2I~@_~A" (spc:names bind) (spc:value bind))
-        (format stream "~2I~@_~A" (spc:value bind)))))
+    (cond ((cdr (spc:names bind))
+           (format stream "def (~{~A~^, ~}) = " (spc:names bind)))
+          ((spc:names bind)
+           (format stream "def ~{~A~^, ~} = " (spc:names bind))))
+    (format stream "~2I~@_~A" (spc:value bind))))
 
 (defmethod print-object ((eql spc:equality) stream)
   (pprint-logical-block (stream nil)
@@ -99,7 +100,7 @@ of ()'s for any non normal form"
     (spc:application
      (pprint-logical-block (stream nil :prefix "(" :suffix ")")
        (print-object expr stream)))
-    (spc:normal-form
+    ((or spc:tuple spc:normal-form)
      (print-object expr stream)))
   stream)
 
@@ -117,6 +118,10 @@ of ()'s for any non normal form"
 
 (defmethod print-object ((wire spc:wire) stream)
   (format stream "~(~a~)" (spc:var wire)))
+
+(defmethod print-object ((tup spc:tuple) stream)
+  (pprint-logical-block (stream nil :prefix "(" :suffix ")")
+    (format stream "~{~(~a~)~^, ~}" (spc:wires tup))))
 
 (defmethod print-object ((const spc:constant) stream)
   (format stream "~A" (spc:const const)))

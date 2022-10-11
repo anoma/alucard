@@ -13,12 +13,12 @@
   `(or alias pub constraint))
 
 (deftype constraint ()
-  `(or application bind equality))
+  `(or application bind equality expression))
 
 ;; called base in the file
 ;; Values are called over a normal form!?!?!?
 (deftype expression ()
-  `(or infix application normal-form))
+  `(or infix application normal-form tuple))
 
 (deftype normal-form ()
   `(or wire constant))
@@ -53,9 +53,12 @@
            :type    list
            :accessor inputs
            :documentation "the arguments to the circuit")
-   (outputs :initarg :outputs
-            :type    list
-            :accessor outputs)
+   ;; we should move this to an expression instead
+   ;; See Issue #38 comment 1 on why.
+   ;; (outputs :initarg :outputs
+   ;;          :type    list
+   ;;          :accessor outputs
+   ;;          :documentation "The return wires of the circuit")
    ;; TODO :: layout types
    (body :initarg :body
          :accessor body
@@ -115,6 +118,11 @@
         :type     expression
         :documentation "the argument to the rigth of the =")))
 
+(defclass tuple ()
+  ((wires :initarg :wires
+          :type    list
+          :accessor wires)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Normal Form Product Types
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -133,8 +141,8 @@
 ;; Alias
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun make-alias (&key name inputs outputs body)
-  (make-instance 'alias :name name :inputs inputs :outputs outputs :body body))
+(defun make-alias (&key name inputs body)
+  (make-instance 'alias :name name :inputs inputs :body body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Pub
@@ -184,3 +192,10 @@
 
 (defun make-constant (&key const)
   (make-instance 'constant :const const))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Tuples
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun make-tuples (&key wires)
+  (make-instance 'tuple :wires wires))

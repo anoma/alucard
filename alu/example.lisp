@@ -45,17 +45,26 @@
                        (y point)))
                   (list (plane nest) (time nest)))))
 
-(defcircuit range-check ((private input int)
-                         (output void))
-  (with-constraint (b1 b0)
-    (with-constraint (b2 b3)
-      (= input (+ b1 b2)))))
+
 
 (defcircuit range-check-1 ((private input int)
                            (output void))
   (def ((with-constraint (b1 b0)
           (= input (+ b1 b0))))
     b1))
+
+(defcircuit imperative-example ((private input int)
+                                (output int))
+  (add-to 300 input))
+
+(defun add-to (x vampir-value)
+  (let ((accumulator vampir-value))
+    (loop for i from 0 to x
+          do (setf accumulator (+ i accumulator)))
+    accumulator))
+
+(defcircuit functional-example ((output int))
+  (reduce (lambda (x y) (+ x y)) (alexandria:iota 10) :initial-value 0))
 
 ;; (alu::let-refs (b0 b1)
 ;;                (alu::with-constraint-standalone (b0 b1) (= input (+ b1 b0)))
@@ -124,4 +133,31 @@
   ;; (equal (owner utxo) "test")
   (= (owner utxo) 5))
 
-(entry-point constrain-3)
+;; (entry-point constrain-3)
+
+
+(defcircuit multivar ((public x int)
+                      (public y int)
+                      (output int))
+  (= (+ (exp x 3)
+        (* 3 (exp x 2))
+        (* 2 x)
+        (* 3 y)
+        4)
+     0))
+
+(defcircuit square-root ((private p int)
+                         (output int))
+  (def ((with-constraint (x)
+          (= p (* x x))))
+    x))
+
+(defun square (cord)
+  (exp cord 2))
+
+(defcircuit distance ((public pt point)
+                      (output int))
+  (square-root (+ (square (x pt))
+                  (square (y pt)))))
+
+(entry-point distance)

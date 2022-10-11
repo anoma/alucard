@@ -39,8 +39,9 @@ and properly propagating arguments around them"
 (-> primitive-circuit (ir:fully-expanded-list ir:circuit) ir:prim-circuit)
 (defun primitive-circuit (terms circuit)
   (~>> (ir:make-prim-circuit :name (ir:name circuit) :body terms)
-       (fill-in-arguments circuit)
-       (fill-in-output    circuit)))
+       ;; we should fix this in the future so we can take tuples.
+       ;; See issue #38 Comment 1
+       (fill-in-arguments circuit)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Individual Passes
@@ -295,26 +296,6 @@ of the user program is preserved."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Return Type Filling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(-> fill-in-output (ir:circuit ir:prim-circuit) ir:prim-circuit)
-(defun fill-in-output (alu-circuit prim-circuit)
-  (values
-   (util:copy-instance
-    prim-circuit
-    :returns (determine-output-variables (ir:body prim-circuit)
-                                         (ir:return-type alu-circuit)))))
-
-(-> determine-output-variables
-    (ir:fully-expanded-list (or ir:type-reference null)) list)
-(defun determine-output-variables (body ret)
-  "Determines which output variables are returned from a function. If
-ret is (`ir:primitive' :void) then an empty list is returned, however
-if the value is not void, then the returns in the body are given back"
-  (unless (voidp ret)
-    (let ((filtered (remove-if-not (lambda (x)
-                                     (typep x 'ir:standalone-ret))
-                                   body)))
-      (mapcan #'ir:var filtered))))
 
 (-> voidp (ir:type-reference) boolean)
 (defun voidp (ret)
