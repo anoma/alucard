@@ -256,9 +256,9 @@ of the user program is preserved."
                         term))))
              (remove-standalone-ret (term)
                (let ((rets (mapcan (lambda (x)
-                                    (if (sycamore:tree-set-find set x)
-                                        nil
-                                        (list x)))
+                                     (if (sycamore:tree-set-find set x)
+                                         nil
+                                         (list x)))
                                    (ir:var term))))
                  (and rets
                       (ir:make-standalone-ret :var rets)))))
@@ -303,6 +303,22 @@ of the user program is preserved."
     (ir:reference-type (eq (ir:name ret) :void))
     (ir:application    nil)
     (otherwise         nil)))
+
+(-> return-void (ir:fully-expanded-list ir:circuit) ir:fully-expanded-list)
+(defun return-void (current-list alu-circuit)
+  "if the circuit returns void, remove the returned value, and return unit instead"
+  ;; implicitly filled in return
+  (cond ((not (find-if (lambda (x) (typep x 'alu.ir:standalone-ret)) current-list))
+         (append current-list
+                 (list (ir:make-standalone-ret :var nil))))
+        ((voidp (ir:return-type alu-circuit))
+         (mapcar (lambda (x)
+                   (if (typep x 'ir:standalone-ret)
+                       (ir:copy-meta x (ir:make-standalone-ret :var nil))
+                       x))
+                 current-list))
+        (t
+         current-list)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Renaming 在蒼白的月光

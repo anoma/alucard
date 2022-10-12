@@ -34,7 +34,8 @@
 (test void-removal
   (let ((ran (pipeline:to-expand-away-records
               (storage:lookup-function :use-constrain))))
-    (is (= 1 (length ran)))))
+    (is (= 2 (length ran)))
+    (is (equalp nil (ir:var (cadr ran))))))
 
 (test renaming
   (let ((ran  (pipeline:to-primitive-circuit (storage:lookup-function :record-test)))

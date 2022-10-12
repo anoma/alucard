@@ -71,7 +71,8 @@
   (~> circuit
       to-expand-arrays
       (pass:expand-away-records circuit)
-      pass:remove-void-bindings))
+      pass:remove-void-bindings
+      (pass:return-void circuit)))
 
 (defun to-primitive-circuit (circuit)
   (~> circuit

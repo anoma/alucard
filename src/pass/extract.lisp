@@ -43,7 +43,7 @@
 (defun return->expression (ret)
   (values
    (let ((wires (ir:var ret)))
-     (if (cdr wires)
+     (if (or (null wires) (cdr wires))
          (spc:make-tuples :wires wires)
          (spc:make-wire :var (car wires))))))
 
