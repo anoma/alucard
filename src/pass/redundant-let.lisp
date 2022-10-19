@@ -19,43 +19,42 @@
 
 (-> replace-references (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
 (defun replace-references (xs map)
-  (mapcar (lambda (x)
-            (etypecase-of ir:fully-expanded-term x
-              (ir:standalone-ret
-               (let* ((vars (ir:var x))
-                      (updated-rets
-                        (mapcar (lambda (y)
-                                  (let ((find (closure:lookup map y)))
-                                    (if find
-                                        (etypecase-of ir:base (closure:lookup map y)
-                                          (ir:application y)
-                                          (ir:reference (ir:name (closure:lookup map y)))
-                                          (number (closure:lookup map y))))))
-                                vars)))
-                 (ir:make-standalone-ret
-                  :var updated-rets)))
-              (ir:bind
-               (etypecase-of ir:base (ir:value x)
-                 (ir:application
-                  (let* ((value (ir:value x))
-                         (updated-refs
-                           (mapcar (lambda (y)
-                                     (etypecase-of ir:base y
-                                       (ir:reference
-                                        (or (closure:lookup map (ir:name y)) y))
-                                       (number y)
-                                       (ir:application y)))
-                                    (ir:arguments value))))
-                    (util:copy-instance
-                     x :value (util:copy-instance value
-                                                  :arguments updated-refs))))
-                 (ir:reference x)
-                 (number x)))
-              (ir:bind-constraint
-               (util:copy-instance x
-                                   :value (replace-references (ir:value x) map)))
-              (ir:multiple-bind x)))
-          xs))
+  (mapcar
+   (lambda (x)
+     (etypecase-of ir:fully-expanded-term x
+       (ir:multiple-bind   x)
+       (ir:bind-constraint (util:copy-instance
+                            x :value (replace-references (ir:value x) map)))
+       (ir:standalone-ret
+        (let* ((vars (ir:var x))
+               (updated-rets
+                 (mapcar (lambda (y)
+                           (let ((find (closure:lookup map y)))
+                             (if find
+                                 (etypecase-of ir:term-normal-form (closure:lookup map y)
+                                   (ir:reference (ir:name (closure:lookup map y)))
+                                   (number       (closure:lookup map y)))
+                                 y)))
+                         vars)))
+          (ir:make-standalone-ret :var updated-rets)))
+       (ir:bind
+        (etypecase-of ir:base (ir:value x)
+          (ir:reference x)
+          (number       x)
+          (ir:application
+           (let* ((value (ir:value x))
+                  (updated-refs
+                    (mapcar (lambda (y)
+                              (etypecase-of ir:base y
+                                (number         y)
+                                (ir:application y)
+                                (ir:reference   (or (closure:lookup map (ir:name y))
+                                                    y))))
+                            (ir:arguments value))))
+             (util:copy-instance
+              x :value (util:copy-instance value
+                                           :arguments updated-refs))))))))
+   xs))
 
 
 (-> remove-redundant-lets (ir:fully-expanded-list closure:typ) ir:fully-expanded-list)
