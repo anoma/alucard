@@ -183,38 +183,36 @@ it's closure"
 (-> expand-applications (relocate:rel) ir:fully-expanded-list)
 (defun expand-applications (rel)
   (let ((closure (relocate:rel-closure rel)))
-    (labels ((update-val (term)
-               (if (typep (ir:value term) 'ir:application)
-                   (util:copy-instance term :value (expand-app (ir:value term)))
-                   term))
-             (expand-app (app)
-               (util:copy-instance app :arguments (mapcan #'expand-argument
-                                                          (ir:arguments app))))
-             (expand-argument (arg)
+    (labels ((expand-argument (arg)
                (etypecase-of ir:term-normal-form arg
                  (number
                   (list arg))
                  (ir:reference
                   (or (mapcar (lambda (x)
-                                (ir:copy-meta arg
-                                              (ir:make-reference :name x)))
+                                (ir:copy-meta arg (ir:make-reference :name x)))
                               (relocate:maps-to (ir:name arg) closure))
                       (list arg)))))
+             (expand-app (app)
+               (util:copy-instance app :arguments (mapcan #'expand-argument
+                                                          (ir:arguments app))))
+             (update-val (term)
+               (if (typep (ir:value term) 'ir:application)
+                   (util:copy-instance term :value (expand-app (ir:value term)))
+                   term))
              (expand-term (term)
-               (etypecase-of ir:fully-expanded-term term
-                 ((or ir:multiple-bind ir:bind)
-                  (update-val term))
-                 (ir:bind-constraint
-                  (ir:copy-meta term
-                                (ir:make-bind-constraint
-                                 :var   (ir:var term)
-                                 :value (mapcar #'expand-term (ir:value term)))))
-                 (ir:standalone-ret
-                  (ir:copy-meta
-                   term
+               (ir:copy-meta
+                term
+                (etypecase-of ir:fully-expanded-term term
+                  ((or ir:multiple-bind ir:bind)
+                   (update-val term))
+                  (ir:bind-constraint
+                   (ir:make-bind-constraint
+                    :var   (ir:var term)
+                    :value (mapcar #'expand-term (ir:value term))))
+                  (ir:standalone-ret
                    (ir:make-standalone-ret
-                    :var (mapcan (lambda (x) (or (relocate:maps-to x closure)
-                                             (list x)))
+                    :var (mapcan (lambda (x)
+                                   (or (relocate:maps-to x closure) (list x)))
                                  (ir:var term))))))))
       (mapcar #'expand-term (relocate:rel-forms rel)))))
 
@@ -248,7 +246,7 @@ of the user program is preserved."
                          term
                          (ir:make-multiple-bind :var nil :val (ir:value term))))
                        ((and (typep value 'ir:reference)
-                             (or (alu.spec.term-op:void-reference? value)
+                             (or (term-op:void-reference? value)
                                  (sycamore:tree-set-find set (ir:name value))))
                         (sycamore:tree-set-insertf set (ir:var term))
                         nil)

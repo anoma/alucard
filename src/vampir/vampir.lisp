@@ -79,7 +79,7 @@
            (format stream "def (~{~A~^, ~}) = " (spc:names bind)))
           ((spc:names bind)
            (format stream "def ~{~A~^, ~} = " (spc:names bind))))
-    (format stream "~2I~@_~A" (spc:value bind))))
+    (format stream "~2I~_~A" (spc:value bind))))
 
 (defmethod print-object ((eql spc:equality) stream)
   (pprint-logical-block (stream nil)
